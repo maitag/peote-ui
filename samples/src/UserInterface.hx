@@ -1,6 +1,6 @@
 package;
 
-#if sampleUserInterface
+#if UserInterface
 import lime.ui.Window;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
@@ -22,7 +22,7 @@ class UserInterface
 	{
 		try {			
 			peoteView = new PeoteView(window.context, window.width, window.height);
-			ui = new UIDisplay(20, 0, window.width, window.height, Color.GREY1);
+			ui = new UIDisplay(20, 10, window.width, window.height, Color.GREY1);
 			peoteView.addDisplay(ui);
 			
 			var mySkin = new Skin();
@@ -106,6 +106,8 @@ class UserInterface
 	// --------------------------------------------------
 
 	// delegate mouse-events to UIDisplay
+	public function onTextInput (text:String):Void {}
+	public function onWindowActivate():Void {};
 	public function onWindowLeave () ui.onWindowLeave();
 	public function onMouseMove (x:Float, y:Float) ui.onMouseMove(peoteView, x, y);
 	public function onMouseDown (x:Float, y:Float, button:MouseButton) ui.onMouseDown(peoteView, x, y, button);

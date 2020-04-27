@@ -1,5 +1,5 @@
 package;
-#if sampleMouseEvents
+#if MouseEvents
 import haxe.Timer;
 
 import lime.ui.Window;
@@ -13,7 +13,6 @@ import peote.view.Display;
 import peote.view.Buffer;
 import peote.view.Program;
 import peote.view.Color;
-//import peote.view.Texture;
 
 import peote.view.Element;
 
@@ -233,6 +232,9 @@ class MouseEvents
 		}
 	}
 	
+	public function onWindowActivate():Void {};
+	public function onTextInput (text:String):Void {}
+
 	public function update(deltaTime:Int):Void {}
 
 	public function render()

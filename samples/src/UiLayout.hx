@@ -1,6 +1,6 @@
 package;
 
-#if sampleUiLayout
+#if UiLayout
 
 import lime.ui.Window;
 import lime.ui.KeyCode;
@@ -246,6 +246,8 @@ class UiLayout
 	
 	var sizeEmulation = false;
 	// delegate mouse-events to UIDisplay
+	public function onTextInput (text:String):Void {}
+	public function onWindowActivate():Void {};
 	public function onWindowLeave () ui.onWindowLeave();
 	public function onMouseMove (x:Float, y:Float) {
 		ui.onMouseMove(peoteView, x, y);

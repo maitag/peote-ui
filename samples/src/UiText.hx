@@ -1,6 +1,6 @@
 package;
 
-#if sampleUiText
+#if UiText
 
 import lime.ui.Window;
 import lime.ui.KeyCode;
@@ -84,6 +84,7 @@ class UiText
 	public function render() peoteView.render();
 
 	// delegate mouse-events to UIDisplay
+	public function onTextInput (text:String):Void {}
 	public function onWindowLeave () ui.onWindowLeave();
 	public function onMouseMove (x:Float, y:Float) ui.onMouseMove(peoteView, x, y);
 	public function onMouseDown (x:Float, y:Float, button:MouseButton) ui.onMouseDown(peoteView, x, y, button);
