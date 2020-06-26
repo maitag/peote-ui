@@ -9,7 +9,7 @@ import lime.ui.MouseButton;
 import peote.view.PeoteView;
 import peote.view.Color;
 import peote.ui.UIDisplay;
-import peote.ui.Button;
+import peote.ui.widgets.Button;
 import peote.ui.skin.Skin;
 import peote.ui.skin.Style;
 

@@ -4,6 +4,8 @@ import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.ui.MouseButton;
 import peote.ui.skin.Skin;
+import peote.ui.widgets.Pickable;
+import peote.ui.widgets.UIElement;
 import peote.view.Display;
 import peote.view.PeoteGL;
 import peote.view.PeoteView;

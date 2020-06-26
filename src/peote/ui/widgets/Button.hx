@@ -1,6 +1,8 @@
-package peote.ui;
+package peote.ui.widgets;
+
 import peote.ui.skin.Skin;
 import peote.ui.skin.Style;
+import peote.ui.widgets.UIElement;
 
 class Button extends UIElement
 {

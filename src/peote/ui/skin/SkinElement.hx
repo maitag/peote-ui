@@ -1,5 +1,6 @@
 package peote.ui.skin;
 
+import peote.ui.widgets.UIElement;
 import peote.view.Element;
 import peote.view.Color;
 

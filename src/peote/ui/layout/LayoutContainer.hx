@@ -1,10 +1,10 @@
-package peote.ui;
+package peote.ui.layout;
 
 import jasper.Strength;
 import jasper.Constraint;
 import jasper.Variable;
 import utils.NestedArray;
-import peote.ui.Layout;
+import peote.ui.layout.Layout;
 
 typedef InnerLimit = { width:Int, height:Int }
 typedef SizeVars = { sLimit:Null<Variable>, sSpan:Null<Variable> }

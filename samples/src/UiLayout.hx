@@ -10,12 +10,12 @@ import lime.ui.MouseButton;
 import peote.view.PeoteView;
 import peote.view.Color;
 import peote.ui.UIDisplay;
-import peote.ui.Button;
+import peote.ui.widgets.Button;
 import peote.ui.skin.Skin;
 import peote.ui.skin.Style;
-import peote.ui.Layout;
-import peote.ui.LayoutSolver;
-import peote.ui.LayoutContainer;
+import peote.ui.layout.Layout;
+import peote.ui.layout.LayoutSolver;
+import peote.ui.layout.LayoutContainer;
 
 import jasper.Constraint;
 import jasper.Strength;

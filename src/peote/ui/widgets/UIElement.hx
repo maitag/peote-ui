@@ -1,5 +1,6 @@
-package peote.ui;
+package peote.ui.widgets;
 
+import peote.ui.layout.Layout;
 import peote.ui.skin.Skin;
 import peote.ui.skin.Style;
 
@@ -49,7 +50,7 @@ class UIElement
 	public var z:Int;
 	
 	#if jasper // cassowary constraints (jasper lib)
-	public var layout(default, null) = new peote.ui.Layout.Layout();
+	public var layout(default, null) = new peote.ui.layout.Layout();
 	public function updateLayout() {
 		//trace("update element");
 		if (uiDisplay != null)

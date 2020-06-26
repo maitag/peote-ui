@@ -1,5 +1,6 @@
-package peote.ui;
+package peote.ui.widgets;
 
+import peote.ui.widgets.UIElement;
 import peote.view.Element;
 
 @:allow(peote.ui)

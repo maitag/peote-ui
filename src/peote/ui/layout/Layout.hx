@@ -1,10 +1,11 @@
-package peote.ui;
+package peote.ui.layout;
 
+import peote.ui.widgets.UIElement;
 import utils.NestedArray;
 
 import peote.view.PeoteView;
 import peote.view.Display;
-import peote.ui.LayoutContainer;
+import peote.ui.layout.LayoutContainer;
 
 import jasper.Expression;
 import jasper.Term;

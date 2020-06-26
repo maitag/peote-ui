@@ -1,5 +1,6 @@
-package peote.ui;
+package peote.ui.layout;
 
+import peote.ui.layout.Layout;
 import utils.NestedArray;
 import jasper.Variable;
 import jasper.Solver;
