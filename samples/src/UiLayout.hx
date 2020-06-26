@@ -13,9 +13,9 @@ import peote.ui.UIDisplay;
 import peote.ui.widgets.Button;
 import peote.ui.skin.Skin;
 import peote.ui.skin.Style;
-import peote.ui.layout.Layout;
-import peote.ui.layout.LayoutSolver;
+import peote.ui.layout.LayoutElement;
 import peote.ui.layout.LayoutContainer;
+import peote.ui.layout.Layout;
 
 import jasper.Constraint;
 import jasper.Strength;
@@ -28,7 +28,7 @@ class UiLayout
 	
 	var red:Button; var green:Button; var blue:Button;	var yellow:Button; var grey:Button; var cyan:Button;
 			
-	var layoutSolver:LayoutSolver;
+	var layout:Layout;
 	
 	public function new(window:Window)
 	{
@@ -59,52 +59,52 @@ class UiLayout
 	
 	public function testManualConstraints()
 	{
-		layoutSolver = new LayoutSolver ([
-				// constraints
-				(peoteView.layout.x == 0) | Strength.REQUIRED,
-				(peoteView.layout.y == 0) | Strength.REQUIRED,
+		layout = new Layout ([
+			// constraints
+			(peoteView.layout.x == 0) | Strength.REQUIRED,
+			(peoteView.layout.y == 0) | Strength.REQUIRED,
 
-				ui.layout.centerX == peoteView.layout.centerX,
-				ui.layout.top == 10,
-				(ui.layout.width == peoteView.layout.width - 20) | Strength.WEAK,
-				(ui.layout.bottom == peoteView.layout.bottom - 10) | Strength.WEAK,
-				(ui.layout.width <= 1000) | Strength.WEAK,
+			ui.layout.centerX == peoteView.layout.centerX,
+			ui.layout.top == 10,
+			(ui.layout.width == peoteView.layout.width - 20) | Strength.WEAK,
+			(ui.layout.bottom == peoteView.layout.bottom - 10) | Strength.WEAK,
+			(ui.layout.width <= 1000) | Strength.WEAK,
 
-				(grey.layout.centerX == ui.layout.centerX) | Strength.WEAK,
-				(grey.layout.y == ui.layout.y + 0.1*ui.layout.height) | Strength.WEAK,
-				//(grey.layout.centerY == ui.layout.centerY) | Strength.MEDIUM,
-				
-				(grey.layout.width  == ui.layout.width  / 1.1) | Strength.WEAK,
-				(grey.layout.height == ui.layout.height / 2.0  - 20) | Strength.WEAK,
-				
-				(grey.layout.width <= 600) | Strength.MEDIUM,
-				(grey.layout.width >= 200) | Strength.MEDIUM,
-				(grey.layout.height <= 400) | Strength.MEDIUM,
-				(grey.layout.height >= 200) | Strength.MEDIUM
+			(grey.layout.centerX == ui.layout.centerX) | Strength.WEAK,
+			(grey.layout.y == ui.layout.y + 0.1*ui.layout.height) | Strength.WEAK,
+			//(grey.layout.centerY == ui.layout.centerY) | Strength.MEDIUM,
+			
+			(grey.layout.width  == ui.layout.width  / 1.1) | Strength.WEAK,
+			(grey.layout.height == ui.layout.height / 2.0  - 20) | Strength.WEAK,
+			
+			(grey.layout.width <= 600) | Strength.MEDIUM,
+			(grey.layout.width >= 200) | Strength.MEDIUM,
+			(grey.layout.height <= 400) | Strength.MEDIUM,
+			(grey.layout.height >= 200) | Strength.MEDIUM
 		]);
 		
 		// adding constraints afterwards:
 		var limitHeight:Constraint = (ui.layout.height <= 800) | Strength.WEAK;
-		layoutSolver.addConstraint(limitHeight);
+		layout.addConstraint(limitHeight);
 		
 		// that constraints can also be removed again:
-		// layoutSolver.removeConstraint(limitHeight);
+		// layout.removeConstraint(limitHeight);
 		
 		// UI-Displays and UI-Elements to update
-		layoutSolver.toUpdate([ui, grey]);
+		layout.toUpdate([ui, grey]);
 		
 		// editable Vars (used in suggest() and suggestValues())	
-		layoutSolver.toSuggest([peoteView.layout.width, peoteView.layout.height]);
+		layout.toSuggest([peoteView.layout.width, peoteView.layout.height]);
 		
 		// set the constraints editable values to actual view size and updating (same as in onResize)
-		layoutSolver.suggestValues([peoteView.width, peoteView.height]).update();
+		layout.suggestValues([peoteView.width, peoteView.height]).update();
 	}
 
 	// ----------------------------------------------------------------
 		
 	public function testManualRowConstraints()
 	{
-		layoutSolver = new LayoutSolver ([
+		layout = new Layout ([
 			// constraints for the Displays
 			(peoteView.layout.x == 0) | Strength.REQUIRED,
 			(peoteView.layout.y == 0) | Strength.REQUIRED,
@@ -157,9 +157,9 @@ class UiLayout
 			(blue.layout.bottom == ui.layout.bottom) | Strength.MEDIUM,			
 		]);
 		
-		layoutSolver.toUpdate([ui, red, green, blue]); // UI-Displays and UI-Elements to update
-		layoutSolver.toSuggest([peoteView.layout.width, peoteView.layout.height]); // editable Vars (used in suggest() and suggestValues())	
-		layoutSolver.suggestValues([peoteView.width, peoteView.height]).update(); // set the constraints editable values to actual view size and updating (same as in onResize)
+		layout.toUpdate([ui, red, green, blue]); // UI-Displays and UI-Elements to update
+		layout.toSuggest([peoteView.layout.width, peoteView.layout.height]); // editable Vars (used in suggest() and suggestValues())	
+		layout.suggestValues([peoteView.width, peoteView.height]).update(); // set the constraints editable values to actual view size and updating (same as in onResize)
 	}
 
 
@@ -171,7 +171,7 @@ class UiLayout
 	
 	public function testLayoutNestedBoxes()
 	{
-		layoutSolver = new LayoutSolver
+		layout = new Layout
 		(
 			peoteView, // root Layout (automatically set width and height as suggestable and all childs toUpdate)
 			[
@@ -190,7 +190,7 @@ class UiLayout
 				
 			]
 		);
-		layoutSolver.suggestValues([peoteView.width, peoteView.height]).update();
+		layout.suggestValues([peoteView.width, peoteView.height]).update();
 	}
 
 	
@@ -199,7 +199,7 @@ class UiLayout
 		
 	public function testLayoutRows()
 	{
-		layoutSolver = new LayoutSolver
+		layout = new Layout
 		(
 			peoteView, // root Layout (automatically set width and height as suggestable and all childs toUpdate)
 			[
@@ -221,7 +221,7 @@ class UiLayout
 				
 			]
 		);
-		layoutSolver.suggestValues([peoteView.width, peoteView.height]).update();
+		layout.suggestValues([peoteView.width, peoteView.height]).update();
 	}
 
 	
@@ -236,8 +236,8 @@ class UiLayout
 		peoteView.resize(width, height);
 		
 		// calculates new Layout and updates all Elements 
-		layoutSolver.suggestValues([width, height]).update();
-		// or layoutSolver.suggest(peoteView.layout.width, width).suggest(peoteView.layout.height, height).update();
+		layout.suggestValues([width, height]).update();
+		// or layout.suggest(peoteView.layout.width, width).suggest(peoteView.layout.height, height).update();
 		trace(ui.width);
 	}
 	
@@ -251,14 +251,14 @@ class UiLayout
 	public function onWindowLeave () ui.onWindowLeave();
 	public function onMouseMove (x:Float, y:Float) {
 		ui.onMouseMove(peoteView, x, y);
-		if (sizeEmulation) layoutSolver.suggestValues([Std.int(x),Std.int(y)]).update();
+		if (sizeEmulation) layout.suggestValues([Std.int(x),Std.int(y)]).update();
 	}
 	public function onMouseDown (x:Float, y:Float, button:MouseButton) ui.onMouseDown(peoteView, x, y, button);
 	public function onMouseUp (x:Float, y:Float, button:MouseButton) {
 		ui.onMouseUp(peoteView, x, y, button);
 		sizeEmulation = !sizeEmulation; 
-		if (sizeEmulation) layoutSolver.suggestValues([Std.int(x), Std.int(y)]).update();
-		else layoutSolver.suggestValues([peoteView.width, peoteView.height]).update();
+		if (sizeEmulation) layout.suggestValues([Std.int(x), Std.int(y)]).update();
+		else layout.suggestValues([peoteView.width, peoteView.height]).update();
 	}
 	public function onKeyDown (keyCode:KeyCode, modifier:KeyModifier) ui.onKeyDown(keyCode, modifier);	
 	public function onPreloadComplete ():Void { trace("preload complete"); }

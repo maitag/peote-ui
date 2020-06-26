@@ -13,8 +13,8 @@ import peote.ui.UIDisplay;
 import peote.ui.widgets.Button;
 import peote.ui.skin.Skin;
 import peote.ui.skin.Style;
+import peote.ui.layout.LayoutElement;
 import peote.ui.layout.Layout;
-import peote.ui.layout.LayoutSolver;
 import peote.ui.layout.LayoutContainer;
 
 class UiText
@@ -25,7 +25,7 @@ class UiText
 	
 	var button:Button;
 			
-	var layoutSolver:LayoutSolver;
+	var layoutSolver:Layout;
 	
 	public function new(window:Window)
 	{
@@ -51,7 +51,7 @@ class UiText
 		
 	public function putIntoLayout()
 	{
-		layoutSolver = new LayoutSolver
+		layoutSolver = new Layout
 		(
 			peoteView, // root Layout (automatically set width and height as suggestable and all childs toUpdate)
 			[

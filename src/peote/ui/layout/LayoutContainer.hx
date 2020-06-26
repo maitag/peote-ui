@@ -4,7 +4,7 @@ import jasper.Strength;
 import jasper.Constraint;
 import jasper.Variable;
 import utils.NestedArray;
-import peote.ui.layout.Layout;
+import peote.ui.layout.LayoutElement;
 
 typedef InnerLimit = { width:Int, height:Int }
 typedef SizeVars = { sLimit:Null<Variable>, sSpan:Null<Variable> }
@@ -12,13 +12,13 @@ typedef SizeVars = { sLimit:Null<Variable>, sSpan:Null<Variable> }
 @:allow(peote.ui)
 class LayoutContainer
 {
-	var layout:Layout;
-	var childs:Array<Layout>;
+	var layout:LayoutElement;
+	var childs:Array<LayoutElement>;
 
-	function new(layout:Layout, width:Width, height:Height,	lSpace:LSpace, rSpace:RSpace, tSpace:TSpace, bSpace:BSpace, childs:Array<Layout>) 
+	function new(layout:LayoutElement, width:Width, height:Height,	lSpace:LSpace, rSpace:RSpace, tSpace:TSpace, bSpace:BSpace, childs:Array<LayoutElement>) 
 	{
 		if (layout == null)
-			this.layout = new Layout(width, height, lSpace, rSpace, tSpace, bSpace);
+			this.layout = new LayoutElement(width, height, lSpace, rSpace, tSpace, bSpace);
 		else {
 			layout.hSize = new SizeSpaced(width, lSpace, rSpace);
 			layout.vSize = new SizeSpaced(height, tSpace, bSpace);
@@ -82,9 +82,9 @@ class LayoutContainer
 // -------------------------------------------------------------------------------------------------
 @:forward abstract Box(LayoutContainer)
 {
-	public inline function new(layout:Layout = null, width:Width = null, height:Height = null, 
+	public inline function new(layout:LayoutElement = null, width:Width = null, height:Height = null, 
 		lSpace:LeftSpace = null, rSpace:RightSpace = null, tSpace:TopSpace = null, bSpace:BottomSpace = null,
-		childs:Array<Layout> = null) 
+		childs:Array<LayoutElement> = null) 
 	{
 		this = new LayoutContainer(layout, width, height, lSpace, rSpace, tSpace, bSpace, childs);
 		this.layout.addChildConstraints = addChildConstraints;
@@ -92,7 +92,7 @@ class LayoutContainer
 	
 	@:to public function toNestedArray():NestedArray<Constraint> return(this.getConstraints());
 	@:to public function toNestedArrayItem():NestedArrayItem<Constraint> return(this.getConstraints().toArray());	
-	@:to public function toLayout():Layout return(this.layout);
+	@:to public function toLayout():LayoutElement return(this.layout);
 
 	function addChildConstraints(constraints:NestedArray<Constraint>):InnerLimit
 	{	
@@ -142,9 +142,9 @@ class LayoutContainer
 // -------------------------------------------------------------------------------------------------
 abstract HBox(Box) to Box
 {
-	public inline function new(layout:Layout = null, width:Width = null, height:Height = null,
+	public inline function new(layout:LayoutElement = null, width:Width = null, height:Height = null,
 		lSpace:LeftSpace = null, rSpace:RightSpace = null, tSpace:TopSpace = null, bSpace:BottomSpace = null,
-		childs:Array<Layout> = null) 
+		childs:Array<LayoutElement> = null) 
 	{
 		this = new Box(layout, width, height, lSpace, rSpace, tSpace, bSpace, childs) ;
 		this.layout.addChildConstraints = addChildConstraints;
@@ -152,7 +152,7 @@ abstract HBox(Box) to Box
 	
 	@:to public function toNestedArray():NestedArray<Constraint> return(this.getConstraints());
 	@:to public function toNestedArrayItem():NestedArrayItem<Constraint> return(this.getConstraints().toArray());	
-	@:to public function toLayout():Layout return(this.layout);
+	@:to public function toLayout():LayoutElement return(this.layout);
 
 	function addChildConstraints(constraints:NestedArray<Constraint>):InnerLimit
 	{
@@ -230,9 +230,9 @@ abstract HBox(Box) to Box
 // -------------------------------------------------------------------------------------------------
 abstract VBox(Box) to Box
 {
-	public inline function new(layout:Layout = null, width:Width = null, height:Height = null,
+	public inline function new(layout:LayoutElement = null, width:Width = null, height:Height = null,
 		lSpace:LeftSpace = null, rSpace:RightSpace = null, tSpace:TopSpace = null, bSpace:BottomSpace = null,
-		childs:Array<Layout> = null) 
+		childs:Array<LayoutElement> = null) 
 	{
 		this = new Box(layout, width, height, lSpace, rSpace, tSpace, bSpace, childs) ;
 		this.layout.addChildConstraints = addChildConstraints;
@@ -240,7 +240,7 @@ abstract VBox(Box) to Box
 	
 	@:to public function toNestedArray():NestedArray<Constraint> return(this.getConstraints());
 	@:to public function toNestedArrayItem():NestedArrayItem<Constraint> return(this.getConstraints().toArray());	
-	@:to public function toLayout():Layout return(this.layout);
+	@:to public function toLayout():LayoutElement return(this.layout);
 
 	function addChildConstraints(constraints:NestedArray<Constraint>):InnerLimit
 	{
