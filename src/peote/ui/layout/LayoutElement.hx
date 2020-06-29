@@ -49,8 +49,9 @@ class _LayoutElement_
 		else return new Term(y) + height;
 	}
 	
-	var addChildConstraints:NestedArray<Constraint>->InnerLimit =
-	function(constraints:NestedArray<Constraint>):InnerLimit {return {width:0,height:0}};
+	var addChildConstraints:NestedArray<Constraint>->InnerLimit = function(constraints:NestedArray<Constraint>):InnerLimit {
+		return {width:0,height:0}
+	};
 	
 	var update:Void->Void = function() {};
 	var updateChilds:Void->Void = function() {};

@@ -42,7 +42,7 @@ class LayoutContainer
 		
 		// recursive Container
 		var innerLimit = this.layout.addChildConstraints(constraints);
-		trace(innerLimit.width);
+		//trace(innerLimit.width);
 		constraints.push( (this.layout.width >= innerLimit.width) | Strength.create(0,900,0) );
 		constraints.push( (this.layout.height >= innerLimit.height) | Strength.create(0,900,0) );
 		

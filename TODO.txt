@@ -1,0 +1,9 @@
+Masking:
+
+- ui-elements inside a container needs to be masked (via Skin renderer)
+- new HScroll, VScroll and Scroll for the layout solver
+
+Event-Bubbling:
+
+- gl-picking also of underlayings Elements (while bubbles are enabled for picked ui-element)
+
