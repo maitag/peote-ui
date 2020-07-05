@@ -1,7 +1,7 @@
 package peote.ui.layout;
 
 import peote.ui.widgets.UIElement;
-import utils.NestedArray;
+import peote.ui.layout.NestedArray;
 
 import peote.view.PeoteView;
 import peote.view.Display;
@@ -19,6 +19,7 @@ class _LayoutElement_
 {
 	public var x(default,null):Variable;
 	public var y(default,null):Variable;	
+
 	public var width(default,null):Variable;
 	public var height(default,null):Variable;	
 	
@@ -86,7 +87,7 @@ class _LayoutElement_
 }
 
 
-// ----------------- Layout -------------------
+// ----------------- LayoutElement -------------------
 
 @:forward abstract LayoutElement(_LayoutElement_) from _LayoutElement_ to _LayoutElement_
 {

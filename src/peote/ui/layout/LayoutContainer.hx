@@ -3,7 +3,7 @@ package peote.ui.layout;
 import jasper.Strength;
 import jasper.Constraint;
 import jasper.Variable;
-import utils.NestedArray;
+import peote.ui.layout.NestedArray;
 import peote.ui.layout.LayoutElement;
 
 typedef InnerLimit = { width:Int, height:Int }
@@ -311,3 +311,71 @@ abstract VBox(Box) to Box
 		return childsLimit;
 	}
 }
+
+
+
+// TODO:  
+// - disable childlimits
+// - add extra scroll properties
+
+// -------------------------------------------------------------------------------------------------
+// -----------------------------     Scroll   ------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
+@:forward abstract Scroll(Box) to Box
+{
+	public inline function new(layout:LayoutElement = null, width:Width = null, height:Height = null, 
+		lSpace:LeftSpace = null, rSpace:RightSpace = null, tSpace:TopSpace = null, bSpace:BottomSpace = null,
+		childs:Array<LayoutElement> = null) 
+	{
+		this = new Box(layout, width, height, lSpace, rSpace, tSpace, bSpace, childs);
+		this.layout.addChildConstraints = addChildConstraints;
+	}
+	
+	@:to public function toNestedArray():NestedArray<Constraint> return(this.getConstraints());
+	@:to public function toNestedArrayItem():NestedArrayItem<Constraint> return(this.getConstraints().toArray());	
+	@:to public function toLayout():LayoutElement return(this.layout);
+
+	function addChildConstraints(constraints:NestedArray<Constraint>):InnerLimit
+	{	
+		var strength = Strength.create(0, 900, 0); // TODO: gloabalstatic
+		var strengthLow = Strength.create(0, 0, 900);		
+		var childsLimit = {width:0, height:0};
+		
+		if (this.childs != null)
+		{
+			for (child in this.childs)
+			{	
+				// ------------------------- recursive childs --------------------------
+				var innerLimit = child.addChildConstraints(constraints);				
+				
+				// --------------------------------- horizontal ---------------------------------------				
+				this.fixLimit(child.hSize, innerLimit.width);
+				this.fixSpacer(this.layout.hSize, child.hSize);
+				
+				//if (child.hSize.getMin() > childsLimit.width) childsLimit.width = child.hSize.getMin();
+				
+				var hSizeVars = child.addHConstraints(constraints, {sLimit:null, sSpan:null}, strength);				
+				if (hSizeVars.sSpan != null) constraints.push( (hSizeVars.sSpan == (this.layout.width - child.hSize.getLimitMax()) / child.hSize.getSumWeight() ) | strengthLow );
+				
+				// TODO: new jasper variable for xScroll
+				constraints.push( (child.left == this.layout.x - 50) | strength );
+				constraints.push( (child.right == this.layout.x + this.layout.width ) | strengthLow );
+				
+				// --------------------------------- vertical ---------------------------------------
+				this.fixLimit(child.vSize, innerLimit.height);
+				this.fixSpacer(this.layout.vSize, child.vSize);
+				
+				if (child.vSize.getMin() > childsLimit.height) childsLimit.height = child.vSize.getMin();
+				
+				var vSizeVars = child.addVConstraints(constraints, {sLimit:null, sSpan:null}, strength);				
+				if (vSizeVars.sSpan != null) constraints.push( (vSizeVars.sSpan == (this.layout.height - child.vSize.getLimitMax()) / child.vSize.getSumWeight() ) | strengthLow );
+				
+				constraints.push( (child.top == this.layout.y) | strength );
+				constraints.push( (child.bottom == this.layout.y + this.layout.height) | strength );				
+			}
+		}
+		return childsLimit;
+	}	
+}
+
+

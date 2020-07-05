@@ -49,7 +49,8 @@ class UiLayout
 			//testManualConstraints();
 			//testManualRowConstraints();
 			//testLayoutNestedBoxes();
-			testLayoutRows();
+			//testLayoutRows();
+			testLayoutScroll();
 			
 		}
 		catch (e:Dynamic) trace("ERROR:", e);
@@ -225,6 +226,36 @@ class UiLayout
 	}
 
 	
+	public function testLayoutScroll()
+	{
+		layout = new Layout
+		(
+			peoteView, // root Layout (automatically set width and height as suggestable and all childs toUpdate)
+			[
+				new Box(peoteView,
+				[
+					new HBox(ui,
+					[
+						new Box(red,   200, 200 ,LSpace.is(10,50)),
+						new Box(green, Width.is(200,250),  LSpace.is(10,20), RSpace.is(10,20), TSpace.is(50) ),
+						new Scroll(blue, Width.is(20, 250), RSpace.is(10, 50), 
+						[	
+							new Box(yellow, 100, Height.is(50,100) ),
+							new Box(cyan, Width.is(100,150), 100, LSpace.is(0,50), TSpace.is(0,15)),
+							new Box(grey, Height.is(50), TSpace.is(0,30), BSpace.min(50) )
+						])
+					])
+				]),
+				
+				
+			]
+		);
+		// TODO: layout.addSuggest([blue.layout.width]);
+		layout.suggestValues([peoteView.width, peoteView.height]).update();
+		// TODO: layout.suggestValues([peoteView.width, peoteView.height, 100]).update();
+	}
+
+	
 	
 	
 	// ----------------------------------------
@@ -238,7 +269,7 @@ class UiLayout
 		// calculates new Layout and updates all Elements 
 		layout.suggestValues([width, height]).update();
 		// or layout.suggest(peoteView.layout.width, width).suggest(peoteView.layout.height, height).update();
-		trace(ui.width);
+		// trace(ui.width);
 	}
 	
 	public function render() peoteView.render();

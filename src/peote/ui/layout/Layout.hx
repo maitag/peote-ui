@@ -1,6 +1,6 @@
 package peote.ui.layout;
 
-import utils.NestedArray;
+import peote.ui.layout.NestedArray;
 import peote.ui.layout.LayoutElement;
 
 import jasper.Variable;
@@ -24,6 +24,7 @@ class Layout
 				
 		solver = new Solver();
 		
+		// TODO: addSuggest
 		if (rootLayout != null) {
 			solver.addEditVariable(rootLayout.width, Strength.create( 0, 900, 0));
 			solver.addEditVariable(rootLayout.height, Strength.create( 0, 900, 0));
@@ -32,6 +33,7 @@ class Layout
 		if (constraints != null) addConstraints(constraints);
 	}
 	
+	// TODO: addSuggest + remove Suggest
 	public function toSuggest(editableLayoutVars:Array<Variable>=null) // TODO
 	{
 		this.editableLayoutVars = editableLayoutVars;
@@ -45,6 +47,18 @@ class Layout
 	public function toUpdate(layoutsToUpdate:Array<LayoutElement>=null) // TODO
 	{
 		this.layoutsToUpdate = layoutsToUpdate;		
+	}
+	
+	public inline function addConstraint(constraint:Constraint):Layout
+	{
+		solver.addConstraint(constraint);
+		return this;
+	}
+	
+	public inline function removeConstraint(constraint:Constraint):Layout
+	{
+		solver.removeConstraint(constraint);
+		return this;
 	}
 	
 	public inline function addConstraints(constraints:Array<Constraint>):Layout
@@ -63,20 +77,9 @@ class Layout
 		return this;
 	}
 	
-	public inline function addConstraint(constraint:Constraint):Layout
-	{
-		solver.addConstraint(constraint);
-		return this;
-	}
-	
-	public inline function removeConstraint(constraint:Constraint):Layout
-	{
-		solver.removeConstraint(constraint);
-		return this;
-	}
-	
 	public inline function suggestValues(values:Array<Int>):Layout
 	{
+		// TODO: not with rootLayout
 		var start:Int = 0;
 		if (rootLayout != null) {
 			solver.suggestValue(rootLayout.width, values[0]);
