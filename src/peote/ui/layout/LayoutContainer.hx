@@ -15,16 +15,14 @@ class LayoutContainer
 	var layout:LayoutElement;
 	var childs:Array<LayoutElement>;
 
-	function new(layout:LayoutElement, width:Width, height:Height,	lSpace:LSpace, rSpace:RSpace, tSpace:TSpace, bSpace:BSpace, childs:Array<LayoutElement>) 
+	function new(layoutElement:LayoutElement, width:Width, height:Height,	lSpace:LSpace, rSpace:RSpace, tSpace:TSpace, bSpace:BSpace, childs:Array<LayoutElement>) 
 	{
-		if (layout == null)
-			this.layout = new LayoutElement(width, height, lSpace, rSpace, tSpace, bSpace);
+		if (layoutElement == null)
+			layout = new LayoutElement(width, height, lSpace, rSpace, tSpace, bSpace);
 		else {
-			layout.hSize = new SizeSpaced(width, lSpace, rSpace);
-			layout.vSize = new SizeSpaced(height, tSpace, bSpace);
-			this.layout = layout;
+			layoutElement.reset(width, height, lSpace, rSpace, tSpace, bSpace);
+			layout = layoutElement;
 		}
-		
 		this.childs = childs;
 		this.layout.updateChilds = updateChilds;	
 	}

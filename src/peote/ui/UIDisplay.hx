@@ -77,7 +77,8 @@ class UIDisplay extends Display
 	}
 	
 	public function updateAll():Void {
-		//TODO
+		overBuffer.update();
+		clickBuffer.update();
 	}
 	
 	// ----------------------------------------

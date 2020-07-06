@@ -96,6 +96,11 @@ class _LayoutElement_
         this = new _LayoutElement_(new SizeSpaced(width, lSpace, rSpace), new SizeSpaced(height, tSpace, bSpace));
     }
 	
+	public function reset(width:Width=null, height:Height=null, lSpace:LSpace = null, rSpace:RSpace = null, tSpace:TSpace = null, bSpace:BSpace = null) {
+		this.hSize = new SizeSpaced(width, lSpace, rSpace);
+		this.vSize = new SizeSpaced(height, tSpace, bSpace);
+	}
+	
 	@:from static public function fromPeoteView(p:PeoteView) {
 		return p.layout;
 	}

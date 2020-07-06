@@ -29,6 +29,7 @@ class UiLayout
 	var red:Button; var green:Button; var blue:Button;	var yellow:Button; var grey:Button; var cyan:Button;
 			
 	var layout:Layout;
+	var layoutNumber:Int = 0;
 	
 	public function new(window:Window)
 	{
@@ -37,29 +38,49 @@ class UiLayout
 			ui = new UIDisplay(0, 0, window.width, window.height, Color.GREY3);
 			peoteView.addDisplay(ui);
 			
-			red   = new Button(-100, mySkin, new Style(Color.RED));
-			green = new Button(-100, mySkin, new Style(Color.GREEN));
-			blue  = new Button(-100, mySkin, new Style(Color.BLUE));
-			yellow= new Button(-100, mySkin, new Style(Color.YELLOW));
-			grey  = new Button(-100, mySkin, new Style(Color.GREY1));		
-			cyan  = new Button(-100, mySkin, new Style(Color.CYAN));		
+			red   = new Button(mySkin, new Style(Color.RED));
+			green = new Button(mySkin, new Style(Color.GREEN));
+			blue  = new Button(mySkin, new Style(Color.BLUE));
+			yellow= new Button(mySkin, new Style(Color.YELLOW));
+			grey  = new Button(mySkin, new Style(Color.GREY1));		
+			cyan  = new Button(mySkin, new Style(Color.CYAN));		
 
 			ui.add(red); ui.add(green); ui.add(blue); ui.add(yellow); ui.add(grey); ui.add(cyan); 
-			
-			//testManualConstraints();
-			//testManualRowConstraints();
-			//testLayoutNestedBoxes();
-			//testLayoutRows();
-			testLayoutScroll();
+			switchLayout();
 			
 		}
 		catch (e:Dynamic) trace("ERROR:", e);
 	}
 
 	// ----------------------------------------------------------------
+	public function switchLayout() {
+		red.x = green.x = blue.x = yellow.x = grey.x = cyan.x = -1000;
+		// TODO: should work same
+		//ui.updateAll();
+		ui.update(red);
+		ui.update(green);
+		ui.update(blue);
+		ui.update(yellow);
+		ui.update(grey);
+		ui.update(cyan);
+		
+		switch (layoutNumber) {
+			case 0: testManualConstraints();
+			case 1: testManualRowConstraints();
+			case 2: testLayoutNestedBoxes();
+			case 3: testLayoutRows();
+			case 4: testLayoutScroll();
+			default:
+		}
+	}
+	
+	// ----------------------------------------------------------------
 	
 	public function testManualConstraints()
 	{
+		ui.layout.reset();
+		grey.layout.reset();
+
 		layout = new Layout ([
 			// constraints
 			(peoteView.layout.x == 0) | Strength.REQUIRED,
@@ -105,6 +126,11 @@ class UiLayout
 		
 	public function testManualRowConstraints()
 	{
+		ui.layout.reset();
+		red.layout.reset();
+		green.layout.reset();
+		blue.layout.reset();
+		
 		layout = new Layout ([
 			// constraints for the Displays
 			(peoteView.layout.x == 0) | Strength.REQUIRED,
@@ -157,7 +183,7 @@ class UiLayout
 			(blue.layout.top == ui.layout.top) | Strength.MEDIUM,
 			(blue.layout.bottom == ui.layout.bottom) | Strength.MEDIUM,			
 		]);
-		
+				
 		layout.toUpdate([ui, red, green, blue]); // UI-Displays and UI-Elements to update
 		layout.toSuggest([peoteView.layout.width, peoteView.layout.height]); // editable Vars (used in suggest() and suggestValues())	
 		layout.suggestValues([peoteView.width, peoteView.height]).update(); // set the constraints editable values to actual view size and updating (same as in onResize)
@@ -291,7 +317,21 @@ class UiLayout
 		if (sizeEmulation) layout.suggestValues([Std.int(x), Std.int(y)]).update();
 		else layout.suggestValues([peoteView.width, peoteView.height]).update();
 	}
-	public function onKeyDown (keyCode:KeyCode, modifier:KeyModifier) ui.onKeyDown(keyCode, modifier);	
+	
+	public function onKeyDown (keyCode:KeyCode, modifier:KeyModifier):Void
+	{
+		switch (keyCode) {
+			case KeyCode.RIGHT:
+				layoutNumber = (layoutNumber + 1) % 5;
+				switchLayout();
+			case KeyCode.LEFT:
+				layoutNumber--;
+				if (layoutNumber < 0) layoutNumber = 4;
+				switchLayout();
+			default:
+		}
+	}
+	
 	public function onPreloadComplete ():Void { trace("preload complete"); }
 	public function update(deltaTime:Int):Void {}
 }

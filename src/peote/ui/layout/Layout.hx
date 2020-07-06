@@ -111,6 +111,11 @@ class Layout
 			for (layout in layoutsToUpdate) layout.update();
 		}		
 	}
+	
+	public function cleanElements()
+	{
+		// TODO: remove all updateChilds
+	}
 
 }
 

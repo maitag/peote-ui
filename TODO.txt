@@ -1,9 +1,20 @@
-Masking:
+Layout:
 
-- ui-elements inside a container needs to be masked (via Skin renderer)
-- new HScroll, VScroll and Scroll for the layout solver
+- scrolling inside Layoutcontainer
 
-Event-Bubbling:
+- improving layoutSolver for better adding/removing
+- add/remove layout elements dynamically
 
-- gl-picking also of underlayings Elements (while bubbles are enabled for picked ui-element)
+Widgets:
+
+- simple scrollbar
+
+Skin:
+
+- ui-elements inside a container needs to be masked
+
+
+Events
+
+- Bubbling: gl-picking also of underlayings Elements (while bubbling are enabled for picked ui-element)
 
