@@ -7,6 +7,7 @@ Layout:
 
 Widgets:
 
+- all UIElements should have optional parent and childs
 - simple scrollbar
 
 Skin:
@@ -14,7 +15,7 @@ Skin:
 - ui-elements inside a container needs to be masked
 
 
-Events
+MouseEvents
 
-- Bubbling: gl-picking also of underlayings Elements (while bubbling are enabled for picked ui-element)
+- Bubbling: if bubbling are enabled for picked ui-element then specialhandle the parent-events into mouse-over/out/click
 

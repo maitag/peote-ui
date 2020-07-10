@@ -1,6 +1,6 @@
 package;
 
-#if UiLayout
+#if JasperLayout
 
 import lime.ui.Window;
 import lime.ui.KeyCode;
@@ -20,7 +20,7 @@ import peote.ui.layout.Layout;
 import jasper.Constraint;
 import jasper.Strength;
 
-class UiLayout 
+class JasperLayout 
 {
 	var peoteView:PeoteView;
 	var ui:UIDisplay;
@@ -56,14 +56,8 @@ class UiLayout
 	public function switchLayout() {
 		red.x = green.x = blue.x = yellow.x = grey.x = cyan.x = -1000;
 		// TODO: should work same
-		//ui.updateAll();
-		ui.update(red);
-		ui.update(green);
-		ui.update(blue);
-		ui.update(yellow);
-		ui.update(grey);
-		ui.update(cyan);
-		
+		ui.updateAll();
+
 		switch (layoutNumber) {
 			case 0: testManualConstraints();
 			case 1: testManualRowConstraints();

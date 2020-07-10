@@ -1,6 +1,6 @@
 package;
 
-#if UiText
+#if Container
 
 import lime.ui.Window;
 import lime.ui.KeyCode;
@@ -17,7 +17,7 @@ import peote.ui.layout.LayoutElement;
 import peote.ui.layout.Layout;
 import peote.ui.layout.LayoutContainer;
 
-class UiText
+class Container
 {
 	var peoteView:PeoteView;
 	var ui:UIDisplay;
@@ -25,7 +25,7 @@ class UiText
 	
 	var button:Button;
 			
-	var layoutSolver:Layout;
+	var layout:Layout;
 	
 	public function new(window:Window)
 	{
@@ -34,10 +34,25 @@ class UiText
 			ui = new UIDisplay(0, 0, window.width, window.height, Color.GREY3);
 			peoteView.addDisplay(ui);
 			
+			
+			
+			// WORK IN PROGRESS
+			
+			
+			
 			button = new Button(mySkin, new Style(Color.RED));
 			ui.add(button);
 			
-			putIntoLayout();
+			
+			// TODO: add child elements to button !
+			
+			// TODO: MASKING / SCROLLING
+			
+			// TODO: test 
+			//  1) manual placing 
+			//  2) via jasper-layout
+
+			//putIntoLayout();
 			
 		}
 		catch (e:Dynamic) trace("ERROR:", e);
@@ -51,7 +66,7 @@ class UiText
 		
 	public function putIntoLayout()
 	{
-		layoutSolver = new Layout
+		layout = new Layout
 		(
 			peoteView, // root Layout (automatically set width and height as suggestable and all childs toUpdate)
 			[
@@ -66,7 +81,7 @@ class UiText
 				
 			]
 		);
-		layoutSolver.suggestValues([peoteView.width, peoteView.height]).update();
+		layout.suggestValues([peoteView.width, peoteView.height]).update();
 	}
 
 	
@@ -78,7 +93,7 @@ class UiText
 	public function resize(width:Int, height:Int)
 	{
 		peoteView.resize(width, height);
-		layoutSolver.suggestValues([width, height]).update(); // calculates new Layout and updates all Elements
+		layout.suggestValues([width, height]).update(); // calculates new Layout and updates all Elements
 	}
 	
 	public function render() peoteView.render();

@@ -41,7 +41,7 @@ class Skin
 				//d.program.clear();
 				displayProgBuff.remove(uiDisplay);
 			}
-		} else throw("Error: can not removeElement() from skin!"); //TODO: this should never be thrown
+		} else throw("Error: can not removeElement() because it is not added!"); //TODO: this should never be thrown
 		
 	}
 	

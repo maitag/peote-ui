@@ -1,6 +1,6 @@
 package;
 
-#if UserInterface
+#if ButtonEvents
 import lime.ui.Window;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
@@ -13,7 +13,7 @@ import peote.ui.widgets.Button;
 import peote.ui.skin.Skin;
 import peote.ui.skin.Style;
 
-class UserInterface 
+class ButtonEvents 
 {
 	var peoteView:PeoteView;
 	var ui:UIDisplay;

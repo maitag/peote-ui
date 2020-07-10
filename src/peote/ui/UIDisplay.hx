@@ -30,7 +30,7 @@ class UIDisplay extends Display
 	var lastOverIndex:Int = -1;
 	var lastDownIndex:Int = -1;
 	
-	var skins:Array<Skin>; // TODO: no references
+	//var skins:Array<Skin>; // TODO: no references
 
 	public function new(x:Int, y:Int, width:Int, height:Int, color:Color=0x00000000) 
 	{
@@ -45,7 +45,7 @@ class UIDisplay extends Display
 		clickProgram = new Program(clickBuffer);
 	
 		uiElements = new Array<UIElement>();
-		skins = new Array<Skin>();
+		//skins = new Array<Skin>();
 	}
 	
 	override private function setNewGLContext(newGl:PeoteGL)
@@ -77,8 +77,9 @@ class UIDisplay extends Display
 	}
 	
 	public function updateAll():Void {
-		overBuffer.update();
-		clickBuffer.update();
+		for (uiElement in uiElements)
+			uiElement.update();
+		//TODO
 	}
 	
 	// ----------------------------------------
@@ -93,6 +94,8 @@ class UIDisplay extends Display
 		try {
 			var pickedElement = peoteView.getElementAt(x, y, this, overProgram);
 			if (pickedElement != lastOverIndex) {
+				// TODO: bubbling only for container-elements
+				// so no over and out to the parent-elements if bubbling is enabled into a child!
 				if (lastOverIndex >= 0) 
 					overBuffer.getElement(lastOverIndex).uiElement.mouseOut( Std.int(x), Std.int(y) );
 				if (pickedElement >= 0) 

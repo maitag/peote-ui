@@ -8,14 +8,12 @@ import lime.ui.Touch;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 
-#if MouseEvents
-typedef Sample = MouseEvents;
-#elseif UserInterface
-typedef Sample = UserInterface;
-#elseif UiText
-typedef Sample = UiText;
-#elseif UiLayout
-typedef Sample = UiLayout;
+#if ButtonEvents
+typedef Sample = ButtonEvents;
+#elseif Container
+typedef Sample = Container;
+#elseif JasperLayout
+typedef Sample = JasperLayout;
 #end 
 
 class Main extends Application
