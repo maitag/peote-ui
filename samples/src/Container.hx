@@ -11,6 +11,7 @@ import peote.view.PeoteView;
 import peote.view.Color;
 import peote.ui.UIDisplay;
 import peote.ui.widgets.Button;
+import peote.ui.widgets.Draggable;
 import peote.ui.skin.Skin;
 import peote.ui.skin.Style;
 import peote.ui.layout.LayoutElement;
@@ -24,6 +25,7 @@ class Container
 	var mySkin = new Skin();
 	
 	var button:Button;
+	var draggable:Draggable;
 			
 	var layout:Layout;
 	
@@ -40,8 +42,28 @@ class Container
 			
 			
 			
-			button = new Button(mySkin, new Style(Color.RED));
+			button = new Button(50, 10, 300, 30, mySkin, new Style(Color.BLUE));
 			ui.add(button);
+			
+			draggable = new Draggable(
+				// dragging area (defining the position and size of rectangular dragging area) 
+				50, 10, 300, 30, // x, y, width, height
+				// minimum size of draggable
+				50, 30, // minWidth, minHeight
+				mySkin, new Style(Color.GREEN)
+			);
+			ui.add(draggable);
+			
+			// TODO:
+
+			// only getter:
+			//trace(draggable.x, draggable.width);
+			
+			//draggable.relativeX = 1; // sets x position to max x value
+			//draggable.relativeWidth = 1; // sets width to max-width
+			//draggable.relativeWidth = 0.5; // sets width to 50% of available
+			
+			// draggable.onDrag
 			
 			
 			// TODO: add child elements to button !
@@ -108,7 +130,7 @@ class Container
 	public function onWindowActivate() //ui.onWindowActivate();	
 	{
 		#if html5
-		reFocus(); // TODO: delegate this event also to ui
+		//reFocus(); // TODO: delegate this event also to ui
 		#end
 	}
 	

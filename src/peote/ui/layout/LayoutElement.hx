@@ -57,8 +57,9 @@ class _LayoutElement_
 	var update:Void->Void = function() {};
 	var updateChilds:Void->Void = function() {};
 
-    public function new(hSize:SizeSpaced, vSize:SizeSpaced)
+    public function new(updateFunction:Void->Void, hSize:SizeSpaced, vSize:SizeSpaced)
 	{
+		if (updateFunction != null) update = updateFunction;
 		this.hSize = hSize;
 		this.vSize = vSize;
 		
@@ -91,9 +92,9 @@ class _LayoutElement_
 
 @:forward abstract LayoutElement(_LayoutElement_) from _LayoutElement_ to _LayoutElement_
 {
-    public function new(width:Width=null, height:Height=null, lSpace:LSpace = null, rSpace:RSpace = null, tSpace:TSpace = null, bSpace:BSpace = null)
+    public function new(updateFunction:Void->Void=null, width:Width=null, height:Height=null, lSpace:LSpace = null, rSpace:RSpace = null, tSpace:TSpace = null, bSpace:BSpace = null)
     {
-        this = new _LayoutElement_(new SizeSpaced(width, lSpace, rSpace), new SizeSpaced(height, tSpace, bSpace));
+        this = new _LayoutElement_(updateFunction, new SizeSpaced(width, lSpace, rSpace), new SizeSpaced(height, tSpace, bSpace));
     }
 	
 	public function reset(width:Width=null, height:Height=null, lSpace:LSpace = null, rSpace:RSpace = null, tSpace:TSpace = null, bSpace:BSpace = null) {

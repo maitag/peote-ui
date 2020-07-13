@@ -50,7 +50,7 @@ class UIElement
 	public var z:Int;
 	
 	#if jasper // cassowary constraints (jasper lib)
-	public var layout(default, null) = new peote.ui.layout.LayoutElement();
+	public var layout(default, null):LayoutElement;
 	public function updateLayout() {
 		//trace("update element");
 		if (uiDisplay != null)
@@ -91,7 +91,8 @@ class UIElement
 	public function new(xPosition:Int=0, yPosition:Int=0, width:Int=100, height:Int=100, zIndex:Int=0, skin:Skin=null, style:Style=null) 
 	{
 		#if jasper // cassowary constraints (jasper lib)
-		layout.update = updateLayout;
+		//layout.update = updateLayout;
+		layout = new LayoutElement(updateLayout);
 		#end
 		x = xPosition;
 		y = yPosition;

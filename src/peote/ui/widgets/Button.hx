@@ -6,10 +6,6 @@ import peote.ui.widgets.UIElement;
 
 class Button extends UIElement
 {
-
-	public var label:String = null;
-	
-
 	public var onMouseOver(default, set):UIDisplay->Button->Int->Int->Void;
 	inline function set_onMouseOver(f:UIDisplay->Button->Int->Int->Void):UIDisplay->Button->Int->Int->Void {
 		rebindMouseOver( f.bind(uiDisplay, this), f == null);
