@@ -49,6 +49,10 @@ class UIElement
 	public var height:Int;
 	public var z:Int;
 	
+	public var dragOriginX:Int;
+	public var dragOriginY:Int;
+	public var isDragging(default, null):Bool = false;
+	
 	#if jasper // cassowary constraints (jasper lib)
 	public var layout(default, null):LayoutElement;
 	public function updateLayout() {

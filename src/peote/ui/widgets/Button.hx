@@ -6,33 +6,33 @@ import peote.ui.widgets.UIElement;
 
 class Button extends UIElement
 {
-	public var onMouseOver(default, set):UIDisplay->Button->Int->Int->Void;
-	inline function set_onMouseOver(f:UIDisplay->Button->Int->Int->Void):UIDisplay->Button->Int->Int->Void {
-		rebindMouseOver( f.bind(uiDisplay, this), f == null);
+	public var onMouseOver(default, set):Button->Int->Int->Void;
+	inline function set_onMouseOver(f:Button->Int->Int->Void):Button->Int->Int->Void {
+		rebindMouseOver( f.bind(this), f == null);
 		return onMouseOver = f;
 	}
 	
-	public var onMouseOut(default, set):UIDisplay->Button->Int->Int->Void;
-	inline function set_onMouseOut(f:UIDisplay->Button->Int->Int->Void):UIDisplay->Button->Int->Int->Void {
-		rebindMouseOut( f.bind(uiDisplay, this), f == null);
+	public var onMouseOut(default, set):Button->Int->Int->Void;
+	inline function set_onMouseOut(f:Button->Int->Int->Void):Button->Int->Int->Void {
+		rebindMouseOut( f.bind(this), f == null);
 		return onMouseOut = f;
 	}
 	
-	public var onMouseUp(default, set):UIDisplay->Button->Int->Int->Void;
-	inline function set_onMouseUp(f:UIDisplay->Button->Int->Int->Void):UIDisplay->Button->Int->Int->Void {
-		rebindMouseUp( f.bind(uiDisplay, this), f == null);
-		return onMouseUp = f;
-	}
-	
-	public var onMouseDown(default, set):UIDisplay->Button->Int->Int->Void;
-	inline function set_onMouseDown(f:UIDisplay->Button->Int->Int->Void):UIDisplay->Button->Int->Int->Void {
-		rebindMouseDown( f.bind(uiDisplay, this), f == null);
+	public var onMouseDown(default, set):Button->Int->Int->Void;
+	inline function set_onMouseDown(f:Button->Int->Int->Void):Button->Int->Int->Void {
+		rebindMouseDown( f.bind(this), f == null);
 		return onMouseDown = f;
 	}
 	
-	public var onMouseClick(default, set):UIDisplay->Button->Int->Int->Void;
-	inline function set_onMouseClick(f:UIDisplay->Button->Int->Int->Void):UIDisplay->Button->Int->Int->Void {
-		rebindMouseClick( f.bind(uiDisplay, this), f == null);
+	public var onMouseUp(default, set):Button->Int->Int->Void;
+	inline function set_onMouseUp(f:Button->Int->Int->Void):Button->Int->Int->Void {
+		rebindMouseUp( f.bind(this), f == null);
+		return onMouseUp = f;
+	}
+	
+	public var onMouseClick(default, set):Button->Int->Int->Void;
+	inline function set_onMouseClick(f:Button->Int->Int->Void):Button->Int->Int->Void {
+		rebindMouseClick( f.bind(this), f == null);
 		return onMouseClick = f;
 	}
 	

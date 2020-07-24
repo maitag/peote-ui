@@ -1,5 +1,6 @@
 # Peote Text - Userinterface for [peote-view](https://github.com/maitag/peote-view)
 
+(work in progress)
 
 ## Installation:
 ```

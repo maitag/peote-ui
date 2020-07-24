@@ -70,38 +70,36 @@ class ButtonEvents
 	}
 	
 	// --------------------------------------------------
-	public function onOver(color:Color, uiDisplay:UIDisplay, button:Button, x:Int, y:Int) {
+	public function onOver(color:Color, button:Button, x:Int, y:Int) {
 		button.style.color = color;
 		button.style.borderColor = Color.GREY7;
 		button.update();
-		trace(" -----> onMouseOver", x, y, button.label);
+		trace(" -----> onMouseOver", x, y);
 	}
 	
-	public function onOut(color:Color, uiDisplay:UIDisplay, button:Button, x:Int, y:Int) {
+	public function onOut(color:Color, button:Button, x:Int, y:Int) {
 		button.style.color = color;
 		button.style.borderColor = Color.GREY5;
 		button.update();
-		trace(" -----> onMouseOut", x, y, button.label);
+		trace(" -----> onMouseOut", x, y);
 	}
 	
-	public function onUp(borderColor:Color, uiDisplay:UIDisplay, button:Button, x:Int, y:Int) {
+	public function onUp(borderColor:Color, button:Button, x:Int, y:Int) {
 		button.style.borderColor = borderColor;
 		button.update();
-		trace(" -----> onMouseUp", x, y, button.label);
+		trace(" -----> onMouseUp", x, y);
 	}
 	
-	public function onDown(borderColor:Color, uiDisplay:UIDisplay, button:Button, x:Int, y:Int) {
+	public function onDown(borderColor:Color, button:Button, x:Int, y:Int) {
 		button.style.borderColor = borderColor;
 		//button.x += 30;
 		button.update();
-		trace(" -----> onMouseDown", x, y, button.label);
-		//ui.onMouseMove(peoteView, x, y);
+		trace(" -----> onMouseDown", x, y);
 	}
 	
-	public function onClick(uiDisplay:UIDisplay, button:Button, x:Int, y:Int) {
+	public function onClick(button:Button, x:Int, y:Int) {
 		//button.y += 30; button.update();
-		trace(" -----> onMouseClick", x, y, button.label);
-		//ui.onMouseMove(peoteView, x, y);
+		trace(" -----> onMouseClick", x, y);
 	}
 	// --------------------------------------------------
 

@@ -15,7 +15,14 @@ Skin:
 - ui-elements inside a container needs to be masked
 
 
-MouseEvents
 
-- Bubbling: if bubbling are enabled for picked ui-element then specialhandle the parent-events into mouse-over/out/click
+Mouse- and Multitouch:
+
+- handle touchevents and -points
+- let emulate touch-events for mouse-only-targets
+
+
+Bubbling:
+
+- if bubbling are enabled for picked ui-element then pass it throught to the parent-uiElement
 

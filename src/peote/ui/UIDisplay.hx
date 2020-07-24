@@ -3,17 +3,14 @@ package peote.ui;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.ui.MouseButton;
-import peote.ui.skin.Skin;
 import peote.ui.widgets.Pickable;
 import peote.ui.widgets.UIElement;
-import peote.view.Display;
 import peote.view.PeoteGL;
 import peote.view.PeoteView;
 import peote.view.Display;
 import peote.view.Buffer;
 import peote.view.Program;
 import peote.view.Color;
-//import peote.view.Texture;
 
 
 @:allow(peote.ui)
@@ -31,6 +28,8 @@ class UIDisplay extends Display
 	var lastDownIndex:Int = -1;
 	
 	//var skins:Array<Skin>; // TODO: no references
+	
+	var draggingElements:Array<UIElement>;
 
 	public function new(x:Int, y:Int, width:Int, height:Int, color:Color=0x00000000) 
 	{
@@ -45,6 +44,7 @@ class UIDisplay extends Display
 		clickProgram = new Program(clickBuffer);
 	
 		uiElements = new Array<UIElement>();
+		draggingElements = new Array<UIElement>();
 		//skins = new Array<Skin>();
 	}
 	
@@ -83,6 +83,19 @@ class UIDisplay extends Display
 	}
 	
 	// ----------------------------------------
+	public function startDragging(uiElement:UIElement):Void {
+		if (! uiElement.isDragging) {
+			uiElement.isDragging = true;
+			draggingElements.push(uiElement);
+		} //TODO: #if peoteui_debug -> else WARNING: already in dragmode
+	}
+
+	public function stopDragging(uiElement:UIElement):Void {
+		if (uiElement.isDragging) {
+			uiElement.isDragging = false;
+			draggingElements.remove(uiElement);
+		} //TODO: #if peoteui_debug -> else WARNING: is not into dragmode
+	}
 
 	
 	
@@ -102,6 +115,12 @@ class UIDisplay extends Display
 					overBuffer.getElement(pickedElement).uiElement.mouseOver(  Std.int(x), Std.int(y) );
 				lastOverIndex = pickedElement;
 			}
+			// Dragging: TODO (touchpoints, refactoring!)
+			for (uiElement in draggingElements) {
+				uiElement.x = Std.int(x-25);
+				uiElement.y = Std.int(y-15);
+				update(uiElement);
+			}
 		}
 		catch (e:Dynamic) trace("ERROR:", e);
 		
@@ -116,20 +135,20 @@ class UIDisplay extends Display
 		if (lastDownIndex >= 0) { 
 			clickBuffer.getElement(lastDownIndex).uiElement.mouseUp( -1, -1 );
 			lastDownIndex = -1;
-			lockDown = false;
+			lockMouseDown = false;
 		}
 	}
 	
-	var lockDown = false;
+	var lockMouseDown = false;
 	public function onMouseDown (peoteView:PeoteView, x:Float, y:Float, button:MouseButton):Void
 	{
 		try {
-			if (!lockDown) 
+			if (!lockMouseDown) 
 			{
 				lastDownIndex = peoteView.getElementAt( x, y, this, clickProgram ) ;
 				if (lastDownIndex >= 0) {
 					clickBuffer.getElement(lastDownIndex).uiElement.mouseDown( Std.int(x), Std.int(y) );
-					lockDown = true;
+					lockMouseDown = true;
 				}
 			}
 			//var pickedElements = peoteView.getAllElementsAt(x, y, display, clickProgram);
@@ -150,8 +169,11 @@ class UIDisplay extends Display
 					clickBuffer.getElement(pickedElement).uiElement.mouseClick( Std.int(x), Std.int(y) );
 				}
 				lastDownIndex = -1;
-				lockDown = false;
+				lockMouseDown = false;
 			}
+			
+			// TODO: stop all draggings here (and how is with touchpoints) ?
+			
 			
 			//var pickedElements = peoteView.getAllElementsAt(x, y, display, clickProgram);
 			//trace(pickedElements);
