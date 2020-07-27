@@ -10,8 +10,8 @@ import lime.ui.MouseButton;
 import peote.view.PeoteView;
 import peote.view.Color;
 import peote.ui.UIDisplay;
+import peote.ui.widgets.UIElement;
 import peote.ui.widgets.Button;
-import peote.ui.widgets.DraggButton;
 import peote.ui.skin.Skin;
 import peote.ui.skin.Style;
 import peote.ui.layout.LayoutElement;
@@ -24,8 +24,8 @@ class Container
 	var ui:UIDisplay;
 	var mySkin = new Skin();
 	
-	var button:Button;
-	var draggable:DraggButton;
+	var background:UIElement;
+	var dragger:Button;
 			
 	var layout:Layout;
 	
@@ -41,31 +41,28 @@ class Container
 			// WORK IN PROGRESS
 			
 			
+			background = new UIElement(150, 10, 300, 30, mySkin, new Style(Color.BLUE));
+			ui.add(background);
 			
-			button = new Button(50, 10, 300, 30, mySkin, new Style(Color.BLUE));
-			ui.add(button);
+			dragger = new Button(150, 10, 50, 30, mySkin, new Style(Color.GREEN));
 			
-			draggable = new DraggButton(
-				// dragging area (defining the position and size of rectangular dragging area) 
-				50, 10, 300, 30, // x, y, width, height
-				// minimum size of draggable
-				50, 30, // minWidth, minHeight
-				mySkin, new Style(Color.GREEN)
-			);
-			ui.add(draggable);
+			dragger.setDragArea(150, 10, 300, 30); // x, y, width, height
+			dragger.onMouseDown = function(b:Button, x:Int, y:Int) {
+				b.startDragging(x, y);
+			}
+			dragger.onMouseUp = function(b:Button, x:Int, y:Int) {
+				b.stopDragging();
+			}
+			ui.add(dragger);
 			
-			//ui.startDragging(draggable);
 			
 			// TODO:
+			// dragger.onDrag = function(b:Button, x:Int, y:Int) {}
 
-			// only getter:
-			//trace(draggable.x, draggable.width);
+			//dragger.relativeX = 1; // sets x position to max x value
+			//dragger.relativeWidth = 1; // sets width to max-width
+			//dragger.relativeWidth = 0.5; // sets width to 50% of available
 			
-			//draggable.relativeX = 1; // sets x position to max x value
-			//draggable.relativeWidth = 1; // sets width to max-width
-			//draggable.relativeWidth = 0.5; // sets width to 50% of available
-			
-			// draggable.onDrag
 			
 			
 			// TODO: add child elements to button !
@@ -88,7 +85,7 @@ class Container
 	// ----------------------------------------------------------------
 
 		
-	public function putIntoLayout()
+/*	public function putIntoLayout()
 	{
 		layout = new Layout
 		(
@@ -98,7 +95,7 @@ class Container
 				[
 					new HBox(ui,
 					[
-						new Box(button, Width.min(200), Height.min(200) , LSpace.is(10,100), RSpace.is(10,100)),
+						new Box(background, Width.min(200), Height.min(200) , LSpace.is(10,100), RSpace.is(10,100)),
 					])
 				]),
 				
@@ -107,7 +104,7 @@ class Container
 		);
 		layout.suggestValues([peoteView.width, peoteView.height]).update();
 	}
-
+*/
 	
 	
 	

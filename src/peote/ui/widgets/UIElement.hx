@@ -49,10 +49,6 @@ class UIElement
 	public var height:Int;
 	public var z:Int;
 	
-	public var dragOriginX:Int;
-	public var dragOriginY:Int;
-	public var isDragging(default, null):Bool = false;
-	
 	#if jasper // cassowary constraints (jasper lib)
 	public var layout(default, null):LayoutElement;
 	public function updateLayout() {
@@ -154,7 +150,51 @@ class UIElement
 		uiDisplay = null;
 	}
 	
+	// ----------------- Dragging ----------------------------
+	
+	var dragMinX:Int = -0x7fff;
+	var dragMinY:Int = -0x7fff;
+	var dragMaxX:Int = 0x7fff;
+	var dragMaxY:Int = 0x7fff;
+	
+	public var isDragging(default, null):Bool = false;
+	
+	var dragOriginX:Int = 0;
+	var dragOriginY:Int = 0;
+	
+	public function setDragArea(dragAreaX:Int, dragAreaY:Int, dragAreaWidth:Int, dragAreaHeight:Int) {
+		dragMinX = dragAreaX;
+		dragMinY = dragAreaY;
+		dragMaxX = dragAreaX + dragAreaWidth;
+		dragMaxY = dragAreaY + dragAreaHeight;
+	}
+	
+	private function dragTo(dragToX:Int, dragToY:Int)
+	{
+		if (dragToX >= dragMinX + dragOriginX) {
+			if (dragToX < dragMaxX - width + dragOriginX) x = dragToX - dragOriginX;
+			else x = dragMaxX - width;
+		} else x = dragMinX;
 		
+		if (dragToY >= dragMinY + dragOriginY) {
+			if (dragToY < dragMaxY - height + dragOriginY) y = dragToY - dragOriginY;
+			else y = dragMaxY - height;
+		} else y = dragMinY;
+	}
+	
+	public function startDragging(dragOriginX:Int, dragOriginY:Int)
+	{
+		if (uiDisplay != null) {
+			this.dragOriginX = dragOriginX - x;
+			this.dragOriginY = dragOriginY - y;
+			uiDisplay.startDragging(this);
+		}
+	}
+	
+	public function stopDragging()
+	{
+		if (uiDisplay != null) uiDisplay.stopDragging(this);
+	}
 	
 	// ----------------- Event-Bindings ----------------------
 

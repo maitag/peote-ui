@@ -101,6 +101,7 @@ class UIDisplay extends Display
 	
 	// ----------------------------------------
 	
+	// TODO: onTouch, touchpoints
 	
 	public function onMouseMove (peoteView:PeoteView, x:Float, y:Float):Void
 	{
@@ -115,10 +116,9 @@ class UIDisplay extends Display
 					overBuffer.getElement(pickedElement).uiElement.mouseOver(  Std.int(x), Std.int(y) );
 				lastOverIndex = pickedElement;
 			}
-			// Dragging: TODO (touchpoints, refactoring!)
+			// Dragging
 			for (uiElement in draggingElements) {
-				uiElement.x = Std.int(x-25);
-				uiElement.y = Std.int(y-15);
+				uiElement.dragTo(Std.int(x), Std.int(y));
 				update(uiElement);
 			}
 		}
@@ -170,11 +170,7 @@ class UIDisplay extends Display
 				}
 				lastDownIndex = -1;
 				lockMouseDown = false;
-			}
-			
-			// TODO: stop all draggings here (and how is with touchpoints) ?
-			
-			
+			}			
 			//var pickedElements = peoteView.getAllElementsAt(x, y, display, clickProgram);
 			//trace(pickedElements);
 			
