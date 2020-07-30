@@ -1,24 +1,58 @@
 package peote.ui.widgets;
 
-import peote.ui.layout.LayoutElement;
 import peote.ui.skin.Skin;
 import peote.ui.skin.Style;
 
-// main class for all ui-widgets
+@:allow(peote.ui.widgets.UIElement)
+class Pickable implements peote.view.Element
+{
+	public var uiElement:UIElement; 
+	
+	@posX public var x:Int=0;
+	@posY public var y:Int=0;	
+	@sizeX public var w:Int=100;
+	@sizeY public var h:Int=100;
+	@zIndex public var z:Int = 0;
+	
+	var OPTIONS = { picking:true };
+	
+	private function new( uiElement:UIElement )
+	{
+		this.uiElement = uiElement;
+		update(uiElement);
+	}
 
-typedef UIEventParams = Int->Int->Void;
+	private inline function update( uiElement:UIElement ):Void
+	{
+		this.uiElement = uiElement;
+		x = uiElement.x;
+		y = uiElement.y;
+		w = uiElement.width;
+		h = uiElement.height;
+		z = uiElement.z;
+	}
 
-@:enum abstract UIEventOver(Int) from Int to Int {
+}
+
+// ---------------------------------------------------------------
+
+private typedef UIEventParams = Int->Int->Void;
+
+@:enum private abstract UIEventOver(Int) from Int to Int {
 
 	public static inline var mouseOver:Int = 1;
 	public static inline var mouseOut :Int = 2;
 }
-@:enum abstract UIEventClick(Int) from Int to Int {
+@:enum private abstract UIEventClick(Int) from Int to Int {
 
 	public static inline var mouseDown :Int = 1;
 	public static inline var mouseUp   :Int = 2;
 	public static inline var mouseClick:Int = 4;
 }
+
+// ---------------------------------------------------------------
+// ---------------------------------------------------------------
+// ---------------------------------------------------------------
 
 @:allow(peote.ui)
 class UIElement
@@ -50,7 +84,7 @@ class UIElement
 	public var z:Int;
 	
 	#if jasper // cassowary constraints (jasper lib)
-	public var layout(default, null):LayoutElement;
+	public var layout(default, null):peote.ui.layout.LayoutElement;
 	public function updateLayout() {
 		//trace("update element");
 		if (uiDisplay != null)
@@ -92,7 +126,7 @@ class UIElement
 	{
 		#if jasper // cassowary constraints (jasper lib)
 		//layout.update = updateLayout;
-		layout = new LayoutElement(updateLayout);
+		layout = new peote.ui.layout.LayoutElement(updateLayout);
 		#end
 		x = xPosition;
 		y = yPosition;
@@ -294,6 +328,5 @@ class UIElement
 		trace("removePickableClick");
 		if (uiDisplay!=null) uiDisplay.clickBuffer.removeElement( pickableClick ); //pickableClick=null
 	}
-	
-	
+		
 }

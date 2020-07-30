@@ -65,6 +65,26 @@ class ButtonEvents
 			//ui.update(b1);
 			//ui.updateAll();
 			
+			// ---- Dragging -----
+			
+			var background = new Button(350, 10, 300, 30, mySkin, myStyle2);
+			ui.add(background);
+			
+			var dragger = new Button(350, 10, 50, 30, mySkin, myStyle);
+			dragger.onMouseOver = onOver.bind(Color.GREY2);
+			dragger.onMouseOut = onOut.bind(Color.GREY1);
+			
+			dragger.setDragArea(350, 10, 300, 30); // x, y, width, height
+			dragger.onMouseDown = function(b:Button, x:Int, y:Int) {
+				b.startDragging(x, y);
+			}
+			dragger.onMouseUp = function(b:Button, x:Int, y:Int) {
+				b.stopDragging();
+			}
+			ui.add(dragger);
+
+			
+			
 		}
 		catch (e:Dynamic) trace("ERROR:", e);
 	}

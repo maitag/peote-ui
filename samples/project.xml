@@ -7,10 +7,9 @@
 	<!-- <meta build-number="714" /> --> <!-- let set the buildnumber manual (android) -->
 	
 	<app main="Main" path="bin" file="Main" />
-	<haxedef name="Container" />
+	<haxedef name="ButtonEvents" />
 	<!--
 		ButtonEvents,
-		Container,
 		JasperLayout,
 		...
 	-->

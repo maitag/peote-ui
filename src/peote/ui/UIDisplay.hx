@@ -3,8 +3,7 @@ package peote.ui;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.ui.MouseButton;
-import peote.ui.widgets.Pickable;
-import peote.ui.widgets.UIElement;
+
 import peote.view.PeoteGL;
 import peote.view.PeoteView;
 import peote.view.Display;
@@ -12,8 +11,11 @@ import peote.view.Buffer;
 import peote.view.Program;
 import peote.view.Color;
 
+import peote.ui.widgets.UIElement;
+import peote.ui.widgets.UIElement.Pickable;
 
-@:allow(peote.ui)
+
+@:allow(peote.ui.widgets.UIElement)
 class UIDisplay extends Display 
 {
 	var uiElements:Array<UIElement>;

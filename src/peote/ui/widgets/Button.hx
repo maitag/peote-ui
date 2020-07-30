@@ -49,8 +49,4 @@ class Button extends UIElement
 	}
 	
 	
-	public function test() {
-		mouseClick(10, 20);
-	}
-	
 }
