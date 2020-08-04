@@ -5,6 +5,8 @@ import lime.ui.Window;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.ui.MouseButton;
+import lime.ui.MouseWheelMode;
+import lime.ui.Touch;
 
 import peote.view.PeoteView;
 import peote.view.Color;
@@ -77,6 +79,8 @@ class ButtonEvents
 			dragger.setDragArea(350, 10, 300, 30); // x, y, width, height
 			dragger.onMouseDown = function(b:Button, x:Int, y:Int) {
 				b.startDragging(x, y);
+				//b.style.color = Color.RED;
+				//b.update();
 			}
 			dragger.onMouseUp = function(b:Button, x:Int, y:Int) {
 				b.stopDragging();
@@ -123,14 +127,27 @@ class ButtonEvents
 	}
 	// --------------------------------------------------
 
-	// delegate mouse-events to UIDisplay
-	public function onTextInput (text:String):Void {}
-	public function onWindowActivate():Void {};
-	public function onWindowLeave () ui.onWindowLeave();
+	// delegate events to UIDisplay
 	public function onMouseMove (x:Float, y:Float) ui.onMouseMove(peoteView, x, y);
 	public function onMouseDown (x:Float, y:Float, button:MouseButton) ui.onMouseDown(peoteView, x, y, button);
 	public function onMouseUp (x:Float, y:Float, button:MouseButton) ui.onMouseUp(peoteView, x, y, button);
+	public function onMouseWheel (deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode) ui.onMouseWheel(peoteView, deltaX, deltaY, deltaMode);
+	
+	public function onTouchStart (touch:Touch):Void {}
+	public function onTouchMove (touch:Touch):Void {}
+	public function onTouchEnd (touch:Touch):Void {}
+	public function onTouchCancel(touch:Touch):Void {}
+	
 	public function onKeyDown (keyCode:KeyCode, modifier:KeyModifier) ui.onKeyDown(keyCode, modifier);
+	public function onKeyUp (keyCode:KeyCode, modifier:KeyModifier):Void  ui.onKeyUp(keyCode, modifier);
+	public function onTextInput (text:String):Void {}
+	public function onTextEdit(text:String, start:Int, length:Int):Void {}
+
+	public function onWindowLeave () ui.onWindowLeave();
+	public function onWindowActivate():Void {};
+	
+	
+	
 	
 	public function render() peoteView.render();
 	public function resize(width:Int, height:Int) peoteView.resize(width, height);

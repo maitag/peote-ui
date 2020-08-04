@@ -3,6 +3,7 @@ package peote.ui;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.ui.MouseButton;
+import lime.ui.MouseWheelMode;
 
 import peote.view.PeoteGL;
 import peote.view.PeoteView;
@@ -181,7 +182,20 @@ class UIDisplay extends Display
 		
 	}
 
+	// TODO ------------
+	public function onMouseWheel (peoteView:PeoteView, deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode):Void
+	{
+	}
+	
 	public function onKeyDown (keyCode:KeyCode, modifier:KeyModifier):Void
+	{
+		switch (keyCode) {
+			//case KeyCode.NUMPAD_PLUS:
+			default:
+		}
+	}
+	
+	public function onKeyUp (keyCode:KeyCode, modifier:KeyModifier):Void
 	{
 		switch (keyCode) {
 			//case KeyCode.NUMPAD_PLUS:

@@ -6,6 +6,8 @@ import lime.ui.Window;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.ui.MouseButton;
+import lime.ui.MouseWheelMode;
+import lime.ui.Touch;
 
 import peote.view.PeoteView;
 import peote.view.Color;
@@ -296,10 +298,7 @@ class JasperLayout
 
 	
 	var sizeEmulation = false;
-	// delegate mouse-events to UIDisplay
-	public function onTextInput (text:String):Void {}
-	public function onWindowActivate():Void {};
-	public function onWindowLeave () ui.onWindowLeave();
+	
 	public function onMouseMove (x:Float, y:Float) {
 		ui.onMouseMove(peoteView, x, y);
 		if (sizeEmulation) layout.suggestValues([Std.int(x),Std.int(y)]).update();
@@ -311,6 +310,11 @@ class JasperLayout
 		if (sizeEmulation) layout.suggestValues([Std.int(x), Std.int(y)]).update();
 		else layout.suggestValues([peoteView.width, peoteView.height]).update();
 	}
+	public function onMouseWheel (deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode):Void {}
+	public function onTouchStart (touch:Touch):Void {}
+	public function onTouchMove (touch:Touch):Void {}
+	public function onTouchEnd (touch:Touch):Void {}
+	public function onTouchCancel(touch:Touch):Void {}
 	
 	public function onKeyDown (keyCode:KeyCode, modifier:KeyModifier):Void
 	{
@@ -325,6 +329,12 @@ class JasperLayout
 			default:
 		}
 	}
+	public function onKeyUp (keyCode:KeyCode, modifier:KeyModifier):Void {}
+	public function onTextInput (text:String):Void {}
+	public function onTextEdit(text:String, start:Int, length:Int):Void {}
+
+	public function onWindowActivate():Void {};
+	public function onWindowLeave () ui.onWindowLeave();
 	
 	public function onPreloadComplete ():Void { trace("preload complete"); }
 	public function update(deltaTime:Int):Void {}
