@@ -56,6 +56,7 @@ class ButtonEvents
 			
 			b2.onMouseOver = onOver.bind(Color.GREY2);
 			b2.onMouseOut = onOut.bind(Color.GREY1);
+			b2.onMouseMove = onMove;
 			b2.onMouseUp = onUp.bind(Color.GREY5);
 			b2.onMouseDown = onDown.bind(Color.RED);
 			b2.onMouseClick = onClick;
@@ -69,6 +70,7 @@ class ButtonEvents
 			
 			// ---- Dragging -----
 			
+			trace("NEW SLIDER -----");
 			var background = new Button(350, 10, 300, 30, mySkin, myStyle2);
 			ui.add(background);
 			
@@ -106,6 +108,10 @@ class ButtonEvents
 		button.style.borderColor = Color.GREY5;
 		button.update();
 		trace(" -----> onMouseOut", x, y);
+	}
+	
+	public function onMove(button:Button, x:Int, y:Int) {
+		trace(" -----> onMouseMove", x, y);
 	}
 	
 	public function onUp(borderColor:Color, button:Button, x:Int, y:Int) {

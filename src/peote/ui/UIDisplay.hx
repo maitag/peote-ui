@@ -7,7 +7,6 @@ import lime.ui.MouseWheelMode;
 import lime.ui.Touch;
 
 import peote.view.PeoteGL;
-import peote.view.PeoteView;
 import peote.view.Display;
 import peote.view.Buffer;
 import peote.view.Program;
@@ -22,11 +21,11 @@ class UIDisplay extends Display
 {
 	var uiElements:Array<UIElement>;
 	
-	var overBuffer:Buffer<Pickable>;
-	var overProgram:Program;
+	var movePickBuffer:Buffer<Pickable>;
+	var movePickProgram:Program;
 	
-	var clickBuffer:Buffer<Pickable>;
-	var clickProgram:Program;
+	var clickPickBuffer:Buffer<Pickable>;
+	var clickPickProgram:Program;
 	
 	var lastOverIndex:Int = -1;
 	var lastDownIndex:Int = -1;
@@ -40,12 +39,12 @@ class UIDisplay extends Display
 		super(x, y, width, height, color);
 		
 		// elements for mouseOver/Out ----------------------
-		overBuffer = new Buffer<Pickable>(16, 8); // TODO: fill with constants
-		overProgram = new Program(overBuffer);
+		movePickBuffer = new Buffer<Pickable>(16, 8); // TODO: fill with constants
+		movePickProgram = new Program(movePickBuffer);
 				
 		// elements for mouseDown/Up ----------------------
-		clickBuffer = new Buffer<Pickable>(16,8); // TODO: fill with constants
-		clickProgram = new Program(clickBuffer);
+		clickPickBuffer = new Buffer<Pickable>(16,8); // TODO: fill with constants
+		clickPickProgram = new Program(clickPickBuffer);
 	
 		uiElements = new Array<UIElement>();
 		draggingElements = new Array<UIElement>();
@@ -55,8 +54,8 @@ class UIDisplay extends Display
 	override private function setNewGLContext(newGl:PeoteGL)
 	{
 		super.setNewGLContext(newGl);
-		overProgram.setNewGLContext(newGl);
-		clickProgram.setNewGLContext(newGl);
+		movePickProgram.setNewGLContext(newGl);
+		clickPickProgram.setNewGLContext(newGl);
 	}
 	
 	public function add(uiElement:UIElement):Void {
@@ -72,6 +71,8 @@ class UIDisplay extends Display
 	}
 	
 	public function removeAll():Void {
+		for (uiElement in uiElements)
+			remove(uiElement);
 		//TODO
 	}
 	
@@ -106,18 +107,25 @@ class UIDisplay extends Display
 	// ----------------------------------------
 	public function onMouseMove (x:Float, y:Float):Void
 	{
-		if (peoteView == null) return;
+		if (peoteView != null)
 		try {
-			var pickedElement = peoteView.getElementAt(x, y, this, overProgram);
-			if (pickedElement != lastOverIndex) {
+			var pickedIndex = peoteView.getElementAt(x, y, this, movePickProgram);
+			
+			// onMouseOver/onMouseOut
+			if (pickedIndex != lastOverIndex) {
 				// TODO: bubbling only for container-elements
 				// so no over and out to the parent-elements if bubbling is enabled into a child!
 				if (lastOverIndex >= 0) 
-					overBuffer.getElement(lastOverIndex).uiElement.mouseOut( Std.int(x), Std.int(y) );
-				if (pickedElement >= 0) 
-					overBuffer.getElement(pickedElement).uiElement.mouseOver(  Std.int(x), Std.int(y) );
-				lastOverIndex = pickedElement;
+					movePickBuffer.getElement(lastOverIndex).uiElement.mouseOut( Std.int(x), Std.int(y) );
+				if (pickedIndex >= 0) 
+					movePickBuffer.getElement(pickedIndex).uiElement.mouseOver(  Std.int(x), Std.int(y) );
+				lastOverIndex = pickedIndex;
 			}
+			
+			// onMouseMove
+			if (pickedIndex >= 0) 
+				movePickBuffer.getElement(pickedIndex).uiElement.mouseMove( Std.int(x), Std.int(y) );
+			
 			// Dragging
 			for (uiElement in draggingElements) {
 				uiElement.dragTo(Std.int(x), Std.int(y));
@@ -134,9 +142,9 @@ class UIDisplay extends Display
 		try {
 			if (!lockMouseDown && peoteView != null) 
 			{
-				lastDownIndex = peoteView.getElementAt( x, y, this, clickProgram ) ;
+				lastDownIndex = peoteView.getElementAt( x, y, this, clickPickProgram ) ;
 				if (lastDownIndex >= 0) {
-					clickBuffer.getElement(lastDownIndex).uiElement.mouseDown( Std.int(x), Std.int(y) );
+					clickPickBuffer.getElement(lastDownIndex).uiElement.mouseDown( Std.int(x), Std.int(y) );
 					lockMouseDown = true;
 				}
 			}
@@ -152,10 +160,10 @@ class UIDisplay extends Display
 	{
 		try {
 			if (lastDownIndex >= 0 && peoteView != null) {
-				var pickedElement = peoteView.getElementAt(x, y, this, clickProgram);
-				clickBuffer.getElement(lastDownIndex).uiElement.mouseUp( Std.int(x), Std.int(y) );
-				if (pickedElement == lastDownIndex) {
-					clickBuffer.getElement(pickedElement).uiElement.mouseClick( Std.int(x), Std.int(y) );
+				var pickedIndex = peoteView.getElementAt(x, y, this, clickPickProgram);
+				clickPickBuffer.getElement(lastDownIndex).uiElement.mouseUp( Std.int(x), Std.int(y) );
+				if (pickedIndex == lastDownIndex) {
+					clickPickBuffer.getElement(pickedIndex).uiElement.mouseClick( Std.int(x), Std.int(y) );
 				}
 				lastDownIndex = -1;
 				lockMouseDown = false;
@@ -189,11 +197,11 @@ class UIDisplay extends Display
 	public function onWindowLeave ():Void {
 		//trace("onWindowLeave");
 		if (lastOverIndex >= 0) {
-			overBuffer.getElement(lastOverIndex).uiElement.mouseOut( -1, -1) ;
+			movePickBuffer.getElement(lastOverIndex).uiElement.mouseOut( -1, -1) ;
 			lastOverIndex = -1;
 		}
 		if (lastDownIndex >= 0) { 
-			clickBuffer.getElement(lastDownIndex).uiElement.mouseUp( -1, -1 );
+			clickPickBuffer.getElement(lastDownIndex).uiElement.mouseUp( -1, -1 );
 			lastDownIndex = -1;
 			lockMouseDown = false;
 		}

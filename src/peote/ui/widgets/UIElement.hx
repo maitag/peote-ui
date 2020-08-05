@@ -38,10 +38,11 @@ class Pickable implements peote.view.Element
 
 private typedef UIEventParams = Int->Int->Void;
 
-@:enum private abstract UIEventOver(Int) from Int to Int {
+@:enum private abstract UIEventMove(Int) from Int to Int {
 
 	public static inline var mouseOver:Int = 1;
 	public static inline var mouseOut :Int = 2;
+	public static inline var mouseMove:Int = 4;
 }
 @:enum private abstract UIEventClick(Int) from Int to Int {
 
@@ -74,7 +75,7 @@ class UIElement
 	
 	
 	var skinElementIndex:Int;
-	var pickableOver:Pickable = null;
+	var pickableMove:Pickable = null;
 	var pickableClick:Pickable = null;
 	
 	public var x:Int;
@@ -115,6 +116,7 @@ class UIElement
 	
 	var mouseOver :UIEventParams;
 	var mouseOut  :UIEventParams;
+	var mouseMove :UIEventParams;
 	var hasOverEvent :Int = 0;
 	
 	var mouseUp   :UIEventParams;
@@ -139,6 +141,7 @@ class UIElement
 		
 		mouseOver  = noOperation;
 		mouseOut   = noOperation;
+		mouseMove  = noOperation;
 		
 		mouseDown  = noOperation;
 		mouseUp    = noOperation;
@@ -152,12 +155,12 @@ class UIElement
 		{
 			if (skin != null) skin.updateElement(uiDisplay, this);
 			if ( hasOverEvent  != 0 ) {
-				pickableOver.update(this);
-				uiDisplay.overBuffer.updateElement( pickableOver );
+				pickableMove.update(this);
+				uiDisplay.movePickBuffer.updateElement( pickableMove );
 			}
 			if ( hasClickEvent != 0 ) {
 				pickableClick.update(this);
-				uiDisplay.clickBuffer.updateElement( pickableClick );		
+				uiDisplay.clickPickBuffer.updateElement( pickableClick );		
 			}
 		}
 	}
@@ -169,7 +172,7 @@ class UIElement
 		this.uiDisplay = uiDisplay;
 		
 		if (skin != null) skin.addElement(uiDisplay, this);
-		if ( hasOverEvent  != 0 ) addPickableOver();	
+		if ( hasOverEvent  != 0 ) addPickableMove();	
 		if ( hasClickEvent != 0 ) addPickableClick();
 	}
 	
@@ -178,7 +181,7 @@ class UIElement
 		if (uiDisplay != this.uiDisplay) throw('Error, $this is not inside uiDisplay: $uiDisplay');
 		
 		if (skin != null) skin.removeElement(uiDisplay, this);
-		if ( hasOverEvent  != 0 ) removePickableOver();
+		if ( hasOverEvent  != 0 ) removePickableMove();
 		if ( hasClickEvent != 0 ) removePickableClick();
 		
 		uiDisplay = null;
@@ -237,12 +240,12 @@ class UIElement
 	private function rebindMouseOver(newBinding:UIEventParams, isNull:Bool):Void {
 		if ( !isNull ) {
 			mouseOver = newBinding;
-			if ( hasOverEvent == 0 ) addPickableOver();
-			hasOverEvent |= UIEventOver.mouseOver;
+			if ( hasOverEvent == 0 ) addPickableMove();
+			hasOverEvent |= UIEventMove.mouseOver;
 		}
 		else {
-			hasOverEvent &= ~UIEventOver.mouseOver;
-			if ( hasOverEvent == 0 ) removePickableOver();
+			hasOverEvent &= ~UIEventMove.mouseOver;
+			if ( hasOverEvent == 0 ) removePickableMove();
 			mouseOver = noOperation;
 		}
 	}
@@ -250,13 +253,26 @@ class UIElement
 	private function rebindMouseOut(newBinding:UIEventParams, isNull:Bool):Void {
 		if ( !isNull ) {
 			mouseOut = newBinding;
-			if ( hasOverEvent == 0 ) addPickableOver();
-			hasOverEvent |= UIEventOver.mouseOut;
+			if ( hasOverEvent == 0 ) addPickableMove();
+			hasOverEvent |= UIEventMove.mouseOut;
 		}
 		else {
-			hasOverEvent &= ~UIEventOver.mouseOut;
-			if ( hasOverEvent == 0 ) removePickableOver();
+			hasOverEvent &= ~UIEventMove.mouseOut;
+			if ( hasOverEvent == 0 ) removePickableMove();
 			mouseOut = noOperation;
+		}
+	}
+
+	private function rebindMouseMove(newBinding:UIEventParams, isNull:Bool):Void {
+		if ( !isNull ) {
+			mouseMove = newBinding;
+			if ( hasOverEvent == 0 ) addPickableMove();
+			hasOverEvent |= UIEventMove.mouseMove;
+		}
+		else {
+			hasOverEvent &= ~UIEventMove.mouseMove;
+			if ( hasOverEvent == 0 ) removePickableMove();
+			mouseMove = noOperation;
 		}
 	}
 
@@ -303,30 +319,30 @@ class UIElement
 	
 	// -----------------
 		
-	private function addPickableOver()
+	private function addPickableMove()
 	{
 		trace("addPickableOver");
-		if (pickableOver==null) pickableOver = new Pickable(this);
-		if (uiDisplay!=null) uiDisplay.overBuffer.addElement( pickableOver );
+		if (pickableMove==null) pickableMove = new Pickable(this);
+		if (uiDisplay!=null) uiDisplay.movePickBuffer.addElement( pickableMove );
 	}
 	
-	private function removePickableOver()
+	private function removePickableMove()
 	{
 		trace("removePickableOver");
-		if (uiDisplay!=null) uiDisplay.overBuffer.removeElement( pickableOver );  //pickableOver=null
+		if (uiDisplay!=null) uiDisplay.movePickBuffer.removeElement( pickableMove );  //pickableOver=null
 	}
 	
 	private function addPickableClick()
 	{
 		trace("addPickableClick");
 		if (pickableClick==null) pickableClick = new Pickable(this);
-		if (uiDisplay!=null) uiDisplay.clickBuffer.addElement( pickableClick );
+		if (uiDisplay!=null) uiDisplay.clickPickBuffer.addElement( pickableClick );
 	}
 	
 	private function removePickableClick()
 	{
 		trace("removePickableClick");
-		if (uiDisplay!=null) uiDisplay.clickBuffer.removeElement( pickableClick ); //pickableClick=null
+		if (uiDisplay!=null) uiDisplay.clickPickBuffer.removeElement( pickableClick ); //pickableClick=null
 	}
 		
 }

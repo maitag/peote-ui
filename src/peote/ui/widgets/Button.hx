@@ -18,6 +18,12 @@ class Button extends UIElement
 		return onMouseOut = f;
 	}
 	
+	public var onMouseMove(default, set):Button->Int->Int->Void;
+	inline function set_onMouseMove(f:Button->Int->Int->Void):Button->Int->Int->Void {
+		rebindMouseMove( f.bind(this), f == null);
+		return onMouseMove = f;
+	}
+	
 	public var onMouseDown(default, set):Button->Int->Int->Void;
 	inline function set_onMouseDown(f:Button->Int->Int->Void):Button->Int->Int->Void {
 		rebindMouseDown( f.bind(this), f == null);
