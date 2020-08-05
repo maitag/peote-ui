@@ -128,19 +128,19 @@ class ButtonEvents
 	// --------------------------------------------------
 
 	// delegate events to UIDisplay
-	public function onMouseMove (x:Float, y:Float) ui.onMouseMove(peoteView, x, y);
-	public function onMouseDown (x:Float, y:Float, button:MouseButton) ui.onMouseDown(peoteView, x, y, button);
-	public function onMouseUp (x:Float, y:Float, button:MouseButton) ui.onMouseUp(peoteView, x, y, button);
-	public function onMouseWheel (deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode) ui.onMouseWheel(peoteView, deltaX, deltaY, deltaMode);
+	public function onMouseMove (x:Float, y:Float) ui.onMouseMove(x, y);
+	public function onMouseDown (x:Float, y:Float, button:MouseButton) ui.onMouseDown(x, y, button);
+	public function onMouseUp (x:Float, y:Float, button:MouseButton) ui.onMouseUp(x, y, button);
+	public function onMouseWheel (deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode) ui.onMouseWheel(deltaX, deltaY, deltaMode);
 	
-	public function onTouchStart (touch:Touch):Void {}
-	public function onTouchMove (touch:Touch):Void {}
-	public function onTouchEnd (touch:Touch):Void {}
-	public function onTouchCancel(touch:Touch):Void {}
+	public function onTouchStart (touch:Touch):Void ui.onTouchStart(touch);
+	public function onTouchMove (touch:Touch):Void ui.onTouchMove(touch);
+	public function onTouchEnd (touch:Touch):Void ui.onTouchEnd(touch);
+	public function onTouchCancel(touch:Touch):Void ui.onTouchCancel(touch);
 	
 	public function onKeyDown (keyCode:KeyCode, modifier:KeyModifier) ui.onKeyDown(keyCode, modifier);
 	public function onKeyUp (keyCode:KeyCode, modifier:KeyModifier):Void  ui.onKeyUp(keyCode, modifier);
-	public function onTextInput (text:String):Void {}
+	public function onTextInput (text:String):Void ui.onTextInput(text);
 	public function onTextEdit(text:String, start:Int, length:Int):Void {}
 
 	public function onWindowLeave () ui.onWindowLeave();

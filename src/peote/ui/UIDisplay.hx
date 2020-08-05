@@ -4,6 +4,7 @@ import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.ui.MouseButton;
 import lime.ui.MouseWheelMode;
+import lime.ui.Touch;
 
 import peote.view.PeoteGL;
 import peote.view.PeoteView;
@@ -103,11 +104,9 @@ class UIDisplay extends Display
 	
 	
 	// ----------------------------------------
-	
-	// TODO: onTouch, touchpoints
-	
-	public function onMouseMove (peoteView:PeoteView, x:Float, y:Float):Void
+	public function onMouseMove (x:Float, y:Float):Void
 	{
+		if (peoteView == null) return;
 		try {
 			var pickedElement = peoteView.getElementAt(x, y, this, overProgram);
 			if (pickedElement != lastOverIndex) {
@@ -129,24 +128,11 @@ class UIDisplay extends Display
 		
 	}
 
-	public function onWindowLeave ():Void {
-		//trace("onWindowLeave");
-		if (lastOverIndex >= 0) {
-			overBuffer.getElement(lastOverIndex).uiElement.mouseOut( -1, -1) ;
-			lastOverIndex = -1;
-		}
-		if (lastDownIndex >= 0) { 
-			clickBuffer.getElement(lastDownIndex).uiElement.mouseUp( -1, -1 );
-			lastDownIndex = -1;
-			lockMouseDown = false;
-		}
-	}
-	
 	var lockMouseDown = false;
-	public function onMouseDown (peoteView:PeoteView, x:Float, y:Float, button:MouseButton):Void
+	public function onMouseDown (x:Float, y:Float, button:MouseButton):Void
 	{
 		try {
-			if (!lockMouseDown) 
+			if (!lockMouseDown && peoteView != null) 
 			{
 				lastDownIndex = peoteView.getElementAt( x, y, this, clickProgram ) ;
 				if (lastDownIndex >= 0) {
@@ -162,10 +148,10 @@ class UIDisplay extends Display
 		
 	}
 	
-	public function onMouseUp (peoteView:PeoteView, x:Float, y:Float, button:MouseButton):Void
+	public function onMouseUp (x:Float, y:Float, button:MouseButton):Void
 	{
 		try {
-			if (lastDownIndex >= 0) {
+			if (lastDownIndex >= 0 && peoteView != null) {
 				var pickedElement = peoteView.getElementAt(x, y, this, clickProgram);
 				clickBuffer.getElement(lastDownIndex).uiElement.mouseUp( Std.int(x), Std.int(y) );
 				if (pickedElement == lastDownIndex) {
@@ -183,8 +169,34 @@ class UIDisplay extends Display
 	}
 
 	// TODO ------------
-	public function onMouseWheel (peoteView:PeoteView, deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode):Void
-	{
+	public function onMouseWheel (deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode):Void {
+		
+	}
+	
+	public function onTouchStart (touch:Touch):Void {
+		
+	}
+	public function onTouchMove (touch:Touch):Void {
+		
+	}
+	public function onTouchEnd (touch:Touch):Void {
+		
+	}
+	public function onTouchCancel(touch:Touch):Void {
+		
+	}
+
+	public function onWindowLeave ():Void {
+		//trace("onWindowLeave");
+		if (lastOverIndex >= 0) {
+			overBuffer.getElement(lastOverIndex).uiElement.mouseOut( -1, -1) ;
+			lastOverIndex = -1;
+		}
+		if (lastDownIndex >= 0) { 
+			clickBuffer.getElement(lastDownIndex).uiElement.mouseUp( -1, -1 );
+			lastDownIndex = -1;
+			lockMouseDown = false;
+		}
 	}
 	
 	public function onKeyDown (keyCode:KeyCode, modifier:KeyModifier):Void
@@ -201,6 +213,9 @@ class UIDisplay extends Display
 			//case KeyCode.NUMPAD_PLUS:
 			default:
 		}
+	}
+	public function onTextInput (text:String):Void {
+		
 	}
 	
 }
