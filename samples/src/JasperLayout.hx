@@ -300,12 +300,12 @@ class JasperLayout
 	var sizeEmulation = false;
 	
 	public function onMouseMove (x:Float, y:Float) {
-		ui.onMouseMove(peoteView, x, y);
+		ui.onMouseMove(x, y);
 		if (sizeEmulation) layout.suggestValues([Std.int(x),Std.int(y)]).update();
 	}
-	public function onMouseDown (x:Float, y:Float, button:MouseButton) ui.onMouseDown(peoteView, x, y, button);
+	public function onMouseDown (x:Float, y:Float, button:MouseButton) ui.onMouseDown(x, y, button);
 	public function onMouseUp (x:Float, y:Float, button:MouseButton) {
-		ui.onMouseUp(peoteView, x, y, button);
+		ui.onMouseUp(x, y, button);
 		sizeEmulation = !sizeEmulation; 
 		if (sizeEmulation) layout.suggestValues([Std.int(x), Std.int(y)]).update();
 		else layout.suggestValues([peoteView.width, peoteView.height]).update();

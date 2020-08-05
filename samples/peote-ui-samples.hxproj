@@ -23,16 +23,15 @@
     <class path="D:\maitag\2020\haxe\peote-text\src" />
     <class path="D:\maitag\2020\haxe\peote-view\src" />
     <class path="src" />
-    <class path="bin\html5\haxe" />
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="peote-ui=0.8.0&#xA;jasper=0.1.1&#xA;json2object=3.8.0&#xA;hxjsonast=1.0.1&#xA;lime=7.8.0&#xA;peote-text=0.8.1&#xA;peote-view=0.8.0&#xA;howlerjs&#xA;peoteview_instancedrawing&#xA;peoteview_vertexarrayobjects&#xA;peoteview_debug_view&#xA;lime-webgl&#xA;lime-dom&#xA;lime-howlerjs&#xA;lime-html5&#xA;peoteview_uniformbuffers&#xA;peoteview_debug_shader&#xA;JasperLayout&#xA;stats&#xA;tools=7.8.0&#xA;lime-canvas&#xA;no-compilation&#xA;peoteview_debug_macro&#xA;fdb&#xA;html5&#xA;web&#xA;html5&#xA;html" />
+    <option directives="peote-ui=0.8.0&#xA;jasper=0.1.1&#xA;json2object=3.8.0&#xA;hxjsonast=1.0.1&#xA;lime=7.8.0&#xA;peote-text=0.8.1&#xA;peote-view=0.8.0&#xA;lime-openal&#xA;peoteview_instancedrawing&#xA;peoteview_vertexarrayobjects&#xA;peoteview_debug_view&#xA;ButtonEvents&#xA;native&#xA;lime-curl&#xA;peoteview_uniformbuffers&#xA;peoteview_debug_shader&#xA;lime-harfbuzz&#xA;tools=7.8.0&#xA;lime-cairo&#xA;lime-opengl&#xA;no-compilation&#xA;peoteview_debug_macro&#xA;lime-native&#xA;lime-vorbis&#xA;lime-cffi&#xA;windows&#xA;desktop" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="False" />
-    <option additional="--macro lime._internal.macros.DefineMacro.run()&#xA;-dce full" />
+    <option additional="--macro lime._internal.macros.DefineMacro.run()&#xA;-dce full&#xA;--no-output " />
   </build>
   <!-- haxelib libraries -->
   <haxelib>
