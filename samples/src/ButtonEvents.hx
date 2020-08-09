@@ -87,6 +87,9 @@ class ButtonEvents
 			dragger.onMouseUp = function(b:Button, x:Int, y:Int) {
 				b.stopDragging();
 			}
+			dragger.onMouseWheel = function(b:Button, dx:Float, dy:Float, deltaMode:MouseWheelMode) {
+				trace("MouseWheel:",dx,dy, deltaMode);
+			}
 			ui.add(dragger);
 
 			

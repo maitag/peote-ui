@@ -1,5 +1,7 @@
 package peote.ui.widgets;
 
+import lime.ui.MouseWheelMode;
+
 import peote.ui.skin.Skin;
 import peote.ui.skin.Style;
 
@@ -40,9 +42,10 @@ private typedef UIEventParams = Int->Int->Void;
 
 @:enum private abstract UIEventMove(Int) from Int to Int {
 
-	public static inline var mouseOver:Int = 1;
-	public static inline var mouseOut :Int = 2;
-	public static inline var mouseMove:Int = 4;
+	public static inline var mouseOver :Int = 1;
+	public static inline var mouseOut  :Int = 2;
+	public static inline var mouseMove :Int = 4;
+	public static inline var mouseWheel:Int = 8;
 }
 @:enum private abstract UIEventClick(Int) from Int to Int {
 
@@ -117,7 +120,8 @@ class UIElement
 	var mouseOver :UIEventParams;
 	var mouseOut  :UIEventParams;
 	var mouseMove :UIEventParams;
-	var hasOverEvent :Int = 0;
+	var mouseWheel:Float->Float->MouseWheelMode->Void;
+	var hasMoveEvent :Int = 0;
 	
 	var mouseUp   :UIEventParams;
 	var mouseDown :UIEventParams;
@@ -142,6 +146,7 @@ class UIElement
 		mouseOver  = noOperation;
 		mouseOut   = noOperation;
 		mouseMove  = noOperation;
+		mouseWheel = noWheelOperation;
 		
 		mouseDown  = noOperation;
 		mouseUp    = noOperation;
@@ -154,7 +159,7 @@ class UIElement
 		if (uiDisplay != null) 
 		{
 			if (skin != null) skin.updateElement(uiDisplay, this);
-			if ( hasOverEvent  != 0 ) {
+			if ( hasMoveEvent  != 0 ) {
 				pickableMove.update(this);
 				uiDisplay.movePickBuffer.updateElement( pickableMove );
 			}
@@ -172,7 +177,7 @@ class UIElement
 		this.uiDisplay = uiDisplay;
 		
 		if (skin != null) skin.addElement(uiDisplay, this);
-		if ( hasOverEvent  != 0 ) addPickableMove();	
+		if ( hasMoveEvent  != 0 ) addPickableMove();	
 		if ( hasClickEvent != 0 ) addPickableClick();
 	}
 	
@@ -181,7 +186,7 @@ class UIElement
 		if (uiDisplay != this.uiDisplay) throw('Error, $this is not inside uiDisplay: $uiDisplay');
 		
 		if (skin != null) skin.removeElement(uiDisplay, this);
-		if ( hasOverEvent  != 0 ) removePickableMove();
+		if ( hasMoveEvent  != 0 ) removePickableMove();
 		if ( hasClickEvent != 0 ) removePickableClick();
 		
 		uiDisplay = null;
@@ -236,16 +241,17 @@ class UIElement
 	// ----------------- Event-Bindings ----------------------
 
 	private function noOperation(x:Int, y:Int):Void {}
+	private function noWheelOperation(dx:Float, dy:Float, deltaMode:MouseWheelMode):Void {}
 	
 	private function rebindMouseOver(newBinding:UIEventParams, isNull:Bool):Void {
 		if ( !isNull ) {
 			mouseOver = newBinding;
-			if ( hasOverEvent == 0 ) addPickableMove();
-			hasOverEvent |= UIEventMove.mouseOver;
+			if ( hasMoveEvent == 0 ) addPickableMove();
+			hasMoveEvent |= UIEventMove.mouseOver;
 		}
 		else {
-			hasOverEvent &= ~UIEventMove.mouseOver;
-			if ( hasOverEvent == 0 ) removePickableMove();
+			hasMoveEvent &= ~UIEventMove.mouseOver;
+			if ( hasMoveEvent == 0 ) removePickableMove();
 			mouseOver = noOperation;
 		}
 	}
@@ -253,12 +259,12 @@ class UIElement
 	private function rebindMouseOut(newBinding:UIEventParams, isNull:Bool):Void {
 		if ( !isNull ) {
 			mouseOut = newBinding;
-			if ( hasOverEvent == 0 ) addPickableMove();
-			hasOverEvent |= UIEventMove.mouseOut;
+			if ( hasMoveEvent == 0 ) addPickableMove();
+			hasMoveEvent |= UIEventMove.mouseOut;
 		}
 		else {
-			hasOverEvent &= ~UIEventMove.mouseOut;
-			if ( hasOverEvent == 0 ) removePickableMove();
+			hasMoveEvent &= ~UIEventMove.mouseOut;
+			if ( hasMoveEvent == 0 ) removePickableMove();
 			mouseOut = noOperation;
 		}
 	}
@@ -266,13 +272,26 @@ class UIElement
 	private function rebindMouseMove(newBinding:UIEventParams, isNull:Bool):Void {
 		if ( !isNull ) {
 			mouseMove = newBinding;
-			if ( hasOverEvent == 0 ) addPickableMove();
-			hasOverEvent |= UIEventMove.mouseMove;
+			if ( hasMoveEvent == 0 ) addPickableMove();
+			hasMoveEvent |= UIEventMove.mouseMove;
 		}
 		else {
-			hasOverEvent &= ~UIEventMove.mouseMove;
-			if ( hasOverEvent == 0 ) removePickableMove();
+			hasMoveEvent &= ~UIEventMove.mouseMove;
+			if ( hasMoveEvent == 0 ) removePickableMove();
 			mouseMove = noOperation;
+		}
+	}
+
+	private function rebindMouseWheel(newBinding:Float->Float->MouseWheelMode->Void, isNull:Bool):Void {
+		if ( !isNull ) {
+			mouseWheel = newBinding;
+			if ( hasMoveEvent == 0 ) addPickableMove();
+			hasMoveEvent |= UIEventMove.mouseWheel;
+		}
+		else {
+			hasMoveEvent &= ~UIEventMove.mouseWheel;
+			if ( hasMoveEvent == 0 ) removePickableMove();
+			mouseWheel = noWheelOperation;
 		}
 	}
 

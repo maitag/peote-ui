@@ -178,20 +178,22 @@ class UIDisplay extends Display
 
 	// TODO ------------
 	public function onMouseWheel (deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode):Void {
-		
+		if (lastOverIndex >= 0) {
+			movePickBuffer.getElement(lastOverIndex).uiElement.mouseWheel( deltaX, deltaY, deltaMode );
+		}
 	}
 	
 	public function onTouchStart (touch:Touch):Void {
-		
+		trace("onTouchStart", touch.id, Math.round(touch.x * peoteView.width), Math.round(touch.y * peoteView.height) );
 	}
 	public function onTouchMove (touch:Touch):Void {
-		
+		trace("onTouchMove", touch.id, Math.round(touch.x * peoteView.width), Math.round(touch.y * peoteView.height) );
 	}
 	public function onTouchEnd (touch:Touch):Void {
-		
+		trace("onTouchEnd", touch.id, Math.round(touch.x * peoteView.width), Math.round(touch.y * peoteView.height) );
 	}
 	public function onTouchCancel(touch:Touch):Void {
-		
+		trace("onTouchCancel", touch.id, Math.round(touch.x * peoteView.width), Math.round(touch.y * peoteView.height) );
 	}
 
 	public function onWindowLeave ():Void {

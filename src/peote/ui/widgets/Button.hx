@@ -1,5 +1,7 @@
 package peote.ui.widgets;
 
+import lime.ui.MouseWheelMode;
+
 import peote.ui.skin.Skin;
 import peote.ui.skin.Style;
 import peote.ui.widgets.UIElement;
@@ -22,6 +24,12 @@ class Button extends UIElement
 	inline function set_onMouseMove(f:Button->Int->Int->Void):Button->Int->Int->Void {
 		rebindMouseMove( f.bind(this), f == null);
 		return onMouseMove = f;
+	}
+	
+	public var onMouseWheel(default, set):Button->Float->Float->MouseWheelMode->Void;
+	inline function set_onMouseWheel(f:Button->Float->Float->MouseWheelMode->Void):Button->Float->Float->MouseWheelMode->Void {
+		rebindMouseWheel( f.bind(this), f == null);
+		return onMouseWheel = f;
 	}
 	
 	public var onMouseDown(default, set):Button->Int->Int->Void;
