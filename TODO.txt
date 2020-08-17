@@ -5,24 +5,25 @@ Layout:
 - improving layoutSolver for better adding/removing
 - add/remove layout elements dynamically
 
+
 Widgets:
 
 - all UIElements should have optional parent and childs
 - simple scrollbar
+
 
 Skin:
 
 - ui-elements inside a container needs to be masked
 
 
-
 Mouse- and Multitouch:
 
-- handle touchevents and -points
-- let emulate touch-events for mouse-only-targets
+- handle mouse-, pen- and events simmiliar
+- multiple mode (changable at runtime) to let disable mouse-events for touch-devices that allways sending equivalent mouse-events
 
 
-Bubbling:
+EventBubbling:
 
 - if bubbling are enabled for picked ui-element then pass it throught to the parent-uiElement
 
