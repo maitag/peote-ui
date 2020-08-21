@@ -40,9 +40,9 @@ class ButtonEvents
 			ui.add(b1);
 			
 			b1.onMouseOver = onOver.bind(Color.GREY2);
-			b1.onMouseOut = onOut.bind(Color.GREY1);
-			b1.onMouseUp = onUp.bind(Color.GREY5);
+			b1.onMouseOut = onOut.bind(Color.GREY1); // only fire if there was some over before!
 			b1.onMouseDown = onDown.bind(Color.YELLOW);
+			b1.onMouseUp = onUp.bind(Color.GREY5);   // only fire if there was some down before!
 			b1.onMouseClick = onClick;
 			
 			var myStyle2 = new Style();
@@ -55,10 +55,10 @@ class ButtonEvents
 			ui.add(b2);
 			
 			b2.onMouseOver = onOver.bind(Color.GREY2);
-			b2.onMouseOut = onOut.bind(Color.GREY1);
+			b2.onMouseOut = onOut.bind(Color.GREY1); // only fire if there was some over before!
 			b2.onMouseMove = onMove;
-			b2.onMouseUp = onUp.bind(Color.GREY5);
 			b2.onMouseDown = onDown.bind(Color.RED);
+			b2.onMouseUp = onUp.bind(Color.GREY5);   // only fire if there was some down before!
 			b2.onMouseClick = onClick;
 			
 			//trace("REMOVE onMouseClick -----"); b1.onMouseClick = null;	
@@ -80,11 +80,13 @@ class ButtonEvents
 			
 			dragger.setDragArea(350, 10, 300, 30); // x, y, width, height
 			dragger.onMouseDown = function(b:Button, x:Int, y:Int) {
+				trace(" -----> onPointerDown", x, y);
 				b.startDragging(x, y);
 				//b.style.color = Color.RED;
 				//b.update();
 			}
 			dragger.onMouseUp = function(b:Button, x:Int, y:Int) {
+				trace(" -----> onPointerUp", x, y);
 				b.stopDragging();
 			}
 			dragger.onMouseWheel = function(b:Button, dx:Float, dy:Float, deltaMode:MouseWheelMode) {
@@ -93,6 +95,9 @@ class ButtonEvents
 			ui.add(dragger);
 
 			
+			// TODO: make button to switch between
+			//ui.mouseEnabled = false;
+			//ui.touchEnabled = false;
 			
 		}
 		catch (e:Dynamic) trace("ERROR:", e);
@@ -103,36 +108,36 @@ class ButtonEvents
 		button.style.color = color;
 		button.style.borderColor = Color.GREY7;
 		button.update();
-		trace(" -----> onMouseOver", x, y);
+		trace(" -----> onPointerOver", x, y);
 	}
 	
 	public function onOut(color:Color, button:Button, x:Int, y:Int) {
 		button.style.color = color;
 		button.style.borderColor = Color.GREY5;
 		button.update();
-		trace(" -----> onMouseOut", x, y);
+		trace(" -----> onPointerOut", x, y);
 	}
 	
 	public function onMove(button:Button, x:Int, y:Int) {
-		trace(" -----> onMouseMove", x, y);
+		trace(" -----> onPointerMove", x, y);
 	}
 	
 	public function onUp(borderColor:Color, button:Button, x:Int, y:Int) {
 		button.style.borderColor = borderColor;
 		button.update();
-		trace(" -----> onMouseUp", x, y);
+		trace(" -----> onPointerUp", x, y);
 	}
 	
 	public function onDown(borderColor:Color, button:Button, x:Int, y:Int) {
 		button.style.borderColor = borderColor;
 		//button.x += 30;
 		button.update();
-		trace(" -----> onMouseDown", x, y);
+		trace(" -----> onPointerDown", x, y);
 	}
 	
 	public function onClick(button:Button, x:Int, y:Int) {
 		//button.y += 30; button.update();
-		trace(" -----> onMouseClick", x, y);
+		trace(" -----> onPointerClick", x, y);
 	}
 	// --------------------------------------------------
 

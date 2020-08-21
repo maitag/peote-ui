@@ -105,26 +105,37 @@ class UIDisplay extends Display
 	
 	
 	// ----------------------------------------
-	public function onMouseMove (x:Float, y:Float):Void
+	public var mouseEnabled = true;
+	public var touchEnabled = true;
+	
+	public function onMouseMove (x:Float, y:Float):Void {
+		if (mouseEnabled) onPointerMove(Std.int(x), Std.int(y));
+	}
+	
+	public function onTouchMove (touch:Touch):Void {
+		if (touchEnabled) onPointerMove(Math.round(touch.x * peoteView.width), Math.round(touch.y * peoteView.height));
+	}
+
+	public inline function onPointerMove (x:Int, y:Int):Void
 	{
 		if (peoteView != null)
-		try {
+		{
 			var pickedIndex = peoteView.getElementAt(x, y, this, movePickProgram);
 			
-			// onMouseOver/onMouseOut
+			// Over/Out
 			if (pickedIndex != lastOverIndex) {
 				// TODO: bubbling only for container-elements
 				// so no over and out to the parent-elements if bubbling is enabled into a child!
 				if (lastOverIndex >= 0) 
-					movePickBuffer.getElement(lastOverIndex).uiElement.mouseOut( Std.int(x), Std.int(y) );
+					movePickBuffer.getElement(lastOverIndex).uiElement.mouseOut(x, y);
 				if (pickedIndex >= 0) 
-					movePickBuffer.getElement(pickedIndex).uiElement.mouseOver(  Std.int(x), Std.int(y) );
+					movePickBuffer.getElement(pickedIndex).uiElement.mouseOver(x, y);
 				lastOverIndex = pickedIndex;
 			}
 			
-			// onMouseMove
+			// Move
 			if (pickedIndex >= 0) 
-				movePickBuffer.getElement(pickedIndex).uiElement.mouseMove( Std.int(x), Std.int(y) );
+				movePickBuffer.getElement(pickedIndex).uiElement.mouseMove(x, y);
 			
 			// Dragging
 			for (uiElement in draggingElements) {
@@ -132,67 +143,95 @@ class UIDisplay extends Display
 				update(uiElement);
 			}
 		}
-		catch (e:Dynamic) trace("ERROR:", e);
-		
 	}
-
-	var lockMouseDown = false;
+	
+	var lockDown = false;
 	public function onMouseDown (x:Float, y:Float, button:MouseButton):Void
 	{
-		try {
-			if (!lockMouseDown && peoteView != null) 
-			{
-				lastDownIndex = peoteView.getElementAt( x, y, this, clickPickProgram ) ;
-				if (lastDownIndex >= 0) {
-					clickPickBuffer.getElement(lastDownIndex).uiElement.mouseDown( Std.int(x), Std.int(y) );
-					lockMouseDown = true;
-				}
+		if (mouseEnabled && !lockDown && peoteView != null) 
+		{
+			lastDownIndex = peoteView.getElementAt( x, y, this, clickPickProgram ) ;
+			if (lastDownIndex >= 0) {
+				clickPickBuffer.getElement(lastDownIndex).uiElement.mouseDown( Std.int(x), Std.int(y) );
+				lockDown = true;
 			}
-			//var pickedElements = peoteView.getAllElementsAt(x, y, display, clickProgram);
-			//trace(pickedElements);
-			
 		}
-		catch (e:Dynamic) trace("ERROR:", e);
-		
+		//var pickedElements = peoteView.getAllElementsAt(x, y, display, clickProgram);
+		//trace(pickedElements);
+	}
+	
+	public function onTouchStart (touch:Touch):Void {
+		if (touchEnabled && !lockDown && peoteView != null) 
+		{
+			var x:Int = (Math.round(touch.x * peoteView.width));
+			var y:Int = Std.int(Math.round(touch.y * peoteView.height));
+			//trace("onTouchStart", touch.id, x, y);
+			
+			// Over/Out
+			var pickedIndex = peoteView.getElementAt(x, y, this, movePickProgram);
+			if (pickedIndex >= 0) {
+				movePickBuffer.getElement(pickedIndex).uiElement.mouseOver(x, y);
+				lastOverIndex = pickedIndex;
+			}
+			lastDownIndex = peoteView.getElementAt( x, y, this, clickPickProgram ) ;
+			if (lastDownIndex >= 0) {
+				clickPickBuffer.getElement(lastDownIndex).uiElement.mouseDown( x, y);
+				lockDown = true;
+			}
+		}
 	}
 	
 	public function onMouseUp (x:Float, y:Float, button:MouseButton):Void
 	{
-		try {
-			if (lastDownIndex >= 0 && peoteView != null) {
-				var pickedIndex = peoteView.getElementAt(x, y, this, clickPickProgram);
-				clickPickBuffer.getElement(lastDownIndex).uiElement.mouseUp( Std.int(x), Std.int(y) );
+		if (mouseEnabled && lastDownIndex >= 0 && peoteView != null) {
+			// Up
+			var pickedIndex = peoteView.getElementAt(x, y, this, clickPickProgram);
+			clickPickBuffer.getElement(lastDownIndex).uiElement.mouseUp( Std.int(x), Std.int(y) );
+			if (pickedIndex == lastDownIndex) {
+				clickPickBuffer.getElement(pickedIndex).uiElement.mouseClick( Std.int(x), Std.int(y) );
+			}
+			lastDownIndex = -1;
+			lockDown = false;
+		}			
+		//var pickedElements = peoteView.getAllElementsAt(x, y, display, clickProgram);
+		//trace(pickedElements);
+	}
+	
+	public function onTouchEnd (touch:Touch):Void {
+		if (touchEnabled && peoteView != null) {
+			var x:Int = (Math.round(touch.x * peoteView.width));
+			var y:Int = Std.int(Math.round(touch.y * peoteView.height));
+			
+			var pickedIndex:Int;
+			// Up
+			if (lastDownIndex >= 0) {
+				pickedIndex = peoteView.getElementAt(touch.x * peoteView.width, touch.y * peoteView.height, this, clickPickProgram);
+				clickPickBuffer.getElement(lastDownIndex).uiElement.mouseUp(x, y);
 				if (pickedIndex == lastDownIndex) {
-					clickPickBuffer.getElement(pickedIndex).uiElement.mouseClick( Std.int(x), Std.int(y) );
+					clickPickBuffer.getElement(pickedIndex).uiElement.mouseClick(x, y);
 				}
 				lastDownIndex = -1;
-				lockMouseDown = false;
-			}			
-			//var pickedElements = peoteView.getAllElementsAt(x, y, display, clickProgram);
-			//trace(pickedElements);
+				lockDown = false;
+			}
 			
-		}
-		catch (e:Dynamic) trace("ERROR:", e);
-		
+			// Over/Out
+			pickedIndex = peoteView.getElementAt(x, y, this, movePickProgram);
+			if (lastOverIndex >= 0 && pickedIndex == lastOverIndex) {
+				movePickBuffer.getElement(pickedIndex).uiElement.mouseOut(x, y);
+				lastOverIndex = 0;
+			}
+			
+		}			
 	}
 
 	public function onMouseWheel (deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode):Void {
-		if (lastOverIndex >= 0) {
+		if (mouseEnabled && lastOverIndex >= 0 && peoteView != null) {
 			movePickBuffer.getElement(lastOverIndex).uiElement.mouseWheel( deltaX, deltaY, deltaMode );
 		}
 	}
 	
-	// TODO ------------
-	public function onTouchStart (touch:Touch):Void {
-		trace("onTouchStart", touch.id, Math.round(touch.x * peoteView.width), Math.round(touch.y * peoteView.height) );
-	}
-	public function onTouchMove (touch:Touch):Void {
-		trace("onTouchMove", touch.id, Math.round(touch.x * peoteView.width), Math.round(touch.y * peoteView.height) );
-	}
-	public function onTouchEnd (touch:Touch):Void {
-		trace("onTouchEnd", touch.id, Math.round(touch.x * peoteView.width), Math.round(touch.y * peoteView.height) );
-	}
 	public function onTouchCancel(touch:Touch):Void {
+		// TODO
 		trace("onTouchCancel", touch.id, Math.round(touch.x * peoteView.width), Math.round(touch.y * peoteView.height) );
 	}
 
@@ -205,7 +244,7 @@ class UIDisplay extends Display
 		if (lastDownIndex >= 0) { 
 			clickPickBuffer.getElement(lastDownIndex).uiElement.mouseUp( -1, -1 );
 			lastDownIndex = -1;
-			lockMouseDown = false;
+			lockDown = false;
 		}
 	}
 	
