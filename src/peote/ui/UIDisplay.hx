@@ -127,19 +127,19 @@ class UIDisplay extends Display
 				// TODO: bubbling only for container-elements
 				// so no over and out to the parent-elements if bubbling is enabled into a child!
 				if (lastOverIndex >= 0) 
-					movePickBuffer.getElement(lastOverIndex).uiElement.mouseOut(x, y);
+					movePickBuffer.getElement(lastOverIndex).uiElement.pointerOut(x, y);
 				if (pickedIndex >= 0) 
-					movePickBuffer.getElement(pickedIndex).uiElement.mouseOver(x, y);
+					movePickBuffer.getElement(pickedIndex).uiElement.pointerOver(x, y);
 				lastOverIndex = pickedIndex;
 			}
 			
 			// Move
 			if (pickedIndex >= 0) 
-				movePickBuffer.getElement(pickedIndex).uiElement.mouseMove(x, y);
+				movePickBuffer.getElement(pickedIndex).uiElement.pointerMove(x, y);
 			
 			// Dragging
 			for (uiElement in draggingElements) {
-				uiElement.dragTo(Std.int(x), Std.int(y));
+				uiElement.dragTo(x, y);
 				update(uiElement);
 			}
 		}
@@ -152,7 +152,7 @@ class UIDisplay extends Display
 		{
 			lastDownIndex = peoteView.getElementAt( x, y, this, clickPickProgram ) ;
 			if (lastDownIndex >= 0) {
-				clickPickBuffer.getElement(lastDownIndex).uiElement.mouseDown( Std.int(x), Std.int(y) );
+				clickPickBuffer.getElement(lastDownIndex).uiElement.pointerDown( Std.int(x), Std.int(y) );
 				lockDown = true;
 			}
 		}
@@ -170,12 +170,12 @@ class UIDisplay extends Display
 			// Over/Out
 			var pickedIndex = peoteView.getElementAt(x, y, this, movePickProgram);
 			if (pickedIndex >= 0) {
-				movePickBuffer.getElement(pickedIndex).uiElement.mouseOver(x, y);
+				movePickBuffer.getElement(pickedIndex).uiElement.pointerOver(x, y);
 				lastOverIndex = pickedIndex;
 			}
 			lastDownIndex = peoteView.getElementAt( x, y, this, clickPickProgram ) ;
 			if (lastDownIndex >= 0) {
-				clickPickBuffer.getElement(lastDownIndex).uiElement.mouseDown( x, y);
+				clickPickBuffer.getElement(lastDownIndex).uiElement.pointerDown( x, y);
 				lockDown = true;
 			}
 		}
@@ -186,9 +186,9 @@ class UIDisplay extends Display
 		if (mouseEnabled && lastDownIndex >= 0 && peoteView != null) {
 			// Up
 			var pickedIndex = peoteView.getElementAt(x, y, this, clickPickProgram);
-			clickPickBuffer.getElement(lastDownIndex).uiElement.mouseUp( Std.int(x), Std.int(y) );
+			clickPickBuffer.getElement(lastDownIndex).uiElement.pointerUp( Std.int(x), Std.int(y) );
 			if (pickedIndex == lastDownIndex) {
-				clickPickBuffer.getElement(pickedIndex).uiElement.mouseClick( Std.int(x), Std.int(y) );
+				clickPickBuffer.getElement(pickedIndex).uiElement.pointerClick( Std.int(x), Std.int(y) );
 			}
 			lastDownIndex = -1;
 			lockDown = false;
@@ -206,9 +206,9 @@ class UIDisplay extends Display
 			// Up
 			if (lastDownIndex >= 0) {
 				pickedIndex = peoteView.getElementAt(touch.x * peoteView.width, touch.y * peoteView.height, this, clickPickProgram);
-				clickPickBuffer.getElement(lastDownIndex).uiElement.mouseUp(x, y);
+				clickPickBuffer.getElement(lastDownIndex).uiElement.pointerUp(x, y);
 				if (pickedIndex == lastDownIndex) {
-					clickPickBuffer.getElement(pickedIndex).uiElement.mouseClick(x, y);
+					clickPickBuffer.getElement(pickedIndex).uiElement.pointerClick(x, y);
 				}
 				lastDownIndex = -1;
 				lockDown = false;
@@ -217,7 +217,7 @@ class UIDisplay extends Display
 			// Over/Out
 			pickedIndex = peoteView.getElementAt(x, y, this, movePickProgram);
 			if (lastOverIndex >= 0 && pickedIndex == lastOverIndex) {
-				movePickBuffer.getElement(pickedIndex).uiElement.mouseOut(x, y);
+				movePickBuffer.getElement(pickedIndex).uiElement.pointerOut(x, y);
 				lastOverIndex = 0;
 			}
 			
@@ -238,11 +238,11 @@ class UIDisplay extends Display
 	public function onWindowLeave ():Void {
 		//trace("onWindowLeave");
 		if (lastOverIndex >= 0) {
-			movePickBuffer.getElement(lastOverIndex).uiElement.mouseOut( -1, -1) ;
+			movePickBuffer.getElement(lastOverIndex).uiElement.pointerOut( -1, -1) ;
 			lastOverIndex = -1;
 		}
 		if (lastDownIndex >= 0) { 
-			clickPickBuffer.getElement(lastDownIndex).uiElement.mouseUp( -1, -1 );
+			clickPickBuffer.getElement(lastDownIndex).uiElement.pointerUp( -1, -1 );
 			lastDownIndex = -1;
 			lockDown = false;
 		}

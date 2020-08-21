@@ -8,46 +8,46 @@ import peote.ui.widgets.UIElement;
 
 class Button extends UIElement
 {
-	public var onMouseOver(default, set):Button->Int->Int->Void;
-	inline function set_onMouseOver(f:Button->Int->Int->Void):Button->Int->Int->Void {
-		rebindMouseOver( f.bind(this), f == null);
-		return onMouseOver = f;
+	public var onPointerOver(default, set):Button->Int->Int->Void;
+	inline function set_onPointerOver(f:Button->Int->Int->Void):Button->Int->Int->Void {
+		rebindPointerOver( f.bind(this), f == null);
+		return onPointerOver = f;
 	}
 	
-	public var onMouseOut(default, set):Button->Int->Int->Void;
-	inline function set_onMouseOut(f:Button->Int->Int->Void):Button->Int->Int->Void {
-		rebindMouseOut( f.bind(this), f == null);
-		return onMouseOut = f;
+	public var onPointerOut(default, set):Button->Int->Int->Void;
+	inline function set_onPointerOut(f:Button->Int->Int->Void):Button->Int->Int->Void {
+		rebindPointerOut( f.bind(this), f == null);
+		return onPointerOut = f;
 	}
 	
-	public var onMouseMove(default, set):Button->Int->Int->Void;
-	inline function set_onMouseMove(f:Button->Int->Int->Void):Button->Int->Int->Void {
-		rebindMouseMove( f.bind(this), f == null);
-		return onMouseMove = f;
+	public var onPointerMove(default, set):Button->Int->Int->Void;
+	inline function set_onPointerMove(f:Button->Int->Int->Void):Button->Int->Int->Void {
+		rebindPointerMove( f.bind(this), f == null);
+		return onPointerMove = f;
+	}
+	
+	public var onPointerDown(default, set):Button->Int->Int->Void;
+	inline function set_onPointerDown(f:Button->Int->Int->Void):Button->Int->Int->Void {
+		rebindPointerDown( f.bind(this), f == null);
+		return onPointerDown = f;
+	}
+	
+	public var onPointerUp(default, set):Button->Int->Int->Void;
+	inline function set_onPointerUp(f:Button->Int->Int->Void):Button->Int->Int->Void {
+		rebindPointerUp( f.bind(this), f == null);
+		return onPointerUp = f;
+	}
+	
+	public var onPointerClick(default, set):Button->Int->Int->Void;
+	inline function set_onPointerClick(f:Button->Int->Int->Void):Button->Int->Int->Void {
+		rebindPointerClick( f.bind(this), f == null);
+		return onPointerClick = f;
 	}
 	
 	public var onMouseWheel(default, set):Button->Float->Float->MouseWheelMode->Void;
 	inline function set_onMouseWheel(f:Button->Float->Float->MouseWheelMode->Void):Button->Float->Float->MouseWheelMode->Void {
 		rebindMouseWheel( f.bind(this), f == null);
 		return onMouseWheel = f;
-	}
-	
-	public var onMouseDown(default, set):Button->Int->Int->Void;
-	inline function set_onMouseDown(f:Button->Int->Int->Void):Button->Int->Int->Void {
-		rebindMouseDown( f.bind(this), f == null);
-		return onMouseDown = f;
-	}
-	
-	public var onMouseUp(default, set):Button->Int->Int->Void;
-	inline function set_onMouseUp(f:Button->Int->Int->Void):Button->Int->Int->Void {
-		rebindMouseUp( f.bind(this), f == null);
-		return onMouseUp = f;
-	}
-	
-	public var onMouseClick(default, set):Button->Int->Int->Void;
-	inline function set_onMouseClick(f:Button->Int->Int->Void):Button->Int->Int->Void {
-		rebindMouseClick( f.bind(this), f == null);
-		return onMouseClick = f;
 	}
 	
 	

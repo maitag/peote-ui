@@ -29,6 +29,10 @@ class ButtonEvents
 			
 			var mySkin = new Skin();
 			
+			
+			// Take care that every Button have its own Style if changing style-params into eventhandler
+			// or alternatively create different styles for over/out/click and so on
+			
 			var myStyle = new Style();
 			myStyle.color = Color.GREY1;
 			myStyle.borderColor = Color.GREY5;
@@ -39,11 +43,11 @@ class ButtonEvents
 			var b1:Button = new Button(20, 10, 200, 100, mySkin, myStyle);
 			ui.add(b1);
 			
-			b1.onMouseOver = onOver.bind(Color.GREY2);
-			b1.onMouseOut = onOut.bind(Color.GREY1); // only fire if there was some over before!
-			b1.onMouseDown = onDown.bind(Color.YELLOW);
-			b1.onMouseUp = onUp.bind(Color.GREY5);   // only fire if there was some down before!
-			b1.onMouseClick = onClick;
+			b1.onPointerOver = onOver.bind(Color.GREY2);
+			b1.onPointerOut = onOut.bind(Color.GREY1); // only fire if there was some over before!
+			b1.onPointerDown = onDown.bind(Color.YELLOW);
+			b1.onPointerUp = onUp.bind(Color.GREY5);   // only fire if there was some down before!
+			b1.onPointerClick = onClick;
 			
 			var myStyle2 = new Style();
 			myStyle2.color = Color.GREY1;
@@ -54,14 +58,14 @@ class ButtonEvents
 			var b2:Button = new Button(120, 60, 200, 100, mySkin, myStyle2);
 			ui.add(b2);
 			
-			b2.onMouseOver = onOver.bind(Color.GREY2);
-			b2.onMouseOut = onOut.bind(Color.GREY1); // only fire if there was some over before!
-			b2.onMouseMove = onMove;
-			b2.onMouseDown = onDown.bind(Color.RED);
-			b2.onMouseUp = onUp.bind(Color.GREY5);   // only fire if there was some down before!
-			b2.onMouseClick = onClick;
+			b2.onPointerOver = onOver.bind(Color.GREY2);
+			b2.onPointerOut = onOut.bind(Color.GREY1); // only fire if there was some over before!
+			b2.onPointerMove = onMove;
+			b2.onPointerDown = onDown.bind(Color.RED);
+			b2.onPointerUp = onUp.bind(Color.GREY5);   // only fire if there was some down before!
+			b2.onPointerClick = onClick;
 			
-			//trace("REMOVE onMouseClick -----"); b1.onMouseClick = null;	
+			//trace("REMOVE onPointerClick -----"); b1.onPointerClick = null;
 			//ui.remove(b1);
 			//ui.add(b1);
 						
@@ -70,24 +74,32 @@ class ButtonEvents
 			
 			// ---- Dragging -----
 			
+			var myStyle3 = new Style();
+			myStyle3.color = Color.GREY1;
+			myStyle3.borderColor = Color.GREY5;
+			myStyle3.borderSize = 3.0;
+			myStyle3.borderRadius = 20.0;
+
 			trace("NEW SLIDER -----");
 			var background = new Button(350, 10, 300, 30, mySkin, myStyle2);
 			ui.add(background);
 			
-			var dragger = new Button(350, 10, 50, 30, mySkin, myStyle);
-			dragger.onMouseOver = onOver.bind(Color.GREY2);
-			dragger.onMouseOut = onOut.bind(Color.GREY1);
+			var dragger = new Button(350, 10, 50, 30, mySkin, myStyle3);
+			dragger.onPointerOver = onOver.bind(Color.BLUE);
+			dragger.onPointerOut = onOut.bind(Color.GREY1);
 			
 			dragger.setDragArea(350, 10, 300, 30); // x, y, width, height
-			dragger.onMouseDown = function(b:Button, x:Int, y:Int) {
+			dragger.onPointerDown = function(b:Button, x:Int, y:Int) {
 				trace(" -----> onPointerDown", x, y);
 				b.startDragging(x, y);
-				//b.style.color = Color.RED;
-				//b.update();
+				b.style.color = Color.GREEN;
+				b.update();
 			}
-			dragger.onMouseUp = function(b:Button, x:Int, y:Int) {
+			dragger.onPointerUp = function(b:Button, x:Int, y:Int) {
 				trace(" -----> onPointerUp", x, y);
 				b.stopDragging();
+				b.style.color = Color.GREY1;
+				b.update();
 			}
 			dragger.onMouseWheel = function(b:Button, dx:Float, dy:Float, deltaMode:MouseWheelMode) {
 				trace("MouseWheel:",dx,dy, deltaMode);
@@ -97,7 +109,7 @@ class ButtonEvents
 			
 			// TODO: make button to switch between
 			//ui.mouseEnabled = false;
-			//ui.touchEnabled = false;
+			ui.touchEnabled = false;
 			
 		}
 		catch (e:Dynamic) trace("ERROR:", e);

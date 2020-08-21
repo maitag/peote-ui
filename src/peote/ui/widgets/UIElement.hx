@@ -42,16 +42,16 @@ private typedef UIEventParams = Int->Int->Void;
 
 @:enum private abstract UIEventMove(Int) from Int to Int {
 
-	public static inline var mouseOver :Int = 1;
-	public static inline var mouseOut  :Int = 2;
-	public static inline var mouseMove :Int = 4;
-	public static inline var mouseWheel:Int = 8;
+	public static inline var over :Int = 1;
+	public static inline var out  :Int = 2;
+	public static inline var move :Int = 4;
+	public static inline var wheel:Int = 8;
 }
 @:enum private abstract UIEventClick(Int) from Int to Int {
 
-	public static inline var mouseDown :Int = 1;
-	public static inline var mouseUp   :Int = 2;
-	public static inline var mouseClick:Int = 4;
+	public static inline var down :Int = 1;
+	public static inline var up   :Int = 2;
+	public static inline var click:Int = 4;
 }
 
 // ---------------------------------------------------------------
@@ -117,15 +117,15 @@ class UIElement
 */	}
 	#end
 	
-	var mouseOver :UIEventParams;
-	var mouseOut  :UIEventParams;
-	var mouseMove :UIEventParams;
+	var pointerOver :UIEventParams;
+	var pointerOut  :UIEventParams;
+	var pointerMove :UIEventParams;
 	var mouseWheel:Float->Float->MouseWheelMode->Void;
 	var hasMoveEvent :Int = 0;
 	
-	var mouseUp   :UIEventParams;
-	var mouseDown :UIEventParams;
-	var mouseClick:UIEventParams;
+	var pointerUp   :UIEventParams;
+	var pointerDown :UIEventParams;
+	var pointerClick:UIEventParams;
 	var hasClickEvent:Int = 0;
 	
 	public function new(xPosition:Int=0, yPosition:Int=0, width:Int=100, height:Int=100, zIndex:Int=0, skin:Skin=null, style:Style=null) 
@@ -143,14 +143,14 @@ class UIElement
 		this.skin = skin;
 		this.style = style;
 		
-		mouseOver  = noOperation;
-		mouseOut   = noOperation;
-		mouseMove  = noOperation;
+		pointerOver  = noOperation;
+		pointerOut   = noOperation;
+		pointerMove  = noOperation;
 		mouseWheel = noWheelOperation;
 		
-		mouseDown  = noOperation;
-		mouseUp    = noOperation;
-		mouseClick = noOperation;
+		pointerDown  = noOperation;
+		pointerUp    = noOperation;
+		pointerClick = noOperation;
 	}
 	
 	
@@ -243,42 +243,42 @@ class UIElement
 	private function noOperation(x:Int, y:Int):Void {}
 	private function noWheelOperation(dx:Float, dy:Float, deltaMode:MouseWheelMode):Void {}
 	
-	private function rebindMouseOver(newBinding:UIEventParams, isNull:Bool):Void {
+	private function rebindPointerOver(newBinding:UIEventParams, isNull:Bool):Void {
 		if ( !isNull ) {
-			mouseOver = newBinding;
+			pointerOver = newBinding;
 			if ( hasMoveEvent == 0 ) addPickableMove();
-			hasMoveEvent |= UIEventMove.mouseOver;
+			hasMoveEvent |= UIEventMove.over;
 		}
 		else {
-			hasMoveEvent &= ~UIEventMove.mouseOver;
+			hasMoveEvent &= ~UIEventMove.over;
 			if ( hasMoveEvent == 0 ) removePickableMove();
-			mouseOver = noOperation;
+			pointerOver = noOperation;
 		}
 	}
 
-	private function rebindMouseOut(newBinding:UIEventParams, isNull:Bool):Void {
+	private function rebindPointerOut(newBinding:UIEventParams, isNull:Bool):Void {
 		if ( !isNull ) {
-			mouseOut = newBinding;
+			pointerOut = newBinding;
 			if ( hasMoveEvent == 0 ) addPickableMove();
-			hasMoveEvent |= UIEventMove.mouseOut;
+			hasMoveEvent |= UIEventMove.out;
 		}
 		else {
-			hasMoveEvent &= ~UIEventMove.mouseOut;
+			hasMoveEvent &= ~UIEventMove.out;
 			if ( hasMoveEvent == 0 ) removePickableMove();
-			mouseOut = noOperation;
+			pointerOut = noOperation;
 		}
 	}
 
-	private function rebindMouseMove(newBinding:UIEventParams, isNull:Bool):Void {
+	private function rebindPointerMove(newBinding:UIEventParams, isNull:Bool):Void {
 		if ( !isNull ) {
-			mouseMove = newBinding;
+			pointerMove = newBinding;
 			if ( hasMoveEvent == 0 ) addPickableMove();
-			hasMoveEvent |= UIEventMove.mouseMove;
+			hasMoveEvent |= UIEventMove.move;
 		}
 		else {
-			hasMoveEvent &= ~UIEventMove.mouseMove;
+			hasMoveEvent &= ~UIEventMove.move;
 			if ( hasMoveEvent == 0 ) removePickableMove();
-			mouseMove = noOperation;
+			pointerMove = noOperation;
 		}
 	}
 
@@ -286,10 +286,10 @@ class UIElement
 		if ( !isNull ) {
 			mouseWheel = newBinding;
 			if ( hasMoveEvent == 0 ) addPickableMove();
-			hasMoveEvent |= UIEventMove.mouseWheel;
+			hasMoveEvent |= UIEventMove.wheel;
 		}
 		else {
-			hasMoveEvent &= ~UIEventMove.mouseWheel;
+			hasMoveEvent &= ~UIEventMove.wheel;
 			if ( hasMoveEvent == 0 ) removePickableMove();
 			mouseWheel = noWheelOperation;
 		}
@@ -297,42 +297,42 @@ class UIElement
 
 	// -----------------
 
-	private function rebindMouseUp(newBinding:UIEventParams, isNull:Bool):Void {
+	private function rebindPointerUp(newBinding:UIEventParams, isNull:Bool):Void {
 		if ( !isNull ) {
-			mouseUp = newBinding;
+			pointerUp = newBinding;
 			if ( hasClickEvent == 0 ) addPickableClick();
-			hasClickEvent |= UIEventClick.mouseUp;
+			hasClickEvent |= UIEventClick.up;
 		}
 		else {
-			hasClickEvent &= ~UIEventClick.mouseUp;
+			hasClickEvent &= ~UIEventClick.up;
 			if ( hasClickEvent == 0 ) removePickableClick();
-			mouseUp = noOperation;
+			pointerUp = noOperation;
 		}
 	}
 	
-	private function rebindMouseDown(newBinding:UIEventParams, isNull:Bool):Void {
+	private function rebindPointerDown(newBinding:UIEventParams, isNull:Bool):Void {
 		if ( !isNull ) {
-			mouseDown = newBinding;
+			pointerDown = newBinding;
 			if ( hasClickEvent == 0 ) addPickableClick();
-			hasClickEvent |= UIEventClick.mouseDown;
+			hasClickEvent |= UIEventClick.down;
 		}
 		else {
-			hasClickEvent &= ~UIEventClick.mouseDown;
+			hasClickEvent &= ~UIEventClick.down;
 			if ( hasClickEvent == 0 ) removePickableClick();
-			mouseDown = noOperation;
+			pointerDown = noOperation;
 		}
 	}
 	
-	private function rebindMouseClick(newBinding:UIEventParams, isNull:Bool):Void {
+	private function rebindPointerClick(newBinding:UIEventParams, isNull:Bool):Void {
 		if ( !isNull ) {
-			mouseClick = newBinding;
+			pointerClick = newBinding;
 			if ( hasClickEvent == 0 ) addPickableClick();
-			hasClickEvent |= UIEventClick.mouseClick;
+			hasClickEvent |= UIEventClick.click;
 		}
 		else {
-			hasClickEvent &= ~UIEventClick.mouseClick;
+			hasClickEvent &= ~UIEventClick.click;
 			if ( hasClickEvent == 0 ) removePickableClick();
-			mouseClick = noOperation;
+			pointerClick = noOperation;
 		}
 	}
 	
