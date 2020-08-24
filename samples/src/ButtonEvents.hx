@@ -24,7 +24,7 @@ class ButtonEvents
 	{
 		try {			
 			peoteView = new PeoteView(window.context, window.width, window.height);
-			ui = new UIDisplay(20, 10, window.width, window.height, Color.GREY1);
+			ui = new UIDisplay(0, 0, window.width, window.height, Color.GREY1);
 			peoteView.addDisplay(ui);
 			
 			var mySkin = new Skin();
@@ -108,8 +108,13 @@ class ButtonEvents
 
 			
 			// TODO: make button to switch between
-			//ui.mouseEnabled = false;
-			ui.touchEnabled = false;
+			ui.mouseEnabled = false;
+			//ui.touchEnabled = false;
+			
+			#if android
+			peoteView.zoom = 3;
+			ui.mouseEnabled = false;
+			#end
 			
 		}
 		catch (e:Dynamic) trace("ERROR:", e);
