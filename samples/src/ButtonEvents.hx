@@ -108,7 +108,7 @@ class ButtonEvents
 
 			
 			// TODO: make button to switch between
-			ui.mouseEnabled = false;
+			//ui.mouseEnabled = false;
 			//ui.touchEnabled = false;
 			
 			#if android

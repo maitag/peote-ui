@@ -52,6 +52,8 @@ class UIDisplay extends Display
 		this.maxTouchpoints = maxTouchpoints;
 		lastTouchOverIndex = new haxe.ds.Vector<Int>(maxTouchpoints);
 		for (i in 0...lastTouchOverIndex.length) lastTouchOverIndex.set(i, -1);
+		lastTouchDownIndex = new haxe.ds.Vector<Int>(maxTouchpoints);
+		for (i in 0...lastTouchDownIndex.length) lastTouchDownIndex.set(i, -1);
 	}
 	
 	override private function setNewGLContext(newGl:PeoteGL)
@@ -113,11 +115,13 @@ class UIDisplay extends Display
 	
 
 	var lastTouchOverIndex:haxe.ds.Vector<Int>;
+	var lastTouchDownIndex:haxe.ds.Vector<Int>;
+	var lockTouchDown:Int = 0;
 	
 	// TODO: if backend allows multiple mice do same like with touch !
 	var lastMouseOverIndex:Int = -1;
 	var lastMouseDownIndex:Int = -1;
-	var lockDown = false;	
+	var lockMouseDown = false;	
 
 	
 	
@@ -185,12 +189,12 @@ class UIDisplay extends Display
 	
 	public function onMouseDown (x:Float, y:Float, button:MouseButton):Void
 	{
-		if (mouseEnabled && !lockDown && peoteView != null) 
+		if (mouseEnabled && !lockMouseDown && peoteView != null) 
 		{
 			lastMouseDownIndex = peoteView.getElementAt( x, y, this, clickPickProgram ) ;
 			if (lastMouseDownIndex >= 0) {
 				clickPickBuffer.getElement(lastMouseDownIndex).uiElement.pointerDown( Std.int(x), Std.int(y) );
-				lockDown = true;
+				lockMouseDown = true;
 			}
 		}
 		//var pickedElements = peoteView.getAllElementsAt(x, y, display, clickProgram);
@@ -199,7 +203,7 @@ class UIDisplay extends Display
 	
 	public function onTouchStart (touch:Touch):Void {
 		//trace("onTouchStart",touch.id, touch.pressure);
-		if (touchEnabled && !lockDown && peoteView != null && touch.id < maxTouchpoints) 
+		if (touchEnabled && (lockTouchDown & (1 << (touch.id+1))) == 0 && peoteView != null && touch.id < maxTouchpoints) 
 		{
 			var x:Int = Math.round(touch.x * peoteView.width);
 			var y:Int = Math.round(touch.y * peoteView.height);
@@ -212,10 +216,11 @@ class UIDisplay extends Display
 				movePickBuffer.getElement(pickedIndex).uiElement.pointerOver(x, y);
 				lastTouchOverIndex.set(touch.id, pickedIndex);
 			}
-			lastDownIndex = peoteView.getElementAt( x, y, this, clickPickProgram ) ;
+			var lastDownIndex = peoteView.getElementAt( x, y, this, clickPickProgram ) ;
 			if (lastDownIndex >= 0) {
 				clickPickBuffer.getElement(lastDownIndex).uiElement.pointerDown( x, y);
-				lockDown = true;
+				lockTouchDown = lockTouchDown | (1 << (touch.id+1));
+				lastTouchDownIndex.set(touch.id, lastDownIndex);
 			}
 		}
 	}
@@ -230,7 +235,7 @@ class UIDisplay extends Display
 				clickPickBuffer.getElement(pickedIndex).uiElement.pointerClick( Std.int(x), Std.int(y) );
 			}
 			lastMouseDownIndex = -1;
-			lockDown = false;
+			lockMouseDown = false;
 		}			
 		//var pickedElements = peoteView.getAllElementsAt(x, y, display, clickProgram);
 		//trace(pickedElements);
@@ -243,6 +248,8 @@ class UIDisplay extends Display
 			var y:Int = Math.round(touch.y * peoteView.height);
 			
 			var pickedIndex:Int;
+			var lastDownIndex = lastTouchDownIndex.get(touch.id);
+			
 			// Up
 			if (lastDownIndex >= 0) {
 				pickedIndex = peoteView.getElementAt(x, y, this, clickPickProgram);
@@ -251,8 +258,8 @@ class UIDisplay extends Display
 				if (pickedIndex == lastDownIndex) {
 					clickPickBuffer.getElement(pickedIndex).uiElement.pointerClick(x, y);
 				}
-				lastDownIndex = -1;
-				lockDown = false;
+				lastTouchDownIndex.set(touch.id, -1);
+				lockTouchDown = lockTouchDown - (1 << (touch.id+1));
 				
 			}
 			
@@ -287,7 +294,7 @@ class UIDisplay extends Display
 		if (lastMouseDownIndex >= 0) { 
 			clickPickBuffer.getElement(lastMouseDownIndex).uiElement.pointerUp( -1, -1 );
 			lastMouseDownIndex = -1;
-			lockDown = false;
+			lockMouseDown = false;
 		}
 		// touch
 		for (i in 0...lastTouchOverIndex.length)
@@ -295,6 +302,12 @@ class UIDisplay extends Display
 				movePickBuffer.getElement(lastTouchOverIndex.get(i)).uiElement.pointerOut( -1, -1) ;
 				lastTouchOverIndex.set(i, -1);
 			}
+		for (i in 0...lastTouchDownIndex.length)
+			if (lastTouchDownIndex.get(i) >= 0) {
+				clickPickBuffer.getElement(lastTouchDownIndex.get(i)).uiElement.pointerOut( -1, -1) ;
+				lastTouchDownIndex.set(i, -1);
+			}
+		lockTouchDown = 0;
 	}
 	
 	public function onKeyDown (keyCode:KeyCode, modifier:KeyModifier):Void
