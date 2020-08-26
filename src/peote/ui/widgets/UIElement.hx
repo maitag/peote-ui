@@ -1,6 +1,7 @@
 package peote.ui.widgets;
 
-import lime.ui.MouseWheelMode;
+import peote.ui.PointerEvent;
+import peote.ui.WheelEvent;
 
 import peote.ui.skin.Skin;
 import peote.ui.skin.Style;
@@ -33,12 +34,9 @@ class Pickable implements peote.view.Element
 		h = uiElement.height;
 		z = uiElement.z;
 	}
-
 }
 
 // ---------------------------------------------------------------
-
-private typedef UIEventParams = Int->Int->Void;
 
 @:enum private abstract UIEventMove(Int) from Int to Int {
 
@@ -74,8 +72,7 @@ class UIElement
 			s = skin.createDefaultStyle();
 		}
 		return style = s;
-	}
-	
+	}	
 	
 	var skinElementIndex:Int;
 	var pickableMove:Pickable = null;
@@ -117,16 +114,19 @@ class UIElement
 */	}
 	#end
 	
-	var pointerOver :UIEventParams;
-	var pointerOut  :UIEventParams;
-	var pointerMove :UIEventParams;
-	var mouseWheel:Float->Float->MouseWheelMode->Void;
-	var hasMoveEvent :Int = 0;
+	var pointerOver :PointerEvent->Void;
+	var pointerOut  :PointerEvent->Void;
+	var pointerMove :PointerEvent->Void;
+	var mouseWheel  :WheelEvent->Void;
+	var hasMoveEvent:Int = 0;
 	
-	var pointerUp   :UIEventParams;
-	var pointerDown :UIEventParams;
-	var pointerClick:UIEventParams;
+	var pointerUp   :PointerEvent->Void;
+	var pointerDown :PointerEvent->Void;
+	var pointerClick:PointerEvent->Void;
 	var hasClickEvent:Int = 0;
+	
+	private inline function noOperation(e:PointerEvent):Void {}
+	private inline function noWheelOperation(e:WheelEvent):Void {}
 	
 	public function new(xPosition:Int=0, yPosition:Int=0, width:Int=100, height:Int=100, zIndex:Int=0, skin:Skin=null, style:Style=null) 
 	{
@@ -245,10 +245,7 @@ class UIElement
 	
 	// ----------------- Event-Bindings ----------------------
 
-	private inline function noOperation(x:Int, y:Int):Void {}
-	private inline function noWheelOperation(dx:Float, dy:Float, deltaMode:MouseWheelMode):Void {}
-	
-	private function rebindPointerOver(newBinding:UIEventParams, isNull:Bool):Void {
+	private function rebindPointerOver(newBinding:PointerEvent->Void, isNull:Bool):Void {
 		if ( !isNull ) {
 			pointerOver = newBinding;
 			if ( hasMoveEvent == 0 ) addPickableMove();
@@ -261,7 +258,7 @@ class UIElement
 		}
 	}
 
-	private function rebindPointerOut(newBinding:UIEventParams, isNull:Bool):Void {
+	private function rebindPointerOut(newBinding:PointerEvent->Void, isNull:Bool):Void {
 		if ( !isNull ) {
 			pointerOut = newBinding;
 			if ( hasMoveEvent == 0 ) addPickableMove();
@@ -274,7 +271,7 @@ class UIElement
 		}
 	}
 
-	private function rebindPointerMove(newBinding:UIEventParams, isNull:Bool):Void {
+	private function rebindPointerMove(newBinding:PointerEvent->Void, isNull:Bool):Void {
 		if ( !isNull ) {
 			pointerMove = newBinding;
 			if ( hasMoveEvent == 0 ) addPickableMove();
@@ -287,7 +284,7 @@ class UIElement
 		}
 	}
 
-	private function rebindMouseWheel(newBinding:Float->Float->MouseWheelMode->Void, isNull:Bool):Void {
+	private function rebindMouseWheel(newBinding:WheelEvent->Void, isNull:Bool):Void {
 		if ( !isNull ) {
 			mouseWheel = newBinding;
 			if ( hasMoveEvent == 0 ) addPickableMove();
@@ -302,7 +299,7 @@ class UIElement
 
 	// -----------------
 
-	private function rebindPointerUp(newBinding:UIEventParams, isNull:Bool):Void {
+	private function rebindPointerUp(newBinding:PointerEvent->Void, isNull:Bool):Void {
 		if ( !isNull ) {
 			pointerUp = newBinding;
 			if ( hasClickEvent == 0 ) addPickableClick();
@@ -315,7 +312,7 @@ class UIElement
 		}
 	}
 	
-	private function rebindPointerDown(newBinding:UIEventParams, isNull:Bool):Void {
+	private function rebindPointerDown(newBinding:PointerEvent->Void, isNull:Bool):Void {
 		if ( !isNull ) {
 			pointerDown = newBinding;
 			if ( hasClickEvent == 0 ) addPickableClick();
@@ -328,7 +325,7 @@ class UIElement
 		}
 	}
 	
-	private function rebindPointerClick(newBinding:UIEventParams, isNull:Bool):Void {
+	private function rebindPointerClick(newBinding:PointerEvent->Void, isNull:Bool):Void {
 		if ( !isNull ) {
 			pointerClick = newBinding;
 			if ( hasClickEvent == 0 ) addPickableClick();

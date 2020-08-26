@@ -1,51 +1,57 @@
 package peote.ui.widgets;
 
-import lime.ui.MouseWheelMode;
-
 import peote.ui.skin.Skin;
 import peote.ui.skin.Style;
 import peote.ui.widgets.UIElement;
 
+import peote.ui.PointerEvent;
+import peote.ui.WheelEvent;
+
+
+private typedef ButtonEventParams = Button->PointerEvent->Void;
+
 class Button extends UIElement
 {
-	public var onPointerOver(default, set):Button->Int->Int->Void;
-	inline function set_onPointerOver(f:Button->Int->Int->Void):Button->Int->Int->Void {
+	public var onPointerOver(default, set):ButtonEventParams;
+	inline function set_onPointerOver(f:ButtonEventParams):ButtonEventParams {
 		rebindPointerOver( f.bind(this), f == null);
 		return onPointerOver = f;
 	}
 	
-	public var onPointerOut(default, set):Button->Int->Int->Void;
-	inline function set_onPointerOut(f:Button->Int->Int->Void):Button->Int->Int->Void {
+	public var onPointerOut(default, set):ButtonEventParams;
+	inline function set_onPointerOut(f:ButtonEventParams):ButtonEventParams {
 		rebindPointerOut( f.bind(this), f == null);
 		return onPointerOut = f;
 	}
 	
-	public var onPointerMove(default, set):Button->Int->Int->Void;
-	inline function set_onPointerMove(f:Button->Int->Int->Void):Button->Int->Int->Void {
+	public var onPointerMove(default, set):ButtonEventParams;
+	inline function set_onPointerMove(f:ButtonEventParams):ButtonEventParams {
 		rebindPointerMove( f.bind(this), f == null);
 		return onPointerMove = f;
 	}
 	
-	public var onPointerDown(default, set):Button->Int->Int->Void;
-	inline function set_onPointerDown(f:Button->Int->Int->Void):Button->Int->Int->Void {
+	public var onPointerDown(default, set):ButtonEventParams;
+	inline function set_onPointerDown(f:ButtonEventParams):ButtonEventParams {
 		rebindPointerDown( f.bind(this), f == null);
 		return onPointerDown = f;
 	}
 	
-	public var onPointerUp(default, set):Button->Int->Int->Void;
-	inline function set_onPointerUp(f:Button->Int->Int->Void):Button->Int->Int->Void {
+	public var onPointerUp(default, set):ButtonEventParams;
+	inline function set_onPointerUp(f:ButtonEventParams):ButtonEventParams {
 		rebindPointerUp( f.bind(this), f == null);
 		return onPointerUp = f;
 	}
 	
-	public var onPointerClick(default, set):Button->Int->Int->Void;
-	inline function set_onPointerClick(f:Button->Int->Int->Void):Button->Int->Int->Void {
+	public var onPointerClick(default, set):ButtonEventParams;
+	inline function set_onPointerClick(f:ButtonEventParams):ButtonEventParams {
 		rebindPointerClick( f.bind(this), f == null);
 		return onPointerClick = f;
 	}
+
 	
-	public var onMouseWheel(default, set):Button->Float->Float->MouseWheelMode->Void;
-	inline function set_onMouseWheel(f:Button->Float->Float->MouseWheelMode->Void):Button->Float->Float->MouseWheelMode->Void {
+	
+	public var onMouseWheel(default, set):Button->WheelEvent->Void;
+	inline function set_onMouseWheel(f:Button->WheelEvent->Void):Button->WheelEvent->Void {
 		rebindMouseWheel( f.bind(this), f == null);
 		return onMouseWheel = f;
 	}

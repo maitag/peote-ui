@@ -5,6 +5,7 @@ import lime.ui.KeyModifier;
 import lime.ui.MouseButton;
 import lime.ui.MouseWheelMode;
 import lime.ui.Touch;
+import peote.ui.PointerEvent.PointerType;
 
 import peote.view.PeoteGL;
 import peote.view.Display;
@@ -49,6 +50,9 @@ class UIDisplay extends Display
 		draggingElements = new Array<UIElement>();
 		//skins = new Array<Skin>();
 		
+		lastMouseDownIndex = new haxe.ds.Vector<Int>(3);
+		for (i in 0...lastMouseDownIndex.length) lastMouseDownIndex.set(i, -1);
+
 		this.maxTouchpoints = maxTouchpoints;
 		lastTouchOverIndex = new haxe.ds.Vector<Int>(maxTouchpoints);
 		for (i in 0...lastTouchOverIndex.length) lastTouchOverIndex.set(i, -1);
@@ -120,32 +124,32 @@ class UIDisplay extends Display
 	
 	// TODO: if backend allows multiple mice do same like with touch !
 	var lastMouseOverIndex:Int = -1;
-	var lastMouseDownIndex:Int = -1;
-	var lockMouseDown = false;	
+	var lastMouseDownIndex:haxe.ds.Vector<Int>;
+	var lockMouseDown:Int = 0;	
 
 	
 	
 	public inline function onMouseMove (mouseX:Float, mouseY:Float):Void {
 		if (mouseEnabled && peoteView != null)
 		{
+			var pickedIndex = peoteView.getElementAt(mouseX, mouseY, this, movePickProgram);
 			var x = Std.int(mouseX);
 			var y = Std.int(mouseY);
-			var pickedIndex = peoteView.getElementAt(x, y, this, movePickProgram);
 			
 			// Over/Out
 			if (pickedIndex != lastMouseOverIndex) {
 				// TODO: bubbling only for container-elements
 				// so no over and out to the parent-elements if bubbling is enabled into a child!
 				if (lastMouseOverIndex >= 0) 
-					movePickBuffer.getElement(lastMouseOverIndex).uiElement.pointerOut(x, y);
+					movePickBuffer.getElement(lastMouseOverIndex).uiElement.pointerOut({x:x, y:y, type:PointerType.MOUSE});
 				if (pickedIndex >= 0) 
-					movePickBuffer.getElement(pickedIndex).uiElement.pointerOver(x, y);
+					movePickBuffer.getElement(pickedIndex).uiElement.pointerOver({x:x, y:y, type:PointerType.MOUSE});
 				lastMouseOverIndex = pickedIndex;
 			}
 			
 			// Move
 			if (pickedIndex >= 0) 
-				movePickBuffer.getElement(pickedIndex).uiElement.pointerMove(x, y);
+				movePickBuffer.getElement(pickedIndex).uiElement.pointerMove({x:x, y:y, type:PointerType.MOUSE});
 			
 			// Dragging
 			for (uiElement in draggingElements) {
@@ -169,15 +173,15 @@ class UIDisplay extends Display
 				// TODO: bubbling only for container-elements
 				// so no over and out to the parent-elements if bubbling is enabled into a child!
 				if (lastOverIndex >= 0) 
-					movePickBuffer.getElement(lastOverIndex).uiElement.pointerOut(x, y);
+					movePickBuffer.getElement(lastOverIndex).uiElement.pointerOut({x:x, y:y, type:PointerType.TOUCH, touch:touch});
 				if (pickedIndex >= 0) 
-					movePickBuffer.getElement(pickedIndex).uiElement.pointerOver(x, y);
+					movePickBuffer.getElement(pickedIndex).uiElement.pointerOver({x:x, y:y, type:PointerType.TOUCH, touch:touch});
 				lastTouchOverIndex.set(touch.id, pickedIndex);
 			}
 			
 			// Move
 			if (pickedIndex >= 0) 
-				movePickBuffer.getElement(pickedIndex).uiElement.pointerMove(x, y);
+				movePickBuffer.getElement(pickedIndex).uiElement.pointerMove({x:x, y:y, type:PointerType.TOUCH, touch:touch});
 			
 			// Dragging
 			for (uiElement in draggingElements) {
@@ -187,13 +191,14 @@ class UIDisplay extends Display
 		}
 	}
 	
-	public inline function onMouseDown (x:Float, y:Float, button:MouseButton):Void {
-		if (mouseEnabled && !lockMouseDown && peoteView != null) 
+	public inline function onMouseDown (mouseX:Float, mouseY:Float, button:MouseButton):Void {
+		if (mouseEnabled && (lockMouseDown & (1 << (button+1))) == 0 && peoteView != null) 
 		{
-			lastMouseDownIndex = peoteView.getElementAt(x, y, this, clickPickProgram) ;
-			if (lastMouseDownIndex >= 0) {
-				clickPickBuffer.getElement(lastMouseDownIndex).uiElement.pointerDown(Std.int(x), Std.int(y));
-				lockMouseDown = true;
+			var mouseDownIndex = peoteView.getElementAt(mouseX, mouseY, this, clickPickProgram) ;
+			if (mouseDownIndex >= 0) {
+				clickPickBuffer.getElement(mouseDownIndex).uiElement.pointerDown({x:Std.int(mouseX), y:Std.int(mouseY), type:PointerType.MOUSE, mouseButton:button});
+				lockMouseDown = lockMouseDown | (1 << (button+1));
+				lastMouseDownIndex.set(button, mouseDownIndex);
 			}
 		}
 		//var pickedElements = peoteView.getAllElementsAt(x, y, display, clickProgram);
@@ -206,32 +211,39 @@ class UIDisplay extends Display
 			var x:Int = Math.round(touch.x * peoteView.width);
 			var y:Int = Math.round(touch.y * peoteView.height);
 			
-			// Over/Out
+			// Out
 			var pickedIndex = peoteView.getElementAt(x, y, this, movePickProgram);
-
 			if (pickedIndex >= 0) {
-				movePickBuffer.getElement(pickedIndex).uiElement.pointerOver(x, y);
+				movePickBuffer.getElement(pickedIndex).uiElement.pointerOver({x:x, y:y, type:PointerType.TOUCH, touch:touch});
 				lastTouchOverIndex.set(touch.id, pickedIndex);
 			}
-			var lastDownIndex = peoteView.getElementAt(x, y, this, clickPickProgram ) ;
-			if (lastDownIndex >= 0) {
-				clickPickBuffer.getElement(lastDownIndex).uiElement.pointerDown(x, y);
+			// Down
+			var touchDownIndex = peoteView.getElementAt(x, y, this, clickPickProgram ) ;
+			if (touchDownIndex >= 0) {
+				clickPickBuffer.getElement(touchDownIndex).uiElement.pointerDown({x:x, y:y, type:PointerType.TOUCH, touch:touch});
 				lockTouchDown = lockTouchDown | (1 << (touch.id+1));
-				lastTouchDownIndex.set(touch.id, lastDownIndex);
+				lastTouchDownIndex.set(touch.id, touchDownIndex);
 			}
 		}
 	}
 	
-	public inline function onMouseUp (x:Float, y:Float, button:MouseButton):Void {
-		if (mouseEnabled && lastMouseDownIndex >= 0 && peoteView != null) {
-			// Up
-			var pickedIndex = peoteView.getElementAt(x, y, this, clickPickProgram);
-			clickPickBuffer.getElement(lastMouseDownIndex).uiElement.pointerUp( Std.int(x), Std.int(y) );
-			if (pickedIndex == lastMouseDownIndex) {
-				clickPickBuffer.getElement(pickedIndex).uiElement.pointerClick( Std.int(x), Std.int(y) );
+	public inline function onMouseUp (mouseX:Float, mouseY:Float, button:MouseButton):Void {
+		if (mouseEnabled && peoteView != null) {
+			
+			var mouseDownIndex = lastMouseDownIndex.get(button);
+			
+			if (mouseDownIndex >= 0) {
+				// Up
+				var pickedIndex = peoteView.getElementAt(mouseX, mouseY, this, clickPickProgram);
+				clickPickBuffer.getElement(mouseDownIndex).uiElement.pointerUp({x:Std.int(mouseX), y:Std.int(mouseY), type:PointerType.MOUSE, mouseButton:button});
+				
+				// Click
+				if (pickedIndex == mouseDownIndex) {
+					clickPickBuffer.getElement(pickedIndex).uiElement.pointerClick({x:Std.int(mouseX), y:Std.int(mouseY), type:PointerType.MOUSE, mouseButton:button});
+				}
+				lastMouseDownIndex.set(button, -1);
+				lockMouseDown = lockMouseDown - (1 << (button+1));
 			}
-			lastMouseDownIndex = -1;
-			lockMouseDown = false;
 		}			
 		//var pickedElements = peoteView.getAllElementsAt(x, y, display, clickProgram);
 		//trace(pickedElements);
@@ -243,25 +255,25 @@ class UIDisplay extends Display
 			var y:Int = Math.round(touch.y * peoteView.height);
 			
 			var pickedIndex:Int;
-			var lastDownIndex = lastTouchDownIndex.get(touch.id);
+			var touchDownIndex = lastTouchDownIndex.get(touch.id);
 			
 			// Up
-			if (lastDownIndex >= 0) {
+			if (touchDownIndex >= 0) {
 				pickedIndex = peoteView.getElementAt(x, y, this, clickPickProgram);
 
-				clickPickBuffer.getElement(lastDownIndex).uiElement.pointerUp(x, y);
-				if (pickedIndex == lastDownIndex) {
-					clickPickBuffer.getElement(pickedIndex).uiElement.pointerClick(x, y);
+				clickPickBuffer.getElement(touchDownIndex).uiElement.pointerUp({x:x, y:y, type:PointerType.TOUCH, touch:touch});
+				if (pickedIndex == touchDownIndex) {
+					clickPickBuffer.getElement(pickedIndex).uiElement.pointerClick({x:x, y:y, type:PointerType.TOUCH, touch:touch});
 				}
 				lastTouchDownIndex.set(touch.id, -1);
 				lockTouchDown = lockTouchDown - (1 << (touch.id+1));
 				
 			}
 			
-			// Over/Out
+			// Out
 			pickedIndex = peoteView.getElementAt(x, y, this, clickPickProgram);
 			if (pickedIndex >=0 && pickedIndex == lastTouchOverIndex.get(touch.id)) {
-				movePickBuffer.getElement(pickedIndex).uiElement.pointerOut(x, y);
+				movePickBuffer.getElement(pickedIndex).uiElement.pointerOut({x:x, y:y, type:PointerType.TOUCH, touch:touch});
 				lastTouchOverIndex.set(touch.id, -1);
 			}
 			
@@ -271,39 +283,43 @@ class UIDisplay extends Display
 
 	public inline function onMouseWheel (deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode):Void {
 		if (mouseEnabled && lastMouseOverIndex >= 0 && peoteView != null) {
-			movePickBuffer.getElement(lastMouseOverIndex).uiElement.mouseWheel( deltaX, deltaY, deltaMode );
+			movePickBuffer.getElement(lastMouseOverIndex).uiElement.mouseWheel({deltaX:deltaX, deltaY:deltaY, deltaMode:deltaMode});
 		}
 	}
 	
 	public inline function onTouchCancel(touch:Touch):Void {
 		// TODO
-		trace("onTouchCancel", touch.id, Math.round(touch.x * peoteView.width), Math.round(touch.y * peoteView.height) );
+		trace("onTouchCancel", touch.id, Math.round(touch.x * peoteView.width), Math.round(touch.y * peoteView.height));
 	}
 
 	public inline function onWindowLeave ():Void {
 		// mouse
 		if (lastMouseOverIndex >= 0) {
-			movePickBuffer.getElement(lastMouseOverIndex).uiElement.pointerOut( -1, -1) ;
+			movePickBuffer.getElement(lastMouseOverIndex).uiElement.pointerOut({x:-1, y:-1, type:PointerType.MOUSE});
 			lastMouseOverIndex = -1;
 		}
-		if (lastMouseDownIndex >= 0) { 
-			clickPickBuffer.getElement(lastMouseDownIndex).uiElement.pointerUp( -1, -1 );
-			lastMouseDownIndex = -1;
-			lockMouseDown = false;
-		}
-		// touch
 		var lastIndex:Int;
+		for (i in 0...lastMouseDownIndex.length) {
+			lastIndex = lastMouseDownIndex.get(i) ;
+			if (lastIndex >= 0) {
+				clickPickBuffer.getElement(lastIndex).uiElement.pointerUp({x:-1, y:-1, type:PointerType.MOUSE, mouseButton:i});
+				lastMouseDownIndex.set(i, -1);
+			}
+		}
+		lockMouseDown = 0;
+
+		// touch
 		for (i in 0...lastTouchOverIndex.length) {
 			lastIndex = lastTouchOverIndex.get(i) ;
 			if (lastIndex >= 0) {
-				movePickBuffer.getElement(lastIndex).uiElement.pointerOut( -1, -1) ;
+				movePickBuffer.getElement(lastIndex).uiElement.pointerOut({x:-1, y:-1, type:PointerType.TOUCH, touch:new Touch(-1, -1, i, 0, 0, 0, 0)});
 				lastTouchOverIndex.set(i, -1);
 			}
 		}
 		for (i in 0...lastTouchDownIndex.length) {
 			lastIndex = lastTouchDownIndex.get(i);
 			if (lastIndex >= 0) {
-				clickPickBuffer.getElement(lastIndex).uiElement.pointerOut( -1, -1) ;
+				clickPickBuffer.getElement(lastIndex).uiElement.pointerUp({x:-1, y:-1, type:PointerType.TOUCH, touch:new Touch(-1, -1, i, 0, 0, 0, 0)});
 				lastTouchDownIndex.set(i, -1);
 			}
 		}

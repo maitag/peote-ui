@@ -14,6 +14,8 @@ import peote.ui.UIDisplay;
 import peote.ui.widgets.Button;
 import peote.ui.skin.Skin;
 import peote.ui.skin.Style;
+import peote.ui.PointerEvent;
+import peote.ui.WheelEvent;
 
 class ButtonEvents 
 {
@@ -89,20 +91,20 @@ class ButtonEvents
 			dragger.onPointerOut = onOut.bind(Color.GREY1);
 			
 			dragger.setDragArea(10, 140, 350, 60); // x, y, width, height
-			dragger.onPointerDown = function(b:Button, x:Int, y:Int) {
-				trace(" -----> onPointerDown", x, y);
-				b.startDragging(x, y);
+			dragger.onPointerDown = function(b:Button, e:PointerEvent) {
+				trace(" -----> onPointerDown", e);
+				b.startDragging(e.x, e.y);
 				b.style.color = Color.GREEN;
 				b.update();
 			}
-			dragger.onPointerUp = function(b:Button, x:Int, y:Int) {
-				trace(" -----> onPointerUp", x, y);
+			dragger.onPointerUp = function(b:Button, e:PointerEvent) {
+				trace(" -----> onPointerUp", e);
 				b.stopDragging();
 				b.style.color = Color.GREY1;
 				b.update();
 			}
-			dragger.onMouseWheel = function(b:Button, dx:Float, dy:Float, deltaMode:MouseWheelMode) {
-				trace("MouseWheel:",dx,dy, deltaMode);
+			dragger.onMouseWheel = function(b:Button, e:WheelEvent) {
+				trace("MouseWheel:", e);
 			}
 			ui.add(dragger);
 
@@ -120,40 +122,40 @@ class ButtonEvents
 	}
 	
 	// --------------------------------------------------
-	public inline function onOver(color:Color, button:Button, x:Int, y:Int) {
+	public inline function onOver(color:Color, button:Button, e:PointerEvent) {
 		button.style.color = color;
 		button.style.borderColor = Color.GREY7;
 		button.update();
-		trace(" -----> onPointerOver", x, y);
+		trace(" -----> onPointerOver", e);
 	}
 	
-	public inline function onOut(color:Color, button:Button, x:Int, y:Int) {
+	public inline function onOut(color:Color, button:Button, e:PointerEvent) {
 		button.style.color = color;
 		button.style.borderColor = Color.GREY5;
 		button.update();
-		trace(" -----> onPointerOut", x, y);
+		trace(" -----> onPointerOut", e);
 	}
 	
-	public inline function onMove(button:Button, x:Int, y:Int) {
-		trace(" -----> onPointerMove", x, y);
+	public inline function onMove(button:Button, e:PointerEvent) {
+		trace(" -----> onPointerMove", e);
 	}
 	
-	public inline function onUp(borderColor:Color, button:Button, x:Int, y:Int) {
-		button.style.borderColor = borderColor;
-		button.update();
-		trace(" -----> onPointerUp", x, y);
-	}
-	
-	public inline function onDown(borderColor:Color, button:Button, x:Int, y:Int) {
+	public inline function onDown(borderColor:Color, button:Button, e:PointerEvent) {
 		button.style.borderColor = borderColor;
 		//button.x += 30;
 		button.update();
-		trace(" -----> onPointerDown", x, y);
+		trace(" -----> onPointerDown", e);
 	}
 	
-	public inline function onClick(button:Button, x:Int, y:Int) {
+	public inline function onUp(borderColor:Color, button:Button, e:PointerEvent) {
+		button.style.borderColor = borderColor;
+		button.update();
+		trace(" -----> onPointerUp", e);
+	}
+	
+	public inline function onClick(button:Button, e:PointerEvent) {
 		//button.y += 30; button.update();
-		trace(" -----> onPointerClick", x, y);
+		trace(" -----> onPointerClick", e);
 	}
 	// --------------------------------------------------
 
