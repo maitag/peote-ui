@@ -110,7 +110,7 @@ class Skin
 		);
 		
 		program.setColorFormula('compose(color, borderColor, borderSize, borderRadius)');
-		program.discardAtAlpha(0.1);
+		program.discardAtAlpha(0.01);
 		return program;
 	}
 }

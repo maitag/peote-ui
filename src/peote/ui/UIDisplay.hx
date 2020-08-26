@@ -1,10 +1,12 @@
 package peote.ui;
 
+import haxe.ds.Vector;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.ui.MouseButton;
 import lime.ui.MouseWheelMode;
 import lime.ui.Touch;
+import peote.ui.PointerEvent;
 import peote.ui.PointerEvent.PointerType;
 
 import peote.view.PeoteGL;
@@ -30,7 +32,8 @@ class UIDisplay extends Display
 	
 	//var skins:Array<Skin>; // TODO: no references
 	
-	var draggingElements:Array<UIElement>;
+	var draggingMouseElements:Array<UIElement>;
+	var draggingTouchElements:Vector<Array<UIElement>>;
 	
 	var maxTouchpoints:Int;
 
@@ -47,17 +50,23 @@ class UIDisplay extends Display
 		clickPickProgram = new Program(clickPickBuffer);
 	
 		uiElements = new Array<UIElement>();
-		draggingElements = new Array<UIElement>();
 		//skins = new Array<Skin>();
 		
-		lastMouseDownIndex = new haxe.ds.Vector<Int>(3);
-		for (i in 0...lastMouseDownIndex.length) lastMouseDownIndex.set(i, -1);
+		lastMouseDownIndex = new Vector<Int>(3);
+		draggingMouseElements = new Array<UIElement>();
+		for (i in 0...lastMouseDownIndex.length) {
+			lastMouseDownIndex.set(i, -1);
+		}
 
 		this.maxTouchpoints = maxTouchpoints;
-		lastTouchOverIndex = new haxe.ds.Vector<Int>(maxTouchpoints);
-		for (i in 0...lastTouchOverIndex.length) lastTouchOverIndex.set(i, -1);
-		lastTouchDownIndex = new haxe.ds.Vector<Int>(maxTouchpoints);
-		for (i in 0...lastTouchDownIndex.length) lastTouchDownIndex.set(i, -1);
+		lastTouchOverIndex = new Vector<Int>(maxTouchpoints);
+		lastTouchDownIndex = new Vector<Int>(maxTouchpoints);
+		draggingTouchElements = new Vector<Array<UIElement>>(maxTouchpoints);
+		for (i in 0...maxTouchpoints) {
+			lastTouchOverIndex.set(i, -1);
+			lastTouchDownIndex.set(i, -1);
+			draggingTouchElements.set(i, new Array<UIElement>());
+		}
 	}
 	
 	override private function setNewGLContext(newGl:PeoteGL)
@@ -97,17 +106,26 @@ class UIDisplay extends Display
 	}
 	
 	// ----------------------------------------
-	public function startDragging(uiElement:UIElement):Void {
+	public function startDragging(uiElement:UIElement, e:PointerEvent):Void {
 		if (! uiElement.isDragging) {
 			uiElement.isDragging = true;
-			draggingElements.push(uiElement);
+			switch (e.type) {
+				case MOUSE: draggingMouseElements.push(uiElement);
+				case TOUCH: draggingTouchElements.get(e.touch.id).push(uiElement);
+				case PEN: // TODO!
+			}
+			
 		} //TODO: #if peoteui_debug -> else WARNING: already in dragmode
 	}
 
-	public function stopDragging(uiElement:UIElement):Void {
+	public function stopDragging(uiElement:UIElement, e:PointerEvent):Void {
 		if (uiElement.isDragging) {
 			uiElement.isDragging = false;
-			draggingElements.remove(uiElement);
+			switch (e.type) {
+				case MOUSE: draggingMouseElements.remove(uiElement);
+				case TOUCH: draggingTouchElements.get(e.touch.id).remove(uiElement);
+				case PEN: // TODO!
+			}
 		} //TODO: #if peoteui_debug -> else WARNING: is not into dragmode
 	}
 
@@ -152,7 +170,7 @@ class UIDisplay extends Display
 				movePickBuffer.getElement(pickedIndex).uiElement.pointerMove({x:x, y:y, type:PointerType.MOUSE});
 			
 			// Dragging
-			for (uiElement in draggingElements) {
+			for (uiElement in draggingMouseElements) {
 				uiElement.dragTo(x, y);
 				update(uiElement);
 			}
@@ -184,7 +202,7 @@ class UIDisplay extends Display
 				movePickBuffer.getElement(pickedIndex).uiElement.pointerMove({x:x, y:y, type:PointerType.TOUCH, touch:touch});
 			
 			// Dragging
-			for (uiElement in draggingElements) {
+			for (uiElement in draggingTouchElements.get(touch.id)) {
 				uiElement.dragTo(x, y);
 				update(uiElement);
 			}

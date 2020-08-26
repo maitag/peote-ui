@@ -76,13 +76,13 @@ class ButtonEvents
 			
 			// ---- Dragging -----
 			
+			trace("NEW SLIDER -----");			
 			var myStyle3 = new Style();
 			myStyle3.color = Color.GREY1;
 			myStyle3.borderColor = Color.GREY5;
 			myStyle3.borderSize = 3.0;
 			myStyle3.borderRadius = 20.0;
 
-			trace("NEW SLIDER -----");
 			var background = new Button(10, 140, 350, 60, mySkin, myStyle2);
 			ui.add(background);
 			
@@ -93,13 +93,13 @@ class ButtonEvents
 			dragger.setDragArea(10, 140, 350, 60); // x, y, width, height
 			dragger.onPointerDown = function(b:Button, e:PointerEvent) {
 				trace(" -----> onPointerDown", e);
-				b.startDragging(e.x, e.y);
+				b.startDragging(e);
 				b.style.color = Color.GREEN;
 				b.update();
 			}
 			dragger.onPointerUp = function(b:Button, e:PointerEvent) {
 				trace(" -----> onPointerUp", e);
-				b.stopDragging();
+				b.stopDragging(e);
 				b.style.color = Color.GREY1;
 				b.update();
 			}
@@ -108,13 +108,41 @@ class ButtonEvents
 			}
 			ui.add(dragger);
 
+			trace("NEW DragArea -----");
+			var myStyle4 = new Style();
+			myStyle4.color = Color.GREY1;
+			myStyle4.borderColor = Color.GREY5;
+			myStyle4.borderSize = 3.0;
+			myStyle4.borderRadius = 40.0;
+			
+			var draggAreaBG = new Button(10, 200, 350, 350, mySkin, myStyle4);
+			ui.add(draggAreaBG);
+
+			var draggArea = new Button(250, 250, 80, 80, mySkin, myStyle4);
+			draggArea.setDragArea(10, 200, 350, 350); // x, y, width, height
+			draggArea.onPointerDown = function(b:Button, e:PointerEvent) {
+				trace(" -----> onPointerDown", e);
+				b.startDragging(e);
+				b.style.color = Color.GREEN;
+				b.update();
+			}
+			draggArea.onPointerUp = function(b:Button, e:PointerEvent) {
+				trace(" -----> onPointerUp", e);
+				b.stopDragging(e);
+				b.style.color = Color.GREY1;
+				b.update();
+			}
+			ui.add(draggArea);
+
 			
 			// TODO: make button to switch between
 			//ui.mouseEnabled = false;
 			//ui.touchEnabled = false;
+			//peoteView.zoom = 2;
+
 			#if android
-			peoteView.zoom = 3;
 			ui.mouseEnabled = false;
+			peoteView.zoom = 3;
 			#end
 			
 		}

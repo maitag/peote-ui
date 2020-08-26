@@ -17,12 +17,6 @@ Skin:
 - ui-elements inside a container needs to be masked
 
 
-Mouse- and Multitouch:
-
-- handle mouse-, pen- and events simmiliar
-- multiple mode (changable at runtime) to let disable mouse-events for touch-devices that allways sending equivalent mouse-events
-
-
 EventBubbling:
 
 - if bubbling are enabled for picked ui-element then pass it throught to the parent-uiElement

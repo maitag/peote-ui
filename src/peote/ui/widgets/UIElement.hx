@@ -229,18 +229,18 @@ class UIElement
 	}
 
 	@:access(peote.view.Display)
-	public function startDragging(dragOriginX:Int, dragOriginY:Int)
+	public function startDragging(e:PointerEvent)
 	{
 		if (uiDisplay != null) {
-			this.dragOriginX = Std.int(dragOriginX / uiDisplay.peoteView.zoom / uiDisplay.zoom) - x;
-			this.dragOriginY = Std.int(dragOriginY / uiDisplay.peoteView.zoom / uiDisplay.zoom) - y;
-			uiDisplay.startDragging(this);
+			dragOriginX = Std.int(e.x / uiDisplay.peoteView.zoom / uiDisplay.zoom) - x;
+			dragOriginY = Std.int(e.y / uiDisplay.peoteView.zoom / uiDisplay.zoom) - y;
+			uiDisplay.startDragging(this, e);
 		}
 	}
 	
-	public function stopDragging()
+	public function stopDragging(e:PointerEvent)
 	{
-		if (uiDisplay != null) uiDisplay.stopDragging(this);
+		if (uiDisplay != null) uiDisplay.stopDragging(this, e);
 	}
 	
 	// ----------------- Event-Bindings ----------------------
