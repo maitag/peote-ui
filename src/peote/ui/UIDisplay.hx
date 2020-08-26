@@ -33,7 +33,7 @@ class UIDisplay extends Display
 	
 	var maxTouchpoints:Int;
 
-	public function new(x:Int, y:Int, width:Int, height:Int, color:Color=0x00000000, maxTouchpoints:Int = 5) 
+	public function new(x:Int, y:Int, width:Int, height:Int, color:Color=0x00000000, maxTouchpoints:Int = 3) 
 	{
 		super(x, y, width, height, color);
 		
@@ -125,7 +125,7 @@ class UIDisplay extends Display
 
 	
 	
-	public function onMouseMove (mouseX:Float, mouseY:Float):Void {
+	public inline function onMouseMove (mouseX:Float, mouseY:Float):Void {
 		if (mouseEnabled && peoteView != null)
 		{
 			var x = Std.int(mouseX);
@@ -155,8 +155,8 @@ class UIDisplay extends Display
 		}
 	}
 	
-	public function onTouchMove (touch:Touch):Void {
-		if (touchEnabled && peoteView != null)
+	public inline function onTouchMove (touch:Touch):Void {
+		if (touchEnabled && peoteView != null && touch.id < maxTouchpoints)
 		{
 			var x:Int = Math.round(touch.x * peoteView.width);
 			var y:Int = Math.round(touch.y * peoteView.height);
@@ -187,13 +187,12 @@ class UIDisplay extends Display
 		}
 	}
 	
-	public function onMouseDown (x:Float, y:Float, button:MouseButton):Void
-	{
+	public inline function onMouseDown (x:Float, y:Float, button:MouseButton):Void {
 		if (mouseEnabled && !lockMouseDown && peoteView != null) 
 		{
-			lastMouseDownIndex = peoteView.getElementAt( x, y, this, clickPickProgram ) ;
+			lastMouseDownIndex = peoteView.getElementAt(x, y, this, clickPickProgram) ;
 			if (lastMouseDownIndex >= 0) {
-				clickPickBuffer.getElement(lastMouseDownIndex).uiElement.pointerDown( Std.int(x), Std.int(y) );
+				clickPickBuffer.getElement(lastMouseDownIndex).uiElement.pointerDown(Std.int(x), Std.int(y));
 				lockMouseDown = true;
 			}
 		}
@@ -201,13 +200,11 @@ class UIDisplay extends Display
 		//trace(pickedElements);
 	}
 	
-	public function onTouchStart (touch:Touch):Void {
-		//trace("onTouchStart",touch.id, touch.pressure);
+	public inline function onTouchStart (touch:Touch):Void {
 		if (touchEnabled && (lockTouchDown & (1 << (touch.id+1))) == 0 && peoteView != null && touch.id < maxTouchpoints) 
 		{
 			var x:Int = Math.round(touch.x * peoteView.width);
 			var y:Int = Math.round(touch.y * peoteView.height);
-			//trace("onTouchStart", touch.id, x, y);
 			
 			// Over/Out
 			var pickedIndex = peoteView.getElementAt(x, y, this, movePickProgram);
@@ -216,17 +213,16 @@ class UIDisplay extends Display
 				movePickBuffer.getElement(pickedIndex).uiElement.pointerOver(x, y);
 				lastTouchOverIndex.set(touch.id, pickedIndex);
 			}
-			var lastDownIndex = peoteView.getElementAt( x, y, this, clickPickProgram ) ;
+			var lastDownIndex = peoteView.getElementAt(x, y, this, clickPickProgram ) ;
 			if (lastDownIndex >= 0) {
-				clickPickBuffer.getElement(lastDownIndex).uiElement.pointerDown( x, y);
+				clickPickBuffer.getElement(lastDownIndex).uiElement.pointerDown(x, y);
 				lockTouchDown = lockTouchDown | (1 << (touch.id+1));
 				lastTouchDownIndex.set(touch.id, lastDownIndex);
 			}
 		}
 	}
 	
-	public function onMouseUp (x:Float, y:Float, button:MouseButton):Void
-	{
+	public inline function onMouseUp (x:Float, y:Float, button:MouseButton):Void {
 		if (mouseEnabled && lastMouseDownIndex >= 0 && peoteView != null) {
 			// Up
 			var pickedIndex = peoteView.getElementAt(x, y, this, clickPickProgram);
@@ -241,8 +237,7 @@ class UIDisplay extends Display
 		//trace(pickedElements);
 	}
 	
-	public function onTouchEnd (touch:Touch):Void {
-		//trace("onTouchEnd",touch.id);
+	public inline function onTouchEnd (touch:Touch):Void {
 		if (touchEnabled && peoteView != null && touch.id < maxTouchpoints) {
 			var x:Int = Math.round(touch.x * peoteView.width);
 			var y:Int = Math.round(touch.y * peoteView.height);
@@ -274,18 +269,18 @@ class UIDisplay extends Display
 		}			
 	}
 
-	public function onMouseWheel (deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode):Void {
+	public inline function onMouseWheel (deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode):Void {
 		if (mouseEnabled && lastMouseOverIndex >= 0 && peoteView != null) {
 			movePickBuffer.getElement(lastMouseOverIndex).uiElement.mouseWheel( deltaX, deltaY, deltaMode );
 		}
 	}
 	
-	public function onTouchCancel(touch:Touch):Void {
+	public inline function onTouchCancel(touch:Touch):Void {
 		// TODO
 		trace("onTouchCancel", touch.id, Math.round(touch.x * peoteView.width), Math.round(touch.y * peoteView.height) );
 	}
 
-	public function onWindowLeave ():Void {
+	public inline function onWindowLeave ():Void {
 		// mouse
 		if (lastMouseOverIndex >= 0) {
 			movePickBuffer.getElement(lastMouseOverIndex).uiElement.pointerOut( -1, -1) ;
@@ -297,20 +292,25 @@ class UIDisplay extends Display
 			lockMouseDown = false;
 		}
 		// touch
-		for (i in 0...lastTouchOverIndex.length)
-			if (lastTouchOverIndex.get(i) >= 0) {
-				movePickBuffer.getElement(lastTouchOverIndex.get(i)).uiElement.pointerOut( -1, -1) ;
+		var lastIndex:Int;
+		for (i in 0...lastTouchOverIndex.length) {
+			lastIndex = lastTouchOverIndex.get(i) ;
+			if (lastIndex >= 0) {
+				movePickBuffer.getElement(lastIndex).uiElement.pointerOut( -1, -1) ;
 				lastTouchOverIndex.set(i, -1);
 			}
-		for (i in 0...lastTouchDownIndex.length)
-			if (lastTouchDownIndex.get(i) >= 0) {
-				clickPickBuffer.getElement(lastTouchDownIndex.get(i)).uiElement.pointerOut( -1, -1) ;
+		}
+		for (i in 0...lastTouchDownIndex.length) {
+			lastIndex = lastTouchDownIndex.get(i);
+			if (lastIndex >= 0) {
+				clickPickBuffer.getElement(lastIndex).uiElement.pointerOut( -1, -1) ;
 				lastTouchDownIndex.set(i, -1);
 			}
+		}
 		lockTouchDown = 0;
 	}
 	
-	public function onKeyDown (keyCode:KeyCode, modifier:KeyModifier):Void
+	public inline function onKeyDown (keyCode:KeyCode, modifier:KeyModifier):Void
 	{
 		switch (keyCode) {
 			//case KeyCode.NUMPAD_PLUS:
@@ -318,14 +318,14 @@ class UIDisplay extends Display
 		}
 	}
 	
-	public function onKeyUp (keyCode:KeyCode, modifier:KeyModifier):Void
+	public inline function onKeyUp (keyCode:KeyCode, modifier:KeyModifier):Void
 	{
 		switch (keyCode) {
 			//case KeyCode.NUMPAD_PLUS:
 			default:
 		}
 	}
-	public function onTextInput (text:String):Void {
+	public inline function onTextInput (text:String):Void {
 		
 	}
 	

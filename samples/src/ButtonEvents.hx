@@ -40,7 +40,7 @@ class ButtonEvents
 			myStyle.borderRadius = 40.0;
 			
 			trace("NEW BUTTON -----");
-			var b1:Button = new Button(20, 10, 200, 100, mySkin, myStyle);
+			var b1:Button = new Button(20, 0, 200, 100, mySkin, myStyle);
 			ui.add(b1);
 			
 			b1.onPointerOver = onOver.bind(Color.GREY2);
@@ -81,14 +81,14 @@ class ButtonEvents
 			myStyle3.borderRadius = 20.0;
 
 			trace("NEW SLIDER -----");
-			var background = new Button(350, 10, 300, 30, mySkin, myStyle2);
+			var background = new Button(10, 140, 350, 60, mySkin, myStyle2);
 			ui.add(background);
 			
-			var dragger = new Button(350, 10, 50, 30, mySkin, myStyle3);
+			var dragger = new Button(10, 140, 100, 60, mySkin, myStyle3);
 			dragger.onPointerOver = onOver.bind(Color.BLUE);
 			dragger.onPointerOut = onOut.bind(Color.GREY1);
 			
-			dragger.setDragArea(350, 10, 300, 30); // x, y, width, height
+			dragger.setDragArea(10, 140, 350, 60); // x, y, width, height
 			dragger.onPointerDown = function(b:Button, x:Int, y:Int) {
 				trace(" -----> onPointerDown", x, y);
 				b.startDragging(x, y);
@@ -110,7 +110,6 @@ class ButtonEvents
 			// TODO: make button to switch between
 			//ui.mouseEnabled = false;
 			//ui.touchEnabled = false;
-			
 			#if android
 			peoteView.zoom = 3;
 			ui.mouseEnabled = false;
@@ -121,69 +120,69 @@ class ButtonEvents
 	}
 	
 	// --------------------------------------------------
-	public function onOver(color:Color, button:Button, x:Int, y:Int) {
+	public inline function onOver(color:Color, button:Button, x:Int, y:Int) {
 		button.style.color = color;
 		button.style.borderColor = Color.GREY7;
 		button.update();
 		trace(" -----> onPointerOver", x, y);
 	}
 	
-	public function onOut(color:Color, button:Button, x:Int, y:Int) {
+	public inline function onOut(color:Color, button:Button, x:Int, y:Int) {
 		button.style.color = color;
 		button.style.borderColor = Color.GREY5;
 		button.update();
 		trace(" -----> onPointerOut", x, y);
 	}
 	
-	public function onMove(button:Button, x:Int, y:Int) {
+	public inline function onMove(button:Button, x:Int, y:Int) {
 		trace(" -----> onPointerMove", x, y);
 	}
 	
-	public function onUp(borderColor:Color, button:Button, x:Int, y:Int) {
+	public inline function onUp(borderColor:Color, button:Button, x:Int, y:Int) {
 		button.style.borderColor = borderColor;
 		button.update();
 		trace(" -----> onPointerUp", x, y);
 	}
 	
-	public function onDown(borderColor:Color, button:Button, x:Int, y:Int) {
+	public inline function onDown(borderColor:Color, button:Button, x:Int, y:Int) {
 		button.style.borderColor = borderColor;
 		//button.x += 30;
 		button.update();
 		trace(" -----> onPointerDown", x, y);
 	}
 	
-	public function onClick(button:Button, x:Int, y:Int) {
+	public inline function onClick(button:Button, x:Int, y:Int) {
 		//button.y += 30; button.update();
 		trace(" -----> onPointerClick", x, y);
 	}
 	// --------------------------------------------------
 
 	// delegate events to UIDisplay
-	public function onMouseMove (x:Float, y:Float) ui.onMouseMove(x, y);
-	public function onMouseDown (x:Float, y:Float, button:MouseButton) ui.onMouseDown(x, y, button);
-	public function onMouseUp (x:Float, y:Float, button:MouseButton) ui.onMouseUp(x, y, button);
-	public function onMouseWheel (deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode) ui.onMouseWheel(deltaX, deltaY, deltaMode);
+	public inline function onMouseMove (x:Float, y:Float) ui.onMouseMove(x, y);
+	public inline function onMouseDown (x:Float, y:Float, button:MouseButton) ui.onMouseDown(x, y, button);
+	public inline function onMouseUp (x:Float, y:Float, button:MouseButton) ui.onMouseUp(x, y, button);
+	public inline function onMouseWheel (deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode) ui.onMouseWheel(deltaX, deltaY, deltaMode);
 	
-	public function onTouchStart (touch:Touch):Void ui.onTouchStart(touch);
-	public function onTouchMove (touch:Touch):Void ui.onTouchMove(touch);
-	public function onTouchEnd (touch:Touch):Void ui.onTouchEnd(touch);
-	public function onTouchCancel(touch:Touch):Void ui.onTouchCancel(touch);
+	public inline function onTouchMove (touch:Touch):Void ui.onTouchMove(touch);
+	public inline function onTouchStart (touch:Touch):Void ui.onTouchStart(touch);
+	public inline function onTouchEnd (touch:Touch):Void ui.onTouchEnd(touch);
+	public inline function onTouchCancel(touch:Touch):Void ui.onTouchCancel(touch);
 	
-	public function onKeyDown (keyCode:KeyCode, modifier:KeyModifier) ui.onKeyDown(keyCode, modifier);
-	public function onKeyUp (keyCode:KeyCode, modifier:KeyModifier):Void  ui.onKeyUp(keyCode, modifier);
-	public function onTextInput (text:String):Void ui.onTextInput(text);
-	public function onTextEdit(text:String, start:Int, length:Int):Void {}
+	public inline function onKeyDown (keyCode:KeyCode, modifier:KeyModifier) ui.onKeyDown(keyCode, modifier);
+	public inline function onKeyUp (keyCode:KeyCode, modifier:KeyModifier):Void  ui.onKeyUp(keyCode, modifier);
+	public inline function onTextInput (text:String):Void ui.onTextInput(text);
+	public inline function onTextEdit(text:String, start:Int, length:Int):Void {}
 
-	public function onWindowLeave () ui.onWindowLeave();
-	public function onWindowActivate():Void {};
+	public inline function onWindowLeave () ui.onWindowLeave();
+	public inline function onWindowActivate():Void {};
 	
 	
 	
 	
-	public function render() peoteView.render();
-	public function resize(width:Int, height:Int) peoteView.resize(width, height);
+	public inline function render() peoteView.render();
+	public inline function resize(width:Int, height:Int) peoteView.resize(width, height);
 	
-	public function onPreloadComplete ():Void { trace("preload complete"); }
-	public function update(deltaTime:Int):Void {}
+	public inline function onPreloadComplete ():Void { trace("preload complete"); }
+	public inline function update(deltaTime:Int):Void {}
 }
 #end

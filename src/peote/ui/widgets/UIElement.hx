@@ -211,10 +211,14 @@ class UIElement
 		dragMaxY = dragAreaY + dragAreaHeight;
 	}
 	
-	private function dragTo(dragToX:Int, dragToY:Int)
+	@:access(peote.view.Display)
+	private inline function dragTo(dragToX:Int, dragToY:Int):Void
 	{
-		if (dragToX >= dragMinX + dragOriginX) {
-			if (dragToX < dragMaxX - width + dragOriginX) x = dragToX - dragOriginX;
+		dragToX = Std.int(dragToX / uiDisplay.peoteView.zoom / uiDisplay.zoom);
+		dragToY = Std.int(dragToY / uiDisplay.peoteView.zoom / uiDisplay.zoom);
+		
+		if (dragToX >= (dragMinX + dragOriginX)) {
+			if (dragToX < (dragMaxX - width + dragOriginX)) x = dragToX - dragOriginX;
 			else x = dragMaxX - width;
 		} else x = dragMinX;
 		
@@ -223,12 +227,13 @@ class UIElement
 			else y = dragMaxY - height;
 		} else y = dragMinY;
 	}
-	
+
+	@:access(peote.view.Display)
 	public function startDragging(dragOriginX:Int, dragOriginY:Int)
 	{
 		if (uiDisplay != null) {
-			this.dragOriginX = dragOriginX - x;
-			this.dragOriginY = dragOriginY - y;
+			this.dragOriginX = Std.int(dragOriginX / uiDisplay.peoteView.zoom / uiDisplay.zoom) - x;
+			this.dragOriginY = Std.int(dragOriginY / uiDisplay.peoteView.zoom / uiDisplay.zoom) - y;
 			uiDisplay.startDragging(this);
 		}
 	}
@@ -240,8 +245,8 @@ class UIElement
 	
 	// ----------------- Event-Bindings ----------------------
 
-	private function noOperation(x:Int, y:Int):Void {}
-	private function noWheelOperation(dx:Float, dy:Float, deltaMode:MouseWheelMode):Void {}
+	private inline function noOperation(x:Int, y:Int):Void {}
+	private inline function noWheelOperation(dx:Float, dy:Float, deltaMode:MouseWheelMode):Void {}
 	
 	private function rebindPointerOver(newBinding:UIEventParams, isNull:Bool):Void {
 		if ( !isNull ) {
