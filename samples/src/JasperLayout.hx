@@ -31,7 +31,7 @@ class JasperLayout
 	var red:Button; var green:Button; var blue:Button;	var yellow:Button; var grey:Button; var cyan:Button;
 			
 	var layout:Layout;
-	var layoutNumber:Int = 0;
+	var layoutNumber:Int = 4;
 	
 	public function new(window:Window)
 	{

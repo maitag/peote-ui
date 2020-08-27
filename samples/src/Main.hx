@@ -1,5 +1,6 @@
 package;
 
+import haxe.ds.Vector;
 import lime.app.Application;
 import lime.graphics.RenderContext;
 import lime.ui.MouseButton;
@@ -40,13 +41,12 @@ class Main extends Application
 	// ------------------------------------------------------------	
 	// ----------- Render Loop ------------------------------------
 	// ------------------------------------------------------------	
-	
 	public override function render(context:RenderContext):Void
 	{	
-		if (init) sample.render();
 		#if (! html5)
-		if (isMouseMove) onMouseMoveFrameSynced();
+		onMouseMoveFrameSynced();
 		#end
+		if (init) sample.render();
 	}
 	
 	public override function update(deltaTime:Int):Void
@@ -81,27 +81,29 @@ class Main extends Application
 		//trace("onMouseMoveRelative", x, y ); 	
 	}
 	
-	#if (! html5)
-	var lastMoveX:Float = 0.0;
-	var lastMoveY:Float = 0.0;
-	#end
 	public override function onMouseMove (x:Float, y:Float):Void
 	{
-		#if (html5)
-		if (init) sample.onMouseMove(x, y);
-		#else
-		lastMoveX = x;
-		lastMoveY = y;
-		isMouseMove = true;
-		#end
+		if (init) {
+			#if (html5)
+			sample.onMouseMove(x, y);
+			#else
+			lastMouseMoveX = x;
+			lastMouseMoveY = y;
+			isMouseMove = true;
+			#end
+		}
 	}
 	
 	#if (! html5)
 	var isMouseMove = false;
-	function onMouseMoveFrameSynced():Void
+	var lastMouseMoveX:Float = 0.0;
+	var lastMouseMoveY:Float = 0.0;
+	inline function onMouseMoveFrameSynced():Void
 	{
-		isMouseMove = false;
-		if (init) sample.onMouseMove(lastMoveX, lastMoveY);
+		if (isMouseMove) {
+			isMouseMove = false;
+			sample.onMouseMove(lastMouseMoveX, lastMouseMoveY);
+		}
 	}
 	#end
 	
@@ -131,7 +133,7 @@ class Main extends Application
 	{
 		if (init) sample.onTouchMove(touch);
 	}
-	
+		
 	public override function onTouchEnd (touch:Touch):Void
 	{
 		if (init) sample.onTouchEnd(touch);

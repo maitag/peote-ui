@@ -100,7 +100,7 @@ class ButtonEvents
 			dragger.onPointerUp = function(b:Button, e:PointerEvent) {
 				trace(" -----> onPointerUp", e);
 				b.stopDragging(e);
-				b.style.color = Color.GREY1;
+				b.style.color = Color.BLUE;
 				b.update();
 			}
 			dragger.onMouseWheel = function(b:Button, e:WheelEvent) {
@@ -138,7 +138,7 @@ class ButtonEvents
 			// TODO: make button to switch between
 			//ui.mouseEnabled = false;
 			//ui.touchEnabled = false;
-			//peoteView.zoom = 2;
+			peoteView.zoom = 2;
 
 			#if android
 			ui.mouseEnabled = false;
