@@ -355,9 +355,9 @@ abstract VBox(Box) to Box
 				var hSizeVars = child.addHConstraints(constraints, {sLimit:null, sSpan:null}, strength);				
 				if (hSizeVars.sSpan != null) constraints.push( (hSizeVars.sSpan == (this.layout.width - child.hSize.getLimitMax()) / child.hSize.getSumWeight() ) | strengthLow );
 				
-				// TODO: new jasper variable for xScroll
+				// TODO: new jasper variable for xScroll 50
 				constraints.push( (child.left == this.layout.x - 50) | strength );
-				constraints.push( (child.right == this.layout.x + this.layout.width ) | strengthLow );
+				constraints.push( (child.right == this.layout.x + this.layout.width - 50) | strengthLow );
 				
 				// --------------------------------- vertical ---------------------------------------
 				this.fixLimit(child.vSize, innerLimit.height);

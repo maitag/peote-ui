@@ -5,11 +5,13 @@
 	
 	<android target-sdk-version="28" />
 	<!-- <meta build-number="714" /> --> <!-- let set the buildnumber manual (android) -->
+	<!-- check this for GG-Playstore: <setenv name="ANDROID_GRADLE_TASK" value=":app:bundleRelease" /> -->
 	
 	<app main="Main" path="bin" file="Main" />
-	<haxedef name="ButtonEvents" />
+	<haxedef name="JasperLayout" />
 	<!--
 		ButtonEvents,
+		JasperConstraints,
 		JasperLayout,
 		...
 	-->
@@ -17,7 +19,7 @@
 	
 	<!--<window fps="60" width="800" height="600" vsync="true" resizable="true" hardware="true" allow-shaders="true" require-shaders="true" depth-buffer="true" stencil-buffer="false" /> -->
 	<window width="800" height="600" fps="61" />
-	<window if="html5||android" width="0" height="0" />
+	<window width="0" height="0" fps="61" if="html5||android" />
 	
 	<!--<set name="angle" if="windows" />-->
 	
@@ -31,6 +33,8 @@
 	<haxelib name="peote-view" />
 	<haxelib name="peote-text" />
 	<haxelib name="peote-ui" />
+	
+	<!-- <haxedef name="peoteui_multitouch" /> -->
 	
 	<!-- force compiling for a special opengl-es version (only set one of them) -->
 	<!-- this optimizes the build and forces no-runtimecheck for the gl-features -->
@@ -62,6 +66,7 @@
 	<!-- <haxedef name="HXCPP_MSVC_VER=120" if="cpp" /> -->
 	<!-- <haxedef name="HXCPP_MSVC_VER=140" if="cpp" /> -->
 	
+	<!-- <setenv name="SHOW_CONSOLE" /> --> <!-- on windows it shows console if start by clicking on .exe -->
 	
 	<!-- for html5 and loading inside onPreloadComplete-event the assets need to be embed=true --> 
 	<assets path="assets" exclude="lime.svg" embed="false" />

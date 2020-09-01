@@ -31,7 +31,8 @@ class JasperLayout
 	var red:Button; var green:Button; var blue:Button;	var yellow:Button; var grey:Button; var cyan:Button;
 			
 	var layout:Layout;
-	var layoutNumber:Int = 4;
+	var layoutNumber:Int = 2;
+	var maxLayout:Int = 3;
 	
 	public function new(window:Window)
 	{
@@ -59,139 +60,16 @@ class JasperLayout
 		red.x = green.x = blue.x = yellow.x = grey.x = cyan.x = -1000;
 		// TODO: should work same
 		ui.updateAll();
-
+		
 		switch (layoutNumber) {
-			case 0: testManualConstraints();
-			case 1: testManualRowConstraints();
-			case 2: testLayoutNestedBoxes();
-			case 3: testLayoutRows();
-			case 4: testLayoutScroll();
+			case 0: testLayoutNestedBoxes();
+			case 1: testLayoutRows();
+			case 2: testLayoutScroll();
 			default:
 		}
 	}
 	
 	// ----------------------------------------------------------------
-	
-	public function testManualConstraints()
-	{
-		ui.layout.reset();
-		grey.layout.reset();
-
-		layout = new Layout ([
-			// constraints
-			(peoteView.layout.x == 0) | Strength.REQUIRED,
-			(peoteView.layout.y == 0) | Strength.REQUIRED,
-
-			ui.layout.centerX == peoteView.layout.centerX,
-			ui.layout.top == 10,
-			(ui.layout.width == peoteView.layout.width - 20) | Strength.WEAK,
-			(ui.layout.bottom == peoteView.layout.bottom - 10) | Strength.WEAK,
-			(ui.layout.width <= 1000) | Strength.WEAK,
-
-			(grey.layout.centerX == ui.layout.centerX) | Strength.WEAK,
-			(grey.layout.y == ui.layout.y + 0.1*ui.layout.height) | Strength.WEAK,
-			//(grey.layout.centerY == ui.layout.centerY) | Strength.MEDIUM,
-			
-			(grey.layout.width  == ui.layout.width  / 1.1) | Strength.WEAK,
-			(grey.layout.height == ui.layout.height / 2.0  - 20) | Strength.WEAK,
-			
-			(grey.layout.width <= 600) | Strength.MEDIUM,
-			(grey.layout.width >= 200) | Strength.MEDIUM,
-			(grey.layout.height <= 400) | Strength.MEDIUM,
-			(grey.layout.height >= 200) | Strength.MEDIUM
-		]);
-		
-		// adding constraints afterwards:
-		var limitHeight:Constraint = (ui.layout.height <= 800) | Strength.WEAK;
-		layout.addConstraint(limitHeight);
-		
-		// that constraints can also be removed again:
-		// layout.removeConstraint(limitHeight);
-		
-		// UI-Displays and UI-Elements to update
-		layout.toUpdate([ui, grey]);
-		
-		// editable Vars (used in suggest() and suggestValues())	
-		layout.toSuggest([peoteView.layout.width, peoteView.layout.height]);
-		
-		// set the constraints editable values to actual view size and updating (same as in onResize)
-		layout.suggestValues([peoteView.width, peoteView.height]).update();
-	}
-
-	// ----------------------------------------------------------------
-		
-	public function testManualRowConstraints()
-	{
-		ui.layout.reset();
-		red.layout.reset();
-		green.layout.reset();
-		blue.layout.reset();
-		
-		layout = new Layout ([
-			// constraints for the Displays
-			(peoteView.layout.x == 0) | Strength.REQUIRED,
-			(peoteView.layout.y == 0) | Strength.REQUIRED,
-
-			(ui.layout.centerX == peoteView.layout.centerX) | new Strength(200),
-			//(ui.layout.left == peoteView.layout.left) | new Strength(300),
-			//(ui.layout.right == peoteView.layout.right) | new Strength(200),
-			(ui.layout.width == peoteView.layout.width) | new Strength(100),
-			
-			(ui.layout.top == 0) | Strength.MEDIUM,
-			(ui.layout.bottom == peoteView.layout.bottom) | Strength.MEDIUM,
-			(ui.layout.width <= 1000) | Strength.MEDIUM,
-		
-			// constraints for ui-elements
-			
-			// size restriction
-			(red.layout.width <= 100) | new Strength(500),
-			(red.layout.width >= 50) | new Strength(500),
-			//(red.layout.width == 100) | new Strength(500),
-			
-			(green.layout.width <= 200) | new Strength(500),
-			(green.layout.width >= 100) | new Strength(500),
-			//(green.layout.width == 200) | new Strength(500),
-			
-			(blue.layout.width <= 300) | new Strength(500),
-			(blue.layout.width >= 150) | new Strength(500),
-			//(blue.layout.width == 300) | new Strength(500),
-			
-			// manual hbox constraints
-			
-			//(red.layout.width   == (ui.layout.width) * ((100+ 50)/2) / ((100+50)/2 + (200+100)/2 + (300+150)/2)) | Strength.WEAK,
-			//(green.layout.width == (ui.layout.width) * ((200+100)/2) / ((100+50)/2 + (200+100)/2 + (300+150)/2)) | Strength.WEAK,
-			//(blue.layout.width  == (ui.layout.width) * ((300+150)/2) / ((100+50)/2 + (200+100)/2 + (300+150)/2)) | Strength.WEAK,
-			
-			(red.layout.width == green.layout.width) | Strength.WEAK,
-			//(red.layout.width == blue.layout.width) | Strength.WEAK,
-			(green.layout.width == blue.layout.width) | Strength.WEAK,
-			
-			(red.layout.left == ui.layout.left) | new Strength(400),
-			(green.layout.left == red.layout.right ) | new Strength(400),
-			(blue.layout.left == green.layout.right ) | new Strength(400),
-			(blue.layout.right == ui.layout.right) | new Strength(300),
-			//(blue.layout.right == ui.layout.right) | Strength.WEAK,
-			
-			(red.layout.top == ui.layout.top) | Strength.MEDIUM,
-			(red.layout.bottom == ui.layout.bottom) | Strength.MEDIUM,
-			(green.layout.top == ui.layout.top) | Strength.MEDIUM,
-			(green.layout.bottom == ui.layout.bottom) | Strength.MEDIUM,
-			(blue.layout.top == ui.layout.top) | Strength.MEDIUM,
-			(blue.layout.bottom == ui.layout.bottom) | Strength.MEDIUM,			
-		]);
-				
-		layout.toUpdate([ui, red, green, blue]); // UI-Displays and UI-Elements to update
-		layout.toSuggest([peoteView.layout.width, peoteView.layout.height]); // editable Vars (used in suggest() and suggestValues())	
-		layout.suggestValues([peoteView.width, peoteView.height]).update(); // set the constraints editable values to actual view size and updating (same as in onResize)
-	}
-
-
-	
-	
-	// ----------------------------------------------------------------
-	
-	
-	
 	public function testLayoutNestedBoxes()
 	{
 		layout = new Layout
@@ -213,13 +91,11 @@ class JasperLayout
 				
 			]
 		);
-		layout.suggestValues([peoteView.width, peoteView.height]).update();
+		layout.setRootSize(peoteView.width, peoteView.height).update();
 	}
 
 	
 	// ----------------------------------------------------------------
-
-		
 	public function testLayoutRows()
 	{
 		layout = new Layout
@@ -244,10 +120,11 @@ class JasperLayout
 				
 			]
 		);
-		layout.suggestValues([peoteView.width, peoteView.height]).update();
+		layout.setRootSize(peoteView.width, peoteView.height).update();
 	}
 
 	
+	// ----------------------------------------------------------------
 	public function testLayoutScroll()
 	{
 		layout = new Layout
@@ -260,7 +137,7 @@ class JasperLayout
 					[
 						new Box(red,   200, 200 ,LSpace.is(10,50)),
 						new Box(green, Width.is(200,250),  LSpace.is(10,20), RSpace.is(10,20), TSpace.is(50) ),
-						new Scroll(blue, Width.is(20, 250), RSpace.is(10, 50), 
+						new Scroll(blue, Width.is(50, 250), RSpace.is(10, 50), 
 						[	
 							new Box(yellow, 100, Height.is(50,100) ),
 							new Box(cyan, Width.is(100,150), 100, LSpace.is(0,50), TSpace.is(0,15)),
@@ -272,9 +149,13 @@ class JasperLayout
 				
 			]
 		);
-		// TODO: layout.addSuggest([blue.layout.width]);
-		layout.suggestValues([peoteView.width, peoteView.height]).update();
-		// TODO: layout.suggestValues([peoteView.width, peoteView.height, 100]).update();
+		// layout.suggestValues([peoteView.width, peoteView.height]).update();
+		//layout.addVariable(blue.layout.width);
+		//layout.removeVariable(blue.layout.width);
+		
+		//layout.setVariable(blue.layout.width, 100);
+		layout.setRootSize(peoteView.width, peoteView.height);
+		layout.update();
 	}
 
 	
@@ -289,8 +170,7 @@ class JasperLayout
 		peoteView.resize(width, height);
 		
 		// calculates new Layout and updates all Elements 
-		layout.suggestValues([width, height]).update();
-		// or layout.suggest(peoteView.layout.width, width).suggest(peoteView.layout.height, height).update();
+		layout.setRootSize(width, height).update();
 		// trace(ui.width);
 	}
 	
@@ -301,14 +181,14 @@ class JasperLayout
 	
 	public function onMouseMove (x:Float, y:Float) {
 		ui.onMouseMove(x, y);
-		if (sizeEmulation) layout.suggestValues([Std.int(x),Std.int(y)]).update();
+		if (sizeEmulation) layout.setRootSize(Std.int(x),Std.int(y)).update();
 	}
 	public function onMouseDown (x:Float, y:Float, button:MouseButton) ui.onMouseDown(x, y, button);
 	public function onMouseUp (x:Float, y:Float, button:MouseButton) {
 		ui.onMouseUp(x, y, button);
 		sizeEmulation = !sizeEmulation; 
-		if (sizeEmulation) layout.suggestValues([Std.int(x), Std.int(y)]).update();
-		else layout.suggestValues([peoteView.width, peoteView.height]).update();
+		if (sizeEmulation) layout.setRootSize(Std.int(x), Std.int(y)).update();
+		else layout.setRootSize(peoteView.width, peoteView.height).update();
 	}
 	public function onMouseWheel (deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode):Void {}
 	public function onTouchStart (touch:Touch):Void {}
@@ -320,11 +200,11 @@ class JasperLayout
 	{
 		switch (keyCode) {
 			case KeyCode.RIGHT:
-				layoutNumber = (layoutNumber + 1) % 5;
+				layoutNumber = (layoutNumber + 1) % maxLayout;
 				switchLayout();
 			case KeyCode.LEFT:
 				layoutNumber--;
-				if (layoutNumber < 0) layoutNumber = 4;
+				if (layoutNumber < 0) layoutNumber = maxLayout-1;
 				switchLayout();
 			default:
 		}

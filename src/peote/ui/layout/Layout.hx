@@ -11,7 +11,6 @@ import jasper.Strength;
 class Layout
 {
 	var rootLayout:LayoutElement;
-	var editableLayoutVars:Array<Variable>;
 	var layoutsToUpdate:Array<LayoutElement>;
 	var constraints:Array<Constraint>;
 	
@@ -31,22 +30,6 @@ class Layout
 		}
 		
 		if (constraints != null) addConstraints(constraints);
-	}
-	
-	// TODO: addSuggest + remove Suggest
-	public function toSuggest(editableLayoutVars:Array<Variable>=null) // TODO
-	{
-		this.editableLayoutVars = editableLayoutVars;
-		if (editableLayoutVars != null) {
-			for (editableLayoutVar in editableLayoutVars) {
-				solver.addEditVariable(editableLayoutVar, Strength.create( 0, 900, 0));
-			}
-		}
-	}
-	
-	public function toUpdate(layoutsToUpdate:Array<LayoutElement>=null) // TODO
-	{
-		this.layoutsToUpdate = layoutsToUpdate;		
 	}
 	
 	public inline function addConstraint(constraint:Constraint):Layout
@@ -76,30 +59,43 @@ class Layout
 		}
 		return this;
 	}
+
+	// ----------------- variables
 	
-	public inline function suggestValues(values:Array<Int>):Layout
+	public function addVariable(editableLayoutVar:Variable)
 	{
-		// TODO: not with rootLayout
-		var start:Int = 0;
-		if (rootLayout != null) {
-			solver.suggestValue(rootLayout.width, values[0]);
-			solver.suggestValue(rootLayout.height, values[1]);
-			start = 2;
+		if (!solver.hasEditVariable(editableLayoutVar)) {
+			solver.addEditVariable(editableLayoutVar, Strength.create( 0, 900, 0));
 		}
-		if (editableLayoutVars != null) {
-			for (i in start...values.length) {
-				solver.suggestValue(editableLayoutVars[i], values[i]);
-			}
-		}
-		return this;
 	}
 	
-	public inline function suggest(layoutVar: Variable, value:Int):Layout
+	public function removeVariable(editableLayoutVar:Variable)
+	{
+		if (solver.hasEditVariable(editableLayoutVar)) {
+			solver.removeEditVariable(editableLayoutVar);
+		}
+	}
+	
+	public inline function setVariable(layoutVar: Variable, value:Int):Layout
 	{
 		solver.suggestValue(layoutVar, value);
 		return this;
 	}
 	
+	public inline function setRootSize(width:Int, height:Int):Layout
+	{
+		solver.suggestValue(rootLayout.width, width);
+		solver.suggestValue(rootLayout.height, height);
+		return this;
+	}
+	
+	
+	// ----------------- update layoutelement positions
+	public function toUpdate(layoutsToUpdate:Array<LayoutElement>=null) // TODO
+	{
+		this.layoutsToUpdate = layoutsToUpdate;		
+	}
+		
 	public inline function update()
 	{
         solver.updateVariables();
