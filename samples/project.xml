@@ -29,9 +29,11 @@
 	
 	<haxelib name="json2object" />
 	<haxelib name="jasper" />
+	<!-- <haxelib name="peote-layout" /> -->
 	
 	<haxelib name="peote-view" />
 	<haxelib name="peote-text" />
+	<haxelib name="peote-layout" />
 	<haxelib name="peote-ui" />
 	
 	<!-- <haxedef name="peoteui_multitouch" /> -->

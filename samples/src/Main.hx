@@ -1,6 +1,5 @@
 package;
 
-import haxe.ds.Vector;
 import lime.app.Application;
 import lime.graphics.RenderContext;
 import lime.ui.MouseButton;

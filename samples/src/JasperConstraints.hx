@@ -70,7 +70,7 @@ class JasperConstraints
 	
 	public function testConstraints()
 	{
-		ui.layout.reset();
+/*		ui.layout.reset();
 		grey.layout.reset();
 
 		layout = new Layout ([
@@ -112,13 +112,13 @@ class JasperConstraints
 		layout.addVariable(peoteView.layout.height);
 		
 		resizeLayout(peoteView.width, peoteView.height);
-	}
+*/	}
 
 	// ----------------------------------------------------------------
 		
 	public function testRowConstraints()
 	{
-		ui.layout.reset();
+/*		ui.layout.reset();
 		red.layout.reset();
 		green.layout.reset();
 		blue.layout.reset();
@@ -184,7 +184,7 @@ class JasperConstraints
 		layout.addVariable(peoteView.layout.height);
 
 		resizeLayout(peoteView.width, peoteView.height);
-	}
+*/	}
 
 
 	

@@ -8,6 +8,7 @@ import lime.ui.MouseWheelMode;
 import lime.ui.Touch;
 import peote.ui.PointerEvent;
 import peote.ui.PointerEvent.PointerType;
+import peote.view.PeoteView;
 
 import peote.view.PeoteGL;
 import peote.view.Display;
@@ -20,8 +21,11 @@ import peote.ui.widgets.UIElement.Pickable;
 
 
 @:allow(peote.ui.widgets.UIElement)
-class UIDisplay extends Display 
-{
+class UIDisplay extends Display
+#if peote_layout
+	implements peote.layout.LayoutElement
+#end
+{	
 	var uiElements:Array<UIElement>;
 	
 	var movePickBuffer:Buffer<Pickable>;
@@ -362,6 +366,59 @@ class UIDisplay extends Display
 	public inline function onTextInput (text:String):Void {
 		
 	}
+
+	
+	// ---------------------------------------- show, hide and interface to peote-layout
+	var lastPeoteView:PeoteView = null;
+	
+	public function show():Void {
+		if (peoteView == null && lastPeoteView != null) {
+			lastPeoteView.addDisplay(this);
+		} 
+	}
+	
+	public function hide():Void{
+		if (peoteView != null) {
+			lastPeoteView = peoteView;
+			peoteView.removeDisplay(this);
+		}		
+	}
+	
+	// ------------------------------------------------------------------------------------
+	
+	#if peote_layout // for binding to peote-layout
+	
+	public function showByLayout():Void show();
+	public function hideByLayout():Void hide();
+	
+	var layoutWasHidden = false;
+	public function updateByLayout(layoutContainer:peote.layout.LayoutContainer) 
+	{
+		if (!layoutWasHidden && layoutContainer.isHidden) { // if it is full outside of the Mask (so invisible)
+			hideByLayout();
+			layoutWasHidden = true;
+		}
+		else {
+			x = Math.round(layoutContainer.x);
+			y = Math.round(layoutContainer.y);
+			width = Math.round(layoutContainer.width);
+			height = Math.round(layoutContainer.height);
+			
+			if (layoutContainer.isMasked) { // if some of the edges is cut by mask for scroll-area
+				x += Math.round(layoutContainer.maskX);
+				y += Math.round(layoutContainer.maskY);
+				width = Math.round(layoutContainer.maskWidth);
+				height = Math.round(layoutContainer.maskHeight);
+			}
+			
+			if (layoutWasHidden) {
+				showByLayout();
+				layoutWasHidden = false;
+			}
+
+		}
+	}	
+	#end
 	
 }
 

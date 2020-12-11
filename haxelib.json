@@ -4,15 +4,15 @@
 	"license": "MIT",
 	"tags": ["peote", "ui", "userinterface", "layout", "widgets"],
 	"description": "Userinterface for peote-view",
-	"version": "0.8.0",
+	"version": "0.9.0",
 	"classPath": "src/",
-	"releasenote": "refactoring",
+	"releasenote": "outsorcing layout into peote-layout lib",
 	"contributors": ["Sylvio Sell - maitag"],
 	"dependencies": {
 		"lime": "",
 		"json2object": "",
-		"jasper": "",
 		"peote-view": "",
-		"peote-text": ""
+		"peote-text": "",
+		"peote-layout": ""
 	}
 }

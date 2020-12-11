@@ -1,6 +1,7 @@
 package peote.ui.widgets;
 
 import peote.ui.PointerEvent;
+import peote.ui.UIDisplay;
 import peote.ui.WheelEvent;
 
 import peote.ui.skin.Skin;
@@ -58,6 +59,9 @@ class Pickable implements peote.view.Element
 
 @:allow(peote.ui)
 class UIElement
+#if peote_layout
+	implements peote.layout.LayoutElement
+#end
 {
 	var uiDisplay:UIDisplay = null;
 	
@@ -84,36 +88,6 @@ class UIElement
 	public var height:Int;
 	public var z:Int;
 	
-	#if jasper // cassowary constraints (jasper lib)
-	public var layout(default, null):peote.ui.layout.LayoutElement;
-	public function updateLayout() {
-		//trace("update element");
-		if (uiDisplay != null)
-			if (x != Math.round(layout.x.m_value) - uiDisplay.x ||
-				y != Math.round(layout.y.m_value) - uiDisplay.y || 
-				width != Math.round(layout.width.m_value) ||
-				height != Math.round(layout.height.m_value))
-			{
-				x = Math.round(layout.x.m_value) - uiDisplay.x;
-				y = Math.round(layout.y.m_value) - uiDisplay.y;
-				width = Math.round(layout.width.m_value);
-				height = Math.round(layout.height.m_value);
-				update();
-			}
-/*			if (x != Std.int(layout.x.m_value) - uiDisplay.x ||
-				y != Std.int(layout.y.m_value) - uiDisplay.y || 
-				width != Std.int(layout.width.m_value) ||
-				height != Std.int(layout.height.m_value))
-			{
-				x = Std.int(layout.x.m_value) - uiDisplay.x;
-				y = Std.int(layout.y.m_value) - uiDisplay.y;
-				width = Std.int(layout.width.m_value);
-				height = Std.int(layout.height.m_value);
-				update();
-			}
-*/	}
-	#end
-	
 	var pointerOver :PointerEvent->Void;
 	var pointerOut  :PointerEvent->Void;
 	var pointerMove :PointerEvent->Void;
@@ -130,10 +104,6 @@ class UIElement
 	
 	public function new(xPosition:Int=0, yPosition:Int=0, width:Int=100, height:Int=100, zIndex:Int=0, skin:Skin=null, style:Style=null) 
 	{
-		#if jasper // cassowary constraints (jasper lib)
-		//layout.update = updateLayout;
-		layout = new peote.ui.layout.LayoutElement(updateLayout);
-		#end
 		x = xPosition;
 		y = yPosition;
 		this.width  = width;
@@ -365,5 +335,67 @@ class UIElement
 		trace("removePickableClick");
 		if (uiDisplay!=null) uiDisplay.clickPickBuffer.removeElement( pickableClick ); //pickableClick=null
 	}
+	
+	
+	// ----------------- show, hide and layout-interface
+
+	var lastUsedDisplay:UIDisplay = null;
+	
+	public function show():Void {
+		if (uiDisplay == null && lastUsedDisplay != null) {
+			lastUsedDisplay.add(this);
+		} 
+	}
+	
+	public function hide():Void{
+		if (uiDisplay != null) {
+			lastUsedDisplay = uiDisplay;
+			uiDisplay.remove(this);
+		}		
+	}
+	
+	
+	// --------------------------------------------------------------------------
+	
+	#if peote_layout // bindings to peote-layout
+	
+	public inline function showByLayout():Void show();
+	public inline function hideByLayout():Void hide();
+
+	var layoutWasHidden = false;
+	public function updateByLayout(layoutContainer:peote.layout.LayoutContainer) 
+	{
+		if (!layoutWasHidden && layoutContainer.isHidden) { // if it is full outside of the Mask (so invisible)
+			hideByLayout();
+			layoutWasHidden = true;
+		}
+		else {
+			x = Math.round(layoutContainer.x);
+			y = Math.round(layoutContainer.y);
+			width = Math.round(layoutContainer.width);
+			height = Math.round(layoutContainer.height);
+			
+			if (layoutContainer.isMasked) { // if some of the edges is cut by mask for scroll-area
+				//maskX = Math.round(layoutContainer.maskX);
+				//maskY = Math.round(layoutContainer.maskY);
+				//maskWidth = maskX + Math.round(layoutContainer.maskWidth);
+				//maskHeight = maskY + Math.round(layoutContainer.maskHeight);
+			}
+			else { // if its fully displayed
+				//maskX = 0;
+				//maskY = 0;
+				//maskWidth = w;
+				//maskHeight = h;
+			}
+			
+			if (layoutWasHidden) {
+				showByLayout();
+				layoutWasHidden = false;
+			}
+			else update();
+		}
+	}	
+	#end
+	
 		
 }
