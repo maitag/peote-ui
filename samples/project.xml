@@ -8,11 +8,12 @@
 	<!-- check this for GG-Playstore: <setenv name="ANDROID_GRADLE_TASK" value=":app:bundleRelease" /> -->
 	
 	<app main="Main" path="bin" file="Main" />
-	<haxedef name="JasperLayout" />
+	<haxedef name="WidgetLayout" />
 	<!--
 		ButtonEvents,
+		ButtonLayout,
+		WidgetLayout,
 		JasperConstraints,
-		JasperLayout,
 		...
 	-->
 	<define name="stats" if="html5" />
@@ -29,7 +30,6 @@
 	
 	<haxelib name="json2object" />
 	<haxelib name="jasper" />
-	<!-- <haxelib name="peote-layout" /> -->
 	
 	<haxelib name="peote-view" />
 	<haxelib name="peote-text" />

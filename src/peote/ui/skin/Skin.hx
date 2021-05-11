@@ -1,7 +1,7 @@
 package peote.ui.skin;
 
-import peote.ui.UIDisplay;
-import peote.ui.widgets.UIElement;
+import peote.ui.interactive.UIDisplay;
+import peote.ui.interactive.UIElement;
 import peote.view.Buffer;
 import peote.view.Program;
 

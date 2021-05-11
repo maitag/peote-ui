@@ -1,13 +1,13 @@
-package peote.ui.widgets;
+package peote.ui.interactive;
 
-import peote.ui.PointerEvent;
-import peote.ui.UIDisplay;
-import peote.ui.WheelEvent;
+import peote.ui.event.PointerEvent;
+import peote.ui.interactive.UIDisplay;
+import peote.ui.event.WheelEvent;
 
 import peote.ui.skin.Skin;
 import peote.ui.skin.Style;
 
-@:allow(peote.ui.widgets.UIElement)
+@:allow(peote.ui.interactive.UIElement)
 class Pickable implements peote.view.Element
 {
 	public var uiElement:UIElement; 

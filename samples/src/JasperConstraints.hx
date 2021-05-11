@@ -11,8 +11,8 @@ import lime.ui.Touch;
 
 import peote.view.PeoteView;
 import peote.view.Color;
-import peote.ui.UIDisplay;
-import peote.ui.widgets.Button;
+import peote.ui.interactive.UIDisplay;
+import peote.ui.interactive.Button;
 import peote.ui.skin.Skin;
 import peote.ui.skin.Style;
 import peote.ui.layout.Layout;

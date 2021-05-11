@@ -1,4 +1,4 @@
-package peote.ui;
+package peote.ui.interactive;
 
 import haxe.ds.Vector;
 import lime.ui.KeyCode;
@@ -6,8 +6,9 @@ import lime.ui.KeyModifier;
 import lime.ui.MouseButton;
 import lime.ui.MouseWheelMode;
 import lime.ui.Touch;
-import peote.ui.PointerEvent;
-import peote.ui.PointerEvent.PointerType;
+
+import peote.ui.event.PointerEvent;
+import peote.ui.event.PointerType;
 import peote.view.PeoteView;
 
 import peote.view.PeoteGL;
@@ -16,11 +17,11 @@ import peote.view.Buffer;
 import peote.view.Program;
 import peote.view.Color;
 
-import peote.ui.widgets.UIElement;
-import peote.ui.widgets.UIElement.Pickable;
+import peote.ui.interactive.UIElement;
+import peote.ui.interactive.UIElement.Pickable;
 
 
-@:allow(peote.ui.widgets.UIElement)
+@:allow(peote.ui.interactive.UIElement)
 class UIDisplay extends Display
 #if peote_layout
 	implements peote.layout.LayoutElement

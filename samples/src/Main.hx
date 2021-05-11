@@ -12,8 +12,10 @@ import lime.ui.KeyModifier;
 typedef Sample = ButtonEvents;
 #elseif JasperConstraints
 typedef Sample = JasperConstraints;
-#elseif JasperLayout
-typedef Sample = JasperLayout;
+#elseif ButtonLayout
+typedef Sample = ButtonLayout;
+#elseif WidgetLayout
+typedef Sample = WidgetLayout;
 #end 
 
 class Main extends Application

@@ -10,24 +10,24 @@ import lime.ui.Touch;
 
 import peote.view.PeoteView;
 import peote.view.Color;
-import peote.ui.UIDisplay;
-import peote.ui.widgets.Button;
+import peote.ui.interactive.UIDisplay;
+import peote.ui.interactive.Button;
 import peote.ui.skin.Skin;
 import peote.ui.skin.Style;
-import peote.ui.PointerEvent;
-import peote.ui.WheelEvent;
+import peote.ui.event.PointerEvent;
+import peote.ui.event.WheelEvent;
 
 class ButtonEvents 
 {
 	var peoteView:PeoteView;
-	var ui:UIDisplay;
+	var uiDisplay:UIDisplay;
 	
 	public function new(window:Window)
 	{
 		try {			
 			peoteView = new PeoteView(window.context, window.width, window.height);
-			ui = new UIDisplay(0, 0, window.width, window.height, Color.GREY1);
-			peoteView.addDisplay(ui);
+			uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY1);
+			peoteView.addDisplay(uiDisplay);
 			
 			var mySkin = new Skin();
 			
@@ -43,7 +43,7 @@ class ButtonEvents
 			
 			trace("NEW BUTTON -----");
 			var b1:Button = new Button(20, 0, 200, 100, mySkin, myStyle);
-			ui.add(b1);
+			uiDisplay.add(b1);
 			
 			b1.onPointerOver = onOver.bind(Color.GREY2);
 			b1.onPointerOut = onOut.bind(Color.GREY1); // only fire if there was some over before!
@@ -58,7 +58,7 @@ class ButtonEvents
 
 			trace("NEW BUTTON -----");
 			var b2:Button = new Button(120, 60, 200, 100, mySkin, myStyle2);
-			ui.add(b2);
+			uiDisplay.add(b2);
 			
 			b2.onPointerOver = onOver.bind(Color.GREY2);
 			b2.onPointerOut = onOut.bind(Color.GREY1); // only fire if there was some over before!
@@ -68,11 +68,11 @@ class ButtonEvents
 			b2.onPointerClick = onClick;
 			
 			//trace("REMOVE onPointerClick -----"); b1.onPointerClick = null;
-			//ui.remove(b1);
-			//ui.add(b1);
+			//uiDisplay.remove(b1);
+			//uiDisplay.add(b1);
 						
-			//ui.update(b1);
-			//ui.updateAll();
+			//uiDisplay.update(b1);
+			//uiDisplay.updateAll();
 			
 			// ---- Dragging -----
 			
@@ -84,7 +84,7 @@ class ButtonEvents
 			myStyle3.borderRadius = 20.0;
 
 			var background = new Button(10, 140, 350, 60, mySkin, myStyle2);
-			ui.add(background);
+			uiDisplay.add(background);
 			
 			var dragger = new Button(10, 140, 100, 60, mySkin, myStyle3);
 			dragger.onPointerOver = onOver.bind(Color.BLUE);
@@ -106,7 +106,7 @@ class ButtonEvents
 			dragger.onMouseWheel = function(b:Button, e:WheelEvent) {
 				trace("MouseWheel:", e);
 			}
-			ui.add(dragger);
+			uiDisplay.add(dragger);
 
 			trace("NEW DragArea -----");
 			var myStyle4 = new Style();
@@ -116,7 +116,7 @@ class ButtonEvents
 			myStyle4.borderRadius = 40.0;
 			
 			var draggAreaBG = new Button(10, 200, 350, 350, mySkin, myStyle4);
-			ui.add(draggAreaBG);
+			uiDisplay.add(draggAreaBG);
 
 			var draggArea = new Button(250, 250, 80, 80, mySkin, myStyle4);
 			draggArea.setDragArea(10, 200, 350, 350); // x, y, width, height
@@ -132,16 +132,16 @@ class ButtonEvents
 				b.style.color = Color.GREY1;
 				b.update();
 			}
-			ui.add(draggArea);
+			uiDisplay.add(draggArea);
 
 			
 			// TODO: make button to switch between
-			//ui.mouseEnabled = false;
-			//ui.touchEnabled = false;
+			//uiDisplay.mouseEnabled = false;
+			//uiDisplay.touchEnabled = false;
 			peoteView.zoom = 2;
 
 			#if android
-			ui.mouseEnabled = false;
+			uiDisplay.mouseEnabled = false;
 			peoteView.zoom = 3;
 			#end
 			
@@ -188,22 +188,22 @@ class ButtonEvents
 	// --------------------------------------------------
 
 	// delegate events to UIDisplay
-	public inline function onMouseMove (x:Float, y:Float) ui.onMouseMove(x, y);
-	public inline function onMouseDown (x:Float, y:Float, button:MouseButton) ui.onMouseDown(x, y, button);
-	public inline function onMouseUp (x:Float, y:Float, button:MouseButton) ui.onMouseUp(x, y, button);
-	public inline function onMouseWheel (deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode) ui.onMouseWheel(deltaX, deltaY, deltaMode);
+	public inline function onMouseMove (x:Float, y:Float) uiDisplay.onMouseMove(x, y);
+	public inline function onMouseDown (x:Float, y:Float, button:MouseButton) uiDisplay.onMouseDown(x, y, button);
+	public inline function onMouseUp (x:Float, y:Float, button:MouseButton) uiDisplay.onMouseUp(x, y, button);
+	public inline function onMouseWheel (deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode) uiDisplay.onMouseWheel(deltaX, deltaY, deltaMode);
 	
-	public inline function onTouchMove (touch:Touch):Void ui.onTouchMove(touch);
-	public inline function onTouchStart (touch:Touch):Void ui.onTouchStart(touch);
-	public inline function onTouchEnd (touch:Touch):Void ui.onTouchEnd(touch);
-	public inline function onTouchCancel(touch:Touch):Void ui.onTouchCancel(touch);
+	public inline function onTouchMove (touch:Touch):Void uiDisplay.onTouchMove(touch);
+	public inline function onTouchStart (touch:Touch):Void uiDisplay.onTouchStart(touch);
+	public inline function onTouchEnd (touch:Touch):Void uiDisplay.onTouchEnd(touch);
+	public inline function onTouchCancel(touch:Touch):Void uiDisplay.onTouchCancel(touch);
 	
-	public inline function onKeyDown (keyCode:KeyCode, modifier:KeyModifier) ui.onKeyDown(keyCode, modifier);
-	public inline function onKeyUp (keyCode:KeyCode, modifier:KeyModifier):Void  ui.onKeyUp(keyCode, modifier);
-	public inline function onTextInput (text:String):Void ui.onTextInput(text);
+	public inline function onKeyDown (keyCode:KeyCode, modifier:KeyModifier) uiDisplay.onKeyDown(keyCode, modifier);
+	public inline function onKeyUp (keyCode:KeyCode, modifier:KeyModifier):Void  uiDisplay.onKeyUp(keyCode, modifier);
+	public inline function onTextInput (text:String):Void uiDisplay.onTextInput(text);
 	public inline function onTextEdit(text:String, start:Int, length:Int):Void {}
 
-	public inline function onWindowLeave () ui.onWindowLeave();
+	public inline function onWindowLeave () uiDisplay.onWindowLeave();
 	public inline function onWindowActivate():Void {};
 	
 	

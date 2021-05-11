@@ -1,4 +1,4 @@
-package peote.ui;
+package peote.ui.event;
 
 import lime.ui.MouseWheelMode;
 

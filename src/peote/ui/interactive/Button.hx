@@ -1,11 +1,11 @@
-package peote.ui.widgets;
+package peote.ui.interactive;
 
 import peote.ui.skin.Skin;
 import peote.ui.skin.Style;
-import peote.ui.widgets.UIElement;
+import peote.ui.interactive.UIElement;
 
-import peote.ui.PointerEvent;
-import peote.ui.WheelEvent;
+import peote.ui.event.PointerEvent;
+import peote.ui.event.WheelEvent;
 
 
 private typedef ButtonEventParams = Button->PointerEvent->Void;

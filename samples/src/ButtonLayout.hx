@@ -1,6 +1,6 @@
 package;
 
-#if JasperLayout
+#if ButtonLayout
 
 import lime.ui.Window;
 import lime.ui.KeyCode;
@@ -12,8 +12,8 @@ import lime.ui.Touch;
 import peote.view.PeoteView;
 import peote.view.Color;
 
-import peote.ui.UIDisplay;
-import peote.ui.widgets.Button;
+import peote.ui.interactive.UIDisplay;
+import peote.ui.interactive.Button;
 import peote.ui.skin.Skin;
 import peote.ui.skin.Style;
 
@@ -21,7 +21,7 @@ import peote.layout.LayoutContainer;
 import peote.layout.Size;
 
 
-class JasperLayout 
+class ButtonLayout 
 {
 	var peoteView:PeoteView;
 	var ui:UIDisplay;
