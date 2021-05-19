@@ -152,7 +152,7 @@ class UIDisplay extends Display
 
 	
 	
-	public inline function onMouseMove (mouseX:Float, mouseY:Float):Void {
+	public inline function mouseMove (mouseX:Float, mouseY:Float):Void {
 		if (mouseEnabled && peoteView != null)
 		{
 			var pickedIndex = peoteView.getElementAt(mouseX, mouseY, this, movePickProgram);
@@ -182,7 +182,7 @@ class UIDisplay extends Display
 		}
 	}
 	
-	public inline function onTouchMove (touch:Touch):Void {
+	public inline function touchMove (touch:Touch):Void {
 		if (touchEnabled && peoteView != null && touch.id < maxTouchpoints)
 		{
 			var x:Int = Math.round(touch.x * peoteView.width);
@@ -214,7 +214,7 @@ class UIDisplay extends Display
 		}
 	}
 	
-	public inline function onMouseDown (mouseX:Float, mouseY:Float, button:MouseButton):Void {
+	public inline function mouseDown (mouseX:Float, mouseY:Float, button:MouseButton):Void {
 		if (mouseEnabled && (lockMouseDown & (1 << (button+1))) == 0 && peoteView != null) 
 		{
 			var mouseDownIndex = peoteView.getElementAt(mouseX, mouseY, this, clickPickProgram) ;
@@ -228,7 +228,7 @@ class UIDisplay extends Display
 		//trace(pickedElements);
 	}
 	
-	public inline function onTouchStart (touch:Touch):Void {
+	public inline function touchStart (touch:Touch):Void {
 		if (touchEnabled && (lockTouchDown & (1 << (touch.id+1))) == 0 && peoteView != null && touch.id < maxTouchpoints) 
 		{
 			var x:Int = Math.round(touch.x * peoteView.width);
@@ -250,7 +250,7 @@ class UIDisplay extends Display
 		}
 	}
 	
-	public inline function onMouseUp (mouseX:Float, mouseY:Float, button:MouseButton):Void {
+	public inline function mouseUp (mouseX:Float, mouseY:Float, button:MouseButton):Void {
 		if (mouseEnabled && peoteView != null) {
 			
 			var mouseDownIndex = lastMouseDownIndex.get(button);
@@ -272,7 +272,7 @@ class UIDisplay extends Display
 		//trace(pickedElements);
 	}
 	
-	public inline function onTouchEnd (touch:Touch):Void {
+	public inline function touchEnd (touch:Touch):Void {
 		if (touchEnabled && peoteView != null && touch.id < maxTouchpoints) {
 			var x:Int = Math.round(touch.x * peoteView.width);
 			var y:Int = Math.round(touch.y * peoteView.height);
@@ -304,18 +304,18 @@ class UIDisplay extends Display
 		}			
 	}
 
-	public inline function onMouseWheel (deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode):Void {
+	public inline function mouseWheel (deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode):Void {
 		if (mouseEnabled && lastMouseOverIndex >= 0 && peoteView != null) {
 			movePickBuffer.getElement(lastMouseOverIndex).uiElement.mouseWheel({deltaX:deltaX, deltaY:deltaY, deltaMode:deltaMode});
 		}
 	}
 	
-	public inline function onTouchCancel(touch:Touch):Void {
+	public inline function touchCancel(touch:Touch):Void {
 		// TODO
 		trace("onTouchCancel", touch.id, Math.round(touch.x * peoteView.width), Math.round(touch.y * peoteView.height));
 	}
 
-	public inline function onWindowLeave ():Void {
+	public inline function windowLeave():Void {
 		// mouse
 		if (lastMouseOverIndex >= 0) {
 			movePickBuffer.getElement(lastMouseOverIndex).uiElement.pointerOut({x:-1, y:-1, type:PointerType.MOUSE});
@@ -349,7 +349,7 @@ class UIDisplay extends Display
 		lockTouchDown = 0;
 	}
 	
-	public inline function onKeyDown (keyCode:KeyCode, modifier:KeyModifier):Void
+	public inline function keyDown (keyCode:KeyCode, modifier:KeyModifier):Void
 	{
 		switch (keyCode) {
 			//case KeyCode.NUMPAD_PLUS:
@@ -357,14 +357,14 @@ class UIDisplay extends Display
 		}
 	}
 	
-	public inline function onKeyUp (keyCode:KeyCode, modifier:KeyModifier):Void
+	public inline function keyUp (keyCode:KeyCode, modifier:KeyModifier):Void
 	{
 		switch (keyCode) {
 			//case KeyCode.NUMPAD_PLUS:
 			default:
 		}
 	}
-	public inline function onTextInput (text:String):Void {
+	public inline function textInput (text:String):Void {
 		
 	}
 

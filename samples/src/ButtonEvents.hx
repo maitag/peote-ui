@@ -25,7 +25,7 @@ class ButtonEvents extends Application
 	
 	public function new() super();
 	
-	public override function onWindowCreate():Void {
+	public override function onWindowCreate() {
 		switch (window.context.type)
 		{
 			case WEBGL, OPENGL, OPENGLES: initPeoteView(window); // start sample
@@ -202,15 +202,15 @@ class ButtonEvents extends Application
 	// ----------------- LIME EVENTS ------------------------------
 	// ------------------------------------------------------------	
 
-	public override function onPreloadComplete():Void {
+	public override function onPreloadComplete() {
 		// access embeded assets here
 	}
 
-	public override function update(deltaTime:Int):Void {
+	public override function update(deltaTime:Int) {
 		// for game-logic update
 	}
 
-	public override function render(context:RenderContext):Void
+	public override function render(context:RenderContext)
 	{
 		#if (! html5)
 		onMouseMoveFrameSynced();
@@ -224,7 +224,7 @@ class ButtonEvents extends Application
 	// ----------------- MOUSE EVENTS ------------------------------
 	public override function onMouseMove (x:Float, y:Float) {
 		#if (html5)
-		uiDisplay.onMouseMove(x, y);
+		_onMouseMove(x, y);
 		#else
 		lastMouseMoveX = x;
 		lastMouseMoveY = y;
@@ -236,65 +236,48 @@ class ButtonEvents extends Application
 	var isMouseMove = false;
 	var lastMouseMoveX:Float = 0.0;
 	var lastMouseMoveY:Float = 0.0;
-	inline function onMouseMoveFrameSynced():Void
+	inline function onMouseMoveFrameSynced()
 	{
 		if (isMouseMove) {
 			isMouseMove = false;
-			uiDisplay.onMouseMove(lastMouseMoveX, lastMouseMoveY);
+			_onMouseMove(lastMouseMoveX, lastMouseMoveY);
 		}
 	}
 	#end
 	
-	public override function onMouseDown (x:Float, y:Float, button:MouseButton) uiDisplay.onMouseDown(x, y, button);
-	public override function onMouseUp (x:Float, y:Float, button:MouseButton) uiDisplay.onMouseUp(x, y, button);
-	public override function onMouseWheel (dx:Float, dy:Float, mode:MouseWheelMode) uiDisplay.onMouseWheel(dx, dy, mode);
+	inline function _onMouseMove (x:Float, y:Float) {
+		uiDisplay.mouseMove(x, y);
+	}
+	public override function onMouseDown (x:Float, y:Float, button:MouseButton) uiDisplay.mouseDown(x, y, button);
+	public override function onMouseUp (x:Float, y:Float, button:MouseButton) uiDisplay.mouseUp(x, y, button);
+	public override function onMouseWheel (dx:Float, dy:Float, mode:MouseWheelMode) uiDisplay.mouseWheel(dx, dy, mode);
 	// public override function onMouseMoveRelative (x:Float, y:Float):Void {}
 
 	// ----------------- TOUCH EVENTS ------------------------------
-	public override function onTouchStart (touch:Touch):Void uiDisplay.onTouchStart(touch);
-	public override function onTouchMove (touch:Touch):Void	 uiDisplay.onTouchMove(touch);
-	public override function onTouchEnd (touch:Touch):Void  uiDisplay.onTouchEnd(touch);
-	public override function onTouchCancel (touch:Touch):Void  uiDisplay.onTouchCancel(touch);
+	public override function onTouchStart (touch:Touch) uiDisplay.touchStart(touch);
+	public override function onTouchMove (touch:Touch)	 uiDisplay.touchMove(touch);
+	public override function onTouchEnd (touch:Touch)  uiDisplay.touchEnd(touch);
+	public override function onTouchCancel (touch:Touch)  uiDisplay.touchCancel(touch);
 	
 	// ----------------- KEYBOARD EVENTS ---------------------------
-	public override function onKeyDown (keyCode:KeyCode, modifier:KeyModifier):Void {
+	public override function onKeyDown (keyCode:KeyCode, modifier:KeyModifier) {
 		switch (keyCode) {
 			#if html5
 			case KeyCode.TAB: untyped __js__('event.preventDefault();');
-			case KeyCode.F:
-				var e:Dynamic = untyped __js__("document.getElementById('content').getElementsByTagName('canvas')[0]");
-				var noFullscreen:Dynamic = untyped __js__("(!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement)");
-				
-				if ( noFullscreen)
-				{	// enter fullscreen
-					if (e.requestFullScreen) e.requestFullScreen();
-					else if (e.msRequestFullScreen) e.msRequestFullScreen();
-					else if (e.mozRequestFullScreen) e.mozRequestFullScreen();
-					else if (e.webkitRequestFullScreen) e.webkitRequestFullScreen();
-				}
-				else
-				{	// leave fullscreen
-					var d:Dynamic = untyped __js__("document");
-					if (d.exitFullscreen) d.exitFullscreen();
-					else if (d.msExitFullscreen) d.msExitFullscreen();
-					else if (d.mozCancelFullScreen) d.mozCancelFullScreen();
-					else if (d.webkitExitFullscreen) d.webkitExitFullscreen();					
-				}
-			#else
-			case KeyCode.F: window.fullscreen = !window.fullscreen;
 			#end
+			case KeyCode.F: window.fullscreen = !window.fullscreen;
 			default:
 		}
-		uiDisplay.onKeyDown(keyCode, modifier);
+		uiDisplay.keyDown(keyCode, modifier);
 	}
 	
-	public override function onKeyUp (keyCode:KeyCode, modifier:KeyModifier):Void uiDisplay.onKeyUp(keyCode, modifier);
-	// public override function onTextEdit(text:String, start:Int, length:Int):Void {}
-	// public override function onTextInput (text:String):Void	{}
+	public override function onKeyUp (keyCode:KeyCode, modifier:KeyModifier) uiDisplay.keyUp(keyCode, modifier);
+	// public override function onTextEdit(text:String, start:Int, length:Int) {}
+	// public override function onTextInput (text:String)	{}
 
 	// ----------------- WINDOWS EVENTS ----------------------------
 	public override function onWindowResize (width:Int, height:Int) peoteView.resize(width, height);
-	public override function onWindowLeave():Void uiDisplay.onWindowLeave();
+	public override function onWindowLeave() uiDisplay.windowLeave();
 	// public override function onWindowActivate():Void { trace("onWindowActivate"); }
 	// public override function onWindowDeactivate():Void { trace("onWindowDeactivate"); }
 	// public override function onWindowClose():Void { trace("onWindowClose"); }

@@ -29,7 +29,7 @@ class ButtonLayout extends Application
 	
 	public function new() super();
 	
-	public override function onWindowCreate():Void {
+	public override function onWindowCreate() {
 		switch (window.context.type)
 		{
 			case WEBGL, OPENGL, OPENGLES: initPeoteView(window); // start sample
@@ -80,47 +80,27 @@ class ButtonLayout extends Application
 	var sizeEmulation = false;
 	
 	public override function onMouseMove (x:Float, y:Float) {
-		uiDisplay.onMouseMove(x, y);
+		uiDisplay.mouseMove(x, y);
 		if (sizeEmulation) uiLayoutContainer.update(Std.int(x),Std.int(y));
 	}
 	
 	public override  function onMouseUp (x:Float, y:Float, button:MouseButton) {
-		uiDisplay.onMouseUp(x, y, button);
+		uiDisplay.mouseUp(x, y, button);
 		sizeEmulation = !sizeEmulation; 
 		if (sizeEmulation) uiLayoutContainer.update(x,y);
 		else uiLayoutContainer.update(peoteView.width, peoteView.height);
 	}
 
 	// ----------------- KEYBOARD EVENTS ---------------------------
-	public override function onKeyDown (keyCode:KeyCode, modifier:KeyModifier):Void {
+	public override function onKeyDown (keyCode:KeyCode, modifier:KeyModifier) {
 		switch (keyCode) {
 			#if html5
 			case KeyCode.TAB: untyped __js__('event.preventDefault();');
-			case KeyCode.F:
-				var e:Dynamic = untyped __js__("document.getElementById('content').getElementsByTagName('canvas')[0]");
-				var noFullscreen:Dynamic = untyped __js__("(!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement)");
-				
-				if ( noFullscreen)
-				{	// enter fullscreen
-					if (e.requestFullScreen) e.requestFullScreen();
-					else if (e.msRequestFullScreen) e.msRequestFullScreen();
-					else if (e.mozRequestFullScreen) e.mozRequestFullScreen();
-					else if (e.webkitRequestFullScreen) e.webkitRequestFullScreen();
-				}
-				else
-				{	// leave fullscreen
-					var d:Dynamic = untyped __js__("document");
-					if (d.exitFullscreen) d.exitFullscreen();
-					else if (d.msExitFullscreen) d.msExitFullscreen();
-					else if (d.mozCancelFullScreen) d.mozCancelFullScreen();
-					else if (d.webkitExitFullscreen) d.webkitExitFullscreen();					
-				}
-			#else
-			case KeyCode.F: window.fullscreen = !window.fullscreen;
 			#end
+			case KeyCode.F: window.fullscreen = !window.fullscreen;
 			default:
 		}
-		uiDisplay.onKeyDown(keyCode, modifier);
+		uiDisplay.keyDown(keyCode, modifier);
 	}
 	
 	// ----------------- WINDOWS EVENTS ----------------------------

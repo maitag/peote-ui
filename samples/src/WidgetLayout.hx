@@ -15,6 +15,7 @@ import peote.ui.skin.Skin;
 import peote.ui.skin.Style;
 
 import peote.ui.PeoteUI;
+import peote.ui.widget.container.*;
 import peote.ui.widget.*;
 
 import peote.layout.Size;
@@ -29,7 +30,7 @@ class WidgetLayout extends Application
 	
 	public function new() super();
 	
-	public override function onWindowCreate():Void {
+	public override function onWindowCreate() {
 		switch (window.context.type)
 		{
 			case WEBGL, OPENGL, OPENGLES: initPeoteView(window); // start sample
@@ -51,24 +52,31 @@ class WidgetLayout extends Application
 
 			
 			ui = new PeoteUI({
+				bgColor:Color.GREY1,
 				left:10,
 				right:10,
 			},
 			[
 				
 				// later into widget -> new LabelButton()
-	/*			new Box(
+				new Box(
 				{
+					top:20,
+					left:20,
+					width:200,
+					height:50,
+					skin:mySkin,
+					style:myStyle,
 					//onPointerOver:onOver.bind(Color.BLUE),
-					onPointerClick: function(uiElement:UIElement, e:PointerEvent) {
-						uiElement.child[0].style.color = Color.RED;
-					},
+					//onPointerClick: function(uiElement:UIElement, e:PointerEvent) {
+						//uiElement.child[0].style.color = Color.RED;
+					//},
 					
 				},
 				[
-					new TextLine(),
+					//new TextLine(),
 				]),
-	*/		
+			
 			
 			
 	/*			// later into widget -> new VScrollArea()
@@ -103,15 +111,15 @@ class WidgetLayout extends Application
 	// ----------------- LIME EVENTS ------------------------------
 	// ------------------------------------------------------------	
 
-	public override function onPreloadComplete():Void {
+	public override function onPreloadComplete() {
 		// access embeded assets here
 	}
 
-	public override function update(deltaTime:Int):Void {
+	public override function update(deltaTime:Int) {
 		// for game-logic update
 	}
 
-	public override function render(context:lime.graphics.RenderContext):Void
+	public override function render(context:lime.graphics.RenderContext)
 	{
 		#if (! html5)
 		onMouseMoveFrameSynced();
@@ -125,7 +133,7 @@ class WidgetLayout extends Application
 	// ----------------- MOUSE EVENTS ------------------------------
 	public override function onMouseMove (x:Float, y:Float) {
 		#if (html5)
-		//ui.onMouseMove(x, y);
+		_onMouseMove(x, y);
 		#else
 		lastMouseMoveX = x;
 		lastMouseMoveY = y;
@@ -141,64 +149,47 @@ class WidgetLayout extends Application
 	{
 		if (isMouseMove) {
 			isMouseMove = false;
-			//ui.onMouseMove(lastMouseMoveX, lastMouseMoveY);
+			_onMouseMove(lastMouseMoveX, lastMouseMoveY);
 		}
 	}
 	#end
 	
-	//public override function onMouseDown (x:Float, y:Float, button:MouseButton) ui.onMouseDown(x, y, button);
-	//public override function onMouseUp (x:Float, y:Float, button:MouseButton) ui.onMouseUp(x, y, button);
-	//public override function onMouseWheel (dx:Float, dy:Float, mode:MouseWheelMode) ui.onMouseWheel(dx, dy, mode);
+	inline function _onMouseMove (x:Float, y:Float) {
+		ui.mouseMove(x, y);
+	}
+	public override function onMouseDown (x:Float, y:Float, button:MouseButton) ui.mouseDown(x, y, button);
+	public override function onMouseUp (x:Float, y:Float, button:MouseButton) ui.mouseUp(x, y, button);
+	public override function onMouseWheel (dx:Float, dy:Float, mode:MouseWheelMode) ui.mouseWheel(dx, dy, mode);
 	// public override function onMouseMoveRelative (x:Float, y:Float):Void {}
 
 	// ----------------- TOUCH EVENTS ------------------------------
-	//public override function onTouchStart (touch:Touch):Void ui.onTouchStart(touch);
-	//public override function onTouchMove (touch:Touch):Void	 ui.onTouchMove(touch);
-	//public override function onTouchEnd (touch:Touch):Void  ui.onTouchEnd(touch);
-	//public override function onTouchCancel (touch:Touch):Void ui.onTouchCancel(touch);
+	public override function onTouchStart (touch:Touch) ui.touchStart(touch);
+	public override function onTouchMove (touch:Touch) ui.touchMove(touch);
+	public override function onTouchEnd (touch:Touch) ui.touchEnd(touch);
+	public override function onTouchCancel (touch:Touch) ui.touchCancel(touch);
 	
 	// ----------------- KEYBOARD EVENTS ---------------------------
-	public override function onKeyDown (keyCode:KeyCode, modifier:KeyModifier):Void {
+	public override function onKeyDown (keyCode:KeyCode, modifier:KeyModifier) {
 		switch (keyCode) {
 			#if html5
 			case KeyCode.TAB: untyped __js__('event.preventDefault();');
-			case KeyCode.F:
-				var e:Dynamic = untyped __js__("document.getElementById('content').getElementsByTagName('canvas')[0]");
-				var noFullscreen:Dynamic = untyped __js__("(!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement)");
-				
-				if ( noFullscreen)
-				{	// enter fullscreen
-					if (e.requestFullScreen) e.requestFullScreen();
-					else if (e.msRequestFullScreen) e.msRequestFullScreen();
-					else if (e.mozRequestFullScreen) e.mozRequestFullScreen();
-					else if (e.webkitRequestFullScreen) e.webkitRequestFullScreen();
-				}
-				else
-				{	// leave fullscreen
-					var d:Dynamic = untyped __js__("document");
-					if (d.exitFullscreen) d.exitFullscreen();
-					else if (d.msExitFullscreen) d.msExitFullscreen();
-					else if (d.mozCancelFullScreen) d.mozCancelFullScreen();
-					else if (d.webkitExitFullscreen) d.webkitExitFullscreen();					
-				}
-			#else
-			case KeyCode.F: window.fullscreen = !window.fullscreen;
 			#end
+			case KeyCode.F: window.fullscreen = !window.fullscreen;
 			default:
 		}
-		//ui.onKeyDown(keyCode, modifier);
+		//ui.keyDown(keyCode, modifier);
 	}
 	
-	//public override function onKeyUp (keyCode:KeyCode, modifier:KeyModifier) ui.onKeyUp(keyCode, modifier);
-	//public override function onTextEdit(text:String, start:Int, length:Int) ui.onTextEdit(text, start, length);
-	//public override function onTextInput (text:String):Void ui.onTextInput(text);
+	//public override function onKeyUp (keyCode:KeyCode, modifier:KeyModifier) ui.keyUp(keyCode, modifier);
+	//public override function onTextEdit(text:String, start:Int, length:Int) ui.textEdit(text, start, length);
+	//public override function onTextInput (text:String):Void ui.textInput(text);
 
 	// ----------------- WINDOWS EVENTS ----------------------------
 	public override function onWindowResize (width:Int, height:Int) {
 		peoteView.resize(width, height);
 		ui.update(width, height);
 	}
-	//public override function onWindowLeave():Void ui.onWindowLeave();
+	public override function onWindowLeave() ui.windowLeave();
 	
 	// public override function onWindowActivate():Void { trace("onWindowActivate"); }
 	// public override function onWindowDeactivate():Void { trace("onWindowDeactivate"); }
