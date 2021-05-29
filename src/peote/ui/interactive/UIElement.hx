@@ -4,9 +4,9 @@ import peote.ui.event.PointerEvent;
 import peote.ui.interactive.UIDisplay;
 import peote.ui.event.WheelEvent;
 
-import peote.ui.skin.Skin;
-import peote.ui.skin.SkinElement;
-import peote.ui.skin.Style;
+import peote.ui.skin.interfaces.Skin;
+import peote.ui.skin.interfaces.SkinElement;
+import peote.ui.skin.SimpleStyle;
 
 @:allow(peote.ui.interactive.UIElement)
 class Pickable implements peote.view.Element
@@ -67,8 +67,8 @@ class UIElement
 	var uiDisplay:UIDisplay = null;
 	
 	public var skin:Skin = null;
-	public var style(default, set):Style = null;
-	inline function set_style(s:Style):Style {
+	public var style(default, set):Dynamic = null;
+	inline function set_style(s:Dynamic):Dynamic {
 		//trace("set style");
 		if (skin == null) {
 			if (style != null) throw ("Error, for styling the widget needs a skin");
@@ -104,7 +104,7 @@ class UIElement
 	private inline function noOperation(e:PointerEvent):Void {}
 	private inline function noWheelOperation(e:WheelEvent):Void {}
 	
-	public function new(xPosition:Int=0, yPosition:Int=0, width:Int=100, height:Int=100, zIndex:Int=0, skin:Skin=null, style:Style=null) 
+	public function new(xPosition:Int=0, yPosition:Int=0, width:Int=100, height:Int=100, zIndex:Int=0, skin:Skin=null, style:Dynamic=null) 
 	{
 		x = xPosition;
 		y = yPosition;

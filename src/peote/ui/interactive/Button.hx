@@ -1,7 +1,7 @@
 package peote.ui.interactive;
 
-import peote.ui.skin.Skin;
-import peote.ui.skin.Style;
+import peote.ui.skin.interfaces.Skin;
+import peote.ui.skin.SimpleStyle;
 import peote.ui.interactive.UIElement;
 
 import peote.ui.event.PointerEvent;
@@ -58,7 +58,7 @@ class Button extends UIElement
 	
 	
 	
-	public function new(xPosition:Int=0, yPosition:Int=0, width:Int=100, height:Int=100, zIndex:Int=0, skin:Skin = null, style:Style = null) 
+	public function new(xPosition:Int=0, yPosition:Int=0, width:Int=100, height:Int=100, zIndex:Int=0, skin:Skin = null, style:SimpleStyle = null) 
 	{
 		super(xPosition, yPosition, width, height, zIndex, skin, style);
 		

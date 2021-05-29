@@ -2,10 +2,14 @@ package peote.ui.skin;
 
 import peote.ui.interactive.UIDisplay;
 import peote.ui.interactive.UIElement;
+import peote.ui.skin.RoundedStyle;
+import peote.ui.skin.interfaces.Skin;
+import peote.ui.skin.interfaces.SkinElement;
 import peote.view.Buffer;
 import peote.view.Program;
 import peote.view.Element;
 import peote.view.Color;
+
 
 @:allow(peote.ui)
 class RoundedSkinElement implements SkinElement implements Element
@@ -34,9 +38,10 @@ class RoundedSkinElement implements SkinElement implements Element
 		h = uiElement.height;
 		z = uiElement.z;
 		color = uiElement.style.color;
-		borderColor = uiElement.style.borderColor;
-		borderSize = uiElement.style.borderSize;
-		borderRadius = uiElement.style.borderRadius;
+		var style:RoundedStyle = uiElement.style;
+		borderColor = style.borderColor;
+		borderSize = style.borderSize;
+		borderRadius = style.borderRadius;
 	}
 }
 
@@ -86,8 +91,8 @@ class RoundedSkin implements Skin
 		if (d != null) d.buffer.updateElement( cast uiElement.skinElement );
 	}
 	
-	public function createDefaultStyle():Style {
-		return new Style();
+	public function createDefaultStyle():Dynamic {
+		return new RoundedStyle();
 	}
 	
 	private function createProgram(buffer:Buffer<RoundedSkinElement>):Program {

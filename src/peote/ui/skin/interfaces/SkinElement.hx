@@ -1,4 +1,4 @@
-package peote.ui.skin;
+package peote.ui.skin.interfaces;
 
 import peote.ui.interactive.UIElement;
 

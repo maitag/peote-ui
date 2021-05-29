@@ -2,7 +2,8 @@ package peote.ui.skin;
 
 import peote.ui.interactive.UIDisplay;
 import peote.ui.interactive.UIElement;
-import peote.ui.skin.Skin;
+import peote.ui.skin.interfaces.Skin;
+import peote.ui.skin.interfaces.SkinElement;
 import peote.view.Buffer;
 import peote.view.Program;
 import peote.view.Element;
@@ -81,8 +82,8 @@ class SimpleSkin implements Skin
 		if (d != null) d.buffer.updateElement( cast uiElement.skinElement );		
 	}
 	
-	public function createDefaultStyle():Style {
-		return new Style();
+	public function createDefaultStyle():Dynamic {
+		return new SimpleStyle();
 	}
 	
 	private function createProgram(buffer:Buffer<SimpleSkinElement>):Program {

@@ -15,7 +15,8 @@ import peote.ui.interactive.UIDisplay;
 import peote.ui.interactive.Button;
 import peote.ui.skin.SimpleSkin;
 import peote.ui.skin.RoundedSkin;
-import peote.ui.skin.Style;
+import peote.ui.skin.RoundedStyle;
+import peote.ui.skin.SimpleStyle;
 import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
 
@@ -47,7 +48,7 @@ class ButtonEvents extends Application
 			// Take care that every Button have its own Style if changing style-params into eventhandler
 			// or alternatively create different styles for over/out/click and so on
 			
-			var myStyle = new Style();
+			var myStyle = new RoundedStyle();
 			myStyle.color = Color.GREY1;
 			myStyle.borderColor = Color.GREY5;
 			myStyle.borderSize = 4.0;
@@ -63,7 +64,7 @@ class ButtonEvents extends Application
 			b1.onPointerUp = onUp.bind(Color.GREY5);   // only fire if there was some down before!
 			b1.onPointerClick = onClick;
 			
-			var myStyle2 = new Style();
+			var myStyle2 = new RoundedStyle();
 			myStyle2.color = Color.GREY1;
 			myStyle2.borderColor = Color.GREY5;
 			myStyle2.borderSize = 2.0;
@@ -89,13 +90,13 @@ class ButtonEvents extends Application
 			// ---- Dragging -----
 			
 			trace("NEW SLIDER -----");			
-			var myStyle3 = new Style();
+			var myStyle3 = new RoundedStyle();
 			myStyle3.color = Color.BLUE-0x00003300;
 			myStyle3.borderColor = Color.GREY5;
 			myStyle3.borderSize = 3.0;
 			myStyle3.borderRadius = 20.0;
 
-			var background = new Button(10, 140, 350, 60, simpleSkin, new Style(Color.GREEN));
+			var background = new Button(10, 140, 350, 60, simpleSkin, new SimpleStyle(Color.GREEN));
 			uiDisplay.add(background);
 			
 			var dragger = new Button(10, 140, 100, 60, 1, simpleSkin, myStyle3);
@@ -121,7 +122,7 @@ class ButtonEvents extends Application
 			uiDisplay.add(dragger);
 
 			trace("NEW DragArea -----");
-			var myStyle4 = new Style();
+			var myStyle4 = new RoundedStyle();
 			myStyle4.color = Color.GREY1;
 			myStyle4.borderColor = Color.GREY5;
 			myStyle4.borderSize = 3.0;

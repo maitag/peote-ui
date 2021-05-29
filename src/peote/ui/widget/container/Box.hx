@@ -6,12 +6,12 @@ import peote.ui.interactive.Button;
 import peote.ui.widget.IWidget;
 
 import peote.ui.skin.RoundedSkin;
-import peote.ui.skin.Style;
+import peote.ui.skin.SimpleStyle;
 
 typedef BoxLayoutOptions = {
 	> LayoutOptions,
 	?skin:RoundedSkin,
-	?style:Style,
+	?style:SimpleStyle,
 }
 
 @:access(peote.layout.LayoutContainer.childs)

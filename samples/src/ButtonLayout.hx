@@ -13,7 +13,7 @@ import peote.view.Color;
 import peote.ui.interactive.UIDisplay;
 import peote.ui.interactive.Button;
 import peote.ui.skin.RoundedSkin;
-import peote.ui.skin.Style;
+import peote.ui.skin.SimpleStyle;
 
 import peote.layout.LayoutContainer;
 import peote.layout.Size;
@@ -43,10 +43,10 @@ class ButtonLayout extends Application
 			uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY3);
 			peoteView.addDisplay(uiDisplay);
 			
-			var red   = new Button(mySkin, new Style(Color.RED));
-			var green = new Button(mySkin, new Style(Color.GREEN));
-			var blue  = new Button(mySkin, new Style(Color.BLUE));
-			var yellow= new Button(mySkin, new Style(Color.YELLOW));
+			var red   = new Button(mySkin, new SimpleStyle(Color.RED));
+			var green = new Button(mySkin, new SimpleStyle(Color.GREEN));
+			var blue  = new Button(mySkin, new SimpleStyle(Color.BLUE));
+			var yellow= new Button(mySkin, new SimpleStyle(Color.YELLOW));
 
 			uiDisplay.add(red);
 			uiDisplay.add(green);

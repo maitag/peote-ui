@@ -12,7 +12,7 @@ import peote.view.PeoteView;
 import peote.view.Color;
 
 import peote.ui.skin.RoundedSkin;
-import peote.ui.skin.Style;
+import peote.ui.skin.SimpleStyle;
 
 import peote.ui.PeoteUI;
 import peote.ui.widget.container.*;
@@ -44,7 +44,7 @@ class WidgetLayout extends Application
 			
 			var mySkin = new RoundedSkin();
 			
-			var myStyle = new Style();
+			var myStyle = new SimpleStyle();
 			myStyle.color = Color.GREY1;
 			myStyle.borderColor = Color.GREY5;
 			myStyle.borderSize = 4.0;

@@ -4,14 +4,14 @@ import peote.layout.LayoutContainer;
 import peote.ui.interactive.Button;
 import peote.ui.interactive.UIElement;
 import peote.ui.skin.RoundedSkin;
-import peote.ui.skin.Style;
+import peote.ui.skin.SimpleStyle;
 import peote.view.Color;
 
 typedef WidgetOptions = {
 	> LayoutOptions,
 	?color:Color,
 	?skin:RoundedSkin,
-	?style:Style,
+	?style:SimpleStyle,
 }
 
 private typedef WidgetEventParams = Widget->PointerEvent->Void;
@@ -30,7 +30,7 @@ class Widget extends LayoutContainer implements IWidget
 	public function new(widgets:Array<IWidget>) 
 	{
 		var skin:RoundedSkin = null;
-		var style:Style = null;
+		var style:SimpleStyle = null;
 		var uiElement = new UIElement(0, 0, 0, 0, 0, skin, style);
 		super(ContainerType.Box, uiElement, widgets);
 	}
