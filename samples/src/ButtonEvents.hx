@@ -55,18 +55,18 @@ class ButtonEvents extends Application
 			myStyle.borderRadius = 40.0;
 			
 			trace("NEW BUTTON -----");
-			var b1:Button = new Button(20, 0, 200, 100, roundedSkin, myStyle);
+			//var b1:Button = new Button(20, 0, 200, 100, roundedSkin, myStyle);
+			var b1:Button = new Button(20, 0, 200, 100, roundedSkin, new SimpleStyle(Color.RED));
 			uiDisplay.add(b1);
 			
 			b1.onPointerOver = onOver.bind(Color.GREY2);
-			b1.onPointerOut = onOut.bind(Color.GREY1); // only fire if there was some over before!
+			//b1.onPointerOut = onOut.bind(Color.GREY1); // only fires if there was some over before!
+			b1.onPointerOut = onOut.bind(Color.RED); // only fires if there was some over before!
 			b1.onPointerDown = onDown.bind(Color.YELLOW);
-			b1.onPointerUp = onUp.bind(Color.GREY5);   // only fire if there was some down before!
+			b1.onPointerUp = onUp.bind(Color.GREY5);   // only fires if there was some down before!
 			b1.onPointerClick = onClick;
 			
-			var myStyle2 = new RoundedStyle();
-			myStyle2.color = Color.GREY1;
-			myStyle2.borderColor = Color.GREY5;
+			var myStyle2 = new RoundedStyle(Color.GREY1, Color.GREY5);
 			myStyle2.borderSize = 2.0;
 
 			trace("NEW BUTTON -----");
@@ -90,13 +90,15 @@ class ButtonEvents extends Application
 			// ---- Dragging -----
 			
 			trace("NEW SLIDER -----");			
-			var myStyle3 = new RoundedStyle();
-			myStyle3.color = Color.BLUE-0x00003300;
-			myStyle3.borderColor = Color.GREY5;
-			myStyle3.borderSize = 3.0;
-			myStyle3.borderRadius = 20.0;
-
-			var background = new Button(10, 140, 350, 60, simpleSkin, new SimpleStyle(Color.GREEN));
+			var myStyle3:RoundedStyle = {
+				color: Color.BLUE-0x00003300,
+				borderColor: Color.GREY5,
+				borderSize: 3.0,
+				borderRadius: 20.0
+			}
+			
+			//var background = new Button(10, 140, 350, 60, simpleSkin, new SimpleStyle(Color.GREEN));
+			var background = new Button(10, 140, 350, 60, simpleSkin, myStyle2);
 			uiDisplay.add(background);
 			
 			var dragger = new Button(10, 140, 100, 60, 1, simpleSkin, myStyle3);

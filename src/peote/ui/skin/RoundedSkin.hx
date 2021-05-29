@@ -37,11 +37,27 @@ class RoundedSkinElement implements SkinElement implements Element
 		w = uiElement.width;
 		h = uiElement.height;
 		z = uiElement.z;
-		color = uiElement.style.color;
-		var style:RoundedStyle = uiElement.style;
-		borderColor = style.borderColor;
-		borderSize = style.borderSize;
-		borderRadius = style.borderRadius;
+		
+		// TODO: better errorhandling here
+		
+		
+		//var style:RoundedStyle = cast (uiElement.style, RoundedStyle); // TODO
+		//var style:RoundedStyle = cast uiElement.style; // TODO
+		//var style:RoundedStyle = uiElement.style; // TODO -> crashes on hl
+		
+		// TODO: HASHLINK 
+		
+		// TODO: set from default-style here!
+		// color = RoundedStyle.DEFAULT_color;
+		//borderColor =  RoundedStyle.DEFAULT_borderColor;
+		//borderSize = RoundedStyle.DEFAULT_borderSize;
+		//borderRadius = RoundedStyle.DEFAULT_borderRadius;
+		
+		
+		color = (uiElement.style.color!=null) ? uiElement.style.color : RoundedStyle.DEFAULT_color;
+		borderColor = (uiElement.style.borderColor!=null) ? uiElement.style.borderColor : RoundedStyle.DEFAULT_borderColor;
+		borderSize = (uiElement.style.borderSize!=null) ? uiElement.style.borderSize : RoundedStyle.DEFAULT_borderSize;
+		borderRadius = (uiElement.style.borderRadius!=null) ? uiElement.style.borderRadius : RoundedStyle.DEFAULT_borderRadius;
 	}
 }
 
@@ -50,7 +66,7 @@ class RoundedSkin implements Skin
 {
 	var displayProgBuff = new Map<UIDisplay,{program:Program, buffer:Buffer<RoundedSkinElement>}>();
 	
-	public function new()
+	public function new() // TODO: default RoundedStyle !
 	{
 	}
 	

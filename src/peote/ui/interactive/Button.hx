@@ -58,7 +58,7 @@ class Button extends UIElement
 	
 	
 	
-	public function new(xPosition:Int=0, yPosition:Int=0, width:Int=100, height:Int=100, zIndex:Int=0, skin:Skin = null, style:SimpleStyle = null) 
+	public function new(xPosition:Int=0, yPosition:Int=0, width:Int=100, height:Int=100, zIndex:Int=0, skin:Skin = null, style:Dynamic = null) 
 	{
 		super(xPosition, yPosition, width, height, zIndex, skin, style);
 		

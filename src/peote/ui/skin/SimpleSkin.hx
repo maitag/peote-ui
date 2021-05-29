@@ -2,6 +2,7 @@ package peote.ui.skin;
 
 import peote.ui.interactive.UIDisplay;
 import peote.ui.interactive.UIElement;
+import peote.ui.skin.SimpleStyle;
 import peote.ui.skin.interfaces.Skin;
 import peote.ui.skin.interfaces.SkinElement;
 import peote.view.Buffer;
@@ -31,7 +32,14 @@ class SimpleSkinElement implements SkinElement implements Element
 		w = uiElement.width;
 		h = uiElement.height;
 		z = uiElement.z;
-		color = uiElement.style.color;
+		
+		//color = uiElement.style.color;
+		
+		//var style:SimpleStyle = cast uiElement.style;
+		//color = style.color;
+		
+		color = (uiElement.style.color!=null) ? uiElement.style.color : SimpleStyle.DEFAULT_color;
+		
 	}
 }
 

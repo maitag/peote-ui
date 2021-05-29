@@ -69,7 +69,7 @@ class UIElement
 	public var skin:Skin = null;
 	public var style(default, set):Dynamic = null;
 	inline function set_style(s:Dynamic):Dynamic {
-		//trace("set style");
+		trace("set style");
 		if (skin == null) {
 			if (style != null) throw ("Error, for styling the widget needs a skin");
 		} 
