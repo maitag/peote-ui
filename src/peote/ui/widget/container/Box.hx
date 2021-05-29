@@ -3,13 +3,14 @@ import peote.layout.LayoutContainer;
 import peote.layout.LayoutOptions;
 import peote.layout.ContainerType;
 import peote.ui.interactive.Button;
+import peote.ui.widget.IWidget;
 
-import peote.ui.skin.Skin;
+import peote.ui.skin.RoundedSkin;
 import peote.ui.skin.Style;
 
 typedef BoxLayoutOptions = {
 	> LayoutOptions,
-	?skin:Skin,
+	?skin:RoundedSkin,
 	?style:Style,
 }
 

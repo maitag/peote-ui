@@ -13,7 +13,8 @@ import peote.view.PeoteView;
 import peote.view.Color;
 import peote.ui.interactive.UIDisplay;
 import peote.ui.interactive.Button;
-import peote.ui.skin.Skin;
+import peote.ui.skin.SimpleSkin;
+import peote.ui.skin.RoundedSkin;
 import peote.ui.skin.Style;
 import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
@@ -39,7 +40,8 @@ class ButtonEvents extends Application
 			uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY1);
 			peoteView.addDisplay(uiDisplay);
 			
-			var mySkin = new Skin();
+			var simpleSkin = new SimpleSkin();
+			var roundedSkin = new RoundedSkin();
 			
 			
 			// Take care that every Button have its own Style if changing style-params into eventhandler
@@ -52,7 +54,7 @@ class ButtonEvents extends Application
 			myStyle.borderRadius = 40.0;
 			
 			trace("NEW BUTTON -----");
-			var b1:Button = new Button(20, 0, 200, 100, mySkin, myStyle);
+			var b1:Button = new Button(20, 0, 200, 100, roundedSkin, myStyle);
 			uiDisplay.add(b1);
 			
 			b1.onPointerOver = onOver.bind(Color.GREY2);
@@ -67,7 +69,7 @@ class ButtonEvents extends Application
 			myStyle2.borderSize = 2.0;
 
 			trace("NEW BUTTON -----");
-			var b2:Button = new Button(120, 60, 200, 100, mySkin, myStyle2);
+			var b2:Button = new Button(120, 60, 200, 100, roundedSkin, myStyle2);
 			uiDisplay.add(b2);
 			
 			b2.onPointerOver = onOver.bind(Color.GREY2);
@@ -88,23 +90,23 @@ class ButtonEvents extends Application
 			
 			trace("NEW SLIDER -----");			
 			var myStyle3 = new Style();
-			myStyle3.color = Color.GREY1;
+			myStyle3.color = Color.BLUE-0x00003300;
 			myStyle3.borderColor = Color.GREY5;
 			myStyle3.borderSize = 3.0;
 			myStyle3.borderRadius = 20.0;
 
-			var background = new Button(10, 140, 350, 60, mySkin, myStyle2);
+			var background = new Button(10, 140, 350, 60, simpleSkin, new Style(Color.GREEN));
 			uiDisplay.add(background);
 			
-			var dragger = new Button(10, 140, 100, 60, mySkin, myStyle3);
+			var dragger = new Button(10, 140, 100, 60, 1, simpleSkin, myStyle3);
 			dragger.onPointerOver = onOver.bind(Color.BLUE);
-			dragger.onPointerOut = onOut.bind(Color.GREY1);
+			dragger.onPointerOut = onOut.bind(Color.BLUE-0x00003300);
 			
 			dragger.setDragArea(10, 140, 350, 60); // x, y, width, height
 			dragger.onPointerDown = function(b:Button, e:PointerEvent) {
 				trace(" -----> onPointerDown", e);
 				b.startDragging(e);
-				b.style.color = Color.GREEN;
+				b.style.color = Color.YELLOW;
 				b.update();
 			}
 			dragger.onPointerUp = function(b:Button, e:PointerEvent) {
@@ -125,15 +127,15 @@ class ButtonEvents extends Application
 			myStyle4.borderSize = 3.0;
 			myStyle4.borderRadius = 40.0;
 			
-			var draggAreaBG = new Button(10, 200, 350, 350, mySkin, myStyle4);
+			var draggAreaBG = new Button(10, 200, 350, 350, roundedSkin, myStyle4);
 			uiDisplay.add(draggAreaBG);
 
-			var draggArea = new Button(250, 250, 80, 80, mySkin, myStyle4);
+			var draggArea = new Button(250, 250, 80, 80, roundedSkin, myStyle4);
 			draggArea.setDragArea(10, 200, 350, 350); // x, y, width, height
 			draggArea.onPointerDown = function(b:Button, e:PointerEvent) {
 				trace(" -----> onPointerDown", e);
 				b.startDragging(e);
-				b.style.color = Color.GREEN;
+				b.style.color = Color.YELLOW;
 				b.update();
 			}
 			draggArea.onPointerUp = function(b:Button, e:PointerEvent) {

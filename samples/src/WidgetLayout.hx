@@ -11,7 +11,7 @@ import lime.ui.Touch;
 import peote.view.PeoteView;
 import peote.view.Color;
 
-import peote.ui.skin.Skin;
+import peote.ui.skin.RoundedSkin;
 import peote.ui.skin.Style;
 
 import peote.ui.PeoteUI;
@@ -24,7 +24,7 @@ import peote.layout.Size;
 class WidgetLayout extends Application
 {
 	var peoteView:PeoteView;
-	var mySkin = new Skin();
+	var mySkin = new RoundedSkin();
 		
 	var ui:PeoteUI;
 	
@@ -42,7 +42,7 @@ class WidgetLayout extends Application
 		try {			
 			peoteView = new PeoteView(window.context, window.width, window.height);		
 			
-			var mySkin = new Skin();
+			var mySkin = new RoundedSkin();
 			
 			var myStyle = new Style();
 			myStyle.color = Color.GREY1;
@@ -66,10 +66,19 @@ class WidgetLayout extends Application
 					width:200,
 					height:50,
 					skin:mySkin,
-					style:myStyle,
+					style:myStyle, // default Style (if myStyle changed it needs a update of all elements that using this!)
+					// To overwrite all of "myStyle"
+					//	color:Color.GREY1,
+					//	borderColor:Color.GREY5,
+					//	borderSize:4.0,
+					//	borderRadius:40.0,
+					}
 					//onPointerOver:onOver.bind(Color.BLUE),
-					//onPointerClick: function(uiElement:UIElement, e:PointerEvent) {
-						//uiElement.child[0].style.color = Color.RED;
+					//onPointerClick: function(widget:Widget, e:PointerEvent) {
+						//widget.style.color = Color.RED;
+						//widget.skin = mySkin1;
+						//widget.parent.style.color = Color.RED;
+						//widget.child[0].style.color = Color.RED;
 					//},
 					
 				},
@@ -97,7 +106,7 @@ class WidgetLayout extends Application
 	}
 
 	// --------------------------------------------------
-/*	public inline function onOver(color:Color, uiElement:UIElement, e:PointerEvent) {
+/*	public inline function onOver(color:Color, widget:Widget, e:PointerEvent) {
 		uiElement.style.color = color;
 		uiElement.style.borderColor = Color.GREY7;
 		uiElement.updateStyle();

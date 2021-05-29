@@ -5,6 +5,7 @@ import peote.ui.interactive.UIDisplay;
 import peote.ui.event.WheelEvent;
 
 import peote.ui.skin.Skin;
+import peote.ui.skin.SkinElement;
 import peote.ui.skin.Style;
 
 @:allow(peote.ui.interactive.UIElement)
@@ -78,7 +79,8 @@ class UIElement
 		return style = s;
 	}	
 	
-	var skinElementIndex:Int;
+	//var skinElementIndex:Int;
+	var skinElement:SkinElement;
 	var pickableMove:Pickable = null;
 	var pickableClick:Pickable = null;
 	
@@ -128,6 +130,7 @@ class UIElement
 	{
 		if (uiDisplay != null) 
 		{
+			skinElement.update(this);
 			if (skin != null) skin.updateElement(uiDisplay, this);
 			if ( hasMoveEvent  != 0 ) {
 				pickableMove.update(this);

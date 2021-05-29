@@ -155,9 +155,10 @@ class UIDisplay extends Display
 	public inline function mouseMove (mouseX:Float, mouseY:Float):Void {
 		if (mouseEnabled && peoteView != null)
 		{
-			var pickedIndex = peoteView.getElementAt(mouseX, mouseY, this, movePickProgram);
 			var x = Std.int(mouseX);
 			var y = Std.int(mouseY);
+			
+			var pickedIndex = (isPointInside(x, y)) ? peoteView.getElementAt(mouseX, mouseY, this, movePickProgram) : -1;
 			
 			// Over/Out
 			if (pickedIndex != lastMouseOverIndex) {
@@ -188,7 +189,7 @@ class UIDisplay extends Display
 			var x:Int = Math.round(touch.x * peoteView.width);
 			var y:Int = Math.round(touch.y * peoteView.height);
 			
-			var pickedIndex = peoteView.getElementAt(x, y, this, movePickProgram);
+			var pickedIndex = (isPointInside(x, y)) ? peoteView.getElementAt(x, y, this, movePickProgram) : -1;
 			var lastOverIndex:Int = lastTouchOverIndex.get(touch.id);
 			
 			// Over/Out
@@ -217,11 +218,17 @@ class UIDisplay extends Display
 	public inline function mouseDown (mouseX:Float, mouseY:Float, button:MouseButton):Void {
 		if (mouseEnabled && (lockMouseDown & (1 << (button+1))) == 0 && peoteView != null) 
 		{
-			var mouseDownIndex = peoteView.getElementAt(mouseX, mouseY, this, clickPickProgram) ;
-			if (mouseDownIndex >= 0) {
-				clickPickBuffer.getElement(mouseDownIndex).uiElement.pointerDown({x:Std.int(mouseX), y:Std.int(mouseY), type:PointerType.MOUSE, mouseButton:button});
-				lockMouseDown = lockMouseDown | (1 << (button+1));
-				lastMouseDownIndex.set(button, mouseDownIndex);
+			var x = Std.int(mouseX);
+			var y = Std.int(mouseY);
+			
+			if (isPointInside(x, y))
+			{			
+				var mouseDownIndex = peoteView.getElementAt(mouseX, mouseY, this, clickPickProgram) ;
+				if (mouseDownIndex >= 0) {
+					clickPickBuffer.getElement(mouseDownIndex).uiElement.pointerDown({x:x, y:y, type:PointerType.MOUSE, mouseButton:button});
+					lockMouseDown = lockMouseDown | (1 << (button+1));
+					lastMouseDownIndex.set(button, mouseDownIndex);
+				}
 			}
 		}
 		//var pickedElements = peoteView.getAllElementsAt(x, y, display, clickProgram);
@@ -234,18 +241,21 @@ class UIDisplay extends Display
 			var x:Int = Math.round(touch.x * peoteView.width);
 			var y:Int = Math.round(touch.y * peoteView.height);
 			
-			// Out
-			var pickedIndex = peoteView.getElementAt(x, y, this, movePickProgram);
-			if (pickedIndex >= 0) {
-				movePickBuffer.getElement(pickedIndex).uiElement.pointerOver({x:x, y:y, type:PointerType.TOUCH, touch:touch});
-				lastTouchOverIndex.set(touch.id, pickedIndex);
-			}
-			// Down
-			var touchDownIndex = peoteView.getElementAt(x, y, this, clickPickProgram ) ;
-			if (touchDownIndex >= 0) {
-				clickPickBuffer.getElement(touchDownIndex).uiElement.pointerDown({x:x, y:y, type:PointerType.TOUCH, touch:touch});
-				lockTouchDown = lockTouchDown | (1 << (touch.id+1));
-				lastTouchDownIndex.set(touch.id, touchDownIndex);
+			if (isPointInside(x, y))
+			{			
+				// Out
+				var pickedIndex = peoteView.getElementAt(x, y, this, movePickProgram);
+				if (pickedIndex >= 0) {
+					movePickBuffer.getElement(pickedIndex).uiElement.pointerOver({x:x, y:y, type:PointerType.TOUCH, touch:touch});
+					lastTouchOverIndex.set(touch.id, pickedIndex);
+				}
+				// Down
+				var touchDownIndex = peoteView.getElementAt(x, y, this, clickPickProgram ) ;
+				if (touchDownIndex >= 0) {
+					clickPickBuffer.getElement(touchDownIndex).uiElement.pointerDown({x:x, y:y, type:PointerType.TOUCH, touch:touch});
+					lockTouchDown = lockTouchDown | (1 << (touch.id+1));
+					lastTouchDownIndex.set(touch.id, touchDownIndex);
+				}
 			}
 		}
 	}
@@ -253,16 +263,19 @@ class UIDisplay extends Display
 	public inline function mouseUp (mouseX:Float, mouseY:Float, button:MouseButton):Void {
 		if (mouseEnabled && peoteView != null) {
 			
+			var x = Std.int(mouseX);
+			var y = Std.int(mouseY);
+			
 			var mouseDownIndex = lastMouseDownIndex.get(button);
 			
 			if (mouseDownIndex >= 0) {
 				// Up
-				var pickedIndex = peoteView.getElementAt(mouseX, mouseY, this, clickPickProgram);
-				clickPickBuffer.getElement(mouseDownIndex).uiElement.pointerUp({x:Std.int(mouseX), y:Std.int(mouseY), type:PointerType.MOUSE, mouseButton:button});
+				var pickedIndex = (isPointInside(x, y)) ? peoteView.getElementAt(mouseX, mouseY, this, clickPickProgram) : -1;
+				clickPickBuffer.getElement(mouseDownIndex).uiElement.pointerUp({x:x, y:y, type:PointerType.MOUSE, mouseButton:button});
 				
 				// Click
 				if (pickedIndex == mouseDownIndex) {
-					clickPickBuffer.getElement(pickedIndex).uiElement.pointerClick({x:Std.int(mouseX), y:Std.int(mouseY), type:PointerType.MOUSE, mouseButton:button});
+					clickPickBuffer.getElement(pickedIndex).uiElement.pointerClick({x:x, y:y, type:PointerType.MOUSE, mouseButton:button});
 				}
 				lastMouseDownIndex.set(button, -1);
 				lockMouseDown = lockMouseDown - (1 << (button+1));
@@ -274,6 +287,7 @@ class UIDisplay extends Display
 	
 	public inline function touchEnd (touch:Touch):Void {
 		if (touchEnabled && peoteView != null && touch.id < maxTouchpoints) {
+			
 			var x:Int = Math.round(touch.x * peoteView.width);
 			var y:Int = Math.round(touch.y * peoteView.height);
 			
@@ -282,7 +296,7 @@ class UIDisplay extends Display
 			
 			// Up
 			if (touchDownIndex >= 0) {
-				pickedIndex = peoteView.getElementAt(x, y, this, clickPickProgram);
+				pickedIndex = (isPointInside(x, y)) ? peoteView.getElementAt(x, y, this, clickPickProgram) : -1;
 
 				clickPickBuffer.getElement(touchDownIndex).uiElement.pointerUp({x:x, y:y, type:PointerType.TOUCH, touch:touch});
 				if (pickedIndex == touchDownIndex) {
@@ -294,13 +308,11 @@ class UIDisplay extends Display
 			}
 			
 			// Out
-			pickedIndex = peoteView.getElementAt(x, y, this, clickPickProgram);
+			pickedIndex = (isPointInside(x, y)) ? peoteView.getElementAt(x, y, this, clickPickProgram) : -1;
 			if (pickedIndex >=0 && pickedIndex == lastTouchOverIndex.get(touch.id)) {
 				movePickBuffer.getElement(pickedIndex).uiElement.pointerOut({x:x, y:y, type:PointerType.TOUCH, touch:touch});
 				lastTouchOverIndex.set(touch.id, -1);
 			}
-			
-			
 		}			
 	}
 

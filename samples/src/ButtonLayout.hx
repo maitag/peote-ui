@@ -12,7 +12,7 @@ import peote.view.Color;
 
 import peote.ui.interactive.UIDisplay;
 import peote.ui.interactive.Button;
-import peote.ui.skin.Skin;
+import peote.ui.skin.RoundedSkin;
 import peote.ui.skin.Style;
 
 import peote.layout.LayoutContainer;
@@ -23,7 +23,7 @@ class ButtonLayout extends Application
 {
 	var peoteView:PeoteView;
 	var uiDisplay:UIDisplay;
-	var mySkin = new Skin();
+	var mySkin = new RoundedSkin();
 		
 	var uiLayoutContainer:LayoutContainer;
 	
