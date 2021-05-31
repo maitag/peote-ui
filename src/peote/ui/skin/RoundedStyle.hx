@@ -1,20 +1,17 @@
 package peote.ui.skin;
 
 import peote.view.Color;
+import peote.ui.skin.SkinType;
 
 @:structInit
 class RoundedStyle //extends SimpleStyle
 {	
-	public static inline var DEFAULT_color      :Color = Color.GREY2;
-	public static inline var DEFAULT_borderColor:Color = Color.GREY6;
-	public static inline var DEFAULT_borderSize  :Float = 4.0;
-	public static inline var DEFAULT_borderRadius:Float = 20.0;
-	
-	public var color      :Null<Color> = DEFAULT_color;
-	public var borderColor:Null<Color> = DEFAULT_borderColor;
+	public var compatibleSkins(default, null):SkinType = SkinType.Simple | SkinType.Rounded;
 
-	public var borderSize:Null<Float>   = DEFAULT_borderSize;
-	public var borderRadius:Null<Float> = DEFAULT_borderRadius;
+	public var color      :Null<Color> = Color.GREY2;
+	public var borderColor:Null<Color> = Color.GREY6;
+	public var borderSize:Null<Float>   =  4.0;
+	public var borderRadius:Null<Float> = 20.0;
 	
 	public function new(
 		?color:Null<Color>,
@@ -22,12 +19,13 @@ class RoundedStyle //extends SimpleStyle
 		?borderSize:Null<Float>,
 		?borderRadius:Null<Float> 
 	) {
+		compatibleSkins = SkinType.Simple | SkinType.Rounded;
 		//super(color);
-		this.color = color;
+		if (color != null) this.color = color;
 		
-		this.borderColor = borderColor;
-		this.borderSize = borderSize;
-		this.borderRadius = borderRadius;
+		if (borderColor != null) this.borderColor = borderColor;
+		if (borderSize != null) this.borderSize = borderSize;
+		if (borderRadius != null) this.borderRadius = borderRadius;
 	}
 	
 }

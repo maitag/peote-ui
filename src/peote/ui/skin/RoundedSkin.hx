@@ -28,9 +28,9 @@ class RoundedSkinElement implements SkinElement implements Element
 	@zIndex public var z:Int = 0;	
 	//var OPTIONS = {  };
 	
-	public function new(uiElement:UIElement) update(uiElement);
+	public function new(uiElement:UIElement, defaultStyle:RoundedStyle) update(uiElement, defaultStyle);
 	
-	public inline function update(uiElement:UIElement)
+	public inline function update(uiElement:UIElement, defaultStyle:Dynamic)
 	{
 		x = uiElement.x;
 		y = uiElement.y;
@@ -38,36 +38,25 @@ class RoundedSkinElement implements SkinElement implements Element
 		h = uiElement.height;
 		z = uiElement.z;
 		
-		// TODO: better errorhandling here
-		
-		
-		//var style:RoundedStyle = cast (uiElement.style, RoundedStyle); // TODO
-		//var style:RoundedStyle = cast uiElement.style; // TODO
-		//var style:RoundedStyle = uiElement.style; // TODO -> crashes on hl
-		
-		// TODO: HASHLINK 
-		
-		// TODO: set from default-style here!
-		// color = RoundedStyle.DEFAULT_color;
-		//borderColor =  RoundedStyle.DEFAULT_borderColor;
-		//borderSize = RoundedStyle.DEFAULT_borderSize;
-		//borderRadius = RoundedStyle.DEFAULT_borderRadius;
-		
-		
-		color = (uiElement.style.color!=null) ? uiElement.style.color : RoundedStyle.DEFAULT_color;
-		borderColor = (uiElement.style.borderColor!=null) ? uiElement.style.borderColor : RoundedStyle.DEFAULT_borderColor;
-		borderSize = (uiElement.style.borderSize!=null) ? uiElement.style.borderSize : RoundedStyle.DEFAULT_borderSize;
-		borderRadius = (uiElement.style.borderRadius!=null) ? uiElement.style.borderRadius : RoundedStyle.DEFAULT_borderRadius;
+		color = (uiElement.style.color!=null) ? uiElement.style.color : defaultStyle.color;
+		borderColor = (uiElement.style.borderColor!=null) ? uiElement.style.borderColor : defaultStyle.borderColor;
+		borderSize = (uiElement.style.borderSize!=null) ? uiElement.style.borderSize : defaultStyle.borderSize;
+		borderRadius = (uiElement.style.borderRadius!=null) ? uiElement.style.borderRadius : defaultStyle.borderRadius;
 	}
 }
 
 @:allow(peote.ui)
 class RoundedSkin implements Skin
 {
+	public var type(default, never) = SkinType.Rounded;
+	public var defaultStyle:RoundedStyle;
+
 	var displayProgBuff = new Map<UIDisplay,{program:Program, buffer:Buffer<RoundedSkinElement>}>();
 	
-	public function new() // TODO: default RoundedStyle !
+	public function new(defaultStyle:RoundedStyle = null)
 	{
+		if (defaultStyle != null) this.defaultStyle = defaultStyle;
+		else this.defaultStyle = new RoundedStyle();
 	}
 	
 	public function addElement(uiDisplay:UIDisplay, uiElement:UIElement)
@@ -79,7 +68,7 @@ class RoundedSkin implements Skin
 			displayProgBuff.set(uiDisplay, d);
 			uiDisplay.addProgram(d.program);
 		}		
-		var skinElement = new RoundedSkinElement(uiElement);
+		var skinElement = new RoundedSkinElement(uiElement, defaultStyle);
 		d.buffer.addElement(skinElement);
 		uiElement.skinElement = skinElement;
 	}
@@ -103,12 +92,27 @@ class RoundedSkin implements Skin
 	
 	public function updateElement(uiDisplay:UIDisplay, uiElement:UIElement)
 	{
+		uiElement.skinElement.update(uiElement, defaultStyle);
 		var d = displayProgBuff.get(uiDisplay);
 		if (d != null) d.buffer.updateElement( cast uiElement.skinElement );
 	}
 	
 	public function createDefaultStyle():Dynamic {
 		return new RoundedStyle();
+	}
+	
+	public function setCompatibleStyle(style:Dynamic):Dynamic {
+		
+		if (style == null) return defaultStyle;
+		else if (style.compatibleSkins & type > 0) return style;
+		else {
+			return new RoundedStyle(
+				(style.color != null) ? style.color : defaultStyle.color,
+				(style.borderColor != null) ? style.borderColor : defaultStyle.borderColor,
+				(style.borderSize != null) ? style.borderSize : defaultStyle.borderSize,
+				(style.borderRadius != null) ? style.borderRadius : defaultStyle.borderRadius
+			);		
+		}
 	}
 	
 	private function createProgram(buffer:Buffer<RoundedSkinElement>):Program {

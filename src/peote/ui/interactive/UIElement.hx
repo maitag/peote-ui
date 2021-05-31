@@ -73,11 +73,10 @@ class UIElement
 		if (skin == null) {
 			if (style != null) throw ("Error, for styling the widget needs a skin");
 		} 
-		else if (s == null) {
-			s = skin.createDefaultStyle();
-		}
-		return style = s;
-	}	
+		else style = skin.setCompatibleStyle(s);
+		
+		return style;
+	}		
 	
 	//var skinElementIndex:Int;
 	var skinElement:SkinElement;
@@ -113,7 +112,7 @@ class UIElement
 		z = zIndex;
 				
 		this.skin = skin;
-		this.style = style;
+		set_style(style);
 		
 		pointerOver  = noOperation;
 		pointerOut   = noOperation;
@@ -130,7 +129,6 @@ class UIElement
 	{
 		if (uiDisplay != null) 
 		{
-			skinElement.update(this);
 			if (skin != null) skin.updateElement(uiDisplay, this);
 			if ( hasMoveEvent  != 0 ) {
 				pickableMove.update(this);

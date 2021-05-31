@@ -23,9 +23,9 @@ class SimpleSkinElement implements SkinElement implements Element
 	@zIndex public var z:Int = 0;
 	//var OPTIONS = {  };
 	
-	public function new(uiElement:UIElement) update(uiElement);
+	public function new(uiElement:UIElement, defaultStyle:SimpleStyle) update(uiElement, defaultStyle);
 	
-	public inline function update(uiElement:UIElement)
+	public inline function update(uiElement:UIElement, defaultStyle:Dynamic)
 	{
 		x = uiElement.x;
 		y = uiElement.y;
@@ -33,28 +33,26 @@ class SimpleSkinElement implements SkinElement implements Element
 		h = uiElement.height;
 		z = uiElement.z;
 		
-		//color = uiElement.style.color;
-		
-		//var style:SimpleStyle = cast uiElement.style;
-		//color = style.color;
-		
-		color = (uiElement.style.color!=null) ? uiElement.style.color : SimpleStyle.DEFAULT_color;
-		
+		color = (uiElement.style.color!=null) ? uiElement.style.color : defaultStyle.color;		
 	}
 }
 
 @:allow(peote.ui)
 class SimpleSkin implements Skin
 {
+	public var type(default, never) = SkinType.Simple;
+	public var defaultStyle:SimpleStyle;
+	
 	var displayProgBuff = new Map<UIDisplay,{program:Program, buffer:Buffer<SimpleSkinElement>}>();
 	
-	public function new()
+	public function new(defaultStyle:SimpleStyle = null)
 	{
+		if (defaultStyle != null) this.defaultStyle = defaultStyle;
+		else this.defaultStyle = new SimpleStyle();
 	}
 	
 	public function addElement(uiDisplay:UIDisplay, uiElement:UIElement)
 	{
-		// TODO: Optimize - store skinelement into uiElement
 		var d = displayProgBuff.get(uiDisplay);
 		if (d == null) {
 			var buffer = new Buffer<SimpleSkinElement>(16, 8);
@@ -62,7 +60,7 @@ class SimpleSkin implements Skin
 			displayProgBuff.set(uiDisplay, d);
 			uiDisplay.addProgram(d.program);
 		}		
-		var skinElement = new SimpleSkinElement(uiElement);
+		var skinElement = new SimpleSkinElement(uiElement, defaultStyle);
 		d.buffer.addElement(skinElement);
 		uiElement.skinElement = skinElement;
 	}
@@ -86,12 +84,19 @@ class SimpleSkin implements Skin
 	
 	public function updateElement(uiDisplay:UIDisplay, uiElement:UIElement)
 	{
+		uiElement.skinElement.update(uiElement, defaultStyle);
 		var d = displayProgBuff.get(uiDisplay);
 		if (d != null) d.buffer.updateElement( cast uiElement.skinElement );		
 	}
 	
-	public function createDefaultStyle():Dynamic {
-		return new SimpleStyle();
+	public function setCompatibleStyle(style:Dynamic):Dynamic {
+		if (style == null) return defaultStyle;
+		else if (style.compatibleSkins & type > 0) return style;
+		else {
+			return new SimpleStyle(
+				(style.color != null) ? style.color : defaultStyle.color
+			);			
+		}
 	}
 	
 	private function createProgram(buffer:Buffer<SimpleSkinElement>):Program {

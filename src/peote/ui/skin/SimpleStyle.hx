@@ -1,17 +1,19 @@
 package peote.ui.skin;
 
 import peote.view.Color;
+import peote.ui.skin.SkinType;
 
 @:structInit 
 class SimpleStyle 
 {
-	public static inline var DEFAULT_color:Color = Color.GREY2;
-
-	public var color:Null<Color> = DEFAULT_color;
+	public var compatibleSkins(default, null):SkinType = SkinType.Simple;
+	
+	public var color:Null<Color> = Color.GREY2;
 	
 	public function new(?color:Color) 
 	{
-		this.color = color;
+		compatibleSkins = SkinType.Simple;
+		if (color != null) this.color = color;
 	}
 	
 }
