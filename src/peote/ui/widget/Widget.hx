@@ -1,49 +1,54 @@
 package peote.ui.widget;
-import peote.layout.ContainerType;
+
 import peote.layout.LayoutContainer;
-import peote.ui.interactive.Button;
-import peote.ui.interactive.UIElement;
-import peote.ui.skin.RoundedSkin;
-import peote.ui.skin.SimpleStyle;
-import peote.view.Color;
+import peote.layout.LayoutOptions;
+import peote.layout.ContainerType;
+
+import peote.ui.skin.interfaces.Skin;
+import peote.ui.event.PointerEvent;
+
+typedef WidgetPointerEventParams = Widget->PointerEvent->Void;
 
 typedef WidgetOptions = {
 	> LayoutOptions,
-	?color:Color,
-	?skin:RoundedSkin,
-	?style:SimpleStyle,
+	?skin:Skin,
+	?style:Dynamic,
+	
+	?onPointerOver:WidgetPointerEventParams,
 }
 
-private typedef WidgetEventParams = Widget->PointerEvent->Void;
 
-class Widget extends LayoutContainer implements IWidget
+//@:access(peote.layout.LayoutContainer.childs)
+@:forward
+abstract Widget(LayoutContainer) from LayoutContainer to LayoutContainer 
 {
+	public inline function new(containerType:ContainerType, widgetOptions:WidgetOptions = null, innerLayoutContainer:Array<LayoutContainer> = null) 
+	{	
+		this = new LayoutContainer(containerType,
+			new UIElement(0, 0, 0, 0, widgetOptions.skin, widgetOptions.style),
+			widgetOptions, innerLayoutContainer);
 
-	var uiElement(get, set):UIElement;
-	public inline function get_uiElement():UIElement {
-		return cast this.layoutElement;
-	}
-	public inline function set_uiElement(uiElement):UIElement {
-		return this.layoutElement = uiElement;
+		set_onPointerOver(widgetOptions.onPointerOver);
 	}
 	
-	public function new(widgets:Array<IWidget>) 
-	{
-		var skin:RoundedSkin = null;
-		var style:SimpleStyle = null;
-		var uiElement = new UIElement(0, 0, 0, 0, 0, skin, style);
-		super(ContainerType.Box, uiElement, widgets);
-	}
+	public var uiElement(get, never):UIElement;
+	public inline function get_uiElement():UIElement return cast this.layoutElement;
 	
-	public function add(widget:IWidget) 
-	{
-		
-	}
+	@:to public inline function toUIElement():UIElement return uiElement;
 	
-	public var onPointerOver(default, set):WidgetEventParams;
-	inline function set_onPointerOver(f:WidgetEventParams):WidgetEventParams {
+	
+	public var onPointerOver(never, set):WidgetPointerEventParams;
+	inline function set_onPointerOver(f:WidgetPointerEventParams):WidgetPointerEventParams {
 		uiElement.rebindPointerOver( f.bind(this), f == null);
-		return onPointerOver = f;
+		return f;
+	}
+	
+	public var style(get, set):Dynamic;
+	inline function get_style():Dynamic {
+		return uiElement.style;
+	}
+	inline function set_style(style:Dynamic):Dynamic {
+		return uiElement.style = style;
 	}
 	
 }

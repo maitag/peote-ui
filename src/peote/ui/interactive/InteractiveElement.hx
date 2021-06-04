@@ -1,17 +1,16 @@
 package peote.ui.interactive;
 
 import peote.ui.event.PointerEvent;
-import peote.ui.interactive.UIDisplay;
+import peote.ui.interactive.InteractiveDisplay;
 import peote.ui.event.WheelEvent;
 
 import peote.ui.skin.interfaces.Skin;
 import peote.ui.skin.interfaces.SkinElement;
-import peote.ui.skin.SimpleStyle;
 
-@:allow(peote.ui.interactive.UIElement)
+@:allow(peote.ui.interactive.InteractiveElement)
 class Pickable implements peote.view.Element
 {
-	public var uiElement:UIElement; 
+	public var uiElement:InteractiveElement; 
 	
 	@posX public var x:Int=0;
 	@posY public var y:Int=0;	
@@ -21,13 +20,13 @@ class Pickable implements peote.view.Element
 	
 	var OPTIONS = { picking:true };
 	
-	private function new( uiElement:UIElement )
+	private function new( uiElement:InteractiveElement )
 	{
 		this.uiElement = uiElement;
 		update(uiElement);
 	}
 
-	private inline function update( uiElement:UIElement ):Void
+	private inline function update( uiElement:InteractiveElement ):Void
 	{
 		this.uiElement = uiElement;
 		x = uiElement.x;
@@ -57,23 +56,67 @@ class Pickable implements peote.view.Element
 // ---------------------------------------------------------------
 // ---------------------------------------------------------------
 // ---------------------------------------------------------------
+private typedef PointerEventParams = InteractiveElement->PointerEvent->Void;
+private typedef WheelEventParams = InteractiveElement->WheelEvent->Void;
 
 @:allow(peote.ui)
-class UIElement
-#if peote_layout
-	implements peote.layout.LayoutElement
-#end
+class InteractiveElement
 {
-	var uiDisplay:UIDisplay = null;
+	public var onPointerOver(default, set):PointerEventParams;
+	inline function set_onPointerOver(f:PointerEventParams):PointerEventParams {
+		rebindPointerOver( f.bind(this), f == null);
+		return onPointerOver = f;
+	}
+	
+	public var onPointerOut(default, set):PointerEventParams;
+	inline function set_onPointerOut(f:PointerEventParams):PointerEventParams {
+		rebindPointerOut( f.bind(this), f == null);
+		return onPointerOut = f;
+	}
+	
+	public var onPointerMove(default, set):PointerEventParams;
+	inline function set_onPointerMove(f:PointerEventParams):PointerEventParams {
+		rebindPointerMove( f.bind(this), f == null);
+		return onPointerMove = f;
+	}
+	
+	public var onPointerDown(default, set):PointerEventParams;
+	inline function set_onPointerDown(f:PointerEventParams):PointerEventParams {
+		rebindPointerDown( f.bind(this), f == null);
+		return onPointerDown = f;
+	}
+	
+	public var onPointerUp(default, set):PointerEventParams;
+	inline function set_onPointerUp(f:PointerEventParams):PointerEventParams {
+		rebindPointerUp( f.bind(this), f == null);
+		return onPointerUp = f;
+	}
+	
+	public var onPointerClick(default, set):PointerEventParams;
+	inline function set_onPointerClick(f:PointerEventParams):PointerEventParams {
+		rebindPointerClick( f.bind(this), f == null);
+		return onPointerClick = f;
+	}	
+	
+	public var onMouseWheel(default, set):WheelEventParams;
+	inline function set_onMouseWheel(f:WheelEventParams):WheelEventParams {
+		rebindMouseWheel( f.bind(this), f == null);
+		return onMouseWheel = f;
+	}
+
+	// ---------------------------------------------------------
+	
+	var uiDisplay:InteractiveDisplay = null;
 	
 	public var skin:Skin = null;
 	public var style(default, set):Dynamic = null;
 	inline function set_style(s:Dynamic):Dynamic {
 		trace("set style");
 		if (skin == null) {
-			if (style != null) throw ("Error, for styling the widget needs a skin");
+			if (s != null) throw ("Error, for styling the widget needs a skin");
+			style = s;
 		} 
-		else style = skin.setCompatibleStyle(s);
+		else style = skin.setCompatibleStyle(s); // TODO: in debug mode trace a warning here if a compatible skin is recreated!
 		
 		return style;
 	}		
@@ -143,7 +186,7 @@ class UIElement
 	
 	// -----------------
 	
-	private function onAddToDisplay(uiDisplay:UIDisplay)
+	private function onAddToDisplay(uiDisplay:InteractiveDisplay)
 	{
 		this.uiDisplay = uiDisplay;
 		
@@ -152,7 +195,7 @@ class UIElement
 		if ( hasClickEvent != 0 ) addPickableClick();
 	}
 	
-	private function onRemoveFromDisplay(uiDisplay:UIDisplay)
+	private function onRemoveFromDisplay(uiDisplay:InteractiveDisplay)
 	{		
 		if (uiDisplay != this.uiDisplay) throw('Error, $this is not inside uiDisplay: $uiDisplay');
 		
@@ -340,7 +383,7 @@ class UIElement
 	
 	// ----------------- show, hide and layout-interface
 
-	var lastUsedDisplay:UIDisplay = null;
+	var lastUsedDisplay:InteractiveDisplay = null;
 	
 	public function show():Void {
 		if (uiDisplay == null && lastUsedDisplay != null) {
@@ -354,49 +397,5 @@ class UIElement
 			uiDisplay.remove(this);
 		}		
 	}
-	
-	
-	// --------------------------------------------------------------------------
-	
-	#if peote_layout // bindings to peote-layout
-	
-	public inline function showByLayout():Void show();
-	public inline function hideByLayout():Void hide();
-
-	var layoutWasHidden = false;
-	public function updateByLayout(layoutContainer:peote.layout.LayoutContainer) 
-	{
-		if (!layoutWasHidden && layoutContainer.isHidden) { // if it is full outside of the Mask (so invisible)
-			hideByLayout();
-			layoutWasHidden = true;
-		}
-		else {
-			x = Math.round(layoutContainer.x);
-			y = Math.round(layoutContainer.y);
-			width = Math.round(layoutContainer.width);
-			height = Math.round(layoutContainer.height);
 			
-			if (layoutContainer.isMasked) { // if some of the edges is cut by mask for scroll-area
-				//maskX = Math.round(layoutContainer.maskX);
-				//maskY = Math.round(layoutContainer.maskY);
-				//maskWidth = maskX + Math.round(layoutContainer.maskWidth);
-				//maskHeight = maskY + Math.round(layoutContainer.maskHeight);
-			}
-			else { // if its fully displayed
-				//maskX = 0;
-				//maskY = 0;
-				//maskWidth = w;
-				//maskHeight = h;
-			}
-			
-			if (layoutWasHidden) {
-				showByLayout();
-				layoutWasHidden = false;
-			}
-			else update();
-		}
-	}	
-	#end
-	
-		
 }

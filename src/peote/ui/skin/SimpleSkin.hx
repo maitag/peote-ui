@@ -1,7 +1,7 @@
 package peote.ui.skin;
 
-import peote.ui.interactive.UIDisplay;
-import peote.ui.interactive.UIElement;
+import peote.ui.interactive.InteractiveDisplay;
+import peote.ui.interactive.InteractiveElement;
 import peote.ui.skin.SimpleStyle;
 import peote.ui.skin.interfaces.Skin;
 import peote.ui.skin.interfaces.SkinElement;
@@ -23,9 +23,9 @@ class SimpleSkinElement implements SkinElement implements Element
 	@zIndex public var z:Int = 0;
 	//var OPTIONS = {  };
 	
-	public function new(uiElement:UIElement, defaultStyle:SimpleStyle) update(uiElement, defaultStyle);
+	public function new(uiElement:InteractiveElement, defaultStyle:SimpleStyle) update(uiElement, defaultStyle);
 	
-	public inline function update(uiElement:UIElement, defaultStyle:Dynamic)
+	public inline function update(uiElement:InteractiveElement, defaultStyle:Dynamic)
 	{
 		x = uiElement.x;
 		y = uiElement.y;
@@ -43,7 +43,7 @@ class SimpleSkin implements Skin
 	public var type(default, never) = SkinType.Simple;
 	public var defaultStyle:SimpleStyle;
 	
-	var displayProgBuff = new Map<UIDisplay,{program:Program, buffer:Buffer<SimpleSkinElement>}>();
+	var displayProgBuff = new Map<InteractiveDisplay,{program:Program, buffer:Buffer<SimpleSkinElement>}>();
 	
 	public function new(defaultStyle:SimpleStyle = null)
 	{
@@ -51,7 +51,7 @@ class SimpleSkin implements Skin
 		else this.defaultStyle = new SimpleStyle();
 	}
 	
-	public function addElement(uiDisplay:UIDisplay, uiElement:UIElement)
+	public function addElement(uiDisplay:InteractiveDisplay, uiElement:InteractiveElement)
 	{
 		var d = displayProgBuff.get(uiDisplay);
 		if (d == null) {
@@ -65,7 +65,7 @@ class SimpleSkin implements Skin
 		uiElement.skinElement = skinElement;
 	}
 	
-	public function removeElement(uiDisplay:UIDisplay, uiElement:UIElement)
+	public function removeElement(uiDisplay:InteractiveDisplay, uiElement:InteractiveElement)
 	{
 		var d = displayProgBuff.get(uiDisplay);
 		if (d != null) {
@@ -82,7 +82,7 @@ class SimpleSkin implements Skin
 		
 	}
 	
-	public function updateElement(uiDisplay:UIDisplay, uiElement:UIElement)
+	public function updateElement(uiDisplay:InteractiveDisplay, uiElement:InteractiveElement)
 	{
 		uiElement.skinElement.update(uiElement, defaultStyle);
 		var d = displayProgBuff.get(uiDisplay);

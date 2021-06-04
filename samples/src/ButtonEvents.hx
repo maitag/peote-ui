@@ -11,8 +11,8 @@ import lime.graphics.RenderContext;
 
 import peote.view.PeoteView;
 import peote.view.Color;
-import peote.ui.interactive.UIDisplay;
-import peote.ui.interactive.Button;
+import peote.ui.interactive.InteractiveDisplay;
+import peote.ui.interactive.InteractiveElement;
 import peote.ui.skin.SimpleSkin;
 import peote.ui.skin.RoundedSkin;
 import peote.ui.skin.RoundedStyle;
@@ -20,10 +20,12 @@ import peote.ui.skin.SimpleStyle;
 import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
 
+typedef Button = InteractiveElement;
+
 class ButtonEvents extends Application
 {
 	var peoteView:PeoteView;
-	var uiDisplay:UIDisplay;
+	var uiDisplay:InteractiveDisplay;
 	
 	public function new() super();
 	
@@ -38,7 +40,7 @@ class ButtonEvents extends Application
 	public function initPeoteView(window:Window) {
 		try {			
 			peoteView = new PeoteView(window.context, window.width, window.height);
-			uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY1);
+			uiDisplay = new InteractiveDisplay(0, 0, window.width, window.height, Color.GREY1);
 			peoteView.addDisplay(uiDisplay);
 			
 			var simpleSkin = new SimpleSkin();

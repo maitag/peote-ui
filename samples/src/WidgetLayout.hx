@@ -7,15 +7,16 @@ import lime.ui.KeyModifier;
 import lime.ui.MouseButton;
 import lime.ui.MouseWheelMode;
 import lime.ui.Touch;
+import peote.layout.ContainerType;
 
 import peote.view.PeoteView;
 import peote.view.Color;
 
 import peote.ui.skin.RoundedSkin;
-import peote.ui.skin.SimpleStyle;
+import peote.ui.skin.RoundedStyle;
 
 import peote.ui.PeoteUI;
-import peote.ui.widget.container.*;
+import peote.ui.event.PointerEvent;
 import peote.ui.widget.*;
 
 import peote.layout.Size;
@@ -44,14 +45,14 @@ class WidgetLayout extends Application
 			
 			var mySkin = new RoundedSkin();
 			
-			var myStyle = new SimpleStyle();
+			var myStyle = new RoundedStyle();
 			myStyle.color = Color.GREY1;
 			myStyle.borderColor = Color.GREY5;
 			myStyle.borderSize = 4.0;
 			myStyle.borderRadius = 40.0;
 
 			
-			ui = new PeoteUI({
+			ui = new PeoteUI(ContainerType.BOX, {
 				bgColor:Color.GREY1,
 				left:10,
 				right:10,
@@ -59,24 +60,19 @@ class WidgetLayout extends Application
 			[
 				
 				// later into widget -> new LabelButton()
-				new Box(
+				new Div(
 				{
 					top:20,
 					left:20,
 					width:200,
 					height:50,
+					
 					skin:mySkin,
-					style:myStyle, // default Style (if myStyle changed it needs a update of all elements that using this!)
-					// To overwrite all of "myStyle"
-					//	color:Color.GREY1,
-					//	borderColor:Color.GREY5,
-					//	borderSize:4.0,
-					//	borderRadius:40.0,
-					}
-					//onPointerOver:onOver.bind(Color.BLUE),
+					style:myStyle,
+					
+					onPointerOver:onOver.bind(Color.BLUE),
 					//onPointerClick: function(widget:Widget, e:PointerEvent) {
 						//widget.style.color = Color.RED;
-						//widget.skin = mySkin1;
 						//widget.parent.style.color = Color.RED;
 						//widget.child[0].style.color = Color.RED;
 					//},
@@ -106,14 +102,19 @@ class WidgetLayout extends Application
 	}
 
 	// --------------------------------------------------
-/*	public inline function onOver(color:Color, widget:Widget, e:PointerEvent) {
-		uiElement.style.color = color;
-		uiElement.style.borderColor = Color.GREY7;
-		uiElement.updateStyle();
-		//uiElement.updateLayout();
+	public inline function onOver(color:Color, widget:Widget, e:PointerEvent) {
+		//trace(widget.parent);
+		
+		//widget.parent.uiElement.color = Color.RED;
+		
+		widget.style.color = color;
+		widget.style.borderColor = Color.GREY7;
+		//TODO: uiElement.updateStyle();
+		widget.uiElement.update();
+		//TODO: uiElement.updateLayout();
 		trace(" -----> onPointerOver", e);
 	}
-*/
+
 	
 
 	// ------------------------------------------------------------

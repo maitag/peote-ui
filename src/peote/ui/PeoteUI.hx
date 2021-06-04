@@ -1,43 +1,62 @@
 package peote.ui;
-import haxe.Constraints.Function;
+
 import lime.ui.MouseButton;
 import lime.ui.MouseWheelMode;
 import lime.ui.Touch;
 import peote.layout.LayoutContainer;
+import peote.layout.LayoutElement;
 import peote.layout.LayoutOptions;
 import peote.layout.ContainerType;
-import peote.ui.interactive.UIDisplay;
+import peote.ui.interactive.InteractiveDisplay;
 import peote.view.Color;
 
-typedef PeoteUILayoutOptions = {
+import peote.ui.widget.UIDisplay;
+import peote.ui.widget.Widget;
+
+typedef PeoteUIOptions = {
 	> LayoutOptions,
 	?bgColor:Color,
 }
 
+class PeoteUIParams {
+	
+}
+
+//@:generic
 @:access(peote.layout.LayoutContainer.childs)
 @:forward
 abstract PeoteUI(LayoutContainer) from LayoutContainer to LayoutContainer {
-	public inline function new(containerType = ContainerType.BOX, peoteUiLayout:PeoteUILayoutOptions = null, innerLayoutContainer:Array<LayoutContainer> = null) 
+	public inline function new(containerType = ContainerType.BOX, peoteUiOptions:PeoteUIOptions = null, widgets:Array<Widget> = null) 
 	{
-		if (peoteUiLayout == null) peoteUiLayout = {relativeChildPositions:true};
-		else peoteUiLayout.relativeChildPositions = true;
+		if (peoteUiOptions == null) peoteUiOptions = {relativeChildPositions:true};
+		else peoteUiOptions.relativeChildPositions = true;
 		
-		this = new LayoutContainer(containerType, new UIDisplay(0, 0, 0, 0, (peoteUiLayout.bgColor != null) ? peoteUiLayout.bgColor : Color.BLACK), peoteUiLayout, innerLayoutContainer);
+		//var layoutElement:LayoutElement = new UIDisplay<PeoteUIOptions, PeoteUIParams>(0, 0, 0, 0, (peoteUiOptions.bgColor != null) ? peoteUiOptions.bgColor : Color.BLACK);
+		var layoutElement:LayoutElement = new UIDisplay(0, 0, 0, 0, (peoteUiOptions.bgColor != null) ? peoteUiOptions.bgColor : Color.BLACK);
+		this = new LayoutContainer(
+			containerType, 
+			layoutElement,
+			peoteUiOptions,
+			widgets
+		);
+			
 		addChildsToDisplay(this);
 	}
 	
 	function addChildsToDisplay(lc:LayoutContainer) {
 		if (lc.childs != null)
 			for (child in lc.childs) {
+				// TODO: if child it is a DISPLAY -> add it to peote-view
 				display.add(cast child.layoutElement);
+				
 				addChildsToDisplay(child);
 			}
 	}
 	
-	public var display(get, never):UIDisplay;
-	public inline function get_display():UIDisplay return cast this.layoutElement;
+	public var display(get, never):InteractiveDisplay;
+	public inline function get_display():InteractiveDisplay return cast this.layoutElement;
 	
-	@:to public inline function toUIDisplay():UIDisplay return display;
+	@:to public inline function toUIDisplay():InteractiveDisplay return display;
 	
 	public var mouseEnabled(get, set):Bool;
 	public inline function get_mouseEnabled():Bool return display.mouseEnabled;
