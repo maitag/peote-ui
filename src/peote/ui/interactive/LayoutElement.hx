@@ -1,12 +1,10 @@
-package peote.ui.widget;
+package peote.ui.interactive;
 
-import peote.layout.LayoutElement;
-
-import peote.ui.interactive.InteractiveElement;
+import peote.ui.interactive.UIElement;
 import peote.ui.skin.interfaces.Skin;
 
-//@:generic class UIElement<O,P> extends InteractiveElement implements LayoutElement
-class UIElement extends InteractiveElement implements LayoutElement
+//@:generic class LayoutElement<O,P> extends UIElement implements peote.layout.LayoutElement
+class LayoutElement extends UIElement implements peote.layout.LayoutElement
 {
 	//var options:O;
 	//var params:P;

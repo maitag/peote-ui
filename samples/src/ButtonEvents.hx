@@ -1,31 +1,33 @@
 package;
 
 import lime.app.Application;
+import lime.graphics.RenderContext;
 import lime.ui.Window;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.ui.MouseButton;
 import lime.ui.MouseWheelMode;
 import lime.ui.Touch;
-import lime.graphics.RenderContext;
 
 import peote.view.PeoteView;
 import peote.view.Color;
-import peote.ui.interactive.InteractiveDisplay;
-import peote.ui.interactive.InteractiveElement;
+
+import peote.ui.interactive.UIDisplay;
+import peote.ui.interactive.UIButton;
+
 import peote.ui.skin.SimpleSkin;
 import peote.ui.skin.RoundedSkin;
 import peote.ui.skin.RoundedStyle;
 import peote.ui.skin.SimpleStyle;
+
 import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
 
-typedef Button = InteractiveElement;
 
 class ButtonEvents extends Application
 {
 	var peoteView:PeoteView;
-	var uiDisplay:InteractiveDisplay;
+	var uiDisplay:UIDisplay;
 	
 	public function new() super();
 	
@@ -40,7 +42,7 @@ class ButtonEvents extends Application
 	public function initPeoteView(window:Window) {
 		try {			
 			peoteView = new PeoteView(window.context, window.width, window.height);
-			uiDisplay = new InteractiveDisplay(0, 0, window.width, window.height, Color.GREY1);
+			uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY1);
 			peoteView.addDisplay(uiDisplay);
 			
 			var simpleSkin = new SimpleSkin();
@@ -57,36 +59,36 @@ class ButtonEvents extends Application
 			myStyle.borderRadius = 40.0;
 			
 			trace("NEW BUTTON -----");
-			//var b1:Button = new Button(20, 0, 200, 100, roundedSkin, myStyle);
-			var b1:Button = new Button(20, 0, 200, 100, roundedSkin, new SimpleStyle(Color.RED));
-			uiDisplay.add(b1);
+			//var button1:Button = new Button(20, 0, 200, 100, roundedSkin, myStyle);
+			var button1:UIButton = new UIButton(20, 0, 200, 100, roundedSkin, new SimpleStyle(Color.RED));
+			uiDisplay.add(button1);
 			
-			b1.onPointerOver = onOver.bind(Color.GREY2);
-			//b1.onPointerOut = onOut.bind(Color.GREY1); // only fires if there was some over before!
-			b1.onPointerOut = onOut.bind(Color.RED); // only fires if there was some over before!
-			b1.onPointerDown = onDown.bind(Color.YELLOW);
-			b1.onPointerUp = onUp.bind(Color.GREY5);   // only fires if there was some down before!
-			b1.onPointerClick = onClick;
+			button1.onPointerOver = onOver.bind(Color.GREY2);
+			//button1.onPointerOut = onOut.bind(Color.GREY1); // only fires if there was some over before!
+			button1.onPointerOut = onOut.bind(Color.RED); // only fires if there was some over before!
+			button1.onPointerDown = onDown.bind(Color.YELLOW);
+			button1.onPointerUp = onUp.bind(Color.GREY5);   // only fires if there was some down before!
+			button1.onPointerClick = onClick;
 			
 			var myStyle2 = new RoundedStyle(Color.GREY1, Color.GREY5);
 			myStyle2.borderSize = 2.0;
 
 			trace("NEW BUTTON -----");
-			var b2:Button = new Button(120, 60, 200, 100, roundedSkin, myStyle2);
-			uiDisplay.add(b2);
+			var button2:UIButton = new UIButton(120, 60, 200, 100, roundedSkin, myStyle2);
+			uiDisplay.add(button2);
 			
-			b2.onPointerOver = onOver.bind(Color.GREY2);
-			b2.onPointerOut = onOut.bind(Color.GREY1); // only fire if there was some over before!
-			b2.onPointerMove = onMove;
-			b2.onPointerDown = onDown.bind(Color.RED);
-			b2.onPointerUp = onUp.bind(Color.GREY5);   // only fire if there was some down before!
-			b2.onPointerClick = onClick;
+			button2.onPointerOver = onOver.bind(Color.GREY2);
+			button2.onPointerOut = onOut.bind(Color.GREY1); // only fire if there was some over before!
+			button2.onPointerMove = onMove;
+			button2.onPointerDown = onDown.bind(Color.RED);
+			button2.onPointerUp = onUp.bind(Color.GREY5);   // only fire if there was some down before!
+			button2.onPointerClick = onClick;
 			
-			//trace("REMOVE onPointerClick -----"); b1.onPointerClick = null;
-			//uiDisplay.remove(b1);
-			//uiDisplay.add(b1);
+			//trace("REMOVE onPointerClick -----"); button1.onPointerClick = null;
+			//uiDisplay.remove(button1);
+			//uiDisplay.add(button1);
 						
-			//uiDisplay.update(b1);
+			//uiDisplay.update(button1);
 			//uiDisplay.updateAll();
 			
 			// ---- Dragging -----
@@ -100,27 +102,27 @@ class ButtonEvents extends Application
 			}
 			
 			//var background = new Button(10, 140, 350, 60, simpleSkin, new SimpleStyle(Color.GREEN));
-			var background = new Button(10, 140, 350, 60, simpleSkin, myStyle2);
+			var background = new UIButton(10, 140, 350, 60, simpleSkin, myStyle2);
 			uiDisplay.add(background);
 			
-			var dragger = new Button(10, 140, 100, 60, 1, simpleSkin, myStyle3);
+			var dragger = new UIButton(10, 140, 100, 60, 1, simpleSkin, myStyle3);
 			dragger.onPointerOver = onOver.bind(Color.BLUE);
 			dragger.onPointerOut = onOut.bind(Color.BLUE-0x00003300);
 			
 			dragger.setDragArea(10, 140, 350, 60); // x, y, width, height
-			dragger.onPointerDown = function(b:Button, e:PointerEvent) {
+			dragger.onPointerDown = function(b:UIButton, e:PointerEvent) {
 				trace(" -----> onPointerDown", e);
 				b.startDragging(e);
 				b.style.color = Color.YELLOW;
 				b.update();
 			}
-			dragger.onPointerUp = function(b:Button, e:PointerEvent) {
+			dragger.onPointerUp = function(b:UIButton, e:PointerEvent) {
 				trace(" -----> onPointerUp", e);
 				b.stopDragging(e);
 				b.style.color = Color.BLUE;
 				b.update();
 			}
-			dragger.onMouseWheel = function(b:Button, e:WheelEvent) {
+			dragger.onMouseWheel = function(b:UIButton, e:WheelEvent) {
 				trace("MouseWheel:", e);
 			}
 			uiDisplay.add(dragger);
@@ -132,18 +134,18 @@ class ButtonEvents extends Application
 			myStyle4.borderSize = 3.0;
 			myStyle4.borderRadius = 40.0;
 			
-			var draggAreaBG = new Button(10, 200, 350, 350, roundedSkin, myStyle4);
+			var draggAreaBG = new UIButton(10, 200, 350, 350, roundedSkin, myStyle4);
 			uiDisplay.add(draggAreaBG);
 
-			var draggArea = new Button(250, 250, 80, 80, roundedSkin, myStyle4);
+			var draggArea = new UIButton(250, 250, 80, 80, roundedSkin, myStyle4);
 			draggArea.setDragArea(10, 200, 350, 350); // x, y, width, height
-			draggArea.onPointerDown = function(b:Button, e:PointerEvent) {
+			draggArea.onPointerDown = function(b:UIButton, e:PointerEvent) {
 				trace(" -----> onPointerDown", e);
 				b.startDragging(e);
 				b.style.color = Color.YELLOW;
 				b.update();
 			}
-			draggArea.onPointerUp = function(b:Button, e:PointerEvent) {
+			draggArea.onPointerUp = function(b:UIButton, e:PointerEvent) {
 				trace(" -----> onPointerUp", e);
 				b.stopDragging(e);
 				b.style.color = Color.GREY1;
@@ -152,7 +154,7 @@ class ButtonEvents extends Application
 			uiDisplay.add(draggArea);
 
 			
-			// TODO: make button to switch between
+			// TODO: make uiElement to switch between
 			//uiDisplay.mouseEnabled = false;
 			//uiDisplay.touchEnabled = false;
 			peoteView.zoom = 2;
@@ -168,39 +170,39 @@ class ButtonEvents extends Application
 	
 	// ----------------- Button Eventhandler ----------------------
 	
-	public inline function onOver(color:Color, button:Button, e:PointerEvent) {
-		button.style.color = color;
-		button.style.borderColor = Color.GREY7;
-		button.update();
+	public inline function onOver(color:Color, uiElement:UIButton, e:PointerEvent) {
+		uiElement.style.color = color;
+		uiElement.style.borderColor = Color.GREY7;
+		uiElement.update();
 		trace(" -----> onPointerOver", e);
 	}
 	
-	public inline function onOut(color:Color, button:Button, e:PointerEvent) {
-		button.style.color = color;
-		button.style.borderColor = Color.GREY5;
-		button.update();
+	public inline function onOut(color:Color, uiElement:UIButton, e:PointerEvent) {
+		uiElement.style.color = color;
+		uiElement.style.borderColor = Color.GREY5;
+		uiElement.update();
 		trace(" -----> onPointerOut", e);
 	}
 	
-	public inline function onMove(button:Button, e:PointerEvent) {
+	public inline function onMove(uiElement:UIButton, e:PointerEvent) {
 		trace(" -----> onPointerMove", e);
 	}
 	
-	public inline function onDown(borderColor:Color, button:Button, e:PointerEvent) {
-		button.style.borderColor = borderColor;
-		//button.x += 30;
-		button.update();
+	public inline function onDown(borderColor:Color, uiElement:UIButton, e:PointerEvent) {
+		uiElement.style.borderColor = borderColor;
+		//uiElement.x += 30;
+		uiElement.update();
 		trace(" -----> onPointerDown", e);
 	}
 	
-	public inline function onUp(borderColor:Color, button:Button, e:PointerEvent) {
-		button.style.borderColor = borderColor;
-		button.update();
+	public inline function onUp(borderColor:Color, uiElement:UIButton, e:PointerEvent) {
+		uiElement.style.borderColor = borderColor;
+		uiElement.update();
 		trace(" -----> onPointerUp", e);
 	}
 	
-	public inline function onClick(button:Button, e:PointerEvent) {
-		//button.y += 30; button.update();
+	public inline function onClick(uiElement:UIButton, e:PointerEvent) {
+		//uiElement.y += 30; uiElement.update();
 		trace(" -----> onPointerClick", e);
 	}
 	

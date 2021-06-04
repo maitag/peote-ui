@@ -7,10 +7,10 @@ import peote.layout.LayoutContainer;
 import peote.layout.LayoutElement;
 import peote.layout.LayoutOptions;
 import peote.layout.ContainerType;
-import peote.ui.interactive.InteractiveDisplay;
+import peote.ui.interactive.UIDisplay;
 import peote.view.Color;
 
-import peote.ui.widget.UIDisplay;
+import peote.ui.interactive.LayoutDisplay;
 import peote.ui.widget.Widget;
 
 typedef PeoteUIOptions = {
@@ -32,7 +32,7 @@ abstract PeoteUI(LayoutContainer) from LayoutContainer to LayoutContainer {
 		else peoteUiOptions.relativeChildPositions = true;
 		
 		//var layoutElement:LayoutElement = new UIDisplay<PeoteUIOptions, PeoteUIParams>(0, 0, 0, 0, (peoteUiOptions.bgColor != null) ? peoteUiOptions.bgColor : Color.BLACK);
-		var layoutElement:LayoutElement = new UIDisplay(0, 0, 0, 0, (peoteUiOptions.bgColor != null) ? peoteUiOptions.bgColor : Color.BLACK);
+		var layoutElement:LayoutElement = new LayoutDisplay(0, 0, 0, 0, (peoteUiOptions.bgColor != null) ? peoteUiOptions.bgColor : Color.BLACK);
 		this = new LayoutContainer(
 			containerType, 
 			layoutElement,
@@ -53,10 +53,10 @@ abstract PeoteUI(LayoutContainer) from LayoutContainer to LayoutContainer {
 			}
 	}
 	
-	public var display(get, never):InteractiveDisplay;
-	public inline function get_display():InteractiveDisplay return cast this.layoutElement;
+	public var display(get, never):UIDisplay;
+	public inline function get_display():UIDisplay return cast this.layoutElement;
 	
-	@:to public inline function toUIDisplay():InteractiveDisplay return display;
+	@:to public inline function toUIDisplay():UIDisplay return display;
 	
 	public var mouseEnabled(get, set):Bool;
 	public inline function get_mouseEnabled():Bool return display.mouseEnabled;

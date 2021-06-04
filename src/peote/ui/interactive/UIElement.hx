@@ -1,16 +1,19 @@
 package peote.ui.interactive;
 
+import peote.view.Element;
+import peote.view.Buffer;
+
 import peote.ui.event.PointerEvent;
-import peote.ui.interactive.InteractiveDisplay;
 import peote.ui.event.WheelEvent;
+
+import peote.ui.interactive.UIDisplay;
 
 import peote.ui.skin.interfaces.Skin;
 import peote.ui.skin.interfaces.SkinElement;
 
-@:allow(peote.ui.interactive.InteractiveElement)
-class Pickable implements peote.view.Element
+class Pickable implements Element
 {
-	public var uiElement:InteractiveElement; 
+	public var uiElement:UIElement;
 	
 	@posX public var x:Int=0;
 	@posY public var y:Int=0;	
@@ -18,15 +21,15 @@ class Pickable implements peote.view.Element
 	@sizeY public var h:Int=100;
 	@zIndex public var z:Int = 0;
 	
-	var OPTIONS = { picking:true };
+	var OPTIONS = { picking: true };
 	
-	private function new( uiElement:InteractiveElement )
+	public function new( uiElement:UIElement )
 	{
 		this.uiElement = uiElement;
 		update(uiElement);
 	}
 
-	private inline function update( uiElement:InteractiveElement ):Void
+	public inline function update( uiElement:UIElement ):Void
 	{
 		this.uiElement = uiElement;
 		x = uiElement.x;
@@ -56,13 +59,17 @@ class Pickable implements peote.view.Element
 // ---------------------------------------------------------------
 // ---------------------------------------------------------------
 // ---------------------------------------------------------------
-private typedef PointerEventParams = InteractiveElement->PointerEvent->Void;
-private typedef WheelEventParams = InteractiveElement->WheelEvent->Void;
+private typedef PointerEventParams = UIElement->PointerEvent->Void;
+private typedef WheelEventParams = UIElement->WheelEvent->Void;
 
 @:allow(peote.ui)
-class InteractiveElement
+class UIElement
 {
-	public var onPointerOver(default, set):PointerEventParams;
+	// TAKE CARE:
+	// if enabling the PointerEvent-helpers here and not like now via the "Button"-childclass,
+	// the ButtonEvents-sample gets PROBLEM inside HAXE 3.4.4 with Buffer<Pickable> macro-generating !!!!
+	
+/*	public var onPointerOver(default, set):PointerEventParams;
 	inline function set_onPointerOver(f:PointerEventParams):PointerEventParams {
 		rebindPointerOver( f.bind(this), f == null);
 		return onPointerOver = f;
@@ -103,10 +110,10 @@ class InteractiveElement
 		rebindMouseWheel( f.bind(this), f == null);
 		return onMouseWheel = f;
 	}
-
+*/
 	// ---------------------------------------------------------
 	
-	var uiDisplay:InteractiveDisplay = null;
+	var uiDisplay:UIDisplay = null;
 	
 	public var skin:Skin = null;
 	public var style(default, set):Dynamic = null;
@@ -186,7 +193,7 @@ class InteractiveElement
 	
 	// -----------------
 	
-	private function onAddToDisplay(uiDisplay:InteractiveDisplay)
+	private function onAddToDisplay(uiDisplay:UIDisplay)
 	{
 		this.uiDisplay = uiDisplay;
 		
@@ -195,7 +202,7 @@ class InteractiveElement
 		if ( hasClickEvent != 0 ) addPickableClick();
 	}
 	
-	private function onRemoveFromDisplay(uiDisplay:InteractiveDisplay)
+	private function onRemoveFromDisplay(uiDisplay:UIDisplay)
 	{		
 		if (uiDisplay != this.uiDisplay) throw('Error, $this is not inside uiDisplay: $uiDisplay');
 		
@@ -383,7 +390,7 @@ class InteractiveElement
 	
 	// ----------------- show, hide and layout-interface
 
-	var lastUsedDisplay:InteractiveDisplay = null;
+	var lastUsedDisplay:UIDisplay = null;
 	
 	public function show():Void {
 		if (uiDisplay == null && lastUsedDisplay != null) {

@@ -1,17 +1,17 @@
 package peote.ui.skin;
 
-import peote.ui.interactive.InteractiveDisplay;
-import peote.ui.interactive.InteractiveElement;
-import peote.ui.skin.RoundedStyle;
-import peote.ui.skin.interfaces.Skin;
-import peote.ui.skin.interfaces.SkinElement;
 import peote.view.Buffer;
 import peote.view.Program;
 import peote.view.Element;
 import peote.view.Color;
 
+import peote.ui.interactive.UIDisplay;
+import peote.ui.interactive.UIElement;
 
-@:allow(peote.ui)
+import peote.ui.skin.RoundedStyle;
+import peote.ui.skin.interfaces.Skin;
+import peote.ui.skin.interfaces.SkinElement;
+
 class RoundedSkinElement implements SkinElement implements Element
 {
 	// from style
@@ -28,9 +28,9 @@ class RoundedSkinElement implements SkinElement implements Element
 	@zIndex public var z:Int = 0;	
 	//var OPTIONS = {  };
 	
-	public function new(uiElement:InteractiveElement, defaultStyle:RoundedStyle) update(uiElement, defaultStyle);
+	public function new(uiElement:UIElement, defaultStyle:RoundedStyle) update(uiElement, defaultStyle);
 	
-	public inline function update(uiElement:InteractiveElement, defaultStyle:Dynamic)
+	public inline function update(uiElement:UIElement, defaultStyle:Dynamic)
 	{
 		x = uiElement.x;
 		y = uiElement.y;
@@ -51,7 +51,7 @@ class RoundedSkin implements Skin
 	public var type(default, never) = SkinType.Rounded;
 	public var defaultStyle:RoundedStyle;
 
-	var displayProgBuff = new Map<InteractiveDisplay,{program:Program, buffer:Buffer<RoundedSkinElement>}>();
+	var displayProgBuff = new Map<UIDisplay,{program:Program, buffer:Buffer<RoundedSkinElement>}>();
 	
 	public function new(defaultStyle:RoundedStyle = null)
 	{
@@ -59,7 +59,7 @@ class RoundedSkin implements Skin
 		else this.defaultStyle = new RoundedStyle();
 	}
 	
-	public function addElement(uiDisplay:InteractiveDisplay, uiElement:InteractiveElement)
+	public function addElement(uiDisplay:UIDisplay, uiElement:UIElement)
 	{
 		var d = displayProgBuff.get(uiDisplay);
 		if (d == null) {
@@ -73,7 +73,7 @@ class RoundedSkin implements Skin
 		uiElement.skinElement = skinElement;
 	}
 	
-	public function removeElement(uiDisplay:InteractiveDisplay, uiElement:InteractiveElement)
+	public function removeElement(uiDisplay:UIDisplay, uiElement:UIElement)
 	{
 		var d = displayProgBuff.get(uiDisplay);
 		if (d != null) {
@@ -90,7 +90,7 @@ class RoundedSkin implements Skin
 		
 	}
 	
-	public function updateElement(uiDisplay:InteractiveDisplay, uiElement:InteractiveElement)
+	public function updateElement(uiDisplay:UIDisplay, uiElement:UIElement)
 	{
 		uiElement.skinElement.update(uiElement, defaultStyle);
 		var d = displayProgBuff.get(uiDisplay);

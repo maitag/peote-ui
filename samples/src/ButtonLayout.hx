@@ -10,8 +10,8 @@ import lime.graphics.RenderContext;
 import peote.view.PeoteView;
 import peote.view.Color;
 
-import peote.ui.widget.UIDisplay;
-import peote.ui.widget.UIElement;
+import peote.ui.interactive.LayoutDisplay;
+import peote.ui.interactive.LayoutElement;
 import peote.ui.skin.RoundedSkin;
 import peote.ui.skin.SimpleStyle;
 
@@ -22,7 +22,7 @@ import peote.layout.Size;
 class ButtonLayout extends Application
 {
 	var peoteView:PeoteView;
-	var uiDisplay:UIDisplay;
+	var uiDisplay:LayoutDisplay;
 	var mySkin = new RoundedSkin();
 		
 	var uiLayoutContainer:LayoutContainer;
@@ -40,13 +40,13 @@ class ButtonLayout extends Application
 	public function initPeoteView(window:Window) {
 		try {			
 			peoteView = new PeoteView(window.context, window.width, window.height);
-			uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY3);
+			uiDisplay = new LayoutDisplay(0, 0, window.width, window.height, Color.GREY3);
 			peoteView.addDisplay(uiDisplay);
 			
-			var red   = new UIElement(mySkin, new SimpleStyle(Color.RED));
-			var green = new UIElement(mySkin, new SimpleStyle(Color.GREEN));
-			var blue  = new UIElement(mySkin, new SimpleStyle(Color.BLUE));
-			var yellow= new UIElement(mySkin, new SimpleStyle(Color.YELLOW));
+			var red   = new LayoutElement(mySkin, new SimpleStyle(Color.RED));
+			var green = new LayoutElement(mySkin, new SimpleStyle(Color.GREEN));
+			var blue  = new LayoutElement(mySkin, new SimpleStyle(Color.BLUE));
+			var yellow= new LayoutElement(mySkin, new SimpleStyle(Color.YELLOW));
 
 			uiDisplay.add(red);
 			uiDisplay.add(green);
