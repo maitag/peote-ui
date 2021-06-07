@@ -1,7 +1,5 @@
 package peote.ui.widget;
 
-import peote.layout.LayoutContainer;
-import peote.layout.LayoutOptions;
 import peote.layout.ContainerType;
 
 

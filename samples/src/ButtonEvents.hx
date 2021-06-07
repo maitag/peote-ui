@@ -2,7 +2,6 @@ package;
 
 import lime.app.Application;
 import lime.graphics.RenderContext;
-import lime.ui.Window;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.ui.MouseButton;
@@ -12,6 +11,8 @@ import lime.ui.Touch;
 import peote.view.PeoteView;
 import peote.view.Color;
 
+import peote.text.Font;
+
 import peote.ui.interactive.UIDisplay;
 import peote.ui.interactive.UIButton;
 
@@ -19,6 +20,8 @@ import peote.ui.skin.SimpleSkin;
 import peote.ui.skin.RoundedSkin;
 import peote.ui.skin.RoundedStyle;
 import peote.ui.skin.SimpleStyle;
+
+import peote.ui.text.FontStylePacked;
 
 import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
@@ -28,23 +31,34 @@ class ButtonEvents extends Application
 {
 	var peoteView:PeoteView;
 	var uiDisplay:UIDisplay;
+	var font:Font<FontStylePacked>;
 	
 	public function new() super();
 	
 	public override function onWindowCreate() {
 		switch (window.context.type)
 		{
-			case WEBGL, OPENGL, OPENGLES: initPeoteView(window); // start sample
+			case WEBGL, OPENGL, OPENGLES: initPeoteView();
 			default: throw("Sorry, only works with OpenGL.");
 		}
 	}
 	
-	public function initPeoteView(window:Window) {
-		try {			
-			peoteView = new PeoteView(window.context, window.width, window.height);
-			uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY1);
-			peoteView.addDisplay(uiDisplay);
+	public function initPeoteView() {
+
+		peoteView = new PeoteView(window.context, window.width, window.height);
+		uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY1);
+		peoteView.addDisplay(uiDisplay);
 			
+		try {			
+			// load the FONT:
+			font = new Font<FontStylePacked>("assets/fonts/packed/hack/config.json");
+			font.load( onFontLoaded ); // start sample
+		}
+		catch (e:Dynamic) trace("ERROR:", e);
+	}
+	
+	public function onFontLoaded() {
+		try {			
 			var simpleSkin = new SimpleSkin();
 			var roundedSkin = new RoundedSkin();
 			
@@ -91,6 +105,18 @@ class ButtonEvents extends Application
 			//uiDisplay.update(button1);
 			//uiDisplay.updateAll();
 			
+			
+			// ----- Text --------
+			
+			
+			//var fontStyle = new FontStyle();
+			//var fontSkin = new FontSkin<FontStyle>(font);
+			//
+			//var textLine = UITextLine<FontStyle>(0,0,300,50, fontSkin, fontStyle); //, selectionFontStyle
+			//uiDisplay.add(textLine);
+			
+			
+
 			// ---- Dragging -----
 			
 			trace("NEW SLIDER -----");			
@@ -152,7 +178,7 @@ class ButtonEvents extends Application
 				b.update();
 			}
 			uiDisplay.add(draggArea);
-
+			
 			
 			// TODO: make uiElement to switch between
 			//uiDisplay.mouseEnabled = false;
@@ -163,6 +189,7 @@ class ButtonEvents extends Application
 			uiDisplay.mouseEnabled = false;
 			peoteView.zoom = 3;
 			#end
+			
 			
 		}
 		catch (e:Dynamic) trace("ERROR:", e);

@@ -17,12 +17,12 @@ import peote.view.Buffer;
 import peote.view.Program;
 import peote.view.Color;
 
-import peote.ui.interactive.UIElement;
+import peote.ui.interactive.InteractiveElement;
 
-@:allow(peote.ui.interactive.UIElement)
+@:allow(peote.ui.interactive)
 class UIDisplay extends Display
 {	
-	var uiElements:Array<UIElement>;
+	var uiElements:Array<InteractiveElement>;
 	
 	var movePickBuffer:Buffer<Pickable>;
 	var movePickProgram:Program;
@@ -32,8 +32,8 @@ class UIDisplay extends Display
 	
 	//var skins:Array<Skin>; // TODO: no references
 	
-	var draggingMouseElements:Array<UIElement>;
-	var draggingTouchElements:Vector<Array<UIElement>>;
+	var draggingMouseElements:Array<InteractiveElement>;
+	var draggingTouchElements:Vector<Array<InteractiveElement>>;
 	
 	var maxTouchpoints:Int;
 
@@ -49,11 +49,11 @@ class UIDisplay extends Display
 		clickPickBuffer = new Buffer<Pickable>(16,8); // TODO: fill with constants
 		clickPickProgram = new Program(clickPickBuffer);
 	
-		uiElements = new Array<UIElement>();
+		uiElements = new Array<InteractiveElement>();
 		//skins = new Array<Skin>();
 		
 		lastMouseDownIndex = new Vector<Int>(3);
-		draggingMouseElements = new Array<UIElement>();
+		draggingMouseElements = new Array<InteractiveElement>();
 		for (i in 0...lastMouseDownIndex.length) {
 			lastMouseDownIndex.set(i, -1);
 		}
@@ -61,11 +61,11 @@ class UIDisplay extends Display
 		this.maxTouchpoints = maxTouchpoints;
 		lastTouchOverIndex = new Vector<Int>(maxTouchpoints);
 		lastTouchDownIndex = new Vector<Int>(maxTouchpoints);
-		draggingTouchElements = new Vector<Array<UIElement>>(maxTouchpoints);
+		draggingTouchElements = new Vector<Array<InteractiveElement>>(maxTouchpoints);
 		for (i in 0...maxTouchpoints) {
 			lastTouchOverIndex.set(i, -1);
 			lastTouchDownIndex.set(i, -1);
-			draggingTouchElements.set(i, new Array<UIElement>());
+			draggingTouchElements.set(i, new Array<InteractiveElement>());
 		}
 	}
 	
@@ -76,13 +76,13 @@ class UIDisplay extends Display
 		clickPickProgram.setNewGLContext(newGl);
 	}
 	
-	public function add(uiElement:UIElement):Void {
+	public function add(uiElement:InteractiveElement):Void {
 		//TODO
 		uiElements.push(uiElement);
 		uiElement.onAddToDisplay(this);
 	}
 	
-	public function remove(uiElement:UIElement):Void {
+	public function remove(uiElement:InteractiveElement):Void {
 		//TODO
 		uiElements.remove(uiElement);
 		uiElement.onRemoveFromDisplay(this);
@@ -94,7 +94,7 @@ class UIDisplay extends Display
 		//TODO
 	}
 	
-	public function update(uiElement:UIElement):Void {
+	public function update(uiElement:InteractiveElement):Void {
 		uiElement.update();
 		//TODO
 	}
@@ -106,7 +106,7 @@ class UIDisplay extends Display
 	}
 	
 	// ----------------------------------------
-	public function startDragging(uiElement:UIElement, e:PointerEvent):Void {
+	public function startDragging(uiElement:InteractiveElement, e:PointerEvent):Void {
 		if (! uiElement.isDragging) {
 			uiElement.isDragging = true;
 			switch (e.type) {
@@ -118,7 +118,7 @@ class UIDisplay extends Display
 		} //TODO: #if peoteui_debug -> else WARNING: already in dragmode
 	}
 
-	public function stopDragging(uiElement:UIElement, e:PointerEvent):Void {
+	public function stopDragging(uiElement:InteractiveElement, e:PointerEvent):Void {
 		if (uiElement.isDragging) {
 			uiElement.isDragging = false;
 			switch (e.type) {

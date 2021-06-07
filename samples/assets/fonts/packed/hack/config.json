@@ -3,7 +3,8 @@
 	"distancefield": true, // distancefield-rendering ( use ttfcompile to generate distancefields )
 	
 	"kerning": false,
-	"width" : 16,
+
+	"width" : 18,
 	"height": 18,
 	"color" : 0x50e040ff,
 	
@@ -11,7 +12,12 @@
 	
 	// multiple unicode ranges
 	"ranges":[
-		{"image":"hack.png", "data":"hack.dat", "slot":{"width":2048, "height":2048}, "range":{"min":0x0020, "max":0x2e25}}
+		{
+			"image":"hack.png",
+			"data": "hack.dat",
+			"slot": {"width":2048, "height":2048},
+			"range":{"min":0x0020, "max":0x2e25}
+		}
 	]
 
 }

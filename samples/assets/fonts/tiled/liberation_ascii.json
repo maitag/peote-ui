@@ -1,15 +1,21 @@
 {
 	"kerning": false,
 	
-	"tilesX":  16, // amount of tile-splitting horizontal
-	"tilesY":   6, // amount of tile-splitting vertical
-	
+	// default glyphstyle
 	"width" : 20,
 	"height": 32,
 	"color" : 0x50e040ff,
 		
+	// (for all ranges)
+	"tiles": { "x": 16, "y": 6  }, // how the image is splitted into tiles
+	"line" : { "height":36, "base":26 }, // line metric
+
 	"ranges":[
-		{"image":"liberation_ascii.png", "slot":{"width":320, "height":192}, "range":{"min":0x0020, "max":0x007f}}
+		{
+			"image": "liberation_ascii.png",
+			"slot" : { "width":320, "height":192 },
+			"range": { "min":0x0020, "max":0x007f }
+		}
 	]
 
 }

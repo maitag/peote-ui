@@ -1,0 +1,20 @@
+{
+	"kerning": false,
+	
+	// default glyphstyle
+	"width" : 32,
+	"height": 32,
+	"color" : 0x50e040ff,
+		
+	// (for all ranges)
+	"tiles": { "x": 16, "y":16 }, // how much the image is splitted into tiles
+	"line" : { "height":36, "base":25 }, // line metric
+
+	"ranges":[
+		{ 	"image": "peote.png",
+			"slot" : {"width":512, "height":512},
+			"range": {"min":0x0000, "max":0x00ff}
+		}
+	]
+
+}
