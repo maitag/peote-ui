@@ -9,10 +9,12 @@ import peote.ui.skin.interfaces.SkinElement;
 @:allow(peote.ui)
 class UIElement extends InteractiveElement
 {	
-	public var skin:Skin = null;
+	public var skin:Skin = null; // TODO: use a setter to change the skin at runtime
+	
 	public var style(default, set):Dynamic = null;
-	inline function set_style(s:Dynamic):Dynamic {
-		trace("set style");
+	inline function set_style(s:Dynamic):Dynamic 
+	{
+		//trace("set style");
 		if (skin == null) {
 			if (s != null) throw ("Error, for styling the widget needs a skin");
 			style = s;
@@ -22,7 +24,6 @@ class UIElement extends InteractiveElement
 		return style;
 	}		
 	
-	//var skinElementIndex:Int;
 	var skinElement:SkinElement;
 	
 	public function new(xPosition:Int=0, yPosition:Int=0, width:Int=100, height:Int=100, zIndex:Int=0, skin:Skin=null, style:Dynamic=null) 

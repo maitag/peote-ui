@@ -22,15 +22,34 @@ class RoundedSkinElement implements SkinElement implements Element
 	@custom @varying public var borderRadius:Float;
 	
 	@posX public var x:Int=0;
-	@posY public var y:Int=0;	
+	@posY public var y:Int=0;
 	@sizeX @varying public var w:Int=100;
 	@sizeY @varying public var h:Int=100;
-	@zIndex public var z:Int = 0;	
+	@zIndex public var z:Int = 0;
 	//var OPTIONS = {  };
 	
-	public function new(uiElement:UIElement, defaultStyle:RoundedStyle) update(uiElement, defaultStyle);
+	var buffer:Buffer<RoundedSkinElement>;
+	
+	public inline function new(uiElement:UIElement, defaultStyle:RoundedStyle, buffer:Buffer<RoundedSkinElement>)
+	{
+		this.buffer = buffer;
+		_update(uiElement, defaultStyle);
+		buffer.addElement(this);
+	}
 	
 	public inline function update(uiElement:UIElement, defaultStyle:Dynamic)
+	{
+		_update(uiElement, defaultStyle);
+		buffer.updateElement(this);
+	}
+	
+	public inline function remove():Bool
+	{
+		buffer.removeElement(this);
+		return (buffer.length() == 0);
+	}
+	
+	inline function _update(uiElement:UIElement, defaultStyle:Dynamic)
 	{
 		x = uiElement.x;
 		y = uiElement.y;
@@ -50,51 +69,74 @@ class RoundedSkin implements Skin
 {
 	public var type(default, never) = SkinType.Rounded;
 	public var defaultStyle:RoundedStyle;
+	
+	var displays:Int = 0;
 
-	var displayProgBuff = new Map<UIDisplay,{program:Program, buffer:Buffer<RoundedSkinElement>}>();
+	#if (peoteui_maxDisplays == "1")
+		var displayProgram:Program;
+		var displayBuffer:Buffer<RoundedSkinElement>;
+	#else
+		var displayProgram = new haxe.ds.Vector<Program>(UIDisplay.MAX_DISPLAYS);
+		var displayBuffer  = new haxe.ds.Vector<Buffer<RoundedSkinElement>>(UIDisplay.MAX_DISPLAYS);
+	#end
 	
 	public function new(defaultStyle:RoundedStyle = null)
 	{
 		if (defaultStyle != null) this.defaultStyle = defaultStyle;
 		else this.defaultStyle = new RoundedStyle();
 	}
+
+	public inline function notIntoDisplay(uiDisplay:UIDisplay):Bool {
+		return ((displays & (1 << uiDisplay.number))==0);
+	}
 	
 	public function addElement(uiDisplay:UIDisplay, uiElement:UIElement)
 	{
-		var d = displayProgBuff.get(uiDisplay);
-		if (d == null) {
+		if (notIntoDisplay(uiDisplay))
+		{
+			displays |= 1 << uiDisplay.number;
 			var buffer = new Buffer<RoundedSkinElement>(16, 8);
-			d = { program: createProgram(buffer), buffer: buffer };
-			displayProgBuff.set(uiDisplay, d);
-			uiDisplay.addProgram(d.program);
-		}		
-		var skinElement = new RoundedSkinElement(uiElement, defaultStyle);
-		d.buffer.addElement(skinElement);
-		uiElement.skinElement = skinElement;
+			var program = createProgram(buffer);
+			#if (peoteui_maxDisplays == "1")
+				displayProgram = program;
+				displayBuffer = buffer;
+			#else
+				displayProgram.set(uiDisplay.number, program);
+				displayBuffer.set(uiDisplay.number, buffer);
+			#end
+			uiDisplay.addProgram(program); // TODO: better also uiDisplay.addSkin() to let clear all skins at once from inside UIDisplay
+			uiElement.skinElement = new RoundedSkinElement(uiElement, defaultStyle, buffer);
+		}
+		else
+			#if (peoteui_maxDisplays == "1")
+				uiElement.skinElement = new RoundedSkinElement(uiElement, defaultStyle, displayBuffer);
+			#else
+				uiElement.skinElement = new RoundedSkinElement(uiElement, defaultStyle, displayBuffer.get(uiDisplay.number));
+			#end
 	}
 	
 	public function removeElement(uiDisplay:UIDisplay, uiElement:UIElement)
 	{
-		var d = displayProgBuff.get(uiDisplay);
-		if (d != null) {
-			d.buffer.removeElement( cast uiElement.skinElement );
-			if (d.buffer.length() == 0) {
-				uiDisplay.removeProgram(d.program);
-				trace("ui-skin: clear buffer and program");
-				// TODO:
-				//d.buffer.clear();
-				//d.program.clear();
-				displayProgBuff.remove(uiDisplay);
-			}
-		} else throw("Error: can not removeElement() because it is not added!"); //TODO: this should never be thrown
-		
+		if (uiElement.skinElement.remove())
+		{
+			// for the last element into buffer remove from displays bitmask
+			displays &= ~(1 << uiDisplay.number);
+			
+			#if (peoteui_maxDisplays == "1")
+				uiDisplay.removeProgram(displayProgram);
+			#else
+				uiDisplay.removeProgram(displayProgram.get(uiDisplay.number));
+			#end
+			
+			// TODO:
+			//d.buffer.clear();
+			//d.program.clear();
+		}
 	}
 	
 	public function updateElement(uiDisplay:UIDisplay, uiElement:UIElement)
 	{
 		uiElement.skinElement.update(uiElement, defaultStyle);
-		var d = displayProgBuff.get(uiDisplay);
-		if (d != null) d.buffer.updateElement( cast uiElement.skinElement );
 	}
 	
 	public function createDefaultStyle():Dynamic {

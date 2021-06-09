@@ -19,9 +19,30 @@ import peote.view.Color;
 
 import peote.ui.interactive.InteractiveElement;
 
+
 @:allow(peote.ui.interactive)
 class UIDisplay extends Display
-{	
+{
+	#if peoteui_maxDisplays
+		static public var MAX_DISPLAYS:Int = Std.parseInt(haxe.macro.Compiler.getDefine("peoteui_maxDisplays"));
+	#else
+		static public inline var MAX_DISPLAYS:Int = 16;
+	#end
+	
+	static var AVAILABLE_NUMBER = 0;
+	static function getFreeNumber():Int {
+		var bit = 1;
+		for (i in 0...MAX_DISPLAYS) {
+			if (AVAILABLE_NUMBER & bit == 0) {
+				AVAILABLE_NUMBER |= bit;
+				return i;
+			}
+			bit = bit << 1;
+		}
+		throw('Error, reach maximum of $MAX_DISPLAYS UIDisplays');
+	}
+	public var number(default, null):Int;
+	
 	var uiElements:Array<InteractiveElement>;
 	
 	var movePickBuffer:Buffer<Pickable>;
@@ -30,8 +51,6 @@ class UIDisplay extends Display
 	var clickPickBuffer:Buffer<Pickable>;
 	var clickPickProgram:Program;
 	
-	//var skins:Array<Skin>; // TODO: no references
-	
 	var draggingMouseElements:Array<InteractiveElement>;
 	var draggingTouchElements:Vector<Array<InteractiveElement>>;
 	
@@ -39,6 +58,8 @@ class UIDisplay extends Display
 
 	public function new(x:Int, y:Int, width:Int, height:Int, color:Color=0x00000000, maxTouchpoints:Int = 3) 
 	{
+		number = getFreeNumber();  trace('MAX_DISPLAYs: $MAX_DISPLAYS', 'UIDisplay NUMBER is $number');
+		
 		super(x, y, width, height, color);
 		
 		// elements for mouseOver/Out ----------------------
@@ -67,6 +88,11 @@ class UIDisplay extends Display
 			lastTouchDownIndex.set(i, -1);
 			draggingTouchElements.set(i, new Array<InteractiveElement>());
 		}
+	}
+	
+	public function clear() {
+		AVAILABLE_NUMBER &= ~(1 << number);
+		// TODO: clear all programms and buffers
 	}
 	
 	override private function setNewGLContext(newGl:PeoteGL)
