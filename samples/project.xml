@@ -7,9 +7,10 @@
 	<!-- <meta build-number="714" /> --> <!-- let set the buildnumber manual (android) -->
 	<!-- check this for GG-Playstore: <setenv name="ANDROID_GRADLE_TASK" value=":app:bundleRelease" /> -->
 	
-	<app main="ButtonEvents" path="bin" file="Main" />
+	<app main="TextEvents" path="bin" file="Main" />
 	<!--
 		ButtonEvents,
+		TextEvents,
 		ButtonLayout,
 		WidgetLayout,
 		...
@@ -36,6 +37,9 @@
 	<haxelib name="peote-ui" />
 	
 	<!-- <haxedef name="peoteui_multitouch" /> -->
+	<define name="peoteui_maxDisplays" value="1" /> <!-- for optimization use "1" (max is 32) -->
+	<haxedef name="peoteui_debug_macro" />
+	<haxedef name="peotetext_debug_macro" />
 	
 	<!-- force compiling for a special opengl-es version (only set one of them) -->
 	<!-- this optimizes the build and forces no-runtimecheck for the gl-features -->
@@ -46,7 +50,6 @@
 	<haxedef name="peoteview_uniformbuffers" />
 	<haxedef name="peoteview_instancedrawing" />
 	<haxedef name="peoteview_vertexarrayobjects" />
-
 
 	<!--<haxedef name="peoteview_debug_macro" />-->
 	<!--<haxedef name="peoteview_debug_buffer" />-->

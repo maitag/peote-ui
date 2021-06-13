@@ -11,21 +11,23 @@ import lime.ui.Touch;
 import peote.view.PeoteView;
 import peote.view.Color;
 
-import peote.ui.interactive.UIDisplay;
-import peote.ui.interactive.UIButton;
+import peote.text.Font;
+import peote.ui.text.FontStyleTiled;
+import peote.ui.text.FontStylePacked;
 
-import peote.ui.skin.SimpleSkin;
-import peote.ui.skin.SimpleStyle;
-import peote.ui.skin.RoundedSkin;
-import peote.ui.skin.RoundedStyle;
+import peote.ui.interactive.UIDisplay;
+import peote.ui.interactive.UITextLine;
 
 import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
 
-class ButtonEvents extends Application
+class TextEvents extends Application
 {
 	var peoteView:PeoteView;
 	var uiDisplay:UIDisplay;
+	
+	var fontTiled:Font<FontStyleTiled>;
+	var fontPacked:Font<FontStylePacked>;
 	
 	public function new() super();
 	
@@ -39,139 +41,79 @@ class ButtonEvents extends Application
 	
 	public function initPeoteView() {
 
+		peoteView = new PeoteView(window.context, window.width, window.height);
+		uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY1);
+		peoteView.addDisplay(uiDisplay);
+			
 		try {			
-			peoteView = new PeoteView(window.context, window.width, window.height);
-			uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY1);
-			peoteView.addDisplay(uiDisplay);
+			// load the FONT:
+			fontTiled = new Font<FontStyleTiled>("assets/fonts/tiled/hack_ascii.json");
+			fontTiled.load( onTiledFontLoaded );
 			
-			var simpleSkin = new SimpleSkin();
-			var roundedSkin = new RoundedSkin();
-			
-			
-			// Take care that every Button have its own Style if changing style-params into eventhandler
-			// or alternatively create different styles for over/out/click and so on
-			
-			var myStyle = new RoundedStyle();
-			myStyle.color = Color.GREY1;
-			myStyle.borderColor = Color.GREY5;
-			myStyle.borderSize = 4.0;
-			myStyle.borderRadius = 40.0;
-			
-			trace("NEW BUTTON -----");
-			//var button1:Button = new Button(20, 0, 200, 100, roundedSkin, myStyle);
-			var button1:UIButton = new UIButton(20, 0, 200, 100, roundedSkin, new SimpleStyle(Color.RED));
-			uiDisplay.add(button1);
-			
-			button1.onPointerOver = onOver.bind(Color.GREY2);
-			//button1.onPointerOut = onOut.bind(Color.GREY1); // only fires if there was some over before!
-			button1.onPointerOut = onOut.bind(Color.RED); // only fires if there was some over before!
-			button1.onPointerDown = onDown.bind(Color.YELLOW);
-			button1.onPointerUp = onUp.bind(Color.GREY5);   // only fires if there was some down before!
-			button1.onPointerClick = onClick;
-			
-			var myStyle2 = new RoundedStyle(Color.GREY1, Color.GREY5);
-			myStyle2.borderSize = 2.0;
-
-			trace("NEW BUTTON -----");
-			var button2:UIButton = new UIButton(120, 60, 200, 100, roundedSkin, myStyle2);
-			uiDisplay.add(button2);
-			
-			button2.onPointerOver = onOver.bind(Color.GREY2);
-			button2.onPointerOut = onOut.bind(Color.GREY1); // only fire if there was some over before!
-			button2.onPointerMove = onMove;
-			button2.onPointerDown = onDown.bind(Color.RED);
-			button2.onPointerUp = onUp.bind(Color.GREY5);   // only fire if there was some down before!
-			button2.onPointerClick = onClick;
-			
-			//trace("REMOVE onPointerClick -----"); button1.onPointerClick = null;
-			//uiDisplay.remove(button1);
-			//uiDisplay.add(button1);
-						
-			//uiDisplay.update(button1);
-			//uiDisplay.updateAll();
+			fontPacked = new Font<FontStylePacked>("assets/fonts/packed/hack/config.json");
+			fontPacked.load( onPackedFontLoaded );
 			
 			
-			// ---- Dragging -----
-			
-			trace("NEW SLIDER -----");			
-			var myStyle3:RoundedStyle = {
-				color: Color.BLUE-0x00003300,
-				borderColor: Color.GREY5,
-				borderSize: 3.0,
-				borderRadius: 20.0
-			}
-			
-			//var background = new Button(10, 140, 350, 60, simpleSkin, new SimpleStyle(Color.GREEN));
-			var background = new UIButton(10, 140, 350, 60, simpleSkin, myStyle2);
-			uiDisplay.add(background);
-			
-			var dragger = new UIButton(10, 140, 100, 60, 1, simpleSkin, myStyle3);
-			dragger.onPointerOver = onOver.bind(Color.BLUE);
-			dragger.onPointerOut = onOut.bind(Color.BLUE-0x00003300);
-			
-			dragger.setDragArea(10, 140, 350, 60); // x, y, width, height
-			dragger.onPointerDown = function(b:UIButton, e:PointerEvent) {
-				trace(" -----> onPointerDown", e);
-				b.startDragging(e);
-				b.style.color = Color.YELLOW;
-				b.update();
-			}
-			dragger.onPointerUp = function(b:UIButton, e:PointerEvent) {
-				trace(" -----> onPointerUp", e);
-				b.stopDragging(e);
-				b.style.color = Color.BLUE;
-				b.update();
-			}
-			dragger.onMouseWheel = function(b:UIButton, e:WheelEvent) {
-				trace("MouseWheel:", e);
-			}
-			uiDisplay.add(dragger);
-
-			trace("NEW DragArea -----");
-			var myStyle4 = new RoundedStyle();
-			myStyle4.color = Color.GREY1;
-			myStyle4.borderColor = Color.GREY5;
-			myStyle4.borderSize = 3.0;
-			myStyle4.borderRadius = 40.0;
-			
-			var draggAreaBG = new UIButton(10, 200, 350, 350, roundedSkin, myStyle4);
-			uiDisplay.add(draggAreaBG);
-
-			var draggArea = new UIButton(250, 250, 80, 80, roundedSkin, myStyle4);
-			draggArea.setDragArea(10, 200, 350, 350); // x, y, width, height
-			draggArea.onPointerDown = function(b:UIButton, e:PointerEvent) {
-				trace(" -----> onPointerDown", e);
-				b.startDragging(e);
-				b.style.color = Color.YELLOW;
-				b.update();
-			}
-			draggArea.onPointerUp = function(b:UIButton, e:PointerEvent) {
-				trace(" -----> onPointerUp", e);
-				b.stopDragging(e);
-				b.style.color = Color.GREY1;
-				b.update();
-			}
-			uiDisplay.add(draggArea);
-			
-			
-			// TODO: make uiElement to switch between
-			//uiDisplay.mouseEnabled = false;
-			//uiDisplay.touchEnabled = false;
 			peoteView.zoom = 2;
 
 			#if android
 			uiDisplay.mouseEnabled = false;
 			peoteView.zoom = 3;
 			#end
-			
-			
 		}
 		catch (e:Dynamic) trace("ERROR:", e);
 	}
 	
-	// ----------------- Button Eventhandler ----------------------
+	public function onTiledFontLoaded() {
+						
+			var fontStyle = new FontStyleTiled();
+			fontStyle.height = 25;
+			fontStyle.width = 25;
+			
+			var textLine = new UITextLine<FontStyleTiled>(0, 0, 112, 25, "hello Button", fontTiled, fontStyle); //, selectionFontStyle
+			textLine.onPointerOver = function(t:UITextLine<FontStyleTiled>, e:PointerEvent) {
+				t.fontStyle.color = Color.YELLOW;
+				t.updateStyle();
+				t.update();
+			}
+			textLine.onPointerOut = function(t:UITextLine<FontStyleTiled>, e:PointerEvent) {
+				t.fontStyle.color = Color.GREEN;
+				t.updateStyle();
+				t.update();
+			}
+						
+			uiDisplay.add(textLine);
+			
+			// TODO
+			// line.set("new Text", 0, 0, fontStyle);
+			// line.setStyle(fontStyle, 1, 4);			
+	}
 	
-	public inline function onOver(color:Color, uiElement:UIButton, e:PointerEvent) {
+	public function onPackedFontLoaded() {
+						
+			var fontStyle = new FontStylePacked();
+			fontStyle.height = 25;
+			fontStyle.width = 25;
+			
+			var textLine = new UITextLine<FontStylePacked>(0, 80, 112, 25, "hello Button", fontPacked, fontStyle); //, selectionFontStyle
+			textLine.onPointerOver = function(t:UITextLine<FontStylePacked>, e:PointerEvent) {
+				t.fontStyle.color = Color.YELLOW;
+				t.updateStyle();
+				t.update();
+			}
+			textLine.onPointerOut = function(t:UITextLine<FontStylePacked>, e:PointerEvent) {
+				t.fontStyle.color = Color.GREEN;
+				t.updateStyle();
+				t.update();
+			}
+						
+			uiDisplay.add(textLine);
+	}
+	
+	
+	// ----------------- Eventhandler ----------------------
+	
+/*	public inline function onOver(color:Color, uiElement:UIButton, e:PointerEvent) {
 		uiElement.style.color = color;
 		uiElement.style.borderColor = Color.GREY7;
 		uiElement.update();
@@ -206,7 +148,7 @@ class ButtonEvents extends Application
 		//uiElement.y += 30; uiElement.update();
 		trace(" -----> onPointerClick", e);
 	}
-	
+*/	
 	
 	// ------------------------------------------------------------
 	// ----------------- LIME EVENTS ------------------------------
