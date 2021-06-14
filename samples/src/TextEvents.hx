@@ -66,6 +66,9 @@ class TextEvents extends Application
 	
 	public function onTiledFontLoaded() {
 						
+			//var cl = Type.getClass(fontTiled);
+			//trace(Type.getClassName(cl));
+			
 			var fontStyleTiled = new FontStyleTiled();
 			fontStyleTiled.height = 25;
 			fontStyleTiled.width = 25;

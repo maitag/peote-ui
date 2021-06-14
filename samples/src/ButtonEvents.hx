@@ -7,6 +7,7 @@ import lime.ui.KeyModifier;
 import lime.ui.MouseButton;
 import lime.ui.MouseWheelMode;
 import lime.ui.Touch;
+import peote.ui.skin.SkinType;
 
 import peote.view.PeoteView;
 import peote.view.Color;
@@ -105,7 +106,8 @@ class ButtonEvents extends Application
 			var background = new UIButton(10, 140, 350, 60, simpleSkin, myStyle2);
 			uiDisplay.add(background);
 			
-			var dragger = new UIButton(10, 140, 100, 60, 1, simpleSkin, myStyle3);
+			//var dragger = new UIButton(10, 140, 100, 60, 1, simpleSkin, myStyle3);
+			var dragger = new UIButton(10, 140, 100, 60, 1, simpleSkin, new SimpleStyle(Color.GREEN));
 			dragger.onPointerOver = onOver.bind(Color.BLUE);
 			dragger.onPointerOut = onOut.bind(Color.BLUE-0x00003300);
 			
@@ -173,14 +175,18 @@ class ButtonEvents extends Application
 	
 	public inline function onOver(color:Color, uiElement:UIButton, e:PointerEvent) {
 		uiElement.style.color = color;
-		uiElement.style.borderColor = Color.GREY7;
+		if (uiElement.style.compatibleSkins == SkinType.Rounded) {
+			uiElement.style.borderColor = Color.GREY7;
+		}
 		uiElement.update();
 		trace(" -----> onPointerOver", e);
 	}
 	
 	public inline function onOut(color:Color, uiElement:UIButton, e:PointerEvent) {
 		uiElement.style.color = color;
-		uiElement.style.borderColor = Color.GREY5;
+		if (uiElement.style.compatibleSkins == SkinType.Rounded) {
+			uiElement.style.borderColor = Color.GREY5;
+		}
 		uiElement.update();
 		trace(" -----> onPointerOut", e);
 	}
@@ -190,15 +196,19 @@ class ButtonEvents extends Application
 	}
 	
 	public inline function onDown(borderColor:Color, uiElement:UIButton, e:PointerEvent) {
-		uiElement.style.borderColor = borderColor;
-		//uiElement.x += 30;
-		uiElement.update();
+		if (uiElement.style.compatibleSkins == SkinType.Rounded) {
+			uiElement.style.borderColor = borderColor;
+			//uiElement.x += 30;
+			uiElement.update();
+		}
 		trace(" -----> onPointerDown", e);
 	}
 	
 	public inline function onUp(borderColor:Color, uiElement:UIButton, e:PointerEvent) {
-		uiElement.style.borderColor = borderColor;
-		uiElement.update();
+		if (uiElement.style.compatibleSkins == SkinType.Rounded) {
+			uiElement.style.borderColor = borderColor;
+			uiElement.update();
+		}
 		trace(" -----> onPointerUp", e);
 	}
 	

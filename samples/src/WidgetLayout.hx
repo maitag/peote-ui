@@ -55,7 +55,8 @@ class WidgetLayout extends Application
 	}
 	
 	public function onFontLoaded() {
-		try {			
+		try {
+			
 			var mySkin = new RoundedSkin();
 			
 			var myStyle = new RoundedStyle();
@@ -76,7 +77,7 @@ class WidgetLayout extends Application
 			},
 			[
 				
-				// later into widget -> new LabelButton()
+				// later into widget -> new LabelButton<FontStyleTiled>()
 				new Div(
 				{
 					top:20,
@@ -97,7 +98,7 @@ class WidgetLayout extends Application
 				},
 				[
 					/*
-					new TextLine(
+					new TextLine<FontStyleTiled>(
 					{
 						text:"ButtonLabel",
 						font:fontTiled,
@@ -121,6 +122,7 @@ class WidgetLayout extends Application
 			ui.init();
 			ui.update(peoteView.width, peoteView.height);
 			peoteView.addDisplay(ui);
+			ui.pointerEnabled = true;
 			
 		}
 		catch (e:Dynamic) trace("ERROR:", e);
@@ -190,18 +192,18 @@ class WidgetLayout extends Application
 	#end
 	
 	inline function _onMouseMove (x:Float, y:Float) {
-		ui.mouseMove(x, y);
+		PeoteUI.mouseMove(x, y);
 	}
-	public override function onMouseDown (x:Float, y:Float, button:MouseButton) ui.mouseDown(x, y, button);
-	public override function onMouseUp (x:Float, y:Float, button:MouseButton) ui.mouseUp(x, y, button);
-	public override function onMouseWheel (dx:Float, dy:Float, mode:MouseWheelMode) ui.mouseWheel(dx, dy, mode);
+	public override function onMouseDown (x:Float, y:Float, button:MouseButton) PeoteUI.mouseDown(x, y, button);
+	public override function onMouseUp (x:Float, y:Float, button:MouseButton) PeoteUI.mouseUp(x, y, button);
+	public override function onMouseWheel (dx:Float, dy:Float, mode:MouseWheelMode) PeoteUI.mouseWheel(dx, dy, mode);
 	// public override function onMouseMoveRelative (x:Float, y:Float):Void {}
 
 	// ----------------- TOUCH EVENTS ------------------------------
-	public override function onTouchStart (touch:Touch) ui.touchStart(touch);
-	public override function onTouchMove (touch:Touch) ui.touchMove(touch);
-	public override function onTouchEnd (touch:Touch) ui.touchEnd(touch);
-	public override function onTouchCancel (touch:Touch) ui.touchCancel(touch);
+	public override function onTouchStart (touch:Touch) PeoteUI.touchStart(touch);
+	public override function onTouchMove (touch:Touch) PeoteUI.touchMove(touch);
+	public override function onTouchEnd (touch:Touch) PeoteUI.touchEnd(touch);
+	public override function onTouchCancel (touch:Touch) PeoteUI.touchCancel(touch);
 	
 	// ----------------- KEYBOARD EVENTS ---------------------------
 	public override function onKeyDown (keyCode:KeyCode, modifier:KeyModifier) {
@@ -212,19 +214,21 @@ class WidgetLayout extends Application
 			case KeyCode.F: window.fullscreen = !window.fullscreen;
 			default:
 		}
-		//ui.keyDown(keyCode, modifier);
+		//PeoteUI.keyDown(keyCode, modifier);
 	}
 	
-	//public override function onKeyUp (keyCode:KeyCode, modifier:KeyModifier) ui.keyUp(keyCode, modifier);
-	//public override function onTextEdit(text:String, start:Int, length:Int) ui.textEdit(text, start, length);
-	//public override function onTextInput (text:String):Void ui.textInput(text);
+	//public override function onKeyUp (keyCode:KeyCode, modifier:KeyModifier) PeoteUI.keyUp(keyCode, modifier);
+	//public override function onTextEdit(text:String, start:Int, length:Int) PeoteUI.textEdit(text, start, length);
+	//public override function onTextInput (text:String):Void PeoteUI.textInput(text);
 
 	// ----------------- WINDOWS EVENTS ----------------------------
 	public override function onWindowResize (width:Int, height:Int) {
 		peoteView.resize(width, height);
+		
+		// TODO
 		ui.update(width, height);
 	}
-	public override function onWindowLeave() ui.windowLeave();
+	public override function onWindowLeave() PeoteUI.windowLeave();
 	
 	// public override function onWindowActivate():Void { trace("onWindowActivate"); }
 	// public override function onWindowDeactivate():Void { trace("onWindowDeactivate"); }

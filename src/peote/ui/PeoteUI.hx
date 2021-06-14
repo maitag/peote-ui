@@ -7,7 +7,6 @@ import peote.layout.LayoutContainer;
 import peote.layout.LayoutElement;
 import peote.layout.LayoutOptions;
 import peote.layout.ContainerType;
-import peote.ui.interactive.UIDisplay;
 import peote.view.Color;
 
 import peote.ui.interactive.LayoutDisplay;
@@ -22,7 +21,6 @@ class PeoteUIParams {
 	
 }
 
-//@:generic
 @:access(peote.layout.LayoutContainer.childs)
 @:forward
 abstract PeoteUI(LayoutContainer) from LayoutContainer to LayoutContainer {
@@ -53,10 +51,12 @@ abstract PeoteUI(LayoutContainer) from LayoutContainer to LayoutContainer {
 			}
 	}
 	
-	public var display(get, never):UIDisplay;
-	public inline function get_display():UIDisplay return cast this.layoutElement;
+	public var display(get, never):LayoutDisplay;
+	public inline function get_display():LayoutDisplay return cast this.layoutElement;
 	
-	@:to public inline function toUIDisplay():UIDisplay return display;
+	@:to public inline function toLayoutDisplay():LayoutDisplay return display;
+	
+	// ------------------------------------------------------------
 	
 	public var mouseEnabled(get, set):Bool;
 	public inline function get_mouseEnabled():Bool return display.mouseEnabled;
@@ -65,18 +65,61 @@ abstract PeoteUI(LayoutContainer) from LayoutContainer to LayoutContainer {
 	public inline function get_touchEnabled():Bool return display.touchEnabled;
 	public inline function set_touchEnabled(b:Bool):Bool return display.touchEnabled = b;
 	
+	public var pointerEnabled(get, set):Bool;
+	public inline function set_pointerEnabled(b:Bool):Bool {
+		if (b) activate(this) else deactivate(this);
+		return b;
+	}
 	
+	// ---------------- global Input-Eventhandlers ----------------
 	
-	public inline function mouseMove(mouseX:Float, mouseY:Float) display.mouseMove(mouseX, mouseY);	
-	public inline function mouseDown(mouseX:Float, mouseY:Float, button:MouseButton) display.mouseDown(mouseX, mouseY, button);
-	public inline function mouseUp(mouseX:Float, mouseY:Float, button:MouseButton) display.mouseUp(mouseX, mouseY, button);
-	public inline function mouseWheel (dx:Float, dy:Float, mode:MouseWheelMode) display.mouseWheel(dx, dy, mode);
-	
-	public inline function touchStart (touch:Touch) display.touchStart(touch);
-	public inline function touchMove (touch:Touch) display.touchMove(touch);
-	public inline function touchEnd (touch:Touch) display.touchEnd(touch);
-	public inline function touchCancel (touch:Touch) display.touchCancel(touch);
+	#if (peoteui_maxDisplays == "1")
+		public inline function get_pointerEnabled():Bool return (interactiveDisplay == display);
+		
+		static var interactiveDisplay:LayoutDisplay;
 
-	public inline function windowLeave() display.windowLeave();
-	
+		static public function activate(peoteUI:PeoteUI) {
+			interactiveDisplay = peoteUI.display;
+		}
+		static public function deactivate(peoteUI:PeoteUI) {
+			interactiveDisplay = null;
+		}
+		
+		static public inline function mouseMove(mouseX:Float, mouseY:Float) if (interactiveDisplay!=null) interactiveDisplay.mouseMove(mouseX, mouseY);	
+		static public inline function mouseDown(mouseX:Float, mouseY:Float, button:MouseButton) if (interactiveDisplay!=null) interactiveDisplay.mouseDown(mouseX, mouseY, button);
+		static public inline function mouseUp(mouseX:Float, mouseY:Float, button:MouseButton) if (interactiveDisplay!=null) interactiveDisplay.mouseUp(mouseX, mouseY, button);
+		static public inline function mouseWheel (dx:Float, dy:Float, mode:MouseWheelMode) if (interactiveDisplay!=null) interactiveDisplay.mouseWheel(dx, dy, mode);
+		
+		static public inline function touchStart (touch:Touch) if (interactiveDisplay!=null) interactiveDisplay.touchStart(touch);
+		static public inline function touchMove (touch:Touch) if (interactiveDisplay!=null) interactiveDisplay.touchMove(touch);
+		static public inline function touchEnd (touch:Touch) if (interactiveDisplay!=null) interactiveDisplay.touchEnd(touch);
+		static public inline function touchCancel (touch:Touch) if (interactiveDisplay!=null) interactiveDisplay.touchCancel(touch);
+
+		static public inline function windowLeave() if (interactiveDisplay!=null) interactiveDisplay.windowLeave();
+
+	#else
+		public inline function get_pointerEnabled():Bool return (interactiveDisplay.indexOf(this.display)>=0);
+
+		static var interactiveDisplay = new Array<LayoutDisplay>();
+		
+		static public function activate(peoteUI:PeoteUI) {
+			if (interactiveDisplay.indexOf(peoteUI.display)<0) interactiveDisplay.push(peoteUI.display);
+		}
+		static public function deactivate(peoteUI:PeoteUI) {
+			interactiveDisplay.remove(peoteUI.display);
+		}
+		
+		static public inline function mouseMove(mouseX:Float, mouseY:Float) for (d in interactiveDisplay) d.mouseMove(mouseX, mouseY);	
+		static public inline function mouseDown(mouseX:Float, mouseY:Float, button:MouseButton) for (d in interactiveDisplay) d.mouseDown(mouseX, mouseY, button);
+		static public inline function mouseUp(mouseX:Float, mouseY:Float, button:MouseButton) for (d in interactiveDisplay) d.mouseUp(mouseX, mouseY, button);
+		static public inline function mouseWheel (dx:Float, dy:Float, mode:MouseWheelMode) for (d in interactiveDisplay) d.mouseWheel(dx, dy, mode);
+		
+		static public inline function touchStart (touch:Touch) for (d in interactiveDisplay) d.touchStart(touch);
+		static public inline function touchMove (touch:Touch) for (d in interactiveDisplay) d.touchMove(touch);
+		static public inline function touchEnd (touch:Touch) for (d in interactiveDisplay) d.touchEnd(touch);
+		static public inline function touchCancel (touch:Touch) for (d in interactiveDisplay) d.touchCancel(touch);
+
+		static public inline function windowLeave() for (d in interactiveDisplay) d.windowLeave();
+	#end
+
 }
