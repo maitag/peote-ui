@@ -10,10 +10,17 @@ import lime.graphics.RenderContext;
 import peote.view.PeoteView;
 import peote.view.Color;
 
+import peote.text.Font;
+import peote.ui.text.FontStyleTiled;
+
 import peote.ui.interactive.LayoutDisplay;
 import peote.ui.interactive.LayoutElement;
-import peote.ui.skin.RoundedSkin;
+import peote.ui.interactive.LayoutTextline;
+
+import peote.ui.skin.SimpleSkin;
 import peote.ui.skin.SimpleStyle;
+import peote.ui.skin.RoundedSkin;
+import peote.ui.skin.RoundedStyle;
 
 import peote.layout.LayoutContainer;
 import peote.layout.Size;
@@ -23,9 +30,13 @@ class ButtonLayout extends Application
 {
 	var peoteView:PeoteView;
 	var uiDisplay:LayoutDisplay;
-	var mySkin = new RoundedSkin();
+	
+	var simlpeSkin = new SimpleSkin();
+	var roundedSkin = new RoundedSkin();
 		
 	var uiLayoutContainer:LayoutContainer;
+	
+	var fontTiled:Font<FontStyleTiled>;
 	
 	public function new() super();
 	
@@ -43,22 +54,41 @@ class ButtonLayout extends Application
 			uiDisplay = new LayoutDisplay(0, 0, window.width, window.height, Color.GREY3);
 			peoteView.addDisplay(uiDisplay);
 			
-			var red   = new LayoutElement(mySkin, new SimpleStyle(Color.RED));
-			var green = new LayoutElement(mySkin, new SimpleStyle(Color.GREEN));
-			var blue  = new LayoutElement(mySkin, new SimpleStyle(Color.BLUE));
-			var yellow= new LayoutElement(mySkin, new SimpleStyle(Color.YELLOW));
+			// load the FONT:
+			fontTiled = new Font<FontStyleTiled>("assets/fonts/tiled/hack_ascii.json");
+			fontTiled.load( onTiledFontLoaded );
+		}
+		catch (e:Dynamic) trace("ERROR:", e);
+	}
+	
+	public function onTiledFontLoaded() {
+		try {			
+			var red   = new LayoutElement(simlpeSkin, new SimpleStyle(Color.RED));
+			var green = new LayoutElement(simlpeSkin, new SimpleStyle(Color.GREEN));
+			var blue  = new LayoutElement(roundedSkin, new SimpleStyle(Color.BLUE));
+			var yellow= new LayoutElement(roundedSkin, new SimpleStyle(Color.YELLOW));
 
+			var fontStyleTiled = new FontStyleTiled();
+			fontStyleTiled.height = 25;
+			fontStyleTiled.width = 25;
+			fontStyleTiled.color = Color.WHITE;
+			var textLine = new LayoutTextline<FontStyleTiled>(0, 0, 112, 25, "hello Button", fontTiled, fontStyleTiled);
+			
 			uiDisplay.add(red);
 			uiDisplay.add(green);
 			uiDisplay.add(blue);
 			uiDisplay.add(yellow);
+			uiDisplay.add(textLine);
 			
 			uiLayoutContainer = new Box( uiDisplay , { width:Size.limit(100,700), relativeChildPositions:true },
 			[                                                          
 				new Box( red , { width:Size.limit(100,600) },
 				[                                                      
 					new Box( green,  { width:Size.limit(50, 300), height:Size.limit(100,400) }),							
-					new Box( blue,   { width:Size.span(50, 150), height:Size.limit(100,300), left:Size.min(50) } ),
+					new Box( blue,   { width:Size.span(50, 150), height:Size.limit(100, 300), left:Size.min(50) },
+					[
+						new Box( textLine, {width:Size.min(100), height:30, top:5, left:5, bottom:Size.min(5) }),
+					]),
 					new Box( yellow, { width:Size.limit(50, 150), height:Size.limit(200,200), left:Size.span(0,100), right:50 } ),
 				])
 			]);

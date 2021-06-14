@@ -66,11 +66,12 @@ class TextEvents extends Application
 	
 	public function onTiledFontLoaded() {
 						
-			var fontStyle = new FontStyleTiled();
-			fontStyle.height = 25;
-			fontStyle.width = 25;
+			var fontStyleTiled = new FontStyleTiled();
+			fontStyleTiled.height = 25;
+			fontStyleTiled.width = 25;
 			
-			var textLine = new UITextLine<FontStyleTiled>(0, 0, 112, 25, "hello Button", fontTiled, fontStyle); //, selectionFontStyle
+			var textLine = new UITextLine<FontStyleTiled>(0, 0, 112, 25, "hello Button", fontTiled, fontStyleTiled); //, selectionFontStyle
+			
 			textLine.onPointerOver = function(t:UITextLine<FontStyleTiled>, e:PointerEvent) {
 				t.fontStyle.color = Color.YELLOW;
 				t.updateStyle();
@@ -91,11 +92,11 @@ class TextEvents extends Application
 	
 	public function onPackedFontLoaded() {
 						
-			var fontStyle = new FontStylePacked();
-			fontStyle.height = 25;
-			fontStyle.width = 25;
+			var fontStylePacked = new FontStylePacked();
+			fontStylePacked.height = 25;
+			fontStylePacked.width = 25;
 			
-			var textLine = new UITextLine<FontStylePacked>(0, 80, 112, 25, "hello Button", fontPacked, fontStyle); //, selectionFontStyle
+			var textLine = new UITextLine<FontStylePacked>(0, 80, 112, 25, "hello Button", fontPacked, fontStylePacked); //, selectionFontStyle
 			textLine.onPointerOver = function(t:UITextLine<FontStylePacked>, e:PointerEvent) {
 				t.fontStyle.color = Color.YELLOW;
 				t.updateStyle();

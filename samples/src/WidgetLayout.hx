@@ -12,6 +12,9 @@ import peote.layout.ContainerType;
 import peote.view.PeoteView;
 import peote.view.Color;
 
+import peote.text.Font;
+import peote.ui.text.FontStyleTiled;
+
 import peote.ui.skin.RoundedSkin;
 import peote.ui.skin.RoundedStyle;
 
@@ -28,6 +31,7 @@ class WidgetLayout extends Application
 	var mySkin = new RoundedSkin();
 		
 	var ui:PeoteUI;
+	var fontTiled:Font<FontStyleTiled>;
 	
 	public function new() super();
 	
@@ -41,8 +45,17 @@ class WidgetLayout extends Application
 	
 	public function initPeoteView(window:Window) {
 		try {			
-			peoteView = new PeoteView(window.context, window.width, window.height);		
+			peoteView = new PeoteView(window.context, window.width, window.height);
 			
+			// load the FONT:
+			fontTiled = new Font<FontStyleTiled>("assets/fonts/tiled/hack_ascii.json");
+			fontTiled.load( onFontLoaded );
+		}
+		catch (e:Dynamic) trace("ERROR:", e);
+	}
+	
+	public function onFontLoaded() {
+		try {			
 			var mySkin = new RoundedSkin();
 			
 			var myStyle = new RoundedStyle();
@@ -51,6 +64,10 @@ class WidgetLayout extends Application
 			myStyle.borderSize = 4.0;
 			myStyle.borderRadius = 40.0;
 
+			var fontStyleTiled = new FontStyleTiled();
+			fontStyleTiled.height = 25;
+			fontStyleTiled.width = 25;
+			fontStyleTiled.color = Color.WHITE;
 			
 			ui = new PeoteUI(ContainerType.BOX, {
 				bgColor:Color.GREY1,
@@ -79,7 +96,15 @@ class WidgetLayout extends Application
 					
 				},
 				[
-					//new TextLine(),
+					/*
+					new TextLine(
+					{
+						text:"ButtonLabel",
+						font:fontTiled,
+						fontStyle:fontStyleTiled
+						onPointerOver:onOver.bind(Color.BLUE),
+					}),
+					*/
 				]),
 			
 			

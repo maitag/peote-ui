@@ -1,98 +1,39 @@
 package peote.ui.interactive;
 
 #if !macro
-@:genericBuild(peote.ui.interactive.UITextLine.UITextLineMacro.build())
+@:genericBuild(peote.ui.interactive.UITextLine.UITextLineMacro.build("UITextLine"))
 class UITextLine<T> {}
 #else
 
 import haxe.macro.Expr;
 import haxe.macro.Context;
-import haxe.macro.TypeTools;
+import peote.text.util.Macro;
+//import peote.text.util.GlyphStyleHasField;
+//import peote.text.util.GlyphStyleHasMeta;
 
 class UITextLineMacro
 {
-	public static var cache = new Map<String, Bool>();
-	
-	static public function build()
-	{	
-		switch (Context.getLocalType()) {
-			case TInst(_, [t]):
-				switch (t) {
-					case TInst(n, []):
-						var style = n.get();
-						var styleSuperName:String = null;
-						var styleSuperModule:String = null;
-						var s = style;
-						while (s.superClass != null) {
-							s = s.superClass.t.get(); trace("->" + s.name);
-							styleSuperName = s.name;
-							styleSuperModule = s.module;
-						}
-						return buildClass(
-							"UITextLine",Context.getLocalClass().get().pack, style.pack, style.module, style.name, styleSuperModule, styleSuperName, TypeTools.toComplexType(t)
-						);	
-					default: Context.error("Type for FontStyle expected", Context.currentPos());
-				}
-			default: Context.error("Type for FontStyle expected", Context.currentPos());
-		}
-		return null;
-	}
-	
-	static public function buildClass(className:String, classPackage:Array<String>, stylePack:Array<String>, styleModule:String, styleName:String, styleSuperModule:String, styleSuperName:String, styleType:ComplexType):ComplexType
-	{		
-		var styleMod = styleModule.split(".").join("_");
+	static public function build(name:String):ComplexType return Macro.build(name, buildClass);
+	static public function buildClass(className:String, classPackage:Array<String>, stylePack:Array<String>, styleModule:String, styleName:String, styleSuperModule:String, styleSuperName:String, styleType:ComplexType, styleField:Array<String>):ComplexType
+	{
+		className += Macro.classNameExtension(styleName, styleModule);
 		
-		className += "__" + styleMod;
-		if (styleModule.split(".").pop() != styleName) className += ((styleMod != "") ? "_" : "") + styleName;
-		
-		if (!cache.exists(className))
+		if ( Macro.isNotGenerated(className) )
 		{
-			cache[className] = true;
-			
-			var styleField:Array<String>;
-			//if (styleSuperName == null) styleField = styleModule.split(".").concat([styleName]);
-			//else styleField = styleSuperModule.split(".").concat([styleSuperName]);
-			styleField = styleModule.split(".").concat([styleName]);
+			Macro.debug(className, classPackage, stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
 			
 			//var glyphType = peote.text.Glyph.GlyphMacro.buildClass("Glyph", stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType);
-			var fontType = peote.text.Font.FontMacro.buildClass("Font", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType);
-			var fontProgramType = peote.text.FontProgram.FontProgramMacro.buildClass("FontProgram", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType);
-			var lineType  = peote.text.Line.LineMacro.buildClass("Line", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType);
+			var fontType = peote.text.Font.FontMacro.buildClass("Font", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
+			var fontProgramType = peote.text.FontProgram.FontProgramMacro.buildClass("FontProgram", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
+			var lineType  = peote.text.Line.LineMacro.buildClass("Line", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
 			
-			#if peoteui_debug_macro
-			trace('generating Class: '+classPackage.concat([className]).join('.'));	
-			
-			trace("ClassName:"+className);           // FontProgram__peote_text_GlypStyle
-			trace("classPackage:" + classPackage);   // [peote,text]	
-			
-			trace("StylePackage:" + stylePack);  // [peote.text]
-			trace("StyleModule:" + styleModule); // peote.text.GlyphStyle
-			trace("StyleName:" + styleName);     // GlyphStyle			
-			trace("StyleType:" + styleType);     // TPath(...)
-			trace("StyleField:" + styleField);   // [peote,text,GlyphStyle,GlyphStyle]
-			#end
-			
-/*			var glyphStyleHasMeta = peote.text.Glyph.GlyphMacro.parseGlyphStyleMetas(styleModule+"."+styleName); // trace("FontProgram: glyphStyleHasMeta", glyphStyleHasMeta);
-			var glyphStyleHasField = peote.text.Glyph.GlyphMacro.parseGlyphStyleFields(styleModule+"."+styleName); // trace("FontProgram: glyphStyleHasField", glyphStyleHasField);
-			
-			var charDataType:ComplexType;
-			if (glyphStyleHasMeta.packed) {
-				if (glyphStyleHasMeta.multiTexture && glyphStyleHasMeta.multiSlot) charDataType = macro: {unit:Int, slot:Int, fontData:peote.text.Gl3FontData, metric:peote.text.Gl3FontData.Metric};
-				else if (glyphStyleHasMeta.multiTexture) charDataType = macro: {unit:Int, fontData:peote.text.Gl3FontData, metric:peote.text.Gl3FontData.Metric};
-				else if (glyphStyleHasMeta.multiSlot) charDataType = macro: {slot:Int, fontData:peote.text.Gl3FontData, metric:peote.text.Gl3FontData.Metric};
-				else charDataType = macro: {fontData:peote.text.Gl3FontData, metric:peote.text.Gl3FontData.Metric};
-			}
-			else  {
-				if (glyphStyleHasMeta.multiTexture && glyphStyleHasMeta.multiSlot) charDataType = macro: {unit:Int, slot:Int, min:Int, max:Int, height:Float, base:Float};
-				else if (glyphStyleHasMeta.multiTexture) charDataType = macro: {unit:Int, min:Int, max:Int, height:Float, base:Float};
-				else if (glyphStyleHasMeta.multiSlot) charDataType = macro: {slot:Int, min:Int, max:Int, height:Float, base:Float};
-				else charDataType = macro: {min:Int, max:Int, height:Float, base:Float};
-			}
-*/
-			// -------------------------------------------------------------------------------------------
-			var c = macro		
+			//var glyphStyleHasMeta = peote.text.Glyph.GlyphMacro.parseGlyphStyleMetas(styleModule+"."+styleName); // trace("FontProgram: glyphStyleHasMeta", glyphStyleHasMeta);
+			//var glyphStyleHasField = peote.text.Glyph.GlyphMacro.parseGlyphStyleFields(styleModule+"."+styleName); // trace("FontProgram: glyphStyleHasField", glyphStyleHasField);
 
+			var c = macro
 
+// -------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------
 
 class $className extends peote.ui.interactive.InteractiveElement
 {	
@@ -153,6 +94,7 @@ class $className extends peote.ui.interactive.InteractiveElement
 	
 	override inline function updateVisible():Void
 	{
+		fontProgram.lineSetPosition(line, x, y);
 		fontProgram.updateLine(line);
 	}
 	
@@ -203,10 +145,10 @@ class $className extends peote.ui.interactive.InteractiveElement
 	}
 
 				
-} // end class
+}
 
-			// -------------------------------------------------------------------------------------------
-			// -------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------
 			
 			Context.defineModule(classPackage.concat([className]).join('.'),[c]);
 		}
