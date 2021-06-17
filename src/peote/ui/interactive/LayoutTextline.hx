@@ -1,22 +1,15 @@
 package peote.ui.interactive;
 
 #if !macro
-@:genericBuild(peote.ui.interactive.LayoutTextline.LayoutTextlineMacro.build("LayoutTextline"))
-class LayoutTextline<T> {}
+@:genericBuild(peote.ui.interactive.LayoutTextLine.LayoutTextLineMacro.build("LayoutTextLine"))
+class LayoutTextLine<T> {}
 #else
 
 import haxe.macro.Expr;
 import haxe.macro.Context;
 import peote.text.util.Macro;
 
-import haxe.macro.ComplexTypeTools;
-import haxe.macro.TypeTools;
-
-
-//import peote.text.util.GlyphStyleHasField;
-//import peote.text.util.GlyphStyleHasMeta;
-
-class LayoutTextlineMacro
+class LayoutTextLineMacro
 {
 	static public function build(name:String):ComplexType return Macro.build(name, buildClass);
 	static public function buildClass(className:String, classPackage:Array<String>, stylePack:Array<String>, styleModule:String, styleName:String, styleSuperModule:String, styleSuperName:String, styleType:ComplexType, styleField:Array<String>):ComplexType
@@ -28,27 +21,21 @@ class LayoutTextlineMacro
 			Macro.debug(className, classPackage, stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
 			
 			peote.ui.interactive.UITextLine.UITextLineMacro.buildClass("UITextLine", classPackage, stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
-			var uiTextLine:TypePath ={ pack:classPackage, name:"UITextLine" + Macro.classNameExtension(styleName, styleModule), params:[] };
+			var uiTextLineType:TypePath ={ pack:classPackage, name:"UITextLine" + Macro.classNameExtension(styleName, styleModule), params:[] };
 			
-			var fontType = peote.text.Font.FontMacro.buildClass("Font", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
-			var fontProgramType = peote.text.FontProgram.FontProgramMacro.buildClass("FontProgram", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
-			//var lineType  = peote.text.Line.LineMacro.buildClass("Line", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
-			
-			//var glyphStyleHasMeta = peote.text.Glyph.GlyphMacro.parseGlyphStyleMetas(styleModule+"."+styleName); // trace("FontProgram: glyphStyleHasMeta", glyphStyleHasMeta);
-			//var glyphStyleHasField = peote.text.Glyph.GlyphMacro.parseGlyphStyleFields(styleModule+"."+styleName); // trace("FontProgram: glyphStyleHasField", glyphStyleHasField);
-
 			var c = macro
 
 // -------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------
 
-class $className extends $uiTextLine implements peote.layout.LayoutElement
+class $className extends $uiTextLineType implements peote.layout.LayoutElement
 {
 	//var options:O;
 	//var params:P;
 	
-	public function new(xPosition:Int = 0, yPosition:Int = 0, width:Int = 100, height:Int = 100, zIndex:Int = 0,
-	                    text:String, font:$fontType, fontStyle:$styleType)
+	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int,
+	                    //text:String, font:$fontType, fontStyle:$styleType) 
+	                    text:String, font:peote.text.Font<$styleType>, fontStyle:$styleType) 
 	{
 		super(xPosition, yPosition, width, height, zIndex, text, font, fontStyle);
 	}

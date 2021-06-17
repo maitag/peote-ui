@@ -12,9 +12,9 @@ class FontStyleTiled
 	public var color:Color = Color.GREEN;
 	
 	//@global public var width:Float = 10.0;
-	public var width:Float = 16;
+	public var width:Float = 16.0;
 	//@global public var height:Float = 16.0;
-	public var height:Float = 16;
+	public var height:Float = 16.0;
 	
 	//@global public var zIndex:Int = 0;
 	//public var zIndex:Int = 0;

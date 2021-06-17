@@ -31,7 +31,6 @@ class WidgetLayout extends Application
 	var mySkin = new RoundedSkin();
 		
 	var ui:PeoteUI;
-	var fontTiled:Font<FontStyleTiled>;
 	
 	public function new() super();
 	
@@ -48,13 +47,12 @@ class WidgetLayout extends Application
 			peoteView = new PeoteView(window.context, window.width, window.height);
 			
 			// load the FONT:
-			fontTiled = new Font<FontStyleTiled>("assets/fonts/tiled/hack_ascii.json");
-			fontTiled.load( onFontLoaded );
+			new Font<FontStyleTiled>("assets/fonts/tiled/hack_ascii.json").load( onFontLoaded );
 		}
 		catch (e:Dynamic) trace("ERROR:", e);
 	}
 	
-	public function onFontLoaded() {
+	public function onFontLoaded(font) {
 		try {
 			
 			var mySkin = new RoundedSkin();
@@ -101,7 +99,7 @@ class WidgetLayout extends Application
 					new TextLine<FontStyleTiled>(
 					{
 						text:"ButtonLabel",
-						font:fontTiled,
+						font:font,
 						fontStyle:fontStyleTiled
 						onPointerOver:onOver.bind(Color.BLUE),
 					}),

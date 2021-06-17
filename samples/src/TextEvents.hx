@@ -16,7 +16,7 @@ import peote.ui.text.FontStyleTiled;
 import peote.ui.text.FontStylePacked;
 
 import peote.ui.interactive.UIDisplay;
-import peote.ui.interactive.UITextLine;
+import peote.ui.interactive.TextLine;
 
 import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
@@ -25,9 +25,6 @@ class TextEvents extends Application
 {
 	var peoteView:PeoteView;
 	var uiDisplay:UIDisplay;
-	
-	var fontTiled:Font<FontStyleTiled>;
-	var fontPacked:Font<FontStylePacked>;
 	
 	public function new() super();
 	
@@ -47,13 +44,9 @@ class TextEvents extends Application
 			
 		try {			
 			// load the FONT:
-			fontTiled = new Font<FontStyleTiled>("assets/fonts/tiled/hack_ascii.json");
-			fontTiled.load( onTiledFontLoaded );
-			
-			fontPacked = new Font<FontStylePacked>("assets/fonts/packed/hack/config.json");
-			fontPacked.load( onPackedFontLoaded );
-			
-			
+			new Font<FontStyleTiled>("assets/fonts/tiled/hack_ascii.json").load( onTiledFontLoaded );
+			new Font<FontStylePacked>("assets/fonts/packed/hack/config.json").load( onPackedFontLoaded );
+						
 			peoteView.zoom = 2;
 
 			#if android
@@ -63,24 +56,22 @@ class TextEvents extends Application
 		}
 		catch (e:Dynamic) trace("ERROR:", e);
 	}
-	
-	public function onTiledFontLoaded() {
+		
+	public function onTiledFontLoaded(font:Font<FontStyleTiled>) { // don'T forget argument-type here !
 						
-			//var cl = Type.getClass(fontTiled);
-			//trace(Type.getClassName(cl));
-			
 			var fontStyleTiled = new FontStyleTiled();
 			fontStyleTiled.height = 25;
 			fontStyleTiled.width = 25;
 			
-			var textLine = new UITextLine<FontStyleTiled>(0, 0, 112, 25, "hello Button", fontTiled, fontStyleTiled); //, selectionFontStyle
-			
-			textLine.onPointerOver = function(t:UITextLine<FontStyleTiled>, e:PointerEvent) {
+			var textLine = new TextLine<FontStyleTiled>(0, 0, 112, 25, 0, "hello Button", font, fontStyleTiled); //, selectionFontStyle
+			//var textLine = font.createTextLine(0, 0, 112, 25, 0, "hello Button", fontStyleTiled); //, selectionFontStyle
+						
+			textLine.onPointerOver = function(t:TextLine<FontStyleTiled>, e:PointerEvent) {
 				t.fontStyle.color = Color.YELLOW;
 				t.updateStyle();
 				t.update();
 			}
-			textLine.onPointerOut = function(t:UITextLine<FontStyleTiled>, e:PointerEvent) {
+			textLine.onPointerOut = function(t:TextLine<FontStyleTiled>, e:PointerEvent) {
 				t.fontStyle.color = Color.GREEN;
 				t.updateStyle();
 				t.update();
@@ -93,19 +84,21 @@ class TextEvents extends Application
 			// line.setStyle(fontStyle, 1, 4);			
 	}
 	
-	public function onPackedFontLoaded() {
+	public function onPackedFontLoaded(font:Font<FontStylePacked>) {
 						
 			var fontStylePacked = new FontStylePacked();
 			fontStylePacked.height = 25;
 			fontStylePacked.width = 25;
 			
-			var textLine = new UITextLine<FontStylePacked>(0, 80, 112, 25, "hello Button", fontPacked, fontStylePacked); //, selectionFontStyle
-			textLine.onPointerOver = function(t:UITextLine<FontStylePacked>, e:PointerEvent) {
+			//var textLine = new TextLine<FontStylePacked>(0, 80, 112, 25, "hello Button", fontPacked, fontStylePacked); //, selectionFontStyle
+			var textLine = font.createTextLine(0, 80, 112, 25, 0, "hello Button", fontStylePacked); //, selectionFontStyle
+
+			textLine.onPointerOver = function(t:TextLine<FontStylePacked>, e:PointerEvent) {
 				t.fontStyle.color = Color.YELLOW;
 				t.updateStyle();
 				t.update();
 			}
-			textLine.onPointerOut = function(t:UITextLine<FontStylePacked>, e:PointerEvent) {
+			textLine.onPointerOut = function(t:TextLine<FontStylePacked>, e:PointerEvent) {
 				t.fontStyle.color = Color.GREEN;
 				t.updateStyle();
 				t.update();

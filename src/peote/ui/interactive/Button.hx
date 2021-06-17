@@ -7,9 +7,9 @@ import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
 
 
-private typedef ButtonEventParams = UIButton->PointerEvent->Void;
+private typedef ButtonEventParams = Button->PointerEvent->Void;
 
-class UIButton extends UIElement
+class Button extends UIElement
 {
 	public var onPointerOver(default, set):ButtonEventParams;
 	inline function set_onPointerOver(f:ButtonEventParams):ButtonEventParams {
@@ -49,8 +49,8 @@ class UIButton extends UIElement
 
 	
 	
-	public var onMouseWheel(default, set):UIButton->WheelEvent->Void;
-	inline function set_onMouseWheel(f:UIButton->WheelEvent->Void):UIButton->WheelEvent->Void {
+	public var onMouseWheel(default, set):Button->WheelEvent->Void;
+	inline function set_onMouseWheel(f:Button->WheelEvent->Void):Button->WheelEvent->Void {
 		rebindMouseWheel( f.bind(this), f == null);
 		return onMouseWheel = f;
 	}

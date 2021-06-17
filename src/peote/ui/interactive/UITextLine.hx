@@ -2,7 +2,7 @@ package peote.ui.interactive;
 
 #if !macro
 @:genericBuild(peote.ui.interactive.UITextLine.UITextLineMacro.build("UITextLine"))
-class UITextLine<T> {}
+class UITextLine<T> extends peote.ui.interactive.InteractiveElement{}
 #else
 
 import haxe.macro.Expr;
@@ -22,10 +22,15 @@ class UITextLineMacro
 		{
 			Macro.debug(className, classPackage, stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
 			
-			//var glyphType = peote.text.Glyph.GlyphMacro.buildClass("Glyph", stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType);
-			var fontType = peote.text.Font.FontMacro.buildClass("Font", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
-			var fontProgramType = peote.text.FontProgram.FontProgramMacro.buildClass("FontProgram", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
-			var lineType  = peote.text.Line.LineMacro.buildClass("Line", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
+			//var glyphType = peote.text.Glyph.GlyphMacro.buildClass("Glyph", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType);
+			//var fontType = peote.text.Font.FontMacro.buildClass("Font", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
+			//var fontProgramType = peote.text.FontProgram.FontProgramMacro.buildClass("FontProgram", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
+			//var lineType  = peote.text.Line.LineMacro.buildClass("Line", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
+			
+			//var fontType = TPath({ pack:["peote","text"], name:"Font" + Macro.classNameExtension(styleName, styleModule), params:[] });
+			//var fontProgramType = TPath({ pack:["peote","text"], name:"FontProgram" + Macro.classNameExtension(styleName, styleModule), params:[] });
+			//var lineType = TPath({ pack:["peote","text"], name:"Line" + Macro.classNameExtension(styleName, styleModule), params:[] });
+
 			
 			//var glyphStyleHasMeta = peote.text.Glyph.GlyphMacro.parseGlyphStyleMetas(styleModule+"."+styleName); // trace("FontProgram: glyphStyleHasMeta", glyphStyleHasMeta);
 			//var glyphStyleHasField = peote.text.Glyph.GlyphMacro.parseGlyphStyleFields(styleModule+"."+styleName); // trace("FontProgram: glyphStyleHasField", glyphStyleHasField);
@@ -37,41 +42,35 @@ class UITextLineMacro
 
 class $className extends peote.ui.interactive.InteractiveElement
 {	
-	public var onPointerOver(default, set):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerOver(f:UITextLine<$styleType>->peote.ui.event.PointerEvent->Void):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void {
-		rebindPointerOver( f.bind(this), f == null);
-		return onPointerOver = f;
-	}
-	public var onPointerOut(default, set):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerOut(f:UITextLine<$styleType>->peote.ui.event.PointerEvent->Void):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void {
-		rebindPointerOut( f.bind(this), f == null);
-		return onPointerOut = f;
-	}
-
-	// --------------------------------------------------------------------------
-	
 	static var displays:Int = 0;
 	
 	#if (peoteui_maxDisplays == "1")
-		static var displayFontProgram:$fontProgramType;
+		//static var displayFontProgram:$fontProgramType;
+		static var displayFontProgram:peote.text.FontProgram<$styleType>;
 	#else
-		static var displayFontProgram = new haxe.ds.Vector<$fontProgramType>(peote.ui.interactive.UIDisplay.MAX_DISPLAYS);
+		//static var displayFontProgram = new haxe.ds.Vector<$fontProgramType>(peote.ui.interactive.UIDisplay.MAX_DISPLAYS);
+		static var displayFontProgram = new haxe.ds.Vector<peote.text.FontProgram<$styleType>;>(peote.ui.interactive.UIDisplay.MAX_DISPLAYS);
 	#end
 	
 	public static inline function notIntoDisplay(uiDisplay:peote.ui.interactive.UIDisplay):Bool {
 		return ((displays & (1 << uiDisplay.number))==0);
 	}
 	
-	//var fontProgram:peote.text.FontProgram<$styleType>;
-	var fontProgram:$fontProgramType;
-	public var font:$fontType;
+	//var fontProgram:$fontProgramType;
+	var fontProgram:peote.text.FontProgram<$styleType>;
+	
+	//public var font:$fontType;
+	public var font:peote.text.Font<$styleType>;
+	
 	public var fontStyle:$styleType;
 	
 	public var text:String;
-	public var line:$lineType;
+	public var line:peote.text.Line<$styleType>;
+	//public var line:$lineType;
 	
-	public function new(xPosition:Int = 0, yPosition:Int = 0, width:Int = 100, height:Int = 100, zIndex:Int = 0,
-	                    text:String, font:$fontType, fontStyle:$styleType) 
+	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int,
+	                    //text:String, font:$fontType, fontStyle:$styleType) 
+	                    text:String, font:peote.text.Font<$styleType>, fontStyle:$styleType) 
 	{
 		super(xPosition, yPosition, width, height, zIndex);
 		

@@ -13,7 +13,7 @@ import peote.view.PeoteView;
 import peote.view.Color;
 
 import peote.ui.interactive.UIDisplay;
-import peote.ui.interactive.UIButton;
+import peote.ui.interactive.Button;
 
 import peote.ui.skin.SimpleSkin;
 import peote.ui.skin.SimpleStyle;
@@ -60,7 +60,7 @@ class ButtonEvents extends Application
 			
 			trace("NEW BUTTON -----");
 			//var button1:Button = new Button(20, 0, 200, 100, roundedSkin, myStyle);
-			var button1:UIButton = new UIButton(20, 0, 200, 100, roundedSkin, new SimpleStyle(Color.RED));
+			var button1:Button = new Button(20, 0, 200, 100, roundedSkin, new SimpleStyle(Color.RED));
 			uiDisplay.add(button1);
 			
 			button1.onPointerOver = onOver.bind(Color.GREY2);
@@ -74,7 +74,7 @@ class ButtonEvents extends Application
 			myStyle2.borderSize = 2.0;
 
 			trace("NEW BUTTON -----");
-			var button2:UIButton = new UIButton(120, 60, 200, 100, roundedSkin, myStyle2);
+			var button2:Button = new Button(120, 60, 200, 100, roundedSkin, myStyle2);
 			uiDisplay.add(button2);
 			
 			button2.onPointerOver = onOver.bind(Color.GREY2);
@@ -103,28 +103,28 @@ class ButtonEvents extends Application
 			}
 			
 			//var background = new Button(10, 140, 350, 60, simpleSkin, new SimpleStyle(Color.GREEN));
-			var background = new UIButton(10, 140, 350, 60, simpleSkin, myStyle2);
+			var background = new Button(10, 140, 350, 60, simpleSkin, myStyle2);
 			uiDisplay.add(background);
 			
 			//var dragger = new UIButton(10, 140, 100, 60, 1, simpleSkin, myStyle3);
-			var dragger = new UIButton(10, 140, 100, 60, 1, simpleSkin, new SimpleStyle(Color.GREEN));
+			var dragger = new Button(10, 140, 100, 60, 1, simpleSkin, new SimpleStyle(Color.GREEN));
 			dragger.onPointerOver = onOver.bind(Color.BLUE);
 			dragger.onPointerOut = onOut.bind(Color.BLUE-0x00003300);
 			
 			dragger.setDragArea(10, 140, 350, 60); // x, y, width, height
-			dragger.onPointerDown = function(b:UIButton, e:PointerEvent) {
+			dragger.onPointerDown = function(b:Button, e:PointerEvent) {
 				trace(" -----> onPointerDown", e);
 				b.startDragging(e);
 				b.style.color = Color.YELLOW;
 				b.update();
 			}
-			dragger.onPointerUp = function(b:UIButton, e:PointerEvent) {
+			dragger.onPointerUp = function(b:Button, e:PointerEvent) {
 				trace(" -----> onPointerUp", e);
 				b.stopDragging(e);
 				b.style.color = Color.BLUE;
 				b.update();
 			}
-			dragger.onMouseWheel = function(b:UIButton, e:WheelEvent) {
+			dragger.onMouseWheel = function(b:Button, e:WheelEvent) {
 				trace("MouseWheel:", e);
 			}
 			uiDisplay.add(dragger);
@@ -136,18 +136,18 @@ class ButtonEvents extends Application
 			myStyle4.borderSize = 3.0;
 			myStyle4.borderRadius = 40.0;
 			
-			var draggAreaBG = new UIButton(10, 200, 350, 350, roundedSkin, myStyle4);
+			var draggAreaBG = new Button(10, 200, 350, 350, roundedSkin, myStyle4);
 			uiDisplay.add(draggAreaBG);
 
-			var draggArea = new UIButton(250, 250, 80, 80, roundedSkin, myStyle4);
+			var draggArea = new Button(250, 250, 80, 80, roundedSkin, myStyle4);
 			draggArea.setDragArea(10, 200, 350, 350); // x, y, width, height
-			draggArea.onPointerDown = function(b:UIButton, e:PointerEvent) {
+			draggArea.onPointerDown = function(b:Button, e:PointerEvent) {
 				trace(" -----> onPointerDown", e);
 				b.startDragging(e);
 				b.style.color = Color.YELLOW;
 				b.update();
 			}
-			draggArea.onPointerUp = function(b:UIButton, e:PointerEvent) {
+			draggArea.onPointerUp = function(b:Button, e:PointerEvent) {
 				trace(" -----> onPointerUp", e);
 				b.stopDragging(e);
 				b.style.color = Color.GREY1;
@@ -173,30 +173,30 @@ class ButtonEvents extends Application
 	
 	// ----------------- Button Eventhandler ----------------------
 	
-	public inline function onOver(color:Color, uiElement:UIButton, e:PointerEvent) {
+	public inline function onOver(color:Color, uiElement:Button, e:PointerEvent) {
 		uiElement.style.color = color;
-		if (uiElement.style.compatibleSkins == SkinType.Rounded) {
+		if (uiElement.style.compatibleSkins & SkinType.Rounded > 0) {
 			uiElement.style.borderColor = Color.GREY7;
 		}
 		uiElement.update();
 		trace(" -----> onPointerOver", e);
 	}
 	
-	public inline function onOut(color:Color, uiElement:UIButton, e:PointerEvent) {
+	public inline function onOut(color:Color, uiElement:Button, e:PointerEvent) {
 		uiElement.style.color = color;
-		if (uiElement.style.compatibleSkins == SkinType.Rounded) {
+		if (uiElement.style.compatibleSkins & SkinType.Rounded > 0) {
 			uiElement.style.borderColor = Color.GREY5;
 		}
 		uiElement.update();
 		trace(" -----> onPointerOut", e);
 	}
 	
-	public inline function onMove(uiElement:UIButton, e:PointerEvent) {
+	public inline function onMove(uiElement:Button, e:PointerEvent) {
 		trace(" -----> onPointerMove", e);
 	}
 	
-	public inline function onDown(borderColor:Color, uiElement:UIButton, e:PointerEvent) {
-		if (uiElement.style.compatibleSkins == SkinType.Rounded) {
+	public inline function onDown(borderColor:Color, uiElement:Button, e:PointerEvent) {
+		if (uiElement.style.compatibleSkins & SkinType.Rounded > 0) {
 			uiElement.style.borderColor = borderColor;
 			//uiElement.x += 30;
 			uiElement.update();
@@ -204,15 +204,15 @@ class ButtonEvents extends Application
 		trace(" -----> onPointerDown", e);
 	}
 	
-	public inline function onUp(borderColor:Color, uiElement:UIButton, e:PointerEvent) {
-		if (uiElement.style.compatibleSkins == SkinType.Rounded) {
+	public inline function onUp(borderColor:Color, uiElement:Button, e:PointerEvent) {
+		if (uiElement.style.compatibleSkins & SkinType.Rounded > 0) {
 			uiElement.style.borderColor = borderColor;
 			uiElement.update();
 		}
 		trace(" -----> onPointerUp", e);
 	}
 	
-	public inline function onClick(uiElement:UIButton, e:PointerEvent) {
+	public inline function onClick(uiElement:Button, e:PointerEvent) {
 		//uiElement.y += 30; uiElement.update();
 		trace(" -----> onPointerClick", e);
 	}
