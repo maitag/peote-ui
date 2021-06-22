@@ -79,10 +79,8 @@ class $className extends $uiTextLineType
 	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int,
 	                    //text:String, font:$fontType, fontStyle:$styleType) 
 	                    text:String, font:peote.text.Font<$styleType>, fontStyle:$styleType) 
-	{
-	
-		super(xPosition, yPosition, width, height, zIndex, text, font, fontStyle);
-		
+	{	
+		super(xPosition, yPosition, width, height, zIndex, text, font, fontStyle);		
 	}
 	
 	

@@ -4,7 +4,7 @@ import peote.ui.interactive.UIElement;
 import peote.ui.skin.interfaces.Skin;
 
 //@:generic class LayoutElement<O,P> extends UIElement implements peote.layout.LayoutElement
-class LayoutElement extends UIElement implements peote.layout.LayoutElement
+class LayoutElement extends UIElement implements peote.layout.ILayoutElement
 {
 	//var options:O;
 	//var params:P;

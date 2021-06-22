@@ -8,6 +8,7 @@ import lime.ui.MouseButton;
 import lime.ui.MouseWheelMode;
 import lime.ui.Touch;
 import peote.layout.ContainerType;
+import peote.layout.LayoutContainer;
 
 import peote.view.PeoteView;
 import peote.view.Color;
@@ -19,8 +20,10 @@ import peote.ui.skin.RoundedSkin;
 import peote.ui.skin.RoundedStyle;
 
 import peote.ui.PeoteUI;
+import peote.ui.interactive.LayoutTextLine;
 import peote.ui.event.PointerEvent;
-import peote.ui.widget.*;
+import peote.ui.widget.Div;
+import peote.ui.widget.TextLine;
 
 import peote.layout.Size;
 
@@ -52,7 +55,7 @@ class WidgetLayout extends Application
 		catch (e:Dynamic) trace("ERROR:", e);
 	}
 	
-	public function onFontLoaded(font) {
+	public function onFontLoaded(font:Font<FontStyleTiled>) {
 		try {
 			
 			var mySkin = new RoundedSkin();
@@ -78,11 +81,12 @@ class WidgetLayout extends Application
 				// later into widget -> new LabelButton<FontStyleTiled>()
 				new Div(
 				{
-					top:20,
-					left:20,
-					width:200,
-					height:50,
-					
+					//layout:{
+						top:20,
+						//left:20,
+						width:Size.limit(200, 300),
+						height:50,
+					//},
 					skin:mySkin,
 					style:myStyle,
 					
@@ -94,19 +98,35 @@ class WidgetLayout extends Application
 					//},
 					
 				},
-				[
-					/*
-					new TextLine<FontStyleTiled>(
+				[   // TODO:
+					new TextLine( font, fontStyleTiled, "TextLine",
 					{
-						text:"ButtonLabel",
-						font:font,
-						fontStyle:fontStyleTiled
-						onPointerOver:onOver.bind(Color.BLUE),
-					}),
-					*/
+						width:Size.limit(100, 200),
+						top:Size.span(0.2),
+						bottom:Size.span(0.2),
+						
+						onPointerOver:
+							function (t:TextLine, e:PointerEvent) {
+								trace("onOverTextfield");
+								
+								//var fontStyle:FontStyleTiled = t.getFontStyle();
+								//var fontStyle = t.getFontStyle();
+								//fontStyle.color = Color.RED;
+								
+								var layoutTextLine:LayoutTextLine<FontStyleTiled> = t.getLayoutTextLine();
+								layoutTextLine.fontStyle.color = Color.YELLOW;
+								layoutTextLine.updateStyle();
+								
+								layoutTextLine.update();
+							}
+					})
+						
+					
+					
+					
 				]),
 			
-			
+				
 			
 	/*			// later into widget -> new VScrollArea()
 				new HBox(
@@ -122,21 +142,29 @@ class WidgetLayout extends Application
 			peoteView.addDisplay(ui);
 			ui.pointerEnabled = true;
 			
+			
+			//TODO:
+			//ui.registerLimeEvents(window); //-> window.onFocusOut.add(...)
+			
 		}
 		catch (e:Dynamic) trace("ERROR:", e);
 	}
 
 	// --------------------------------------------------
-	public inline function onOver(color:Color, widget:Widget, e:PointerEvent) {
+	public inline function onOver(color:Color, widget:Div, e:PointerEvent) {
 		//trace(widget.parent);
 		
 		//widget.parent.uiElement.color = Color.RED;
 		
+		//switch(widged.Type) {
+		//	case(WidgetType.TextLine) 
+		
 		widget.style.color = color;
 		widget.style.borderColor = Color.GREY7;
-		//TODO: uiElement.updateStyle();
-		widget.uiElement.update();
-		//TODO: uiElement.updateLayout();
+		//TODO: widget.updateStyle();
+		widget.layoutElement.update();
+		//TODO: widget.updateLayout();
+		//TODO: widget.update();
 		trace(" -----> onPointerOver", e);
 	}
 

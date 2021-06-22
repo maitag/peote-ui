@@ -28,7 +28,7 @@ class LayoutTextLineMacro
 // -------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------
 
-class $className extends $uiTextLineType implements peote.layout.LayoutElement
+class $className extends $uiTextLineType implements peote.layout.ILayoutElement
 {
 	//var options:O;
 	//var params:P;
@@ -37,6 +37,7 @@ class $className extends $uiTextLineType implements peote.layout.LayoutElement
 	                    //text:String, font:$fontType, fontStyle:$styleType) 
 	                    text:String, font:peote.text.Font<$styleType>, fontStyle:$styleType) 
 	{
+		//trace("NEW LayoutTextLine");
 		super(xPosition, yPosition, width, height, zIndex, text, font, fontStyle);
 	}
 	
@@ -51,6 +52,7 @@ class $className extends $uiTextLineType implements peote.layout.LayoutElement
 	var layoutWasHidden = false;
 	public function updateByLayout(layoutContainer:peote.layout.LayoutContainer) 
 	{
+
 		if (!layoutWasHidden && layoutContainer.isHidden) { // if it is full outside of the Mask (so invisible)
 			hideByLayout();
 			layoutWasHidden = true;
@@ -60,7 +62,7 @@ class $className extends $uiTextLineType implements peote.layout.LayoutElement
 			y = Math.round(layoutContainer.y);
 			width = Math.round(layoutContainer.width);
 			height = Math.round(layoutContainer.height);
-			
+						
 			if (layoutContainer.isMasked) { // if some of the edges is cut by mask for scroll-area
 				//maskX = Math.round(layoutContainer.maskX);
 				//maskY = Math.round(layoutContainer.maskY);

@@ -4,7 +4,7 @@ import lime.ui.MouseButton;
 import lime.ui.MouseWheelMode;
 import lime.ui.Touch;
 import peote.layout.LayoutContainer;
-import peote.layout.LayoutElement;
+import peote.layout.ILayoutElement;
 import peote.layout.LayoutOptions;
 import peote.layout.ContainerType;
 import peote.view.Color;
@@ -30,7 +30,7 @@ abstract PeoteUI(LayoutContainer) from LayoutContainer to LayoutContainer {
 		else peoteUiOptions.relativeChildPositions = true;
 		
 		//var layoutElement:LayoutElement = new UIDisplay<PeoteUIOptions, PeoteUIParams>(0, 0, 0, 0, (peoteUiOptions.bgColor != null) ? peoteUiOptions.bgColor : Color.BLACK);
-		var layoutElement:LayoutElement = new LayoutDisplay(0, 0, 0, 0, (peoteUiOptions.bgColor != null) ? peoteUiOptions.bgColor : Color.BLACK);
+		var layoutElement:ILayoutElement = new LayoutDisplay(0, 0, 0, 0, (peoteUiOptions.bgColor != null) ? peoteUiOptions.bgColor : Color.BLACK);
 		this = new LayoutContainer(
 			containerType, 
 			layoutElement,

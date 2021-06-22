@@ -1,55 +1,32 @@
 package peote.ui.widget;
 
+import peote.layout.ILayoutElement;
+import peote.layout.Layout;
 import peote.layout.LayoutContainer;
-import peote.layout.LayoutOptions;
 import peote.layout.ContainerType;
-import peote.ui.interactive.LayoutElement;
+import peote.ui.interactive.InteractiveElement;
 
-import peote.ui.skin.interfaces.Skin;
 import peote.ui.event.PointerEvent;
-
-typedef WidgetPointerEventParams = Widget->PointerEvent->Void;
-
-typedef WidgetOptions = {
-	> LayoutOptions,
-	?skin:Skin,
-	?style:Dynamic,
-	
-	?onPointerOver:WidgetPointerEventParams,
-}
 
 
 //@:access(peote.layout.LayoutContainer.childs)
 @:forward
-abstract Widget(LayoutContainer) from LayoutContainer to LayoutContainer 
+abstract Widget(LayoutContainer) from LayoutContainer to LayoutContainer
 {
-	public inline function new(containerType:ContainerType, widgetOptions:WidgetOptions = null, innerLayoutContainer:Array<LayoutContainer> = null) 
+	public inline function new(containerType:ContainerType, uiElem:ILayoutElement, layout:Layout = null, widgets:Array<Widget> = null) 
 	{	
 		this = new LayoutContainer(containerType,
-			new LayoutElement(0, 0, 0, 0, widgetOptions.skin, widgetOptions.style),
-			widgetOptions, innerLayoutContainer);
-
-		set_onPointerOver(widgetOptions.onPointerOver);
+			uiElem,
+			layout, widgets);
 	}
 	
-	public var uiElement(get, never):LayoutElement;
-	public inline function get_uiElement():LayoutElement return cast this.layoutElement;
+	public var interactiveElement(get, never):InteractiveElement;
+	public inline function get_interactiveElement():InteractiveElement return cast this.layoutElement;	
 	
-	@:to public inline function toUIElement():LayoutElement return uiElement;
-	
-	
-	public var onPointerOver(never, set):WidgetPointerEventParams;
-	inline function set_onPointerOver(f:WidgetPointerEventParams):WidgetPointerEventParams {
-		uiElement.rebindPointerOver( f.bind(this), f == null);
+	public var onPointerOver(never, set):Widget->PointerEvent->Void;
+	inline function set_onPointerOver(f:Widget->PointerEvent->Void):Widget->PointerEvent->Void {
+		interactiveElement.rebindPointerOver( f.bind(this), f == null);
 		return f;
-	}
-	
-	public var style(get, set):Dynamic;
-	inline function get_style():Dynamic {
-		return uiElement.style;
-	}
-	inline function set_style(style:Dynamic):Dynamic {
-		return uiElement.style = style;
 	}
 	
 }

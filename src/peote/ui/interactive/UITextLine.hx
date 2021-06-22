@@ -72,8 +72,9 @@ class $className extends peote.ui.interactive.InteractiveElement
 	                    //text:String, font:$fontType, fontStyle:$styleType) 
 	                    text:String, font:peote.text.Font<$styleType>, fontStyle:$styleType) 
 	{
+		//trace("NEW UITextLine");
 		super(xPosition, yPosition, width, height, zIndex);
-		
+
 		this.text = text;
 		this.font = font;
 		this.fontStyle = fontStyle;
@@ -87,12 +88,19 @@ class $className extends peote.ui.interactive.InteractiveElement
 	}
 	
 	public function updateStyle(from:Int = 0, to:Null<Int> = null) {
+		trace("updateStyle",x,y);
 		fontProgram.lineSetStyle(line, fontStyle, from, to);
 	}
 	
 	
 	override inline function updateVisible():Void
 	{
+		trace("updateVisible",line.maxX,line.maxY, x, y);
+		
+		// TODO:
+		line.maxX = x + width;
+		line.maxY = y + height;
+		
 		fontProgram.lineSetPosition(line, x, y);
 		fontProgram.updateLine(line);
 	}

@@ -78,9 +78,10 @@ class ButtonLayout extends Application
 			fontStyleTiled.color = Color.WHITE;
 			
 			//var textLine1 = new LayoutTextLine<FontStyleTiled>(0, 0, 112, 25, 0, "hello", font, fontStyleTiled);
-			var textLine1 = font.createLayoutTextLine(0, 0, 112, 25, 0, "hello", fontStyleTiled);
-			var textLine2 = font.createLayoutTextLine(0, 0, 112, 25, 0, "world", fontStyleTiled);			
+			var textLine1:LayoutTextLine<FontStyleTiled> = font.createLayoutTextLine(0, 0, 112, 25, 0, "hello", fontStyleTiled);
 			uiDisplay.add(textLine1);
+			
+			var textLine2 = font.createLayoutTextLine(0, 0, 112, 25, 0, "world", font.createFontStyle());			
 			uiDisplay.add(textLine2);
 			
 			uiLayoutContainer = new Box( uiDisplay , { width:Size.limit(100,700), relativeChildPositions:true },
@@ -99,6 +100,11 @@ class ButtonLayout extends Application
 			
 			uiLayoutContainer.init();
 			uiLayoutContainer.update(peoteView.width, peoteView.height);
+			
+			//trace("change style after");
+			//textLine2.fontStyle = fontStyleTiled;
+			//textLine2.updateStyle();
+			//textLine2.update();
 		}
 		catch (e:Dynamic) trace("ERROR:", e);
 	}
