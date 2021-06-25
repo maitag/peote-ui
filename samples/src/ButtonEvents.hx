@@ -297,7 +297,12 @@ class ButtonEvents extends Application
 
 	// ----------------- WINDOWS EVENTS ----------------------------
 	public override function onWindowResize (width:Int, height:Int) peoteView.resize(width, height);
-	public override function onWindowLeave() uiDisplay.windowLeave();
+	public override function onWindowLeave() {
+		#if (! html5)
+		lastMouseMoveX = lastMouseMoveY = -1; // fix for another onMouseMoveFrameSynced() by render-loop
+		#end
+		uiDisplay.windowLeave();
+	}
 	// public override function onWindowActivate():Void { trace("onWindowActivate"); }
 	// public override function onWindowDeactivate():Void { trace("onWindowDeactivate"); }
 	// public override function onWindowClose():Void { trace("onWindowClose"); }

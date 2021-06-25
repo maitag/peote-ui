@@ -101,10 +101,13 @@ class ButtonLayout extends Application
 			uiLayoutContainer.init();
 			uiLayoutContainer.update(peoteView.width, peoteView.height);
 			
-			//trace("change style after");
-			//textLine2.fontStyle = fontStyleTiled;
-			//textLine2.updateStyle();
-			//textLine2.update();
+			//haxe.Timer.delay(function() {
+				//trace("change style after");
+				//textLine2.fontStyle = fontStyleTiled;
+				//textLine2.updateStyle();
+				//textLine2.update();
+				
+			//}, 1000);
 		}
 		catch (e:Dynamic) trace("ERROR:", e);
 	}

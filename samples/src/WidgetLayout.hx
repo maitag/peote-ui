@@ -254,7 +254,13 @@ class WidgetLayout extends Application
 		// TODO
 		ui.update(width, height);
 	}
-	public override function onWindowLeave() PeoteUI.windowLeave();
+
+	public override function onWindowLeave() {
+		#if (! html5)
+		lastMouseMoveX = lastMouseMoveY = -1; // fix for another onMouseMoveFrameSynced() by render-loop
+		#end
+		PeoteUI.windowLeave()
+	}
 	
 	// public override function onWindowActivate():Void { trace("onWindowActivate"); }
 	// public override function onWindowDeactivate():Void { trace("onWindowDeactivate"); }

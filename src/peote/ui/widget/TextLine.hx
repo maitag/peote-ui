@@ -2,13 +2,9 @@ package peote.ui.widget;
 
 import peote.layout.ContainerType;
 import peote.layout.LayoutOptions;
-import peote.text.Font;
 import peote.ui.event.PointerEvent;
-import peote.ui.text.FontStyleTiled;
-
 
 import peote.ui.widget.Widget;
-import peote.ui.interactive.LayoutTextLine;
 
 typedef TextLineOptions = {
 	> LayoutOptions,
@@ -20,7 +16,6 @@ typedef TextLineOptions = {
 @:forward
 abstract TextLine(Widget) from Widget to Widget
 {
-	//public inline function new(layoutTextLine:Dynamic, textLineOptions:TextLineOptions = null)
 	public inline function new(font, fontStyleTiled, text:String, textLineOptions:TextLineOptions)
 	{
 		this = new Widget(ContainerType.BOX,

@@ -65,7 +65,7 @@ class $className extends peote.ui.interactive.InteractiveElement
 	public var fontStyle:$styleType;
 	
 	public var text:String;
-	public var line:peote.text.Line<$styleType>;
+	public var line:peote.text.Line<$styleType> = null;
 	//public var line:$lineType;
 	
 	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int,
@@ -79,16 +79,16 @@ class $className extends peote.ui.interactive.InteractiveElement
 		this.font = font;
 		this.fontStyle = fontStyle;
 		
-		line = new peote.text.Line<$styleType>();
+/*		line = new peote.text.Line<$styleType>();
 		line.x = x;
 		line.y = y;
 		line.maxX = x + width;
 		line.maxY = y + height;
 		line.xOffset = 0;
-	}
+*/	}
 	
 	public function updateStyle(from:Int = 0, to:Null<Int> = null) {
-		trace("updateStyle",x,y);
+		//trace("updateStyle",x,y);
 		fontProgram.lineSetStyle(line, fontStyle, from, to);
 	}
 	
@@ -96,7 +96,7 @@ class $className extends peote.ui.interactive.InteractiveElement
 	override inline function updateVisible():Void
 	{
 		trace("updateVisible",line.maxX,line.maxY, x, y);
-		
+		//
 		// TODO:
 		line.maxX = x + width;
 		line.maxY = y + height;
@@ -127,7 +127,9 @@ class $className extends peote.ui.interactive.InteractiveElement
 				fontProgram = displayFontProgram.get(uiDisplay.number));
 			#end
 		
-		fontProgram.setLine(line, text, line.x, line.y, fontStyle);
+		//fontProgram.setLine(line, text, line.x, line.y, fontStyle);
+		if (line == null) line = fontProgram.createLine(text, x, y, fontStyle);
+		else fontProgram.addLine(line);
 	}
 	
 	override inline function onRemoveVisibleFromDisplay()

@@ -299,27 +299,27 @@ class InteractiveElement
 		
 	private function addPickableMove()
 	{
-		trace("addPickableOver");
+		//trace("addPickableOver");
 		if (pickableMove==null) pickableMove = new Pickable(this);
 		if (uiDisplay!=null) uiDisplay.movePickBuffer.addElement( pickableMove );
 	}
 	
 	private function removePickableMove()
 	{
-		trace("removePickableOver");
+		//trace("removePickableOver");
 		if (uiDisplay!=null) uiDisplay.movePickBuffer.removeElement( pickableMove );  //pickableOver=null
 	}
 	
 	private function addPickableClick()
 	{
-		trace("addPickableClick");
+		//trace("addPickableClick");
 		if (pickableClick==null) pickableClick = new Pickable(this);
 		if (uiDisplay!=null) uiDisplay.clickPickBuffer.addElement( pickableClick );
 	}
 	
 	private function removePickableClick()
 	{
-		trace("removePickableClick");
+		//trace("removePickableClick");
 		if (uiDisplay!=null) uiDisplay.clickPickBuffer.removeElement( pickableClick ); //pickableClick=null
 	}
 	

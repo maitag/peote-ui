@@ -63,21 +63,37 @@ class TextEvents extends Application
 			fontStyleTiled.height = 25;
 			fontStyleTiled.width = 25;
 			
-			var textLine = new TextLine<FontStyleTiled>(0, 0, 112, 25, 0, "hello Button", font, fontStyleTiled); //, selectionFontStyle
+			var textLine = new TextLine<FontStyleTiled>(0, 0, 112, 25, 0, "Hello", font, fontStyleTiled); //, selectionFontStyle
 			//var textLine = font.createTextLine(0, 0, 112, 25, 0, "hello Button", fontStyleTiled); //, selectionFontStyle
 						
 			textLine.onPointerOver = function(t:TextLine<FontStyleTiled>, e:PointerEvent) {
+				trace("onPointerOver");
 				t.fontStyle.color = Color.YELLOW;
 				t.updateStyle();
 				t.update();
 			}
 			textLine.onPointerOut = function(t:TextLine<FontStyleTiled>, e:PointerEvent) {
+				trace("onPointerOut");
 				t.fontStyle.color = Color.GREEN;
 				t.updateStyle();
 				t.update();
 			}
 						
 			uiDisplay.add(textLine);
+			
+			haxe.Timer.delay(function() {
+				//trace("change style after");
+				//textLine2.fontStyle = fontStyleTiled;
+				//textLine2.updateStyle();
+				//textLine2.update();
+				
+				uiDisplay.remove(textLine);
+				haxe.Timer.delay(function() {					
+					uiDisplay.add(textLine);
+				}, 1000);
+				
+			}, 1000);
+
 			
 			// TODO
 			// line.set("new Text", 0, 0, fontStyle);
@@ -91,14 +107,16 @@ class TextEvents extends Application
 			fontStylePacked.width = 25;
 			
 			//var textLine = new TextLine<FontStylePacked>(0, 80, 112, 25, "hello Button", fontPacked, fontStylePacked); //, selectionFontStyle
-			var textLine = font.createTextLine(0, 80, 112, 25, 0, "hello Button", fontStylePacked); //, selectionFontStyle
+			var textLine = font.createTextLine(250, 0, 125, 25, 0, "Hello", fontStylePacked); //, selectionFontStyle
 
 			textLine.onPointerOver = function(t:TextLine<FontStylePacked>, e:PointerEvent) {
+				trace("onPointerOver");
 				t.fontStyle.color = Color.YELLOW;
 				t.updateStyle();
 				t.update();
 			}
 			textLine.onPointerOut = function(t:TextLine<FontStylePacked>, e:PointerEvent) {
+				trace("onPointerOut");
 				t.fontStyle.color = Color.GREEN;
 				t.updateStyle();
 				t.update();
@@ -115,35 +133,6 @@ class TextEvents extends Application
 		uiElement.style.borderColor = Color.GREY7;
 		uiElement.update();
 		trace(" -----> onPointerOver", e);
-	}
-	
-	public inline function onOut(color:Color, uiElement:UIButton, e:PointerEvent) {
-		uiElement.style.color = color;
-		uiElement.style.borderColor = Color.GREY5;
-		uiElement.update();
-		trace(" -----> onPointerOut", e);
-	}
-	
-	public inline function onMove(uiElement:UIButton, e:PointerEvent) {
-		trace(" -----> onPointerMove", e);
-	}
-	
-	public inline function onDown(borderColor:Color, uiElement:UIButton, e:PointerEvent) {
-		uiElement.style.borderColor = borderColor;
-		//uiElement.x += 30;
-		uiElement.update();
-		trace(" -----> onPointerDown", e);
-	}
-	
-	public inline function onUp(borderColor:Color, uiElement:UIButton, e:PointerEvent) {
-		uiElement.style.borderColor = borderColor;
-		uiElement.update();
-		trace(" -----> onPointerUp", e);
-	}
-	
-	public inline function onClick(uiElement:UIButton, e:PointerEvent) {
-		//uiElement.y += 30; uiElement.update();
-		trace(" -----> onPointerClick", e);
 	}
 */	
 	
@@ -195,6 +184,7 @@ class TextEvents extends Application
 	#end
 	
 	inline function _onMouseMove (x:Float, y:Float) {
+		trace(" -------onMouseMove--------- ", x, y);
 		uiDisplay.mouseMove(x, y);
 	}
 	public override function onMouseDown (x:Float, y:Float, button:MouseButton) uiDisplay.mouseDown(x, y, button);
@@ -226,12 +216,17 @@ class TextEvents extends Application
 
 	// ----------------- WINDOWS EVENTS ----------------------------
 	public override function onWindowResize (width:Int, height:Int) peoteView.resize(width, height);
-	public override function onWindowLeave() uiDisplay.windowLeave();
+	public override function onWindowLeave() {
+		#if (! html5)
+		lastMouseMoveX = lastMouseMoveY = -1; // fix for another onMouseMoveFrameSynced() by render-loop
+		#end
+		uiDisplay.windowLeave();
+	}
+	// public override function onWindowEnter():Void { trace("onWindowEnter"); }
 	// public override function onWindowActivate():Void { trace("onWindowActivate"); }
 	// public override function onWindowDeactivate():Void { trace("onWindowDeactivate"); }
 	// public override function onWindowClose():Void { trace("onWindowClose"); }
 	// public override function onWindowDropFile(file:String):Void { trace("onWindowDropFile"); }
-	// public override function onWindowEnter():Void { trace("onWindowEnter"); }
 	// public override function onWindowExpose():Void { trace("onWindowExpose"); }
 	// public override function onWindowFocusIn():Void { trace("onWindowFocusIn"); }
 	// public override function onWindowFocusOut():Void { trace("onWindowFocusOut"); }
