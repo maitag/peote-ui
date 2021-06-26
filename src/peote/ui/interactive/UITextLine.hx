@@ -68,24 +68,22 @@ class $className extends peote.ui.interactive.InteractiveElement
 	public var line:peote.text.Line<$styleType> = null;
 	//public var line:$lineType;
 	
-	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int,
+	public var masked:Bool;
+	
+	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int, masked:Bool = false,
 	                    //text:String, font:$fontType, fontStyle:$styleType) 
 	                    text:String, font:peote.text.Font<$styleType>, fontStyle:$styleType) 
 	{
 		//trace("NEW UITextLine");
 		super(xPosition, yPosition, width, height, zIndex);
 
+		this.masked = masked;
+		
 		this.text = text;
 		this.font = font;
 		this.fontStyle = fontStyle;
 		
-/*		line = new peote.text.Line<$styleType>();
-		line.x = x;
-		line.y = y;
-		line.maxX = x + width;
-		line.maxY = y + height;
-		line.xOffset = 0;
-*/	}
+	}
 	
 	public function updateStyle(from:Int = 0, to:Null<Int> = null) {
 		//trace("updateStyle",x,y);
@@ -95,14 +93,19 @@ class $className extends peote.ui.interactive.InteractiveElement
 	
 	override inline function updateVisible():Void
 	{
-		trace("updateVisible",line.maxX,line.maxY, x, y);
-		//
-		// TODO:
-		line.maxX = x + width;
-		line.maxY = y + height;
+		if (masked) {
+			line.maxX = x + width;
+			line.maxY = y + height;
+		}
 		
-		fontProgram.lineSetPosition(line, x, y);
+		//fontProgram.lineSetPosition(line, x, y);
 		fontProgram.updateLine(line);
+		
+		if (!masked) {
+			width = Std.int(line.fullWidth);
+			// TODO:
+			//height= Std.int(line.fullHeight);
+		}
 	}
 	
 	// -----------------
@@ -127,9 +130,26 @@ class $className extends peote.ui.interactive.InteractiveElement
 				fontProgram = displayFontProgram.get(uiDisplay.number));
 			#end
 		
-		//fontProgram.setLine(line, text, line.x, line.y, fontStyle);
-		if (line == null) line = fontProgram.createLine(text, x, y, fontStyle);
+		if (line == null) {
+			//line = fontProgram.createLine(text, x, y, fontStyle);
+			line = new peote.text.Line<$styleType>();
+			if (masked) {
+				line.maxX = x + width;
+				line.maxY = y + height;
+			}
+			
+			fontProgram.setLine(line, text, x, y, fontStyle);
+			
+			if (!masked) {
+				width = Std.int(line.fullWidth);
+				// TODO:
+				//height= Std.int(line.fullHeight);
+				if ( hasMoveEvent  != 0 ) pickableMove.update(this);
+				if ( hasClickEvent != 0 ) pickableClick.update(this);				
+			}
+		}
 		else fontProgram.addLine(line);
+		
 	}
 	
 	override inline function onRemoveVisibleFromDisplay()

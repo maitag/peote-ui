@@ -47,7 +47,7 @@ class TextEvents extends Application
 			new Font<FontStyleTiled>("assets/fonts/tiled/hack_ascii.json").load( onTiledFontLoaded );
 			new Font<FontStylePacked>("assets/fonts/packed/hack/config.json").load( onPackedFontLoaded );
 						
-			peoteView.zoom = 2;
+			//peoteView.zoom = 2;
 
 			#if android
 			uiDisplay.mouseEnabled = false;
@@ -63,8 +63,8 @@ class TextEvents extends Application
 			fontStyleTiled.height = 25;
 			fontStyleTiled.width = 25;
 			
-			var textLine = new TextLine<FontStyleTiled>(0, 0, 112, 25, 0, "Hello", font, fontStyleTiled); //, selectionFontStyle
-			//var textLine = font.createTextLine(0, 0, 112, 25, 0, "hello Button", fontStyleTiled); //, selectionFontStyle
+			var textLine = new TextLine<FontStyleTiled>(0, 0, 10, 25, 0, "hello", font, fontStyleTiled); //, selectionFontStyle
+			//var textLine = font.createTextLine(0, 0, 112, 25, 0, "hello", fontStyleTiled); //, selectionFontStyle
 						
 			textLine.onPointerOver = function(t:TextLine<FontStyleTiled>, e:PointerEvent) {
 				trace("onPointerOver");
@@ -107,7 +107,7 @@ class TextEvents extends Application
 			fontStylePacked.width = 25;
 			
 			//var textLine = new TextLine<FontStylePacked>(0, 80, 112, 25, "hello Button", fontPacked, fontStylePacked); //, selectionFontStyle
-			var textLine = font.createTextLine(250, 0, 125, 25, 0, "Hello", fontStylePacked); //, selectionFontStyle
+			var textLine = font.createTextLine(250, 0, 50, 25, 0, true, "Masked", fontStylePacked); //, selectionFontStyle
 
 			textLine.onPointerOver = function(t:TextLine<FontStylePacked>, e:PointerEvent) {
 				trace("onPointerOver");
@@ -183,10 +183,8 @@ class TextEvents extends Application
 	}
 	#end
 	
-	inline function _onMouseMove (x:Float, y:Float) {
-		trace(" -------onMouseMove--------- ", x, y);
-		uiDisplay.mouseMove(x, y);
-	}
+	inline function _onMouseMove (x:Float, y:Float) uiDisplay.mouseMove(x, y);
+	
 	public override function onMouseDown (x:Float, y:Float, button:MouseButton) uiDisplay.mouseDown(x, y, button);
 	public override function onMouseUp (x:Float, y:Float, button:MouseButton) uiDisplay.mouseUp(x, y, button);
 	public override function onMouseWheel (dx:Float, dy:Float, mode:MouseWheelMode) uiDisplay.mouseWheel(dx, dy, mode);

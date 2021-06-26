@@ -350,7 +350,7 @@ class UIDisplay extends Display
 
 	public inline function windowLeave():Void {
 		// mouse
-		if (lastMouseOverIndex >= 0) {trace("KK", lastMouseOverIndex);
+		if (lastMouseOverIndex >= 0) {
 			movePickBuffer.getElement(lastMouseOverIndex).uiElement.pointerOut({x:-1, y:-1, type:PointerType.MOUSE});
 			lastMouseOverIndex = -1;
 		}

@@ -33,12 +33,12 @@ class $className extends $uiTextLineType implements peote.layout.ILayoutElement
 	//var options:O;
 	//var params:P;
 	
-	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int,
+	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int, masked:Bool = false,
 	                    //text:String, font:$fontType, fontStyle:$styleType) 
 	                    text:String, font:peote.text.Font<$styleType>, fontStyle:$styleType) 
 	{
 		//trace("NEW LayoutTextLine");
-		super(xPosition, yPosition, width, height, zIndex, text, font, fontStyle);
+		super(xPosition, yPosition, width, height, zIndex, masked, text, font, fontStyle);
 	}
 	
 	// ----------- Interface: LayoutElement --------------------
