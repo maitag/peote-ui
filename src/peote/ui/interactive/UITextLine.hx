@@ -93,12 +93,14 @@ class $className extends peote.ui.interactive.InteractiveElement
 	
 	override inline function updateVisible():Void
 	{
+		
 		if (masked) {
 			line.maxX = x + width;
 			line.maxY = y + height;
+			fontProgram.lineSetXOffset(line, 0); // need if mask changed
 		}
 		
-		//fontProgram.lineSetPosition(line, x, y);
+		fontProgram.lineSetPosition(line, x, y);
 		fontProgram.updateLine(line);
 		
 		if (!masked) {
@@ -144,6 +146,8 @@ class $className extends peote.ui.interactive.InteractiveElement
 				width = Std.int(line.fullWidth);
 				// TODO:
 				//height= Std.int(line.fullHeight);
+				
+				// fit interactive pickables to new width and height
 				if ( hasMoveEvent  != 0 ) pickableMove.update(this);
 				if ( hasClickEvent != 0 ) pickableClick.update(this);				
 			}

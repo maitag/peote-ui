@@ -7,6 +7,7 @@ import lime.ui.KeyModifier;
 import lime.ui.MouseButton;
 import lime.ui.MouseWheelMode;
 import lime.ui.Touch;
+import peote.ui.interactive.InteractiveElement;
 import peote.ui.skin.SkinType;
 
 import peote.view.PeoteView;
@@ -77,7 +78,7 @@ class ButtonEvents extends Application
 			var button2:Button = new Button(120, 60, 200, 100, roundedSkin, myStyle2);
 			uiDisplay.add(button2);
 			
-			button2.onPointerOver = onOver.bind(Color.GREY2);
+			button2.onPointerOver = onOver.bind(Color.GREY3);
 			button2.onPointerOut = onOut.bind(Color.GREY1); // only fire if there was some over before!
 			button2.onPointerMove = onMove;
 			button2.onPointerDown = onDown.bind(Color.RED);
@@ -92,22 +93,40 @@ class ButtonEvents extends Application
 			//uiDisplay.updateAll();
 			
 			
-			// ---- Dragging -----
+			// -------------- Dragging -------------------
 			
-			trace("NEW SLIDER -----");			
+			trace("NEW SLIDER -----");
 			var myStyle3:RoundedStyle = {
-				color: Color.BLUE-0x00003300,
+				color: Color.GREY2,
 				borderColor: Color.GREY5,
 				borderSize: 3.0,
 				borderRadius: 20.0
 			}
 			
 			//var background = new Button(10, 140, 350, 60, simpleSkin, new SimpleStyle(Color.GREEN));
-			var background = new Button(10, 140, 350, 60, simpleSkin, myStyle2);
-			uiDisplay.add(background);
+			var dragBackground = new Button(10, 140, 350, 60, simpleSkin, myStyle3);
+			dragBackground.onPointerOver = onOver.bind(Color.GREY3);
+			dragBackground.onPointerOut = onOut.bind(Color.GREY2);
+			uiDisplay.add(dragBackground);
 			
 			//var dragger = new UIButton(10, 140, 100, 60, 1, simpleSkin, myStyle3);
-			var dragger = new Button(10, 140, 100, 60, 1, simpleSkin, new SimpleStyle(Color.GREEN));
+			var dragger = new Button(dragBackground.x, dragBackground.y, 100, 60, 1, simpleSkin, new SimpleStyle(Color.GREEN));
+			
+			dragBackground.onMouseWheel = function(b:Button, e:WheelEvent) {
+				trace("MouseWheel:", e);
+				dragger.x = Std.int(Math.max(dragBackground.x, Math.min(dragBackground.x+dragBackground.width-dragger.width, (dragger.x + e.deltaY * 20))));
+				dragger.update();
+			}
+			
+			
+			// to bubble over-event up to the dragBackground
+			dragger.overOutEventsBubbleTo = dragBackground;
+			dragger.wheelEventsBubbleTo = dragBackground;
+			
+			// testing bubble move-events
+			//dragger.moveEventsBubbleTo = button2;
+			
+			
 			dragger.onPointerOver = onOver.bind(Color.BLUE);
 			dragger.onPointerOut = onOut.bind(Color.BLUE-0x00003300);
 			
@@ -124,11 +143,10 @@ class ButtonEvents extends Application
 				b.style.color = Color.BLUE;
 				b.update();
 			}
-			dragger.onMouseWheel = function(b:Button, e:WheelEvent) {
-				trace("MouseWheel:", e);
-			}
 			uiDisplay.add(dragger);
 
+			// ------ DragArea ------
+			
 			trace("NEW DragArea -----");
 			var myStyle4 = new RoundedStyle();
 			myStyle4.color = Color.GREY1;

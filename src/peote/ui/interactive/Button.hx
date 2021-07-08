@@ -8,6 +8,7 @@ import peote.ui.event.WheelEvent;
 
 
 private typedef ButtonEventParams = Button->PointerEvent->Void;
+private typedef ButtonWheelEventParams = Button->WheelEvent->Void;
 
 class Button extends UIElement
 {
@@ -49,13 +50,15 @@ class Button extends UIElement
 
 	
 	
-	public var onMouseWheel(default, set):Button->WheelEvent->Void;
-	inline function set_onMouseWheel(f:Button->WheelEvent->Void):Button->WheelEvent->Void {
+	public var onMouseWheel(default, set):ButtonWheelEventParams;
+	inline function set_onMouseWheel(f:ButtonWheelEventParams):ButtonWheelEventParams {
 		rebindMouseWheel( f.bind(this), f == null);
 		return onMouseWheel = f;
 	}
 	
 	
+	public static inline function noOperation(b:Button, e:PointerEvent):Void {}
+	public static inline function noWheelOperation(b:Button, e:WheelEvent):Void {}
 	
 	public function new(xPosition:Int=0, yPosition:Int=0, width:Int=100, height:Int=100, zIndex:Int=0, skin:Skin = null, style:Dynamic = null) 
 	{

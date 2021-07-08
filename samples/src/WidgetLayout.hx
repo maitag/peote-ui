@@ -25,6 +25,8 @@ import peote.ui.event.PointerEvent;
 import peote.ui.widget.Div;
 import peote.ui.widget.TextLine;
 
+import peote.ui.interactive.Button;
+
 import peote.layout.Size;
 
 
@@ -73,8 +75,8 @@ class WidgetLayout extends Application
 			
 			ui = new PeoteUI(ContainerType.BOX, {
 				bgColor:Color.GREY1,
-				left:10,
-				right:10,
+				//left:10,
+				//right:10,
 			},
 			[
 				
@@ -90,7 +92,8 @@ class WidgetLayout extends Application
 					skin:mySkin,
 					style:myStyle,
 					
-					onPointerOver:onOver.bind(Color.BLUE),
+					onPointerOver:onOverOut.bind(Color.BLUE),
+					onPointerOut:onOverOut.bind(Color.GREY1),
 					//onPointerClick: function(widget:Widget, e:PointerEvent) {
 						//widget.style.color = Color.RED;
 						//widget.parent.style.color = Color.RED;
@@ -114,11 +117,27 @@ class WidgetLayout extends Application
 								//fontStyle.color = Color.RED;
 								
 								var layoutTextLine:LayoutTextLine<FontStyleTiled> = t.getLayoutTextLine();
-								layoutTextLine.fontStyle.color = Color.YELLOW;
+								layoutTextLine.fontStyle.color = Color.RED;
 								layoutTextLine.updateStyle();
 								
 								layoutTextLine.update();
 							}
+						,	
+						onPointerOut:
+							function (t:TextLine, e:PointerEvent) {
+								trace("onOutTextfield");
+								
+								//var fontStyle:FontStyleTiled = t.getFontStyle();
+								//var fontStyle = t.getFontStyle();
+								//fontStyle.color = Color.RED;
+								
+								var layoutTextLine:LayoutTextLine<FontStyleTiled> = t.getLayoutTextLine();
+								layoutTextLine.fontStyle.color = Color.WHITE;
+								layoutTextLine.updateStyle();
+								
+								layoutTextLine.update();
+							}
+							
 					})
 						
 					
@@ -146,12 +165,57 @@ class WidgetLayout extends Application
 			//TODO:
 			//ui.registerLimeEvents(window); //-> window.onFocusOut.add(...)
 			
+			
+			// TODO: better need a resizable-widget-container!
+			// oder einfach nur rechts-unten einen button und ein onMove auf die gesammte peote-ui!
+			trace("NEW DragArea -----");
+
+			var roundedSkin = new RoundedSkin();
+			
+			var myStyle4 = new RoundedStyle();
+			myStyle4.color = Color.GREY1;
+			myStyle4.borderColor = Color.GREY5;
+			myStyle4.borderSize = 3.0;
+			myStyle4.borderRadius = 20.0;
+			
+			var draggerSize:Int = 25;
+			var draggArea = new Button(ui.display.width-draggerSize, ui.display.height-draggerSize, draggerSize, draggerSize, roundedSkin, myStyle4);
+			
+			draggArea.onPointerDown = function(b:Button, e:PointerEvent) {
+				trace(" -----> startDragging", e);
+				b.startDragging(e);
+				b.style.color = Color.YELLOW;
+				b.update();
+			}
+			draggArea.onPointerUp = function(b:Button, e:PointerEvent) {
+				trace(" -----> stopDragging", e);
+				b.stopDragging(e);
+				b.style.color = Color.GREY1;
+				b.update();
+				ui.update(b.x +draggerSize, b.y + draggerSize);
+			}
+			draggArea.onPointerMove = function(b:Button, e:PointerEvent) {
+				//trace(" -----> onPointerMove", e.x, e.y);
+				if (b.isDragging) {
+					trace(b.x +draggerSize, b.y + draggerSize);
+					//draggArea.setDragArea(0, 0, ui.display.width+10, ui.display.height+10); // x, y, width, height
+					ui.update(b.x +draggerSize, b.y + draggerSize);
+				}
+			}
+			
+			draggArea.setDragArea(0, 0, ui.display.width, ui.display.height); // x, y, width, height
+
+			ui.display.add(draggArea);
+			
+			
+			
+			
 		}
 		catch (e:Dynamic) trace("ERROR:", e);
 	}
 
 	// --------------------------------------------------
-	public inline function onOver(color:Color, widget:Div, e:PointerEvent) {
+	public inline function onOverOut(color:Color, widget:Div, e:PointerEvent) {
 		//trace(widget.parent);
 		
 		//widget.parent.uiElement.color = Color.RED;
@@ -165,7 +229,6 @@ class WidgetLayout extends Application
 		widget.layoutElement.update();
 		//TODO: widget.updateLayout();
 		//TODO: widget.update();
-		trace(" -----> onPointerOver", e);
 	}
 
 	
@@ -259,7 +322,7 @@ class WidgetLayout extends Application
 		#if (! html5)
 		lastMouseMoveX = lastMouseMoveY = -1; // fix for another onMouseMoveFrameSynced() by render-loop
 		#end
-		PeoteUI.windowLeave()
+		PeoteUI.windowLeave();
 	}
 	
 	// public override function onWindowActivate():Void { trace("onWindowActivate"); }

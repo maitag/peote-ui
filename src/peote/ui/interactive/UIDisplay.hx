@@ -95,13 +95,25 @@ class UIDisplay extends Display
 		// TODO: clear all programms and buffers
 	}
 	
-	override private function setNewGLContext(newGl:PeoteGL)
+	override public function addToPeoteView(peoteView:PeoteView, ?atDisplay:Display, addBefore:Bool=false)
+	{
+		super.addToPeoteView(peoteView, atDisplay, addBefore);
+		movePickProgram.setNewGLContext(peoteView.gl);
+		clickPickProgram.setNewGLContext(peoteView.gl);
+	}
+	
+	override public function removeFromPeoteView(peoteView:PeoteView)
+	{
+		super.removeFromPeoteView(peoteView);
+	}
+
+/*	override private function setNewGLContext(newGl:PeoteGL)
 	{
 		super.setNewGLContext(newGl);
 		movePickProgram.setNewGLContext(newGl);
 		clickPickProgram.setNewGLContext(newGl);
 	}
-	
+*/	
 	public function add(uiElement:InteractiveElement):Void {
 		//TODO
 		uiElements.push(uiElement);
@@ -148,7 +160,10 @@ class UIDisplay extends Display
 		if (uiElement.isDragging) {
 			uiElement.isDragging = false;
 			switch (e.type) {
-				case MOUSE: draggingMouseElements.remove(uiElement);
+				case MOUSE: {
+					draggingMouseElements.remove(uiElement);
+					if (draggingMouseElements.length == 0) mouseMove(e.x, e.y);
+				}
 				case TOUCH: draggingTouchElements.get(e.touch.id).remove(uiElement);
 				case PEN: // TODO!
 			}
@@ -179,28 +194,88 @@ class UIDisplay extends Display
 			var x = Std.int(mouseX);
 			var y = Std.int(mouseY);
 			
-			var pickedIndex = (isPointInside(x, y)) ? peoteView.getElementAt(mouseX, mouseY, this, movePickProgram) : -1;
-			
-			// Over/Out
-			if (pickedIndex != lastMouseOverIndex) {
-				// TODO: bubbling only for container-elements
-				// so no over and out to the parent-elements if bubbling is enabled into a child!
-				if (lastMouseOverIndex >= 0) 
-					movePickBuffer.getElement(lastMouseOverIndex).uiElement.pointerOut({x:x, y:y, type:PointerType.MOUSE});
-				if (pickedIndex >= 0) 
-					movePickBuffer.getElement(pickedIndex).uiElement.pointerOver({x:x, y:y, type:PointerType.MOUSE});
-				lastMouseOverIndex = pickedIndex;
+			if (draggingMouseElements.length == 0)	
+			{	
+				var pickedIndex = (isPointInside(x, y)) ? peoteView.getElementAt(mouseX, mouseY, this, movePickProgram) : -1;
+				
+				// Over/Out
+				if (pickedIndex != lastMouseOverIndex) 
+				{
+					
+					if (lastMouseOverIndex >= 0) 
+					{
+						var lastElem = movePickBuffer.getElement(lastMouseOverIndex).uiElement;
+						
+						if (pickedIndex >= 0)
+						{
+							var pickedElem = movePickBuffer.getElement(pickedIndex).uiElement;
+							
+							if (lastElem.intoOverOutEventBubbleOf(pickedElem))
+							{
+								//trace("AAAAAAAAAAAAAAAAAAAAAAA");
+								while (pickedElem != null && pickedElem != lastElem) {
+									pickedElem.pointerOver({x:x, y:y, type:PointerType.MOUSE});
+									pickedElem = pickedElem.overOutEventsBubbleTo;
+								}
+							} 
+							else
+							{
+								//trace("BBBBBBBBBBBBBBBBBBBBBBB");
+								while (lastElem != null && lastElem != pickedElem) {
+									lastElem.pointerOut({x:x, y:y, type:PointerType.MOUSE});
+									lastElem = lastElem.overOutEventsBubbleTo;
+								}
+								if (lastElem == null)
+									while (pickedElem != null) {
+										pickedElem.pointerOver({x:x, y:y, type:PointerType.MOUSE});
+										pickedElem = pickedElem.overOutEventsBubbleTo;
+									}
+							}						
+							
+						} 
+						else
+						{
+							//trace("CCCCCCCCCCCCCCCCCCCCCCCCCC");
+							while (lastElem != null) {
+								lastElem.pointerOut({x:x, y:y, type:PointerType.MOUSE});
+								lastElem = lastElem.overOutEventsBubbleTo;
+							}
+						}
+						
+					}
+					else 
+					{
+						//trace("DDDDDDDDDDDDDDDDDDDDDDDDDD");
+						if (pickedIndex >= 0) {
+							var pickedElem = movePickBuffer.getElement(pickedIndex).uiElement;
+							while (pickedElem != null) {
+								pickedElem.pointerOver({x:x, y:y, type:PointerType.MOUSE});
+								pickedElem = pickedElem.overOutEventsBubbleTo;
+							}
+						}
+					}
+						
+					lastMouseOverIndex = pickedIndex;
+				}
+				
+				// Move
+				if (pickedIndex >= 0) {
+					var pickedElem = movePickBuffer.getElement(pickedIndex).uiElement;
+					while (pickedElem != null) {
+						pickedElem.pointerMove({x:x, y:y, type:PointerType.MOUSE});
+						pickedElem = pickedElem.moveEventsBubbleTo;
+					}					
+				}
+			}
+			else 
+			{
+				// Dragging
+				for (uiElement in draggingMouseElements) {
+					uiElement.dragTo(x, y);
+					update(uiElement);
+				}
 			}
 			
-			// Move
-			if (pickedIndex >= 0) 
-				movePickBuffer.getElement(pickedIndex).uiElement.pointerMove({x:x, y:y, type:PointerType.MOUSE});
-			
-			// Dragging
-			for (uiElement in draggingMouseElements) {
-				uiElement.dragTo(x, y);
-				update(uiElement);
-			}
 		}
 	}
 	
@@ -210,32 +285,95 @@ class UIDisplay extends Display
 			var x:Int = Math.round(touch.x * peoteView.width);
 			var y:Int = Math.round(touch.y * peoteView.height);
 			
-			var pickedIndex = (isPointInside(x, y)) ? peoteView.getElementAt(x, y, this, movePickProgram) : -1;
-			var lastOverIndex:Int = lastTouchOverIndex.get(touch.id);
+			var draggingTouchElemArray = draggingTouchElements.get(touch.id);
 			
-			// Over/Out
-			if (pickedIndex != lastOverIndex) {
-				// TODO: bubbling only for container-elements
-				// so no over and out to the parent-elements if bubbling is enabled into a child!
-				if (lastOverIndex >= 0) 
-					movePickBuffer.getElement(lastOverIndex).uiElement.pointerOut({x:x, y:y, type:PointerType.TOUCH, touch:touch});
-				if (pickedIndex >= 0) 
-					movePickBuffer.getElement(pickedIndex).uiElement.pointerOver({x:x, y:y, type:PointerType.TOUCH, touch:touch});
-				lastTouchOverIndex.set(touch.id, pickedIndex);
+			if (draggingTouchElemArray.length == 0)
+			{	
+				var pickedIndex = (isPointInside(x, y)) ? peoteView.getElementAt(x, y, this, movePickProgram) : -1;
+				var lastOverIndex:Int = lastTouchOverIndex.get(touch.id);
+				
+				// touch Over/Out
+				if (pickedIndex != lastOverIndex) 
+				{
+					
+					if (lastOverIndex >= 0) 
+					{
+						var lastElem = movePickBuffer.getElement(lastOverIndex).uiElement;
+						
+						if (pickedIndex >= 0)
+						{
+							var pickedElem = movePickBuffer.getElement(pickedIndex).uiElement;
+							
+							if (lastElem.intoOverOutEventBubbleOf(pickedElem))
+							{
+								//trace("A");
+								while (pickedElem != null && pickedElem != lastElem) {
+									pickedElem.pointerOver({x:x, y:y, type:PointerType.TOUCH, touch:touch});
+									pickedElem = pickedElem.overOutEventsBubbleTo;
+								}
+							} 
+							else
+							{
+								//trace("B");
+								while (lastElem != null && lastElem != pickedElem) {
+									lastElem.pointerOut({x:x, y:y, type:PointerType.TOUCH, touch:touch});
+									lastElem = lastElem.overOutEventsBubbleTo;
+								}
+								if (lastElem == null)
+									while (pickedElem != null) {
+										pickedElem.pointerOver({x:x, y:y, type:PointerType.TOUCH, touch:touch});
+										pickedElem = pickedElem.overOutEventsBubbleTo;
+									}
+							}						
+							
+						} 
+						else
+						{
+							//trace("C");
+							while (lastElem != null) {
+								lastElem.pointerOut({x:x, y:y, type:PointerType.TOUCH, touch:touch});
+								lastElem = lastElem.overOutEventsBubbleTo;
+							}
+						}
+						
+					}
+					else 
+					{
+						//trace("D");
+						if (pickedIndex >= 0) {
+							var pickedElem = movePickBuffer.getElement(pickedIndex).uiElement;
+							while (pickedElem != null) {
+								pickedElem.pointerOver({x:x, y:y, type:PointerType.TOUCH, touch:touch});
+								pickedElem = pickedElem.overOutEventsBubbleTo;
+							}
+						}
+					}
+						
+					lastTouchOverIndex.set(touch.id, pickedIndex);
+				}
+				
+				// touch Move
+				if (pickedIndex >= 0) {
+					var pickedElem = movePickBuffer.getElement(pickedIndex).uiElement;
+					while (pickedElem != null) {
+						pickedElem.pointerMove({x:x, y:y, type:PointerType.TOUCH, touch:touch});
+						pickedElem = pickedElem.moveEventsBubbleTo;
+					}					
+				}
+				
 			}
-			
-			// Move
-			if (pickedIndex >= 0) 
-				movePickBuffer.getElement(pickedIndex).uiElement.pointerMove({x:x, y:y, type:PointerType.TOUCH, touch:touch});
-			
-			// Dragging
-			for (uiElement in draggingTouchElements.get(touch.id)) {
-				uiElement.dragTo(x, y);
-				update(uiElement);
+			else 
+			{
+				// touch Dragging
+				for (uiElement in draggingTouchElemArray) {
+					uiElement.dragTo(x, y);
+					update(uiElement);
+				}
 			}
 		}
 	}
 	
+	// TODO: bubbling
 	public inline function mouseDown (mouseX:Float, mouseY:Float, button:MouseButton):Void {
 		if (mouseEnabled && (lockMouseDown & (1 << (button+1))) == 0 && peoteView != null) 
 		{
@@ -256,6 +394,7 @@ class UIDisplay extends Display
 		//trace(pickedElements);
 	}
 	
+	// TODO: bubbling
 	public inline function touchStart (touch:Touch):Void {
 		if (touchEnabled && (lockTouchDown & (1 << (touch.id+1))) == 0 && peoteView != null && touch.id < maxTouchpoints) 
 		{
@@ -264,7 +403,7 @@ class UIDisplay extends Display
 			
 			if (isPointInside(x, y))
 			{			
-				// Out
+				// Over
 				var pickedIndex = peoteView.getElementAt(x, y, this, movePickProgram);
 				if (pickedIndex >= 0) {
 					movePickBuffer.getElement(pickedIndex).uiElement.pointerOver({x:x, y:y, type:PointerType.TOUCH, touch:touch});
@@ -281,6 +420,7 @@ class UIDisplay extends Display
 		}
 	}
 	
+	// TODO: bubbling
 	public inline function mouseUp (mouseX:Float, mouseY:Float, button:MouseButton):Void {
 		if (mouseEnabled && peoteView != null) {
 			
@@ -306,6 +446,7 @@ class UIDisplay extends Display
 		//trace(pickedElements);
 	}
 	
+	// TODO: bubbling
 	public inline function touchEnd (touch:Touch):Void {
 		if (touchEnabled && peoteView != null && touch.id < maxTouchpoints) {
 			
@@ -339,7 +480,12 @@ class UIDisplay extends Display
 
 	public inline function mouseWheel (deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode):Void {
 		if (mouseEnabled && lastMouseOverIndex >= 0 && peoteView != null) {
-			movePickBuffer.getElement(lastMouseOverIndex).uiElement.mouseWheel({deltaX:deltaX, deltaY:deltaY, deltaMode:deltaMode});
+			var lastElem = movePickBuffer.getElement(lastMouseOverIndex).uiElement;
+			while (lastElem != null) {
+				lastElem.mouseWheel({deltaX:deltaX, deltaY:deltaY, deltaMode:deltaMode});
+				lastElem = lastElem.wheelEventsBubbleTo;
+			}
+			
 		}
 	}
 	

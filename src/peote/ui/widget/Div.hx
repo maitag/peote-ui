@@ -14,6 +14,7 @@ typedef DivOptions = {
 	//?layout:Layout,
 	
 	?onPointerOver:Div->PointerEvent->Void,
+	?onPointerOut:Div->PointerEvent->Void,
 
 	
 	
@@ -36,6 +37,7 @@ abstract Div(Widget) from Widget to Widget
 		);
 		
 		this.onPointerOver = divOptions.onPointerOver;
+		this.onPointerOut = divOptions.onPointerOut;
 	}
 	
 	public var layoutElement(get, never):LayoutElement;

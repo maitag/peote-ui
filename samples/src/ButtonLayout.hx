@@ -73,15 +73,15 @@ class ButtonLayout extends Application
 			var fontStyleTiled:FontStyleTiled = font.createFontStyle(); // (at least here it needs the FontStyleTiled Type!)
 			//var fontStyleTiled = font.createFontStyle();
 			//var fontStyleTiled = new FontStyleTiled();
-			fontStyleTiled.height = 25.0;
-			fontStyleTiled.width = 25.0;
-			fontStyleTiled.color = Color.WHITE;
+			fontStyleTiled.height = 30.0;
+			fontStyleTiled.width = 30.0;
+			fontStyleTiled.color = Color.BLACK;
 			
 			//var textLine1 = new LayoutTextLine<FontStyleTiled>(0, 0, 112, 25, 0, "hello", font, fontStyleTiled);
-			var textLine1:LayoutTextLine<FontStyleTiled> = font.createLayoutTextLine(0, 0, 112, 25, 0, "hello", fontStyleTiled);
+			var textLine1:LayoutTextLine<FontStyleTiled> = font.createLayoutTextLine(0, 0, 300, 25, 0, false, "hello world", fontStyleTiled);
 			uiDisplay.add(textLine1);
 			
-			var textLine2 = font.createLayoutTextLine(0, 0, 112, 25, 0, "world", font.createFontStyle());			
+			var textLine2 = font.createLayoutTextLine(0, 0, 300, 25, 0, true, "hello world", font.createFontStyle());			
 			uiDisplay.add(textLine2);
 			
 			uiLayoutContainer = new Box( uiDisplay , { width:Size.limit(100,700), relativeChildPositions:true },
@@ -91,23 +91,26 @@ class ButtonLayout extends Application
 					new Box( green,  { width:Size.limit(50, 300), height:Size.limit(100,400) }),							
 					new HBox( blue,   { width:Size.span(50, 150), height:Size.limit(100, 300), left:Size.min(50) },
 					[
-						new Box( textLine1, {width:Size.min(130), height:30, top:5, left:5, bottom:Size.min(5) }),
-						new Box( textLine2, {width:Size.min(130), height:30, top:5, left:5, bottom:Size.min(5) }),
 					]),
-					new Box( yellow, { width:Size.limit(50, 150), height:Size.limit(200,200), left:Size.span(0,100), right:50 } ),
+					new Box( yellow, { width:Size.limit(30, 200), height:Size.limit(200, 200), left:Size.span(0, 100), right:50 },
+					[
+						new Box( textLine1, {width:Size.min(130), height:30, top:5, left:5, bottom:Size.min(5) }),
+						new Box( textLine2, {width:Size.min(30), height:30, top:50, left:5, bottom:Size.min(5) }),					
+					]),
 				])
 			]);
 			
 			uiLayoutContainer.init();
 			uiLayoutContainer.update(peoteView.width, peoteView.height);
 			
-			//haxe.Timer.delay(function() {
+			haxe.Timer.delay(function() {
 				//trace("change style after");
-				//textLine2.fontStyle = fontStyleTiled;
-				//textLine2.updateStyle();
-				//textLine2.update();
+				textLine2.fontStyle.color = Color.RED;
+				textLine2.fontStyle.height = 30;
+				textLine2.updateStyle();
+				textLine2.update();
 				
-			//}, 1000);
+			}, 1000);
 		}
 		catch (e:Dynamic) trace("ERROR:", e);
 	}
