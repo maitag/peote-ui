@@ -516,18 +516,26 @@ class UIDisplay extends Display
 		trace("onTouchCancel", touch.id, Math.round(touch.x * peoteView.width), Math.round(touch.y * peoteView.height));
 	}
 
-	// TODO: bubbling (test dragging on html5!)
-	public inline function windowLeave():Void {
+	public inline function windowLeave():Void { trace("LEAVE WINDOW");
+		var lastElem:InteractiveElement;
 		// mouse
 		if (lastMouseOverIndex >= 0) {
-			movePickBuffer.getElement(lastMouseOverIndex).uiElement.pointerOut({x:-1, y:-1, type:PointerType.MOUSE});
+			lastElem = movePickBuffer.getElement(lastMouseOverIndex).uiElement;
+			while (lastElem != null) {
+				lastElem.pointerOut({x: -1, y: -1, type:PointerType.MOUSE});
+				lastElem = lastElem.overOutEventsBubbleTo;
+			}
 			lastMouseOverIndex = -1;
 		}
 		var lastIndex:Int;
 		for (i in 0...lastMouseDownIndex.length) {
 			lastIndex = lastMouseDownIndex.get(i) ;
 			if (lastIndex >= 0) {
-				clickPickBuffer.getElement(lastIndex).uiElement.pointerUp({x:-1, y:-1, type:PointerType.MOUSE, mouseButton:i});
+				lastElem = clickPickBuffer.getElement(lastIndex).uiElement;
+				while (lastElem != null) {
+					lastElem.pointerUp({x:-1, y:-1, type:PointerType.MOUSE, mouseButton:i});
+					lastElem = lastElem.upDownEventsBubbleTo;
+				}
 				lastMouseDownIndex.set(i, -1);
 			}
 		}
@@ -537,14 +545,22 @@ class UIDisplay extends Display
 		for (i in 0...lastTouchOverIndex.length) {
 			lastIndex = lastTouchOverIndex.get(i) ;
 			if (lastIndex >= 0) {
-				movePickBuffer.getElement(lastIndex).uiElement.pointerOut({x:-1, y:-1, type:PointerType.TOUCH, touch:new Touch(-1, -1, i, 0, 0, 0, 0)});
+				lastElem = movePickBuffer.getElement(lastIndex).uiElement;
+				while (lastElem != null) {
+					lastElem.pointerOut({x:-1, y:-1, type:PointerType.TOUCH, touch:new Touch(-1, -1, i, 0, 0, 0, 0)});
+					lastElem = lastElem.overOutEventsBubbleTo;
+				}
 				lastTouchOverIndex.set(i, -1);
 			}
 		}
 		for (i in 0...lastTouchDownIndex.length) {
 			lastIndex = lastTouchDownIndex.get(i);
 			if (lastIndex >= 0) {
-				clickPickBuffer.getElement(lastIndex).uiElement.pointerUp({x:-1, y:-1, type:PointerType.TOUCH, touch:new Touch(-1, -1, i, 0, 0, 0, 0)});
+				lastElem = clickPickBuffer.getElement(lastIndex).uiElement;
+				while (lastElem != null) {
+					lastElem.pointerUp({x:-1, y:-1, type:PointerType.TOUCH, touch:new Touch(-1, -1, i, 0, 0, 0, 0)});
+					lastElem = lastElem.upDownEventsBubbleTo;
+				}
 				lastTouchDownIndex.set(i, -1);
 			}
 		}
