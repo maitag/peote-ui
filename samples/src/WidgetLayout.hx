@@ -8,7 +8,6 @@ import lime.ui.MouseButton;
 import lime.ui.MouseWheelMode;
 import lime.ui.Touch;
 import peote.layout.ContainerType;
-import peote.layout.LayoutContainer;
 
 import peote.view.PeoteView;
 import peote.view.Color;
@@ -25,7 +24,6 @@ import peote.ui.event.PointerEvent;
 import peote.ui.widget.Div;
 import peote.ui.widget.TextLine;
 
-import peote.ui.interactive.Button;
 
 import peote.layout.Size;
 
@@ -82,33 +80,49 @@ class WidgetLayout extends Application
 			},
 			[
 				
-				// later into widget -> new LabelButton<FontStyleTiled>()
+				// later into widget-component
 				new Div(
 				{
-					//layout:{
-						top:20,
-						//left:20,
-						width:Size.limit(200, 300),
-						height:50,
-					//},
+					top:20,
+					//left:20,
+					width:Size.limit(200, 300),
+					height:50,
+
 					skin:mySkin,
 					style:myStyle,
 					
 					onPointerOver:onOverOut.bind(Color.BLUE),
 					onPointerOut:onOverOut.bind(Color.GREY1),
-					//onPointerClick: function(widget:Widget, e:PointerEvent) {
-						//widget.style.color = Color.RED;
-						//widget.parent.style.color = Color.RED;
-						//widget.child[0].style.color = Color.RED;
-					//},
+					onPointerDown: function(widget:Div, e:PointerEvent) {
+						//widget.style.color = Color.YELLOW;
+						//widget.parent.style.color = Color.YELLOW;
+						
+						var t:TextLine = widget.childs[0];
+						var layoutTextLine:LayoutTextLine<FontStyleTiled> = t.getLayoutTextLine();
+						layoutTextLine.fontStyle.color = Color.BLACK;
+						layoutTextLine.updateStyle();
+						layoutTextLine.update();
+						
+						widget.layoutElement.update();
+					},
+					onPointerUp: function(widget:Div, e:PointerEvent) {
+						var t:TextLine = widget.childs[0];
+						var layoutTextLine:LayoutTextLine<FontStyleTiled> = t.getLayoutTextLine();
+						layoutTextLine.fontStyle.color = Color.WHITE;
+						layoutTextLine.updateStyle();
+						layoutTextLine.update();
+						
+						widget.layoutElement.update();
+					},
 					
 				},
 				[   // TODO:
 					new TextLine( font, fontStyleTiled, "TextLine",
 					{
 						width:Size.limit(100, 200),
-						top:Size.span(0.2),
-						bottom:Size.span(0.2),
+						//top:Size.span(0.2),
+						//bottom:Size.span(0.2),
+						height:25, // <- TODO: by FontSize !
 						
 						onPointerOver:
 							function (t:TextLine, e:PointerEvent) {

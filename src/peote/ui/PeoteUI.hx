@@ -30,7 +30,6 @@ abstract PeoteUI(LayoutContainer) from LayoutContainer to LayoutContainer {
 		if (peoteUiOptions == null) peoteUiOptions = {relativeChildPositions:true};
 		else peoteUiOptions.relativeChildPositions = true;
 		
-		//var layoutElement:LayoutElement = new UIDisplay<PeoteUIOptions, PeoteUIParams>(0, 0, 0, 0, (peoteUiOptions.bgColor != null) ? peoteUiOptions.bgColor : Color.BLACK);
 		var layoutElement:ILayoutElement = new LayoutDisplay(0, 0, 0, 0, (peoteUiOptions.bgColor != null) ? peoteUiOptions.bgColor : Color.BLACK);
 		this = new LayoutContainer(
 			containerType, 

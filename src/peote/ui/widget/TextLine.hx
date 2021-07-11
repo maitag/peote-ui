@@ -2,18 +2,22 @@ package peote.ui.widget;
 
 import peote.layout.ContainerType;
 import peote.layout.LayoutOptions;
-import peote.ui.event.PointerEvent;
 
+import peote.ui.event.PointerEvent;
+import peote.ui.event.WheelEvent;
 import peote.ui.widget.Widget;
 
 typedef TextLineOptions = {
 	> LayoutOptions,
 	?onPointerOver:TextLine->PointerEvent->Void,
 	?onPointerOut:TextLine->PointerEvent->Void,
+	?onPointerUp:TextLine->PointerEvent->Void,
+	?onPointerDown:TextLine->PointerEvent->Void,
+	?onPointerClick:TextLine->PointerEvent->Void,
+	?onMouseWheel:TextLine->WheelEvent->Void,
 }
 
 
-//@:access(peote.layout.LayoutContainer.childs)
 @:forward
 abstract TextLine(Widget) from Widget to Widget
 {
@@ -30,6 +34,10 @@ abstract TextLine(Widget) from Widget to Widget
 		
 		this.onPointerOver = textLineOptions.onPointerOver;
 		this.onPointerOut = textLineOptions.onPointerOut;
+		this.onPointerUp = textLineOptions.onPointerUp;
+		this.onPointerDown = textLineOptions.onPointerDown;
+		this.onPointerClick = textLineOptions.onPointerClick;
+		this.onMouseWheel = textLineOptions.onMouseWheel;
 	}
 	
 	// TODO:
