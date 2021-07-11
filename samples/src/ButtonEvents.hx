@@ -60,13 +60,12 @@ class ButtonEvents extends Application
 			myStyle.borderRadius = 40.0;
 			
 			trace("NEW BUTTON -----");
-			//var button1:Button = new Button(20, 0, 200, 100, roundedSkin, myStyle);
-			var button1:Button = new Button(20, 0, 200, 100, roundedSkin, new SimpleStyle(Color.RED));
+			var button1:Button = new Button(20, 0, 200, 100, roundedSkin, myStyle);
+			//var button1:Button = new Button(20, 0, 200, 100, roundedSkin, new SimpleStyle(Color.GREY1));
 			uiDisplay.add(button1);
 			
 			button1.onPointerOver = onOver.bind(Color.GREY2);
-			//button1.onPointerOut = onOut.bind(Color.GREY1); // only fires if there was some over before!
-			button1.onPointerOut = onOut.bind(Color.RED); // only fires if there was some over before!
+			button1.onPointerOut = onOut.bind(Color.GREY1); // only fires if there was some over before!
 			button1.onPointerDown = onDown.bind(Color.YELLOW);
 			button1.onPointerUp = onUp.bind(Color.GREY5);   // only fires if there was some down before!
 			button1.onPointerClick = onClick;
@@ -112,13 +111,17 @@ class ButtonEvents extends Application
 			dragBackground.onPointerOut = onOut.bind(Color.GREY2);
 			uiDisplay.add(dragBackground);
 			
-			//var dragger = new UIButton(10, 140, 100, 60, 1, simpleSkin, myStyle3);
-			var dragger = new Button(dragBackground.x, dragBackground.y, 100, 60, 1, simpleSkin, new SimpleStyle(Color.GREEN));
+			//var dragger = new Button(10, 140, 100, 60, 1, simpleSkin, myStyle3);
+			//var dragger = new Button(dragBackground.x, dragBackground.y, 100, 60, 1, roundedSkin, myStyle2);
+			var dragger = new Button(dragBackground.x, dragBackground.y, 100, 60, 1, roundedSkin,  new RoundedStyle(Color.BLUE,Color.GREY5));
+			//var dragger = new Button(dragBackground.x, dragBackground.y, 100, 60, 1, simpleSkin, new SimpleStyle(Color.GREEN));
 			
 			dragBackground.onMouseWheel = function(b:Button, e:WheelEvent) {
 				trace("MouseWheel:", e);
 				dragger.x = Std.int(Math.max(dragBackground.x, Math.min(dragBackground.x+dragBackground.width-dragger.width, (dragger.x + e.deltaY * 20))));
 				dragger.update();
+				// trigger mouse-move here also for html5 (maybe also x and y position forlastMouseMoveX)!
+				//uiDisplay.mouseMove(lastMouseMoveX, lastMouseMoveY);
 			}
 			
 			
@@ -130,21 +133,21 @@ class ButtonEvents extends Application
 			//dragger.moveEventsBubbleTo = button2;
 			
 			
-			dragger.onPointerOver = onOver.bind(Color.BLUE);
-			dragger.onPointerOut = onOut.bind(Color.BLUE-0x00003300);
-			
+			dragger.onPointerOver = onOver.bind(Color.RED);
+			dragger.onPointerOut = onOut.bind(Color.BLUE);
+
 			dragger.setDragArea(10, 140, 350, 60); // x, y, width, height
 			dragger.onPointerDown = function(b:Button, e:PointerEvent) {
 				trace(" -----> onPointerDown", e);
 				b.startDragging(e);
-				b.style.color = Color.YELLOW;
+				b.style.borderColor = Color.YELLOW;
 				b.update();
 			}
 			dragger.onPointerUp = function(b:Button, e:PointerEvent) {
 				trace(" -----> onPointerUp", e);
-				b.stopDragging(e);
-				b.style.color = Color.BLUE;
+				b.style.borderColor = Color.GREY7;
 				b.update();
+				b.stopDragging(e); // this need to be at End because it can be trigger the OUT-event after
 			}
 			uiDisplay.add(dragger);
 

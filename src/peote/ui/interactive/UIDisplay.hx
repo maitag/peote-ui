@@ -164,7 +164,11 @@ class UIDisplay extends Display
 					draggingMouseElements.remove(uiElement);
 					if (draggingMouseElements.length == 0) mouseMove(e.x, e.y);
 				}
-				case TOUCH: draggingTouchElements.get(e.touch.id).remove(uiElement);
+				case TOUCH: {
+					var draggingTouchElemArray = draggingTouchElements.get(e.touch.id);
+					draggingTouchElemArray.remove(uiElement);
+					if (draggingTouchElemArray.length == 0) touchMove(e.touch);
+				}
 				case PEN: // TODO!
 			}
 		} //TODO: #if peoteui_debug -> else WARNING: is not into dragmode
