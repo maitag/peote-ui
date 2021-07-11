@@ -198,9 +198,11 @@ class UIDisplay extends Display
 			var x = Std.int(mouseX);
 			var y = Std.int(mouseY);
 			
+			var pickedIndex = (isPointInside(x, y)) ? peoteView.getElementAt(mouseX, mouseY, this, movePickProgram) : -1;
+
 			if (draggingMouseElements.length == 0)	
 			{	
-				var pickedIndex = (isPointInside(x, y)) ? peoteView.getElementAt(mouseX, mouseY, this, movePickProgram) : -1;
+				//var pickedIndex = (isPointInside(x, y)) ? peoteView.getElementAt(mouseX, mouseY, this, movePickProgram) : -1;
 				
 				// Over/Out
 				if (pickedIndex != lastMouseOverIndex) 
@@ -259,7 +261,7 @@ class UIDisplay extends Display
 					lastMouseOverIndex = pickedIndex;
 				}
 				
-				// Move
+/*				// Move
 				if (pickedIndex >= 0) {
 					var pickedElem = movePickBuffer.getElement(pickedIndex).uiElement;
 					while (pickedElem != null) {
@@ -267,7 +269,7 @@ class UIDisplay extends Display
 						pickedElem = pickedElem.moveEventsBubbleTo;
 					}					
 				}
-			}
+*/			}
 			else // Dragging
 			{
 				for (uiElement in draggingMouseElements) {
@@ -275,6 +277,16 @@ class UIDisplay extends Display
 					update(uiElement);
 				}
 			}
+			
+			// Move
+			if (pickedIndex >= 0) {
+				var pickedElem = movePickBuffer.getElement(pickedIndex).uiElement;
+				while (pickedElem != null) {
+					pickedElem.pointerMove({x:x, y:y, type:PointerType.MOUSE});
+					pickedElem = pickedElem.moveEventsBubbleTo;
+				}					
+			}
+				
 			
 		}
 	}
@@ -287,9 +299,11 @@ class UIDisplay extends Display
 			
 			var draggingTouchElemArray = draggingTouchElements.get(touch.id);
 			
+			var pickedIndex = (isPointInside(x, y)) ? peoteView.getElementAt(x, y, this, movePickProgram) : -1;
+			
 			if (draggingTouchElemArray.length == 0)
 			{	
-				var pickedIndex = (isPointInside(x, y)) ? peoteView.getElementAt(x, y, this, movePickProgram) : -1;
+				//var pickedIndex = (isPointInside(x, y)) ? peoteView.getElementAt(x, y, this, movePickProgram) : -1;
 				var lastOverIndex:Int = lastTouchOverIndex.get(touch.id);
 				
 				// touch Over/Out
@@ -349,7 +363,7 @@ class UIDisplay extends Display
 					lastTouchOverIndex.set(touch.id, pickedIndex);
 				}
 				
-				// touch Move
+/*				// touch Move
 				if (pickedIndex >= 0) {
 					var pickedElem = movePickBuffer.getElement(pickedIndex).uiElement;
 					while (pickedElem != null) {
@@ -357,7 +371,7 @@ class UIDisplay extends Display
 						pickedElem = pickedElem.moveEventsBubbleTo;
 					}					
 				}
-				
+*/			
 			}
 			else // touch Dragging
 			{
@@ -365,6 +379,15 @@ class UIDisplay extends Display
 					uiElement.dragTo(x, y);
 					update(uiElement);
 				}
+			}
+			
+			// touch Move
+			if (pickedIndex >= 0) {
+				var pickedElem = movePickBuffer.getElement(pickedIndex).uiElement;
+				while (pickedElem != null) {
+					pickedElem.pointerMove({x:x, y:y, type:PointerType.TOUCH, touch:touch});
+					pickedElem = pickedElem.moveEventsBubbleTo;
+				}					
 			}
 		}
 	}
@@ -520,7 +543,7 @@ class UIDisplay extends Display
 		trace("onTouchCancel", touch.id, Math.round(touch.x * peoteView.width), Math.round(touch.y * peoteView.height));
 	}
 
-	public inline function windowLeave():Void { trace("LEAVE WINDOW");
+	public inline function windowLeave():Void {
 		var lastElem:InteractiveElement;
 		// mouse
 		if (lastMouseOverIndex >= 0) {

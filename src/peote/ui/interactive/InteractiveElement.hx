@@ -115,6 +115,19 @@ class InteractiveElement
 	var mouseWheel  :WheelEvent->Void;
 	var hasMoveEvent:Int = 0;
 	
+	public var hasPointerOver(get, never):Bool;
+	public var hasPointerOut (get, never):Bool;
+	public var hasPointerMove(get, never):Bool;
+	public var hasMouseWheel (get, never):Bool;
+	
+	inline function get_hasPointerOver():Bool return (hasMoveEvent & UIEventMove.over > 0);
+	inline function get_hasPointerOut ():Bool return (hasMoveEvent & UIEventMove.out  > 0);
+	inline function get_hasPointerMove():Bool return (hasMoveEvent & UIEventMove.move > 0);
+	inline function get_hasMouseWheel ():Bool return (hasMoveEvent & UIEventMove.wheel > 0);
+	
+	public var hasOverOutMoveWheel (get, never):Bool;
+	inline function get_hasOverOutMoveWheel():Bool return (hasMoveEvent > 0);
+	
 	var pointerUp   :PointerEvent->Void;
 	var pointerDown :PointerEvent->Void;
 	var pointerClick:PointerEvent->Void;

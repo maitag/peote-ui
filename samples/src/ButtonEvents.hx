@@ -128,7 +128,7 @@ class ButtonEvents extends Application
 			// to bubble over-event up to the dragBackground
 			dragger.overOutEventsBubbleTo = dragBackground;
 			dragger.wheelEventsBubbleTo = dragBackground;
-			
+			//dragger.onMouseWheel = Button.noWheelOperation;
 			// testing bubble move-events
 			//dragger.moveEventsBubbleTo = button2;
 			

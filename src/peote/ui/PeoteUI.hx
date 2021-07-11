@@ -7,6 +7,7 @@ import peote.layout.LayoutContainer;
 import peote.layout.ILayoutElement;
 import peote.layout.LayoutOptions;
 import peote.layout.ContainerType;
+import peote.ui.interactive.InteractiveElement;
 import peote.view.Color;
 
 import peote.ui.interactive.LayoutDisplay;
@@ -41,13 +42,33 @@ abstract PeoteUI(LayoutContainer) from LayoutContainer to LayoutContainer {
 		addChildsToDisplay(this);
 	}
 	
-	function addChildsToDisplay(lc:LayoutContainer) {
+	function addChildsToDisplay(lc:LayoutContainer,
+		_overOutEventsBubbleTo:InteractiveElement = null,
+		_moveEventsBubbleTo:InteractiveElement = null,
+		_wheelEventsBubbleTo:InteractiveElement = null
+		)
+	{		
 		if (lc.childs != null)
 			for (child in lc.childs) {
-				// TODO: if child it is a DISPLAY -> add it to peote-view
-				display.add(cast child.layoutElement);
 				
-				addChildsToDisplay(child);
+				// TODO: if child it is a DISPLAY -> add it to peote-view
+				var widget:Widget = child;
+				var elem:InteractiveElement = widget.interactiveElement;
+				display.add(elem);
+				
+				
+				// delegate the last used events for bubbling to the childs
+				if (elem.hasOverOutMoveWheel) {
+					elem.overOutEventsBubbleTo = _overOutEventsBubbleTo;
+					elem.moveEventsBubbleTo = _moveEventsBubbleTo;
+					elem.wheelEventsBubbleTo = _wheelEventsBubbleTo;
+				}
+					
+				addChildsToDisplay( child,
+					(elem.hasPointerOver || elem.hasPointerOut) ? elem : _overOutEventsBubbleTo,
+					(elem.hasPointerMove) ? elem : _moveEventsBubbleTo,
+					(elem.hasMouseWheel)  ? elem : _wheelEventsBubbleTo
+				);
 			}
 	}
 	
@@ -61,6 +82,7 @@ abstract PeoteUI(LayoutContainer) from LayoutContainer to LayoutContainer {
 	public var mouseEnabled(get, set):Bool;
 	public inline function get_mouseEnabled():Bool return display.mouseEnabled;
 	public inline function set_mouseEnabled(b:Bool):Bool return display.mouseEnabled = b;
+	
 	public var touchEnabled(get, set):Bool;
 	public inline function get_touchEnabled():Bool return display.touchEnabled;
 	public inline function set_touchEnabled(b:Bool):Bool return display.touchEnabled = b;

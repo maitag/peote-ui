@@ -37,6 +37,8 @@ class WidgetLayout extends Application
 		
 	var ui:PeoteUI;
 	
+	var uiResizeMode = false;
+	
 	public function new() super();
 	
 	public override function onWindowCreate() {
@@ -138,15 +140,18 @@ class WidgetLayout extends Application
 								layoutTextLine.update();
 							}
 							
-					})
+					}),
 						
-					
-					
-					
 				]),
 			
-				
-			
+				// button for quick resize testing
+				new Div({
+					width:50, height:50, right:0, bottom:0, skin:mySkin, style:new RoundedStyle(),
+					onPointerClick: function(widget:Div, e:PointerEvent) {uiResizeMode = true; ui.pointerEnabled = false;} ,
+					onPointerOver: onOverOut.bind(Color.BLUE),
+					onPointerOut: onOverOut.bind(Color.GREY1),
+				}),			
+					
 	/*			// later into widget -> new VScrollArea()
 				new HBox(
 				[
@@ -160,55 +165,9 @@ class WidgetLayout extends Application
 			ui.update(peoteView.width, peoteView.height);
 			peoteView.addDisplay(ui);
 			ui.pointerEnabled = true;
-			
-			
+						
 			//TODO:
 			//ui.registerLimeEvents(window); //-> window.onFocusOut.add(...)
-			
-			
-			// TODO: better need a resizable-widget-container!
-			// oder einfach nur rechts-unten einen button und ein onMove auf die gesammte peote-ui!
-			trace("NEW DragArea -----");
-
-			var roundedSkin = new RoundedSkin();
-			
-			var myStyle4 = new RoundedStyle();
-			myStyle4.color = Color.GREY1;
-			myStyle4.borderColor = Color.GREY5;
-			myStyle4.borderSize = 3.0;
-			myStyle4.borderRadius = 20.0;
-			
-			var draggerSize:Int = 25;
-			var draggArea = new Button(ui.display.width-draggerSize, ui.display.height-draggerSize, draggerSize, draggerSize, roundedSkin, myStyle4);
-			
-			draggArea.onPointerDown = function(b:Button, e:PointerEvent) {
-				trace(" -----> startDragging", e);
-				b.startDragging(e);
-				b.style.color = Color.YELLOW;
-				b.update();
-			}
-			draggArea.onPointerUp = function(b:Button, e:PointerEvent) {
-				trace(" -----> stopDragging", e);
-				b.stopDragging(e);
-				b.style.color = Color.GREY1;
-				b.update();
-				ui.update(b.x +draggerSize, b.y + draggerSize);
-			}
-			draggArea.onPointerMove = function(b:Button, e:PointerEvent) {
-				//trace(" -----> onPointerMove", e.x, e.y);
-				if (b.isDragging) {
-					trace(b.x +draggerSize, b.y + draggerSize);
-					//draggArea.setDragArea(0, 0, ui.display.width+10, ui.display.height+10); // x, y, width, height
-					ui.update(b.x +draggerSize, b.y + draggerSize);
-				}
-			}
-			
-			draggArea.setDragArea(0, 0, ui.display.width, ui.display.height); // x, y, width, height
-
-			ui.display.add(draggArea);
-			
-			
-			
 			
 		}
 		catch (e:Dynamic) trace("ERROR:", e);
@@ -282,8 +241,16 @@ class WidgetLayout extends Application
 	
 	inline function _onMouseMove (x:Float, y:Float) {
 		PeoteUI.mouseMove(x, y);
+		if (uiResizeMode && x>0 && y>0) ui.update(x, y);
 	}
-	public override function onMouseDown (x:Float, y:Float, button:MouseButton) PeoteUI.mouseDown(x, y, button);
+	public override function onMouseDown (x:Float, y:Float, button:MouseButton) {
+		PeoteUI.mouseDown(x, y, button);
+		if (uiResizeMode) {
+			uiResizeMode = false;
+			ui.update(peoteView.width, peoteView.height);
+			ui.pointerEnabled = true;
+		}
+	}
 	public override function onMouseUp (x:Float, y:Float, button:MouseButton) PeoteUI.mouseUp(x, y, button);
 	public override function onMouseWheel (dx:Float, dy:Float, mode:MouseWheelMode) PeoteUI.mouseWheel(dx, dy, mode);
 	// public override function onMouseMoveRelative (x:Float, y:Float):Void {}

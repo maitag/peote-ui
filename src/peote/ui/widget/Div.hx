@@ -2,12 +2,11 @@ package peote.ui.widget;
 
 import peote.layout.ContainerType;
 import peote.layout.LayoutOptions;
-import peote.ui.event.PointerEvent;
-
 
 import peote.ui.skin.interfaces.Skin;
-import peote.ui.widget.Widget;
+import peote.ui.event.PointerEvent;
 import peote.ui.interactive.LayoutElement;
+import peote.ui.widget.Widget;
 
 typedef DivOptions = {
 	> LayoutOptions,
@@ -15,6 +14,7 @@ typedef DivOptions = {
 	
 	?onPointerOver:Div->PointerEvent->Void,
 	?onPointerOut:Div->PointerEvent->Void,
+	?onPointerClick:Div->PointerEvent->Void,
 
 	
 	
@@ -38,6 +38,7 @@ abstract Div(Widget) from Widget to Widget
 		
 		this.onPointerOver = divOptions.onPointerOver;
 		this.onPointerOut = divOptions.onPointerOut;
+		this.onPointerClick = divOptions.onPointerClick;
 	}
 	
 	public var layoutElement(get, never):LayoutElement;

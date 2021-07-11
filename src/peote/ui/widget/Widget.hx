@@ -35,4 +35,10 @@ abstract Widget(LayoutContainer) from LayoutContainer to LayoutContainer
 		return f;
 	}
 	
+	public var onPointerClick(never, set):Widget->PointerEvent->Void;
+	inline function set_onPointerClick(f:Widget->PointerEvent->Void):Widget->PointerEvent->Void {
+		interactiveElement.rebindPointerClick( f.bind(this), f == null);
+		return f;
+	}
+	
 }
