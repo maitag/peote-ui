@@ -78,6 +78,9 @@ class ButtonEvents extends Application
 			var button2:Button = new Button(120, 60, 200, 100, roundedSkin, myStyle2);
 			uiDisplay.add(button2);
 			
+			// to bubble up/down and click-events up to button1
+			button2.upDownEventsBubbleTo = button1; 
+			
 			button2.onPointerOver = onOver.bind(Color.GREY3);
 			button2.onPointerOut = onOut.bind(Color.GREY1); // only fire if there was some over before!
 			button2.onPointerMove = onMove;

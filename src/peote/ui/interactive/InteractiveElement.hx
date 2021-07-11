@@ -67,15 +67,6 @@ class InteractiveElement
 	var pickableMove:Pickable = null;
 	var pickableClick:Pickable = null;
 	
-	public var moveEventsBubbleTo:InteractiveElement = null;
-	public function intoMoveEventBubbleOf(e:InteractiveElement):Bool {
-		while (e.moveEventsBubbleTo != null) {
-			if (e.moveEventsBubbleTo == this) return true;
-			e = e.moveEventsBubbleTo;
-		}
-		return false;
-	}
-	
 	public var overOutEventsBubbleTo:InteractiveElement = null;
 	public function intoOverOutEventBubbleOf(e:InteractiveElement):Bool {
 		while (e.overOutEventsBubbleTo != null) {
@@ -85,15 +76,33 @@ class InteractiveElement
 		return false;
 	}
 	
+	public var moveEventsBubbleTo:InteractiveElement = null;
+/*	public function intoMoveEventBubbleOf(e:InteractiveElement):Bool {
+		while (e.moveEventsBubbleTo != null) {
+			if (e.moveEventsBubbleTo == this) return true;
+			e = e.moveEventsBubbleTo;
+		}
+		return false;
+	}
+*/	
+	public var upDownEventsBubbleTo:InteractiveElement = null;
+	public function intoUpDownEventBubbleOf(e:InteractiveElement):Bool {
+		while (e.upDownEventsBubbleTo != null) {
+			if (e.upDownEventsBubbleTo == this) return true;
+			e = e.upDownEventsBubbleTo;
+		}
+		return false;
+	}
+	
 	public var wheelEventsBubbleTo:InteractiveElement = null;
-	public function intoWheelEventBubbleOf(e:InteractiveElement):Bool {
+/*	public function intoWheelEventBubbleOf(e:InteractiveElement):Bool {
 		while (e.wheelEventsBubbleTo != null) {
 			if (e.wheelEventsBubbleTo == this) return true;
 			e = e.wheelEventsBubbleTo;
 		}
 		return false;
 	}
-	
+*/	
 	public var x:Int;
 	public var y:Int;
 	public var width:Int;
