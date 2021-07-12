@@ -31,8 +31,6 @@ import peote.layout.Size;
 class WidgetLayout extends Application
 {
 	var peoteView:PeoteView;
-	var mySkin = new RoundedSkin();
-		
 	var ui:PeoteUI;
 	
 	var uiResizeMode = false;
@@ -161,7 +159,7 @@ class WidgetLayout extends Application
 				// button for quick resize testing
 				new Div({
 					width:50, height:50, right:0, bottom:0, skin:mySkin, style:new RoundedStyle(),
-					onPointerClick: function(widget:Div, e:PointerEvent) {uiResizeMode = true; ui.pointerEnabled = false;} ,
+					onPointerDown: function(widget:Div, e:PointerEvent) {uiResizeMode = true; ui.pointerEnabled = false;} ,
 					onPointerOver: onOverOut.bind(Color.BLUE),
 					onPointerOut: onOverOut.bind(Color.GREY1),
 				}),			
@@ -179,9 +177,11 @@ class WidgetLayout extends Application
 			ui.update(peoteView.width, peoteView.height);
 			peoteView.addDisplay(ui);
 			ui.pointerEnabled = true;
-						
-			//TODO:
-			//ui.registerLimeEvents(window); //-> window.onFocusOut.add(...)
+			
+			#if android
+			ui.mouseEnabled = false;
+			#end
+			PeoteUI.registerEvents(window); // to fetch all input events (todo)
 			
 		}
 		catch (e:Dynamic) trace("ERROR:", e);
@@ -190,9 +190,9 @@ class WidgetLayout extends Application
 	// --------------------------------------------------
 	public inline function onOverOut(color:Color, widget:Div, e:PointerEvent) {
 		//trace(widget.parent);
-		
 		//widget.parent.uiElement.color = Color.RED;
 		
+		//TODO:
 		//switch(widged.Type) {
 		//	case(WidgetType.TextLine) 
 		
@@ -210,70 +210,39 @@ class WidgetLayout extends Application
 	// ----------------- LIME EVENTS ------------------------------
 	// ------------------------------------------------------------	
 
-	public override function onPreloadComplete() {
-		// access embeded assets here
-	}
-
-	public override function update(deltaTime:Int) {
-		// for game-logic update
-	}
-
-	public override function render(context:lime.graphics.RenderContext)
-	{
-		#if (! html5)
-		onMouseMoveFrameSynced();
-		#end
-		peoteView.render(); // rendering all Displays -> Programs - Buffer
-	}
+	public override function render(context:lime.graphics.RenderContext) peoteView.render();
+	public override function onWindowResize (width:Int, height:Int) peoteView.resize(width, height);
 	
-	// public override function onRenderContextLost ():Void trace(" --- WARNING: LOST RENDERCONTEXT --- ");		
-	// public override function onRenderContextRestored (context:lime.graphics.RenderContext):Void trace(" --- onRenderContextRestored --- ");		
-
 	// ----------------- MOUSE EVENTS ------------------------------
 	public override function onMouseMove (x:Float, y:Float) {
-		#if (html5)
-		_onMouseMove(x, y);
-		#else
-		lastMouseMoveX = x;
-		lastMouseMoveY = y;
-		isMouseMove = true;
-		#end		
-	}
-	
-	#if (! html5)
-	var isMouseMove = false;
-	var lastMouseMoveX:Float = 0.0;
-	var lastMouseMoveY:Float = 0.0;
-	inline function onMouseMoveFrameSynced():Void
-	{
-		if (isMouseMove) {
-			isMouseMove = false;
-			_onMouseMove(lastMouseMoveX, lastMouseMoveY);
-		}
-	}
-	#end
-	
-	inline function _onMouseMove (x:Float, y:Float) {
-		PeoteUI.mouseMove(x, y);
 		if (uiResizeMode && x>0 && y>0) ui.update(x, y);
 	}
+
 	public override function onMouseDown (x:Float, y:Float, button:MouseButton) {
-		PeoteUI.mouseDown(x, y, button);
 		if (uiResizeMode) {
 			uiResizeMode = false;
 			ui.update(peoteView.width, peoteView.height);
 			ui.pointerEnabled = true;
 		}
 	}
-	public override function onMouseUp (x:Float, y:Float, button:MouseButton) PeoteUI.mouseUp(x, y, button);
-	public override function onMouseWheel (dx:Float, dy:Float, mode:MouseWheelMode) PeoteUI.mouseWheel(dx, dy, mode);
-	// public override function onMouseMoveRelative (x:Float, y:Float):Void {}
 
 	// ----------------- TOUCH EVENTS ------------------------------
-	public override function onTouchStart (touch:Touch) PeoteUI.touchStart(touch);
-	public override function onTouchMove (touch:Touch) PeoteUI.touchMove(touch);
-	public override function onTouchEnd (touch:Touch) PeoteUI.touchEnd(touch);
-	public override function onTouchCancel (touch:Touch) PeoteUI.touchCancel(touch);
+	public override function onTouchMove (touch:Touch) {
+		var x:Int = Math.round(touch.x * peoteView.width);
+		var y:Int = Math.round(touch.y * peoteView.height);
+		if (uiResizeMode && x>0 && y>0) ui.update(x, y);
+	}
+	
+	public override function onTouchEnd (touch:Touch) {
+		if (uiResizeMode) {
+			uiResizeMode = false;
+			ui.update(peoteView.width, peoteView.height);
+			ui.pointerEnabled = true;
+		}
+	}
+	
+	
+	// TODO: delegate to PeoteUI also!
 	
 	// ----------------- KEYBOARD EVENTS ---------------------------
 	public override function onKeyDown (keyCode:KeyCode, modifier:KeyModifier) {
@@ -291,31 +260,4 @@ class WidgetLayout extends Application
 	//public override function onTextEdit(text:String, start:Int, length:Int) PeoteUI.textEdit(text, start, length);
 	//public override function onTextInput (text:String):Void PeoteUI.textInput(text);
 
-	// ----------------- WINDOWS EVENTS ----------------------------
-	public override function onWindowResize (width:Int, height:Int) {
-		peoteView.resize(width, height);
-		
-		// TODO
-		if (ui!=null) ui.update(width, height);
-	}
-
-	public override function onWindowLeave() {
-		#if (! html5)
-		lastMouseMoveX = lastMouseMoveY = -1; // fix for another onMouseMoveFrameSynced() by render-loop
-		#end
-		PeoteUI.windowLeave();
-	}
-	
-	// public override function onWindowActivate():Void { trace("onWindowActivate"); }
-	// public override function onWindowDeactivate():Void { trace("onWindowDeactivate"); }
-	// public override function onWindowClose():Void { trace("onWindowClose"); }
-	// public override function onWindowDropFile(file:String):Void { trace("onWindowDropFile"); }
-	// public override function onWindowEnter():Void { trace("onWindowEnter"); }
-	// public override function onWindowExpose():Void { trace("onWindowExpose"); }
-	// public override function onWindowFocusIn():Void { trace("onWindowFocusIn"); }
-	// public override function onWindowFocusOut():Void { trace("onWindowFocusOut"); }
-	// public override function onWindowFullscreen():Void { trace("onWindowFullscreen"); }
-	// public override function onWindowMove(x:Float, y:Float):Void { trace("onWindowMove"); }
-	// public override function onWindowMinimize():Void { trace("onWindowMinimize"); }
-	// public override function onWindowRestore():Void { trace("onWindowRestore"); }
 }

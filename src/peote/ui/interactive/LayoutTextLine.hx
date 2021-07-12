@@ -50,7 +50,6 @@ class $className extends $uiTextLineType implements peote.layout.ILayoutElement
 	var layoutWasHidden = false;
 	public function updateByLayout(layoutContainer:peote.layout.LayoutContainer) 
 	{
-
 		if (!layoutWasHidden && layoutContainer.isHidden) { // if it is full outside of the Mask (so invisible)
 			hideByLayout();
 			layoutWasHidden = true;
@@ -78,7 +77,9 @@ class $className extends $uiTextLineType implements peote.layout.ILayoutElement
 				showByLayout();
 				layoutWasHidden = false;
 			}
-			else update();
+			else {
+				update();
+			}
 		}
 	}	
 		

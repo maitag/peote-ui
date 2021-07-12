@@ -86,7 +86,6 @@ class $className extends peote.ui.interactive.InteractiveElement
 	}
 	
 	public function updateStyle(from:Int = 0, to:Null<Int> = null) {
-		//trace("updateStyle",x,y);
 		fontProgram.lineSetStyle(line, fontStyle, from, to);
 	}
 	
@@ -96,11 +95,12 @@ class $className extends peote.ui.interactive.InteractiveElement
 		
 		if (masked) {
 			line.maxX = x + width;
-			line.maxY = y + height;
+			line.maxY = y + height;trace("KK",line.maxX);
 			fontProgram.lineSetXOffset(line, 0); // need if mask changed
 		}
 		
 		fontProgram.lineSetPosition(line, x, y);
+		fontProgram.lineSetStyle(line, fontStyle); // TODO: BUG inside peote-text -> if maxX/maxY changed to much in size (RESIZE-EVENT ONLY)?
 		fontProgram.updateLine(line);
 		
 		if (!masked) {
