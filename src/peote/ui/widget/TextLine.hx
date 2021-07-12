@@ -21,10 +21,10 @@ typedef TextLineOptions = {
 @:forward
 abstract TextLine(Widget) from Widget to Widget
 {
-	public inline function new(font, fontStyleTiled, text:String, textLineOptions:TextLineOptions)
+	public inline function new(font, fontStyle, text:String, textLineOptions:TextLineOptions)
 	{
 		this = new Widget(ContainerType.BOX,
-			font.createLayoutTextLine(0, 0, 0, 0, 0, true, text, fontStyleTiled),
+			font.createLayoutTextLine(0, 0, 0, 0, 0, true, text, fontStyle),
 			textLineOptions
 		);
 		

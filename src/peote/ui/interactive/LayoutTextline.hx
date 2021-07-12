@@ -30,8 +30,6 @@ class LayoutTextLineMacro
 
 class $className extends $uiTextLineType implements peote.layout.ILayoutElement
 {
-	//var options:O;
-	//var params:P;
 	
 	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int, masked:Bool = false,
 	                    //text:String, font:$fontType, fontStyle:$styleType) 

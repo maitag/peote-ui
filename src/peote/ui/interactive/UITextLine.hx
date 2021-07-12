@@ -2,7 +2,7 @@ package peote.ui.interactive;
 
 #if !macro
 @:genericBuild(peote.ui.interactive.UITextLine.UITextLineMacro.build("UITextLine"))
-class UITextLine<T> extends peote.ui.interactive.InteractiveElement{}
+class UITextLine<T> extends peote.ui.interactive.InteractiveElement {}
 #else
 
 import haxe.macro.Expr;
