@@ -296,7 +296,7 @@ class WidgetLayout extends Application
 		peoteView.resize(width, height);
 		
 		// TODO
-		ui.update(width, height);
+		if (ui!=null) ui.update(width, height);
 	}
 
 	public override function onWindowLeave() {

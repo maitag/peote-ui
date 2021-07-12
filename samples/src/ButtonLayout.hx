@@ -154,7 +154,7 @@ class ButtonLayout extends Application
 		peoteView.resize(width, height);
 		
 		// calculates new Layout and updates all Elements 
-		uiLayoutContainer.update(width, height);
+		if (uiLayoutContainer != null) uiLayoutContainer.update(width, height);
 	}
 
 }
