@@ -55,10 +55,7 @@ class LayoutDisplay extends UIDisplay implements peote.layout.ILayoutElement
 		}
 	}	
 
-/*	var _peoteView:PeoteView;
-	var isVisible:Bool = false;
-
-	public function new(peoteView:PeoteView, color:Color=0x00000000) 
+/*	public function new(peoteView:PeoteView, color:Color=0x00000000) 
 	{
 		_peoteView = peoteView;
 	}
@@ -82,26 +79,12 @@ class LayoutDisplay extends UIDisplay implements peote.layout.ILayoutElement
 		}
 	}
 	
-	public inline function show() {
-		isVisible = true;
-		_peoteView.addDisplay(this);
-	}
-	
-	public inline function hide() {
-		isVisible = false;
-		_peoteView.removeDisplay(this);
-	}
 	
 	
 	// ---------------- interface to peote-layout ---------------------
 	
-	public inline function showByLayout() {
-		if (!isVisible) show();
-	}
-	
-	public inline function hideByLayout() {
-		if (isVisible) hide();
-	}
+	public inline function showByLayout() if (!isVisible) show();	
+	public inline function hideByLayout() if (isVisible) hide();
 	
 	public function updateByLayout(layoutContainer:peote.layout.LayoutContainer) {
 		// TODO: layoutContainer.updateMask() from here to make it only on-need

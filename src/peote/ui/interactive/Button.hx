@@ -12,49 +12,26 @@ private typedef ButtonWheelEventParams = Button->WheelEvent->Void;
 
 class Button extends UIElement
 {
-	public var onPointerOver(default, set):ButtonEventParams;
-	inline function set_onPointerOver(f:ButtonEventParams):ButtonEventParams {
-		rebindPointerOver( f.bind(this), f == null);
-		return onPointerOver = f;
-	}
+	public var onPointerOver(never, set):ButtonEventParams;
+	inline function set_onPointerOver(f:ButtonEventParams):ButtonEventParams return setOnPointerOver(this, f);
 	
-	public var onPointerOut(default, set):ButtonEventParams;
-	inline function set_onPointerOut(f:ButtonEventParams):ButtonEventParams {
-		rebindPointerOut( f.bind(this), f == null);
-		return onPointerOut = f;
-	}
+	public var onPointerOut(never, set):ButtonEventParams;
+	inline function set_onPointerOut(f:ButtonEventParams):ButtonEventParams return setOnPointerOut(this, f);
 	
-	public var onPointerMove(default, set):ButtonEventParams;
-	inline function set_onPointerMove(f:ButtonEventParams):ButtonEventParams {
-		rebindPointerMove( f.bind(this), f == null);
-		return onPointerMove = f;
-	}
+	public var onPointerMove(never, set):ButtonEventParams;
+	inline function set_onPointerMove(f:ButtonEventParams):ButtonEventParams return setOnPointerMove(this, f);
 	
-	public var onPointerDown(default, set):ButtonEventParams;
-	inline function set_onPointerDown(f:ButtonEventParams):ButtonEventParams {
-		rebindPointerDown( f.bind(this), f == null);
-		return onPointerDown = f;
-	}
+	public var onPointerDown(never, set):ButtonEventParams;
+	inline function set_onPointerDown(f:ButtonEventParams):ButtonEventParams return setOnPointerDown(this, f);
 	
-	public var onPointerUp(default, set):ButtonEventParams;
-	inline function set_onPointerUp(f:ButtonEventParams):ButtonEventParams {
-		rebindPointerUp( f.bind(this), f == null);
-		return onPointerUp = f;
-	}
+	public var onPointerUp(never, set):ButtonEventParams;
+	inline function set_onPointerUp(f:ButtonEventParams):ButtonEventParams return setOnPointerUp(this, f);
 	
-	public var onPointerClick(default, set):ButtonEventParams;
-	inline function set_onPointerClick(f:ButtonEventParams):ButtonEventParams {
-		rebindPointerClick( f.bind(this), f == null);
-		return onPointerClick = f;
-	}
-
-	
-	
+	public var onPointerClick(never, set):ButtonEventParams;
+	inline function set_onPointerClick(f:ButtonEventParams):ButtonEventParams return setOnPointerClick(this, f);
+		
 	public var onMouseWheel(default, set):ButtonWheelEventParams;
-	inline function set_onMouseWheel(f:ButtonWheelEventParams):ButtonWheelEventParams {
-		rebindMouseWheel( f.bind(this), f == null);
-		return onMouseWheel = f;
-	}
+	inline function set_onMouseWheel(f:ButtonWheelEventParams):ButtonWheelEventParams  return setOnMouseWheel(this, f);
 	
 	
 	public static inline function noOperation(b:Button, e:PointerEvent):Void {}
@@ -62,13 +39,7 @@ class Button extends UIElement
 	
 	public function new(xPosition:Int=0, yPosition:Int=0, width:Int=100, height:Int=100, zIndex:Int=0, skin:Skin = null, style:Dynamic = null) 
 	{
-		super(xPosition, yPosition, width, height, zIndex, skin, style);
-		
-		// here defining for what events a Button needs over/click pickables
-		
-		// what graphics (skin) a Button needs is defined here
-		
-	}
-	
+		super(xPosition, yPosition, width, height, zIndex, skin, style);		
+	}	
 	
 }

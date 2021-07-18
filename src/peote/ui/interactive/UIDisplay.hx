@@ -11,7 +11,6 @@ import peote.ui.event.PointerEvent;
 import peote.ui.event.PointerType;
 import peote.view.PeoteView;
 
-import peote.view.PeoteGL;
 import peote.view.Display;
 import peote.view.Buffer;
 import peote.view.Program;
@@ -107,13 +106,22 @@ class UIDisplay extends Display
 		super.removeFromPeoteView(peoteView);
 	}
 
-/*	override private function setNewGLContext(newGl:PeoteGL)
-	{
-		super.setNewGLContext(newGl);
-		movePickProgram.setNewGLContext(newGl);
-		clickPickProgram.setNewGLContext(newGl);
+	// -------------------------------------------------------
+/*	var _peoteView:PeoteView;
+	var isVisible:Bool = false;
+	
+	public inline function show() {
+		isVisible = true;
+		_peoteView.addDisplay(this);
+	}
+	
+	public inline function hide() {
+		isVisible = false;
+		_peoteView.removeDisplay(this);
 	}
 */	
+	// -------------------------------------------------------
+	
 	public function add(uiElement:InteractiveElement):Void {
 		//TODO
 		uiElements.push(uiElement);

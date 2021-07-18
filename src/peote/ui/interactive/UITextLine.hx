@@ -95,7 +95,7 @@ class $className extends peote.ui.interactive.InteractiveElement
 		
 		if (masked) {
 			line.maxX = x + width;
-			line.maxY = y + height;trace("KK",line.maxX);
+			line.maxY = y + height;
 			fontProgram.lineSetXOffset(line, 0); // need if mask changed
 		}
 		

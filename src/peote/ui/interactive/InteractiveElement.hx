@@ -251,7 +251,12 @@ class InteractiveElement
 	
 	// ----------------- Event-Bindings ----------------------
 
-	private function rebindPointerOver(newBinding:PointerEvent->Void, isNull:Bool):Void {
+	private inline function setOnPointerOver<T>(object:T, f:T->PointerEvent->Void):T->PointerEvent->Void {
+		rebindPointerOver(f.bind(object), f == null);
+		return f;
+	}
+		
+	private inline function rebindPointerOver(newBinding:PointerEvent->Void, isNull:Bool):Void {
 		if ( !isNull ) {
 			pointerOver = newBinding;
 			if ( hasMoveEvent == 0 ) addPickableMove();
@@ -264,7 +269,12 @@ class InteractiveElement
 		}
 	}
 
-	private function rebindPointerOut(newBinding:PointerEvent->Void, isNull:Bool):Void {
+	private inline function setOnPointerOut<T>(object:T, f:T->PointerEvent->Void):T->PointerEvent->Void {
+		rebindPointerOut(f.bind(object), f == null);
+		return f;
+	}
+		
+	private inline function rebindPointerOut(newBinding:PointerEvent->Void, isNull:Bool):Void {
 		if ( !isNull ) {
 			pointerOut = newBinding;
 			if ( hasMoveEvent == 0 ) addPickableMove();
@@ -277,7 +287,12 @@ class InteractiveElement
 		}
 	}
 
-	private function rebindPointerMove(newBinding:PointerEvent->Void, isNull:Bool):Void {
+	private inline function setOnPointerMove<T>(object:T, f:T->PointerEvent->Void):T->PointerEvent->Void {
+		rebindPointerMove(f.bind(object), f == null);
+		return f;
+	}
+		
+	private inline function rebindPointerMove(newBinding:PointerEvent->Void, isNull:Bool):Void {
 		if ( !isNull ) {
 			pointerMove = newBinding;
 			if ( hasMoveEvent == 0 ) addPickableMove();
@@ -290,7 +305,12 @@ class InteractiveElement
 		}
 	}
 
-	private function rebindMouseWheel(newBinding:WheelEvent->Void, isNull:Bool):Void {
+	private inline function setOnMouseWheel<T>(object:T, f:T->WheelEvent->Void):T->WheelEvent->Void {
+		rebindMouseWheel(f.bind(object), f == null);
+		return f;
+	}
+	
+	private inline function rebindMouseWheel(newBinding:WheelEvent->Void, isNull:Bool):Void {
 		if ( !isNull ) {
 			mouseWheel = newBinding;
 			if ( hasMoveEvent == 0 ) addPickableMove();
@@ -305,7 +325,12 @@ class InteractiveElement
 
 	// -----------------
 
-	private function rebindPointerUp(newBinding:PointerEvent->Void, isNull:Bool):Void {
+	private inline function setOnPointerUp<T>(object:T, f:T->PointerEvent->Void):T->PointerEvent->Void {
+		rebindPointerUp(f.bind(object), f == null);
+		return f;
+	}
+		
+	private inline function rebindPointerUp(newBinding:PointerEvent->Void, isNull:Bool):Void {
 		if ( !isNull ) {
 			pointerUp = newBinding;
 			if ( hasClickEvent == 0 ) addPickableClick();
@@ -318,7 +343,12 @@ class InteractiveElement
 		}
 	}
 	
-	private function rebindPointerDown(newBinding:PointerEvent->Void, isNull:Bool):Void {
+	private inline function setOnPointerDown<T>(object:T, f:T->PointerEvent->Void):T->PointerEvent->Void {
+		rebindPointerDown(f.bind(object), f == null);
+		return f;
+	}
+		
+	private inline function rebindPointerDown(newBinding:PointerEvent->Void, isNull:Bool):Void {
 		if ( !isNull ) {
 			pointerDown = newBinding;
 			if ( hasClickEvent == 0 ) addPickableClick();
@@ -331,7 +361,12 @@ class InteractiveElement
 		}
 	}
 	
-	private function rebindPointerClick(newBinding:PointerEvent->Void, isNull:Bool):Void {
+	private inline function setOnPointerClick<T>(object:T, f:T->PointerEvent->Void):T->PointerEvent->Void {
+		rebindPointerClick(f.bind(object), f == null);
+		return f;
+	}
+		
+	private inline function rebindPointerClick(newBinding:PointerEvent->Void, isNull:Bool):Void {
 		if ( !isNull ) {
 			pointerClick = newBinding;
 			if ( hasClickEvent == 0 ) addPickableClick();

@@ -31,49 +31,33 @@ class TextLineMacro
 
 class $className extends $uiTextLineType
 {
-
 	public var onPointerOver(default, set):TextLine<$styleType>->peote.ui.event.PointerEvent->Void;
-	public inline function set_onPointerOver(f:TextLine<$styleType>->peote.ui.event.PointerEvent->Void):TextLine<$styleType>->peote.ui.event.PointerEvent->Void {
-		rebindPointerOver( f.bind(this), f == null);
-		return onPointerOver = f;
-	}
+	inline function set_onPointerOver(f:TextLine<$styleType>->peote.ui.event.PointerEvent->Void):TextLine<$styleType>->peote.ui.event.PointerEvent->Void
+		return setOnPointerOver(this, f);
 	
 	public var onPointerOut(default, set):TextLine<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerOut(f:TextLine<$styleType>->peote.ui.event.PointerEvent->Void):TextLine<$styleType>->peote.ui.event.PointerEvent->Void {
-		rebindPointerOut( f.bind(this), f == null);
-		return onPointerOut = f;
-	}
+	inline function set_onPointerOut(f:TextLine<$styleType>->peote.ui.event.PointerEvent->Void):TextLine<$styleType>->peote.ui.event.PointerEvent->Void 
+		return setOnPointerOut(this, f);
 	
 	public var onPointerMove(default, set):TextLine<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerMove(f:TextLine<$styleType>->peote.ui.event.PointerEvent->Void):TextLine<$styleType>->peote.ui.event.PointerEvent->Void {
-		rebindPointerMove( f.bind(this), f == null);
-		return onPointerMove = f;
-	}
+	inline function set_onPointerMove(f:TextLine<$styleType>->peote.ui.event.PointerEvent->Void):TextLine<$styleType>->peote.ui.event.PointerEvent->Void
+		return setOnPointerMove(this, f);
 	
 	public var onPointerDown(default, set):TextLine<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerDown(f:TextLine<$styleType>->peote.ui.event.PointerEvent->Void):TextLine<$styleType>->peote.ui.event.PointerEvent->Void {
-		rebindPointerDown( f.bind(this), f == null);
-		return onPointerDown = f;
-	}
+	inline function set_onPointerDown(f:TextLine<$styleType>->peote.ui.event.PointerEvent->Void):TextLine<$styleType>->peote.ui.event.PointerEvent->Void
+		return setOnPointerDown(this, f);
 	
 	public var onPointerUp(default, set):TextLine<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerUp(f:TextLine<$styleType>->peote.ui.event.PointerEvent->Void):TextLine<$styleType>->peote.ui.event.PointerEvent->Void {
-		rebindPointerUp( f.bind(this), f == null);
-		return onPointerUp = f;
-	}
+	inline function set_onPointerUp(f:TextLine<$styleType>->peote.ui.event.PointerEvent->Void):TextLine<$styleType>->peote.ui.event.PointerEvent->Void
+		return setOnPointerUp(this, f);
 	
 	public var onPointerClick(default, set):TextLine<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerClick(f:TextLine<$styleType>->peote.ui.event.PointerEvent->Void):TextLine<$styleType>->peote.ui.event.PointerEvent->Void {
-		rebindPointerClick( f.bind(this), f == null);
-		return onPointerClick = f;
-	}
-
+	inline function set_onPointerClick(f:TextLine<$styleType>->peote.ui.event.PointerEvent->Void):TextLine<$styleType>->peote.ui.event.PointerEvent->Void
+		return setOnPointerClick(this, f);
 		
 	public var onMouseWheel(default, set):TextLine<$styleType>->peote.ui.event.WheelEvent->Void;
-	inline function set_onMouseWheel(f:TextLine<$styleType>->peote.ui.event.WheelEvent->Void):TextLine<$styleType>->peote.ui.event.WheelEvent->Void {
-		rebindMouseWheel( f.bind(this), f == null);
-		return onMouseWheel = f;
-	}
+	inline function set_onMouseWheel(f:TextLine<$styleType>->peote.ui.event.WheelEvent->Void):TextLine<$styleType>->peote.ui.event.WheelEvent->Void 
+		return setOnMouseWheel(this, f);
 	
 	
 	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int, masked:Bool = false,
@@ -82,7 +66,6 @@ class $className extends $uiTextLineType
 	{	
 		super(xPosition, yPosition, width, height, zIndex, masked, text, font, fontStyle);		
 	}
-	
 	
 }
 

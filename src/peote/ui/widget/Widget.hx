@@ -32,46 +32,25 @@ abstract Widget(LayoutContainer) from LayoutContainer to LayoutContainer
 	
 	// ------------ eventhandler ------------
 	public var onPointerOver(never, set):Widget->PointerEvent->Void;
-	inline function set_onPointerOver(f:Widget->PointerEvent->Void):Widget->PointerEvent->Void {
-		interactiveElement.rebindPointerOver( f.bind(this), f == null);
-		return f;
-	}
-	
+	inline function set_onPointerOver(f:Widget->PointerEvent->Void):Widget->PointerEvent->Void return interactiveElement.setOnPointerOver(this, f);
+
 	public var onPointerOut(never, set):Widget->PointerEvent->Void;
-	inline function set_onPointerOut(f:Widget->PointerEvent->Void):Widget->PointerEvent->Void {
-		interactiveElement.rebindPointerOut( f.bind(this), f == null);
-		return f;
-	}
+	inline function set_onPointerOut(f:Widget->PointerEvent->Void):Widget->PointerEvent->Void return interactiveElement.setOnPointerOut(this, f);
 	
 	public var onPointerUp(never, set):Widget->PointerEvent->Void;
-	inline function set_onPointerUp(f:Widget->PointerEvent->Void):Widget->PointerEvent->Void {
-		interactiveElement.rebindPointerUp( f.bind(this), f == null);
-		return f;
-	}
+	inline function set_onPointerUp(f:Widget->PointerEvent->Void):Widget->PointerEvent->Void return interactiveElement.setOnPointerUp(this, f);
 	
 	public var onPointerDown(never, set):Widget->PointerEvent->Void;
-	inline function set_onPointerDown(f:Widget->PointerEvent->Void):Widget->PointerEvent->Void {
-		interactiveElement.rebindPointerDown( f.bind(this), f == null);
-		return f;
-	}
+	inline function set_onPointerDown(f:Widget->PointerEvent->Void):Widget->PointerEvent->Void return interactiveElement.setOnPointerDown(this, f);
 
 	public var onPointerClick(never, set):Widget->PointerEvent->Void;
-	inline function set_onPointerClick(f:Widget->PointerEvent->Void):Widget->PointerEvent->Void {
-		interactiveElement.rebindPointerClick( f.bind(this), f == null);
-		return f;
-	}
+	inline function set_onPointerClick(f:Widget->PointerEvent->Void):Widget->PointerEvent->Void return interactiveElement.setOnPointerClick(this, f);
 	
 	public var onPointerMove(never, set):Widget->PointerEvent->Void;
-	inline function set_onPointerMove(f:Widget->PointerEvent->Void):Widget->PointerEvent->Void {
-		interactiveElement.rebindPointerMove( f.bind(this), f == null);
-		return f;
-	}
+	inline function set_onPointerMove(f:Widget->PointerEvent->Void):Widget->PointerEvent->Void return interactiveElement.setOnPointerMove(this, f);
 	
 	public var onMouseWheel(never, set):Widget->WheelEvent->Void;
-	inline function set_onMouseWheel(f:Widget->WheelEvent->Void):Widget->WheelEvent->Void {
-		interactiveElement.rebindMouseWheel( f.bind(this), f == null);
-		return f;
-	}
+	inline function set_onMouseWheel(f:Widget->WheelEvent->Void):Widget->WheelEvent->Void return interactiveElement.setOnMouseWheel(this, f);
 	
 
 }
