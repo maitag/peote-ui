@@ -15,8 +15,8 @@ import peote.text.Font;
 import peote.ui.fontstyle.FontStyleTiled;
 import peote.ui.fontstyle.FontStylePacked;
 
-import peote.ui.interactive.UIDisplay;
-import peote.ui.interactive.TextLine;
+import peote.ui.UIDisplay;
+import peote.ui.interactive.InteractiveTextLine;
 
 import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
@@ -63,16 +63,16 @@ class SimpleText extends Application
 			fontStyleTiled.height = 25;
 			fontStyleTiled.width = 25;
 			
-			var textLine = new TextLine<FontStyleTiled>(0, 0, 10, 25, 0, "hello", font, fontStyleTiled); //, selectionFontStyle
-			//var textLine = font.createTextLine(0, 0, 112, 25, 0, "hello", fontStyleTiled); //, selectionFontStyle
+			var textLine = new InteractiveTextLine<FontStyleTiled>(0, 0, 10, 25, 0, "hello", font, fontStyleTiled); //, selectionFontStyle
+			//var textLine = font.createInteractiveTextLine(0, 0, 112, 25, 0, "hello", fontStyleTiled); //, selectionFontStyle
 						
-			textLine.onPointerOver = function(t:TextLine<FontStyleTiled>, e:PointerEvent) {
+			textLine.onPointerOver = function(t:InteractiveTextLine<FontStyleTiled>, e:PointerEvent) {
 				trace("onPointerOver");
 				t.fontStyle.color = Color.YELLOW;
 				t.updateStyle();
 				t.update();
 			}
-			textLine.onPointerOut = function(t:TextLine<FontStyleTiled>, e:PointerEvent) {
+			textLine.onPointerOut = function(t:InteractiveTextLine<FontStyleTiled>, e:PointerEvent) {
 				trace("onPointerOut");
 				t.fontStyle.color = Color.GREEN;
 				t.updateStyle();
@@ -106,16 +106,16 @@ class SimpleText extends Application
 			fontStylePacked.height = 25;
 			fontStylePacked.width = 25;
 			
-			//var textLine = new TextLine<FontStylePacked>(0, 80, 112, 25, "hello Button", fontPacked, fontStylePacked); //, selectionFontStyle
-			var textLine = font.createTextLine(250, 0, 50, 25, 0, true, "Masked", fontStylePacked); //, selectionFontStyle
+			//var textLine = new InteractiveTextLine<FontStylePacked>(0, 80, 112, 25, "hello Button", fontPacked, fontStylePacked); //, selectionFontStyle
+			var textLine = font.createInteractiveTextLine(250, 0, 50, 25, 0, true, "Masked", fontStylePacked); //, selectionFontStyle
 
-			textLine.onPointerOver = function(t:TextLine<FontStylePacked>, e:PointerEvent) {
+			textLine.onPointerOver = function(t:InteractiveTextLine<FontStylePacked>, e:PointerEvent) {
 				trace("onPointerOver");
 				t.fontStyle.color = Color.YELLOW;
 				t.updateStyle();
 				t.update();
 			}
-			textLine.onPointerOut = function(t:TextLine<FontStylePacked>, e:PointerEvent) {
+			textLine.onPointerOut = function(t:InteractiveTextLine<FontStylePacked>, e:PointerEvent) {
 				trace("onPointerOut");
 				t.fontStyle.color = Color.GREEN;
 				t.updateStyle();

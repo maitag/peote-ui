@@ -2,7 +2,7 @@ package peote.ui.interactive;
 
 #if !macro
 @:genericBuild(peote.ui.interactive.InteractiveTextLine.InteractiveTextLineMacro.build("InteractiveTextLine"))
-class InteractiveTextLine<T> extends peote.ui.interactive.InteractiveElement {}
+class InteractiveTextLine<T> extends peote.ui.interactive.Interactive {}
 #else
 
 import haxe.macro.Expr;
@@ -40,7 +40,7 @@ class InteractiveTextLineMacro
 // -------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------
 
-class $className extends peote.ui.interactive.InteractiveElement
+class $className extends peote.ui.interactive.Interactive
 {	
 	static var displays:Int = 0;
 	
@@ -48,11 +48,11 @@ class $className extends peote.ui.interactive.InteractiveElement
 		//static var displayFontProgram:$fontProgramType;
 		static var displayFontProgram:peote.text.FontProgram<$styleType>;
 	#else
-		//static var displayFontProgram = new haxe.ds.Vector<$fontProgramType>(peote.ui.interactive.UIDisplay.MAX_DISPLAYS);
-		static var displayFontProgram = new haxe.ds.Vector<peote.text.FontProgram<$styleType>;>(peote.ui.interactive.UIDisplay.MAX_DISPLAYS);
+		//static var displayFontProgram = new haxe.ds.Vector<$fontProgramType>(peote.ui.UIDisplay.MAX_DISPLAYS);
+		static var displayFontProgram = new haxe.ds.Vector<peote.text.FontProgram<$styleType>;>(peote.ui.UIDisplay.MAX_DISPLAYS);
 	#end
 	
-	public static inline function notIntoDisplay(uiDisplay:peote.ui.interactive.UIDisplay):Bool {
+	public static inline function notIntoDisplay(uiDisplay:peote.ui.UIDisplay):Bool {
 		return ((displays & (1 << uiDisplay.number))==0);
 	}
 	
@@ -177,6 +177,33 @@ class $className extends peote.ui.interactive.InteractiveElement
 		}
 	}
 
+	public var onPointerOver(never, set):InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void;
+	inline function set_onPointerOver(f:InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void):InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void
+		return setOnPointerOver(this, f);
+	
+	public var onPointerOut(never, set):InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void;
+	inline function set_onPointerOut(f:InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void):InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void 
+		return setOnPointerOut(this, f);
+	
+	public var onPointerMove(never, set):InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void;
+	inline function set_onPointerMove(f:InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void):InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void
+		return setOnPointerMove(this, f);
+	
+	public var onPointerDown(never, set):InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void;
+	inline function set_onPointerDown(f:InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void):InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void
+		return setOnPointerDown(this, f);
+	
+	public var onPointerUp(never, set):InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void;
+	inline function set_onPointerUp(f:InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void):InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void
+		return setOnPointerUp(this, f);
+	
+	public var onPointerClick(never, set):InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void;
+	inline function set_onPointerClick(f:InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void):InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void
+		return setOnPointerClick(this, f);
+		
+	public var onMouseWheel(never, set):InteractiveTextLine<$styleType>->peote.ui.event.WheelEvent->Void;
+	inline function set_onMouseWheel(f:InteractiveTextLine<$styleType>->peote.ui.event.WheelEvent->Void):InteractiveTextLine<$styleType>->peote.ui.event.WheelEvent->Void 
+		return setOnMouseWheel(this, f);
 				
 }
 

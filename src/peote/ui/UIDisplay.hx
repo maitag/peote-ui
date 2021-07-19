@@ -1,4 +1,4 @@
-package peote.ui.interactive;
+package peote.ui;
 
 import haxe.ds.Vector;
 import lime.ui.KeyCode;
@@ -16,7 +16,7 @@ import peote.view.Buffer;
 import peote.view.Program;
 import peote.view.Color;
 
-import peote.ui.interactive.InteractiveElement;
+import peote.ui.interactive.Interactive;
 
 
 @:allow(peote.ui.interactive)
@@ -42,7 +42,7 @@ class UIDisplay extends Display
 	}
 	public var number(default, null):Int;
 	
-	var uiElements:Array<InteractiveElement>;
+	var uiElements:Array<Interactive>;
 	
 	var movePickBuffer:Buffer<Pickable>;
 	var movePickProgram:Program;
@@ -50,8 +50,8 @@ class UIDisplay extends Display
 	var clickPickBuffer:Buffer<Pickable>;
 	var clickPickProgram:Program;
 	
-	var draggingMouseElements:Array<InteractiveElement>;
-	var draggingTouchElements:Vector<Array<InteractiveElement>>;
+	var draggingMouseElements:Array<Interactive>;
+	var draggingTouchElements:Vector<Array<Interactive>>;
 	
 	var maxTouchpoints:Int;
 
@@ -69,11 +69,11 @@ class UIDisplay extends Display
 		clickPickBuffer = new Buffer<Pickable>(16,8); // TODO: fill with constants
 		clickPickProgram = new Program(clickPickBuffer);
 	
-		uiElements = new Array<InteractiveElement>();
+		uiElements = new Array<Interactive>();
 		//skins = new Array<Skin>();
 		
 		lastMouseDownIndex = new Vector<Int>(3);
-		draggingMouseElements = new Array<InteractiveElement>();
+		draggingMouseElements = new Array<Interactive>();
 		for (i in 0...lastMouseDownIndex.length) {
 			lastMouseDownIndex.set(i, -1);
 		}
@@ -81,11 +81,11 @@ class UIDisplay extends Display
 		this.maxTouchpoints = maxTouchpoints;
 		lastTouchOverIndex = new Vector<Int>(maxTouchpoints);
 		lastTouchDownIndex = new Vector<Int>(maxTouchpoints);
-		draggingTouchElements = new Vector<Array<InteractiveElement>>(maxTouchpoints);
+		draggingTouchElements = new Vector<Array<Interactive>>(maxTouchpoints);
 		for (i in 0...maxTouchpoints) {
 			lastTouchOverIndex.set(i, -1);
 			lastTouchDownIndex.set(i, -1);
-			draggingTouchElements.set(i, new Array<InteractiveElement>());
+			draggingTouchElements.set(i, new Array<Interactive>());
 		}
 	}
 	
@@ -122,13 +122,13 @@ class UIDisplay extends Display
 */	
 	// -------------------------------------------------------
 	
-	public function add(uiElement:InteractiveElement):Void {
+	public function add(uiElement:Interactive):Void {
 		//TODO
 		uiElements.push(uiElement);
 		uiElement.onAddToDisplay(this);
 	}
 	
-	public function remove(uiElement:InteractiveElement):Void {
+	public function remove(uiElement:Interactive):Void {
 		//TODO
 		uiElements.remove(uiElement);
 		uiElement.onRemoveFromDisplay(this);
@@ -140,7 +140,7 @@ class UIDisplay extends Display
 		//TODO
 	}
 	
-	public function update(uiElement:InteractiveElement):Void {
+	public function update(uiElement:Interactive):Void {
 		uiElement.update();
 		//TODO
 	}
@@ -152,7 +152,7 @@ class UIDisplay extends Display
 	}
 	
 	// ----------------------------------------
-	public function startDragging(uiElement:InteractiveElement, e:PointerEvent):Void {
+	public function startDragging(uiElement:Interactive, e:PointerEvent):Void {
 		if (! uiElement.isDragging) {
 			uiElement.isDragging = true;
 			switch (e.type) {
@@ -164,7 +164,7 @@ class UIDisplay extends Display
 		} //TODO: #if peoteui_debug -> else WARNING: already in dragmode
 	}
 
-	public function stopDragging(uiElement:InteractiveElement, e:PointerEvent):Void {
+	public function stopDragging(uiElement:Interactive, e:PointerEvent):Void {
 		if (uiElement.isDragging) {
 			uiElement.isDragging = false;
 			switch (e.type) {
@@ -472,7 +472,7 @@ class UIDisplay extends Display
 				var lastMouseDownElem = clickPickBuffer.getElement(_lastMouseDownIndex).uiElement;
 				var startClick = false;
 				var pickedIndex = (isPointInside(x, y)) ? peoteView.getElementAt(mouseX, mouseY, this, clickPickProgram) : -1;
-				var pickedElem:InteractiveElement = null;
+				var pickedElem:Interactive = null;
 				if (pickedIndex >= 0) {
 					pickedElem = clickPickBuffer.getElement(pickedIndex).uiElement;
 					if (lastMouseDownElem.intoUpDownEventBubbleOf(pickedElem)) startClick = true;
@@ -500,7 +500,7 @@ class UIDisplay extends Display
 			var y:Int = Math.round(touch.y * peoteView.height);
 			
 			var pickedIndex:Int;
-			var pickedElem:InteractiveElement = null;
+			var pickedElem:Interactive = null;
 			var _lastTouchDownIndex = lastTouchDownIndex.get(touch.id);
 			
 			// Up
@@ -552,7 +552,7 @@ class UIDisplay extends Display
 	}
 
 	public inline function windowLeave():Void {
-		var lastElem:InteractiveElement;
+		var lastElem:Interactive;
 		// mouse
 		if (lastMouseOverIndex >= 0) {
 			lastElem = movePickBuffer.getElement(lastMouseOverIndex).uiElement;

@@ -7,7 +7,7 @@ import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.graphics.RenderContext;
 import peote.ui.event.PointerEvent;
-import peote.ui.interactive.UIElement;
+import peote.ui.interactive.InteractiveElement;
 
 import peote.view.PeoteView;
 import peote.view.Color;
@@ -15,7 +15,7 @@ import peote.view.Color;
 import peote.text.Font;
 import peote.ui.fontstyle.FontStyleTiled;
 
-import peote.ui.layouted.LayoutedDisplay;
+import peote.ui.layouted.LayoutedUIDisplay;
 import peote.ui.layouted.LayoutedElement;
 import peote.ui.layouted.LayoutedTextLine;
 
@@ -31,7 +31,7 @@ import peote.layout.Size;
 class SimpleLayouted extends Application
 {
 	var peoteView:PeoteView;
-	var uiDisplay:LayoutedDisplay;
+	var uiDisplay:LayoutedUIDisplay;
 	
 	var simlpeSkin = new SimpleSkin();
 	var roundedSkin = new RoundedSkin();
@@ -51,7 +51,7 @@ class SimpleLayouted extends Application
 	public function initPeoteView(window:Window) {
 		try {			
 			peoteView = new PeoteView(window.context, window.width, window.height);
-			uiDisplay = new LayoutedDisplay(0, 0, window.width, window.height, Color.GREY3);
+			uiDisplay = new LayoutedUIDisplay(0, 0, window.width, window.height, Color.GREY3);
 			peoteView.addDisplay(uiDisplay);
 			
 			// load the FONT:

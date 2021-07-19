@@ -38,35 +38,7 @@ class $className extends $interactiveTextLineType implements peote.layout.ILayou
 		//trace("NEW LayoutedTextLine");
 		super(xPosition, yPosition, width, height, zIndex, masked, text, font, fontStyle);
 	}
-	
-	public var onPointerOver(never, set):LayoutedTextLine<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerOver(f:LayoutedTextLine<$styleType>->peote.ui.event.PointerEvent->Void):LayoutedTextLine<$styleType>->peote.ui.event.PointerEvent->Void
-		return setOnPointerOver(this, f);
-	
-	public var onPointerOut(never, set):LayoutedTextLine<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerOut(f:LayoutedTextLine<$styleType>->peote.ui.event.PointerEvent->Void):LayoutedTextLine<$styleType>->peote.ui.event.PointerEvent->Void 
-		return setOnPointerOut(this, f);
-	
-	public var onPointerMove(never, set):LayoutedTextLine<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerMove(f:LayoutedTextLine<$styleType>->peote.ui.event.PointerEvent->Void):LayoutedTextLine<$styleType>->peote.ui.event.PointerEvent->Void
-		return setOnPointerMove(this, f);
-	
-	public var onPointerDown(never, set):LayoutedTextLine<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerDown(f:LayoutedTextLine<$styleType>->peote.ui.event.PointerEvent->Void):LayoutedTextLine<$styleType>->peote.ui.event.PointerEvent->Void
-		return setOnPointerDown(this, f);
-	
-	public var onPointerUp(never, set):LayoutedTextLine<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerUp(f:LayoutedTextLine<$styleType>->peote.ui.event.PointerEvent->Void):LayoutedTextLine<$styleType>->peote.ui.event.PointerEvent->Void
-		return setOnPointerUp(this, f);
-	
-	public var onPointerClick(never, set):LayoutedTextLine<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerClick(f:LayoutedTextLine<$styleType>->peote.ui.event.PointerEvent->Void):LayoutedTextLine<$styleType>->peote.ui.event.PointerEvent->Void
-		return setOnPointerClick(this, f);
 		
-	public var onMouseWheel(never, set):LayoutedTextLine<$styleType>->peote.ui.event.WheelEvent->Void;
-	inline function set_onMouseWheel(f:LayoutedTextLine<$styleType>->peote.ui.event.WheelEvent->Void):LayoutedTextLine<$styleType>->peote.ui.event.WheelEvent->Void 
-		return setOnMouseWheel(this, f);
-	
 	
 	// ----------- Interface: LayoutElement --------------------
 

@@ -4,7 +4,7 @@ import peote.layout.ILayoutElement;
 import peote.layout.Layout;
 import peote.layout.LayoutContainer;
 import peote.layout.ContainerType;
-import peote.ui.interactive.InteractiveElement;
+import peote.ui.interactive.Interactive;
 
 import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
@@ -25,8 +25,8 @@ abstract Widget(LayoutContainer) from LayoutContainer to LayoutContainer
 	public inline function get_childs():Array<Widget> return cast this.childs;	
 	
 	
-	public var interactiveElement(get, never):InteractiveElement;
-	public inline function get_interactiveElement():InteractiveElement return cast this.layoutElement;	
+	public var interactiveElement(get, never):Interactive;
+	public inline function get_interactiveElement():Interactive return cast this.layoutElement;	
 	
 	
 	

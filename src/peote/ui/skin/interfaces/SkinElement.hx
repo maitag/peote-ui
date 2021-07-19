@@ -1,9 +1,9 @@
 package peote.ui.skin.interfaces;
 
-import peote.ui.interactive.UIElement;
+import peote.ui.interactive.InteractiveElement;
 
 interface SkinElement 
 {
-	public function update(uiElement:UIElement, defaultStyle:Dynamic):Void;
+	public function update(uiElement:InteractiveElement, defaultStyle:Dynamic):Void;
 	public function remove():Bool;
 }

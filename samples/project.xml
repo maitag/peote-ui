@@ -7,11 +7,11 @@
 	<!-- <meta build-number="714" /> --> <!-- let set the buildnumber manual (android) -->
 	<!-- check this for GG-Playstore: <setenv name="ANDROID_GRADLE_TASK" value=":app:bundleRelease" /> -->
 	
-	<app main="ButtonEvents" path="bin" file="Main" />
+	<app main="WidgetLayout" path="bin" file="Main" />
 	<!--
-		ButtonEvents,
-		TextEvents,
-		ButtonLayout,
+		SimpleElements,
+		SimpleText,
+		SimpleLayouted,
 		WidgetLayout,
 		...
 	-->
@@ -36,7 +36,8 @@
 	<haxelib name="peote-layout" />
 	<haxelib name="peote-ui" />
 	
-	<!-- <haxedef name="peoteui_multitouch" /> -->
+	<!-- TODO: --><!-- <haxedef name="peoteui_multitouch" /> -->
+	
 	<define name="peoteui_maxDisplays" value="1" /> <!-- for optimization use "1" (max is 32) -->
 	<haxedef name="peoteui_debug_macro" />
 	<haxedef name="peotetext_debug_macro" />

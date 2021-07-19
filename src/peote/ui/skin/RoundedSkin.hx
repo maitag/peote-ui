@@ -5,8 +5,8 @@ import peote.view.Program;
 import peote.view.Element;
 import peote.view.Color;
 
-import peote.ui.interactive.UIDisplay;
-import peote.ui.interactive.UIElement;
+import peote.ui.UIDisplay;
+import peote.ui.interactive.InteractiveElement;
 
 import peote.ui.style.RoundedStyle;
 import peote.ui.skin.interfaces.Skin;
@@ -30,14 +30,14 @@ class RoundedSkinElement implements SkinElement implements Element
 	
 	var buffer:Buffer<RoundedSkinElement>;
 	
-	public inline function new(uiElement:UIElement, defaultStyle:RoundedStyle, buffer:Buffer<RoundedSkinElement>)
+	public inline function new(uiElement:InteractiveElement, defaultStyle:RoundedStyle, buffer:Buffer<RoundedSkinElement>)
 	{
 		this.buffer = buffer;
 		_update(uiElement, defaultStyle);
 		buffer.addElement(this);
 	}
 	
-	public inline function update(uiElement:UIElement, defaultStyle:Dynamic)
+	public inline function update(uiElement:InteractiveElement, defaultStyle:Dynamic)
 	{
 		_update(uiElement, defaultStyle);
 		buffer.updateElement(this);
@@ -49,7 +49,7 @@ class RoundedSkinElement implements SkinElement implements Element
 		return (buffer.length() == 0);
 	}
 	
-	inline function _update(uiElement:UIElement, defaultStyle:Dynamic)
+	inline function _update(uiElement:InteractiveElement, defaultStyle:Dynamic)
 	{
 		x = uiElement.x;
 		y = uiElement.y;
@@ -90,7 +90,7 @@ class RoundedSkin implements Skin
 		return ((displays & (1 << uiDisplay.number))==0);
 	}
 	
-	public function addElement(uiDisplay:UIDisplay, uiElement:UIElement)
+	public function addElement(uiDisplay:UIDisplay, uiElement:InteractiveElement)
 	{
 		if (notIntoDisplay(uiDisplay))
 		{
@@ -115,7 +115,7 @@ class RoundedSkin implements Skin
 			#end
 	}
 	
-	public function removeElement(uiDisplay:UIDisplay, uiElement:UIElement)
+	public function removeElement(uiDisplay:UIDisplay, uiElement:InteractiveElement)
 	{
 		if (uiElement.skinElement.remove())
 		{
@@ -134,7 +134,7 @@ class RoundedSkin implements Skin
 		}
 	}
 	
-	public function updateElement(uiDisplay:UIDisplay, uiElement:UIElement)
+	public function updateElement(uiDisplay:UIDisplay, uiElement:InteractiveElement)
 	{
 		uiElement.skinElement.update(uiElement, defaultStyle);
 	}

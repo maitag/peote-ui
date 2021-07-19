@@ -10,10 +10,10 @@ import peote.layout.LayoutContainer;
 import peote.layout.ILayoutElement;
 import peote.layout.LayoutOptions;
 import peote.layout.ContainerType;
-import peote.ui.interactive.InteractiveElement;
+import peote.ui.interactive.Interactive;
 import peote.view.Color;
 
-import peote.ui.layouted.LayoutedDisplay;
+import peote.ui.layouted.LayoutedUIDisplay;
 import peote.ui.widget.Widget;
 
 typedef PeoteUIOptions = {
@@ -33,7 +33,7 @@ abstract PeoteUI(LayoutContainer) from LayoutContainer to LayoutContainer {
 		if (peoteUiOptions == null) peoteUiOptions = {relativeChildPositions:true};
 		else peoteUiOptions.relativeChildPositions = true;
 		
-		var layoutElement:ILayoutElement = new LayoutedDisplay(0, 0, 0, 0, (peoteUiOptions.bgColor != null) ? peoteUiOptions.bgColor : Color.BLACK);
+		var layoutElement:ILayoutElement = new LayoutedUIDisplay(0, 0, 0, 0, (peoteUiOptions.bgColor != null) ? peoteUiOptions.bgColor : Color.BLACK);
 		this = new LayoutContainer(
 			containerType, 
 			layoutElement,
@@ -45,9 +45,9 @@ abstract PeoteUI(LayoutContainer) from LayoutContainer to LayoutContainer {
 	}
 	
 	function addChildsToDisplay(lc:LayoutContainer,
-		_overOutEventsBubbleTo:InteractiveElement = null,
-		_moveEventsBubbleTo:InteractiveElement = null,
-		_wheelEventsBubbleTo:InteractiveElement = null
+		_overOutEventsBubbleTo:Interactive = null,
+		_moveEventsBubbleTo:Interactive = null,
+		_wheelEventsBubbleTo:Interactive = null
 		)
 	{		
 		if (lc.childs != null)
@@ -55,7 +55,7 @@ abstract PeoteUI(LayoutContainer) from LayoutContainer to LayoutContainer {
 				
 				// TODO: if child it is a DISPLAY -> add it to peote-view
 				var widget:Widget = child;
-				var elem:InteractiveElement = widget.interactiveElement;
+				var elem:Interactive = widget.interactiveElement;
 				display.add(elem);
 				
 				
@@ -74,10 +74,10 @@ abstract PeoteUI(LayoutContainer) from LayoutContainer to LayoutContainer {
 			}
 	}
 	
-	public var display(get, never):LayoutedDisplay;
-	public inline function get_display():LayoutedDisplay return cast this.layoutElement;
+	public var display(get, never):LayoutedUIDisplay;
+	public inline function get_display():LayoutedUIDisplay return cast this.layoutElement;
 	
-	@:to public inline function toLayoutDisplay():LayoutedDisplay return display;
+	@:to public inline function toLayoutDisplay():LayoutedUIDisplay return display;
 	
 	// ------------------------------------------------------------
 	
