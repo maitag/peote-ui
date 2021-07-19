@@ -24,7 +24,7 @@ abstract TextLine(Widget) from Widget to Widget
 	public inline function new(font, fontStyle, text:String, textLineOptions:TextLineOptions)
 	{
 		this = new Widget(ContainerType.BOX,
-			font.createLayoutTextLine(0, 0, 0, 0, 0, true, text, fontStyle),
+			font.createLayoutedTextLine(0, 0, 0, 0, 0, true, text, fontStyle),
 			textLineOptions
 		);
 		
@@ -42,7 +42,7 @@ abstract TextLine(Widget) from Widget to Widget
 	
 	// TODO:
 	//public inline function getFontStyle<T>():T return (cast this.layoutElement).fontStyle;
-	public inline function getLayoutTextLine<T>():T return cast this.layoutElement;
+	public inline function getLayoutedTextLine<T>():T return cast this.layoutElement;
 
 
 }

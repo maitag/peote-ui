@@ -13,7 +13,7 @@ import peote.layout.ContainerType;
 import peote.ui.interactive.InteractiveElement;
 import peote.view.Color;
 
-import peote.ui.interactive.LayoutDisplay;
+import peote.ui.layouted.LayoutedDisplay;
 import peote.ui.widget.Widget;
 
 typedef PeoteUIOptions = {
@@ -33,7 +33,7 @@ abstract PeoteUI(LayoutContainer) from LayoutContainer to LayoutContainer {
 		if (peoteUiOptions == null) peoteUiOptions = {relativeChildPositions:true};
 		else peoteUiOptions.relativeChildPositions = true;
 		
-		var layoutElement:ILayoutElement = new LayoutDisplay(0, 0, 0, 0, (peoteUiOptions.bgColor != null) ? peoteUiOptions.bgColor : Color.BLACK);
+		var layoutElement:ILayoutElement = new LayoutedDisplay(0, 0, 0, 0, (peoteUiOptions.bgColor != null) ? peoteUiOptions.bgColor : Color.BLACK);
 		this = new LayoutContainer(
 			containerType, 
 			layoutElement,
@@ -74,10 +74,10 @@ abstract PeoteUI(LayoutContainer) from LayoutContainer to LayoutContainer {
 			}
 	}
 	
-	public var display(get, never):LayoutDisplay;
-	public inline function get_display():LayoutDisplay return cast this.layoutElement;
+	public var display(get, never):LayoutedDisplay;
+	public inline function get_display():LayoutedDisplay return cast this.layoutElement;
 	
-	@:to public inline function toLayoutDisplay():LayoutDisplay return display;
+	@:to public inline function toLayoutDisplay():LayoutedDisplay return display;
 	
 	// ------------------------------------------------------------
 	

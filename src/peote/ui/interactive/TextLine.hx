@@ -21,41 +21,41 @@ class TextLineMacro
 			Macro.debug(className, classPackage, stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
 			
 			//var fontType = peote.text.Font.FontMacro.buildClass("Font", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
-			peote.ui.interactive.UITextLine.UITextLineMacro.buildClass("UITextLine", classPackage, stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
-			var uiTextLineType:TypePath ={ pack:classPackage, name:"UITextLine" + Macro.classNameExtension(styleName, styleModule), params:[] };
+			peote.ui.interactive.InteractiveTextLine.InteractiveTextLineMacro.buildClass("InteractiveTextLine", classPackage, stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
+			var interactiveTextLineType:TypePath ={ pack:classPackage, name:"InteractiveTextLine" + Macro.classNameExtension(styleName, styleModule), params:[] };
 
 			var c = macro
 
 // -------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------
 
-class $className extends $uiTextLineType
+class $className extends $interactiveTextLineType
 {
-	public var onPointerOver(default, set):TextLine<$styleType>->peote.ui.event.PointerEvent->Void;
+	public var onPointerOver(never, set):TextLine<$styleType>->peote.ui.event.PointerEvent->Void;
 	inline function set_onPointerOver(f:TextLine<$styleType>->peote.ui.event.PointerEvent->Void):TextLine<$styleType>->peote.ui.event.PointerEvent->Void
 		return setOnPointerOver(this, f);
 	
-	public var onPointerOut(default, set):TextLine<$styleType>->peote.ui.event.PointerEvent->Void;
+	public var onPointerOut(never, set):TextLine<$styleType>->peote.ui.event.PointerEvent->Void;
 	inline function set_onPointerOut(f:TextLine<$styleType>->peote.ui.event.PointerEvent->Void):TextLine<$styleType>->peote.ui.event.PointerEvent->Void 
 		return setOnPointerOut(this, f);
 	
-	public var onPointerMove(default, set):TextLine<$styleType>->peote.ui.event.PointerEvent->Void;
+	public var onPointerMove(never, set):TextLine<$styleType>->peote.ui.event.PointerEvent->Void;
 	inline function set_onPointerMove(f:TextLine<$styleType>->peote.ui.event.PointerEvent->Void):TextLine<$styleType>->peote.ui.event.PointerEvent->Void
 		return setOnPointerMove(this, f);
 	
-	public var onPointerDown(default, set):TextLine<$styleType>->peote.ui.event.PointerEvent->Void;
+	public var onPointerDown(never, set):TextLine<$styleType>->peote.ui.event.PointerEvent->Void;
 	inline function set_onPointerDown(f:TextLine<$styleType>->peote.ui.event.PointerEvent->Void):TextLine<$styleType>->peote.ui.event.PointerEvent->Void
 		return setOnPointerDown(this, f);
 	
-	public var onPointerUp(default, set):TextLine<$styleType>->peote.ui.event.PointerEvent->Void;
+	public var onPointerUp(never, set):TextLine<$styleType>->peote.ui.event.PointerEvent->Void;
 	inline function set_onPointerUp(f:TextLine<$styleType>->peote.ui.event.PointerEvent->Void):TextLine<$styleType>->peote.ui.event.PointerEvent->Void
 		return setOnPointerUp(this, f);
 	
-	public var onPointerClick(default, set):TextLine<$styleType>->peote.ui.event.PointerEvent->Void;
+	public var onPointerClick(never, set):TextLine<$styleType>->peote.ui.event.PointerEvent->Void;
 	inline function set_onPointerClick(f:TextLine<$styleType>->peote.ui.event.PointerEvent->Void):TextLine<$styleType>->peote.ui.event.PointerEvent->Void
 		return setOnPointerClick(this, f);
 		
-	public var onMouseWheel(default, set):TextLine<$styleType>->peote.ui.event.WheelEvent->Void;
+	public var onMouseWheel(never, set):TextLine<$styleType>->peote.ui.event.WheelEvent->Void;
 	inline function set_onMouseWheel(f:TextLine<$styleType>->peote.ui.event.WheelEvent->Void):TextLine<$styleType>->peote.ui.event.WheelEvent->Void 
 		return setOnMouseWheel(this, f);
 	

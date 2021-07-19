@@ -1,4 +1,4 @@
-package peote.ui.skin;
+package peote.ui.style;
 
 import peote.view.Color;
 import peote.ui.skin.SkinType;

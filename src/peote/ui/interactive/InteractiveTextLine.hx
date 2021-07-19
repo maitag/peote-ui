@@ -1,8 +1,8 @@
 package peote.ui.interactive;
 
 #if !macro
-@:genericBuild(peote.ui.interactive.UITextLine.UITextLineMacro.build("UITextLine"))
-class UITextLine<T> extends peote.ui.interactive.InteractiveElement {}
+@:genericBuild(peote.ui.interactive.InteractiveTextLine.InteractiveTextLineMacro.build("InteractiveTextLine"))
+class InteractiveTextLine<T> extends peote.ui.interactive.InteractiveElement {}
 #else
 
 import haxe.macro.Expr;
@@ -11,7 +11,7 @@ import peote.text.util.Macro;
 //import peote.text.util.GlyphStyleHasField;
 //import peote.text.util.GlyphStyleHasMeta;
 
-class UITextLineMacro
+class InteractiveTextLineMacro
 {
 	static public function build(name:String):ComplexType return Macro.build(name, buildClass);
 	static public function buildClass(className:String, classPackage:Array<String>, stylePack:Array<String>, styleModule:String, styleName:String, styleSuperModule:String, styleSuperName:String, styleType:ComplexType, styleField:Array<String>):ComplexType
@@ -74,7 +74,7 @@ class $className extends peote.ui.interactive.InteractiveElement
 	                    //text:String, font:$fontType, fontStyle:$styleType) 
 	                    text:String, font:peote.text.Font<$styleType>, fontStyle:$styleType) 
 	{
-		//trace("NEW UITextLine");
+		//trace("NEW InteractiveTextLine");
 		super(xPosition, yPosition, width, height, zIndex);
 
 		this.masked = masked;

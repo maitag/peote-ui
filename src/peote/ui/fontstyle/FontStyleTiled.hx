@@ -1,4 +1,4 @@
-package peote.ui.text;
+package peote.ui.fontstyle;
 
 import peote.view.Color;
 

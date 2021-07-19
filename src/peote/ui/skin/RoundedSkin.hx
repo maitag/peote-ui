@@ -8,7 +8,7 @@ import peote.view.Color;
 import peote.ui.interactive.UIDisplay;
 import peote.ui.interactive.UIElement;
 
-import peote.ui.skin.RoundedStyle;
+import peote.ui.style.RoundedStyle;
 import peote.ui.skin.interfaces.Skin;
 import peote.ui.skin.interfaces.SkinElement;
 

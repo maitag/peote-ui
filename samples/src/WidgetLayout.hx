@@ -5,7 +5,6 @@ import lime.ui.Window;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.ui.MouseButton;
-import lime.ui.MouseWheelMode;
 import lime.ui.Touch;
 import peote.layout.ContainerType;
 
@@ -13,13 +12,13 @@ import peote.view.PeoteView;
 import peote.view.Color;
 
 import peote.text.Font;
-import peote.ui.text.FontStyleTiled;
+import peote.ui.fontstyle.FontStyleTiled;
 
 import peote.ui.skin.RoundedSkin;
-import peote.ui.skin.RoundedStyle;
+import peote.ui.style.RoundedStyle;
 
 import peote.ui.PeoteUI;
-import peote.ui.interactive.LayoutTextLine;
+import peote.ui.layouted.LayoutedTextLine;
 import peote.ui.event.PointerEvent;
 import peote.ui.widget.Div;
 import peote.ui.widget.TextLine;
@@ -96,19 +95,19 @@ class WidgetLayout extends Application
 						//widget.parent.style.color = Color.YELLOW;
 						
 						var t:TextLine = widget.childs[0];
-						var layoutTextLine:LayoutTextLine<FontStyleTiled> = t.getLayoutTextLine();
-						layoutTextLine.fontStyle.color = Color.BLACK;
-						layoutTextLine.updateStyle();
-						layoutTextLine.update();
+						var layoutedTextLine:LayoutedTextLine<FontStyleTiled> = t.getLayoutedTextLine();
+						layoutedTextLine.fontStyle.color = Color.BLACK;
+						layoutedTextLine.updateStyle();
+						layoutedTextLine.update();
 						
 						widget.layoutElement.update();
 					},
 					onPointerUp: function(widget:Div, e:PointerEvent) {
 						var t:TextLine = widget.childs[0];
-						var layoutTextLine:LayoutTextLine<FontStyleTiled> = t.getLayoutTextLine();
-						layoutTextLine.fontStyle.color = Color.WHITE;
-						layoutTextLine.updateStyle();
-						layoutTextLine.update();
+						var layoutedTextLine:LayoutedTextLine<FontStyleTiled> = t.getLayoutedTextLine();
+						layoutedTextLine.fontStyle.color = Color.WHITE;
+						layoutedTextLine.updateStyle();
+						layoutedTextLine.update();
 						
 						widget.layoutElement.update();
 					},
@@ -130,11 +129,11 @@ class WidgetLayout extends Application
 								//var fontStyle = t.getFontStyle();
 								//fontStyle.color = Color.RED;
 								
-								var layoutTextLine:LayoutTextLine<FontStyleTiled> = t.getLayoutTextLine();
-								layoutTextLine.fontStyle.color = Color.RED;
-								layoutTextLine.updateStyle();
+								var layoutedTextLine:LayoutedTextLine<FontStyleTiled> = t.getLayoutedTextLine();
+								layoutedTextLine.fontStyle.color = Color.RED;
+								layoutedTextLine.updateStyle();
 								
-								layoutTextLine.update();
+								layoutedTextLine.update();
 							}
 						,	
 						onPointerOut:
@@ -145,11 +144,11 @@ class WidgetLayout extends Application
 								//var fontStyle = t.getFontStyle();
 								//fontStyle.color = Color.RED;
 								
-								var layoutTextLine:LayoutTextLine<FontStyleTiled> = t.getLayoutTextLine();
-								layoutTextLine.fontStyle.color = Color.WHITE;
-								layoutTextLine.updateStyle();
+								var layoutedTextLine:LayoutedTextLine<FontStyleTiled> = t.getLayoutedTextLine();
+								layoutedTextLine.fontStyle.color = Color.WHITE;
+								layoutedTextLine.updateStyle();
 								
-								layoutTextLine.update();
+								layoutedTextLine.update();
 							}
 							
 					}),

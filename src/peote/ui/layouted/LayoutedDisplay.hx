@@ -1,4 +1,4 @@
-package peote.ui.interactive;
+package peote.ui.layouted;
 
 import peote.view.Color;
 import peote.view.Display;
@@ -7,7 +7,7 @@ import peote.ui.interactive.UIDisplay;
 
 
 //@:generic class LayoutDisplay<O,P> extends UIDisplay implements peote.layout.LayoutElement
-class LayoutDisplay extends UIDisplay implements peote.layout.ILayoutElement
+class LayoutedDisplay extends UIDisplay implements peote.layout.ILayoutElement
 {	
 	//var options:O;
 	//var params:P;

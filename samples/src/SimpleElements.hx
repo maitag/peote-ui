@@ -7,7 +7,6 @@ import lime.ui.KeyModifier;
 import lime.ui.MouseButton;
 import lime.ui.MouseWheelMode;
 import lime.ui.Touch;
-import peote.ui.interactive.InteractiveElement;
 import peote.ui.skin.SkinType;
 
 import peote.view.PeoteView;
@@ -17,14 +16,14 @@ import peote.ui.interactive.UIDisplay;
 import peote.ui.interactive.Button;
 
 import peote.ui.skin.SimpleSkin;
-import peote.ui.skin.SimpleStyle;
+import peote.ui.style.SimpleStyle;
 import peote.ui.skin.RoundedSkin;
-import peote.ui.skin.RoundedStyle;
+import peote.ui.style.RoundedStyle;
 
 import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
 
-class ButtonEvents extends Application
+class SimpleElements extends Application
 {
 	var peoteView:PeoteView;
 	var uiDisplay:UIDisplay;
@@ -198,21 +197,21 @@ class ButtonEvents extends Application
 	// ----------------- Button Eventhandler ----------------------
 	
 	public inline function onOver(color:Color, uiElement:Button, e:PointerEvent) {
+		trace(" -----> onPointerOver", e);
 		uiElement.style.color = color;
 		if (uiElement.style.compatibleSkins & SkinType.Rounded > 0) {
 			uiElement.style.borderColor = Color.GREY7;
 		}
 		uiElement.update();
-		trace(" -----> onPointerOver", e);
 	}
 	
 	public inline function onOut(color:Color, uiElement:Button, e:PointerEvent) {
+		trace(" -----> onPointerOut", e);
 		uiElement.style.color = color;
 		if (uiElement.style.compatibleSkins & SkinType.Rounded > 0) {
 			uiElement.style.borderColor = Color.GREY5;
 		}
 		uiElement.update();
-		trace(" -----> onPointerOut", e);
 	}
 	
 	public inline function onMove(uiElement:Button, e:PointerEvent) {
@@ -220,25 +219,25 @@ class ButtonEvents extends Application
 	}
 	
 	public inline function onDown(borderColor:Color, uiElement:Button, e:PointerEvent) {
+		trace(" -----> onPointerDown", e);
 		if (uiElement.style.compatibleSkins & SkinType.Rounded > 0) {
 			uiElement.style.borderColor = borderColor;
 			//uiElement.x += 30;
 			uiElement.update();
 		}
-		trace(" -----> onPointerDown", e);
 	}
 	
 	public inline function onUp(borderColor:Color, uiElement:Button, e:PointerEvent) {
+		trace(" -----> onPointerUp", e);
 		if (uiElement.style.compatibleSkins & SkinType.Rounded > 0) {
 			uiElement.style.borderColor = borderColor;
 			uiElement.update();
 		}
-		trace(" -----> onPointerUp", e);
 	}
 	
 	public inline function onClick(uiElement:Button, e:PointerEvent) {
-		//uiElement.y += 30; uiElement.update();
 		trace(" -----> onPointerClick", e);
+		//uiElement.y += 30; uiElement.update();
 	}
 	
 	

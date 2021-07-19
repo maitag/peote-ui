@@ -6,30 +6,32 @@ import lime.app.Application;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.graphics.RenderContext;
+import peote.ui.event.PointerEvent;
+import peote.ui.interactive.UIElement;
 
 import peote.view.PeoteView;
 import peote.view.Color;
 
 import peote.text.Font;
-import peote.ui.text.FontStyleTiled;
+import peote.ui.fontstyle.FontStyleTiled;
 
-import peote.ui.interactive.LayoutDisplay;
-import peote.ui.interactive.LayoutElement;
-import peote.ui.interactive.LayoutTextLine;
+import peote.ui.layouted.LayoutedDisplay;
+import peote.ui.layouted.LayoutedElement;
+import peote.ui.layouted.LayoutedTextLine;
 
 import peote.ui.skin.SimpleSkin;
-import peote.ui.skin.SimpleStyle;
+import peote.ui.style.SimpleStyle;
 import peote.ui.skin.RoundedSkin;
-import peote.ui.skin.RoundedStyle;
+import peote.ui.style.RoundedStyle;
 
 import peote.layout.LayoutContainer;
 import peote.layout.Size;
 
 
-class ButtonLayout extends Application
+class SimpleLayouted extends Application
 {
 	var peoteView:PeoteView;
-	var uiDisplay:LayoutDisplay;
+	var uiDisplay:LayoutedDisplay;
 	
 	var simlpeSkin = new SimpleSkin();
 	var roundedSkin = new RoundedSkin();
@@ -49,7 +51,7 @@ class ButtonLayout extends Application
 	public function initPeoteView(window:Window) {
 		try {			
 			peoteView = new PeoteView(window.context, window.width, window.height);
-			uiDisplay = new LayoutDisplay(0, 0, window.width, window.height, Color.GREY3);
+			uiDisplay = new LayoutedDisplay(0, 0, window.width, window.height, Color.GREY3);
 			peoteView.addDisplay(uiDisplay);
 			
 			// load the FONT:
@@ -61,10 +63,20 @@ class ButtonLayout extends Application
 	public function onFontLoaded(font:Font<FontStyleTiled>) { // don'T forget argument-type or force at least the style to FontStyleTiled-Type (see below!)
 	//public function onFontLoaded(font) {
 		try {			
-			var red   = new LayoutElement(simlpeSkin, new SimpleStyle(Color.RED));
-			var green = new LayoutElement(simlpeSkin, new SimpleStyle(Color.GREEN));
-			var blue  = new LayoutElement(roundedSkin, new SimpleStyle(Color.BLUE));
-			var yellow= new LayoutElement(roundedSkin, new SimpleStyle(Color.YELLOW));
+			var red   = new LayoutedElement(simlpeSkin, new SimpleStyle(Color.RED));
+			var green = new LayoutedElement(simlpeSkin, new SimpleStyle(Color.GREEN));
+			var blue  = new LayoutedElement(roundedSkin, new SimpleStyle(Color.BLUE));
+			var yellow= new LayoutedElement(roundedSkin, new SimpleStyle(Color.YELLOW));
+/*			yellow.onPointerOver = function(elem:InteraktiveElement, e:PointerEvent) {
+				elem.style.color = Color.YELLOW - 0x00550000;
+				elem.update();
+			}
+			
+			yellow.onPointerOut = function(elem:InteraktiveElement, e:PointerEvent) {
+				elem.style.color = Color.YELLOW;
+				elem.update();
+			}
+*/			
 			uiDisplay.add(red);
 			uiDisplay.add(green);
 			uiDisplay.add(blue);
@@ -77,11 +89,11 @@ class ButtonLayout extends Application
 			fontStyleTiled.width = 30.0;
 			fontStyleTiled.color = Color.BLACK;
 			
-			//var textLine1 = new LayoutTextLine<FontStyleTiled>(0, 0, 112, 25, 0, "hello", font, fontStyleTiled);
-			var textLine1:LayoutTextLine<FontStyleTiled> = font.createLayoutTextLine(0, 0, 300, 25, 0, false, "hello world", fontStyleTiled);
+			//var textLine1 = new LayoutedTextLine<FontStyleTiled>(0, 0, 112, 25, 0, "hello", font, fontStyleTiled);
+			var textLine1:LayoutedTextLine<FontStyleTiled> = font.createLayoutedTextLine(0, 0, 300, 25, 0, false, "hello world", fontStyleTiled);
 			uiDisplay.add(textLine1);
 			
-			var textLine2 = font.createLayoutTextLine(0, 0, 300, 25, 0, true, "hello world", font.createFontStyle());			
+			var textLine2 = font.createLayoutedTextLine(0, 0, 300, 25, 0, true, "hello world", font.createFontStyle());			
 			uiDisplay.add(textLine2);
 			
 			uiLayoutContainer = new Box( uiDisplay , { width:Size.limit(100,700), relativeChildPositions:true },

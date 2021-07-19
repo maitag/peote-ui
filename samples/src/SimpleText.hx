@@ -12,8 +12,8 @@ import peote.view.PeoteView;
 import peote.view.Color;
 
 import peote.text.Font;
-import peote.ui.text.FontStyleTiled;
-import peote.ui.text.FontStylePacked;
+import peote.ui.fontstyle.FontStyleTiled;
+import peote.ui.fontstyle.FontStylePacked;
 
 import peote.ui.interactive.UIDisplay;
 import peote.ui.interactive.TextLine;
@@ -21,7 +21,7 @@ import peote.ui.interactive.TextLine;
 import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
 
-class TextEvents extends Application
+class SimpleText extends Application
 {
 	var peoteView:PeoteView;
 	var uiDisplay:UIDisplay;
