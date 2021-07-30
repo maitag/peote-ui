@@ -418,7 +418,7 @@ class Interactive
 		} 
 	}
 	
-	public function hide():Void{
+	public function hide():Void {
 		if (uiDisplay != null) {
 			lastUsedDisplay = uiDisplay;
 			uiDisplay.remove(this);

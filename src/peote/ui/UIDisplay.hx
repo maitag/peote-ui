@@ -55,6 +55,9 @@ class UIDisplay extends Display
 	
 	var maxTouchpoints:Int;
 
+	var _peoteView:PeoteView = null;
+	var isVisible(default, null):Bool = false;
+	
 	public function new(x:Int, y:Int, width:Int, height:Int, color:Color=0x00000000, maxTouchpoints:Int = 3) 
 	{
 		number = getFreeNumber();  trace('MAX_DISPLAYs: $MAX_DISPLAYS', 'UIDisplay NUMBER is $number');
@@ -96,6 +99,8 @@ class UIDisplay extends Display
 	
 	override public function addToPeoteView(peoteView:PeoteView, ?atDisplay:Display, addBefore:Bool=false)
 	{
+		_peoteView = peoteView;
+		isVisible = true;
 		super.addToPeoteView(peoteView, atDisplay, addBefore);
 		movePickProgram.setNewGLContext(peoteView.gl);
 		clickPickProgram.setNewGLContext(peoteView.gl);
@@ -103,23 +108,29 @@ class UIDisplay extends Display
 	
 	override public function removeFromPeoteView(peoteView:PeoteView)
 	{
+		isVisible = false;
 		super.removeFromPeoteView(peoteView);
 	}
 
 	// -------------------------------------------------------
-/*	var _peoteView:PeoteView;
-	var isVisible:Bool = false;
-	
+		
 	public inline function show() {
-		isVisible = true;
-		_peoteView.addDisplay(this);
+		if (!isVisible) {
+			if (_peoteView == null) throw("Error, UIDisplay needs to add to PeoteView first");
+			else {
+				isVisible = true;
+				_peoteView.addDisplay(this);
+			} 
+		}
 	}
 	
 	public inline function hide() {
-		isVisible = false;
-		_peoteView.removeDisplay(this);
+		if (isVisible) {
+			isVisible = false;
+			_peoteView.removeDisplay(this);
+		}
 	}
-*/	
+	
 	// -------------------------------------------------------
 	
 	public function add(uiElement:Interactive):Void {
@@ -622,22 +633,6 @@ class UIDisplay extends Display
 	}
 
 	
-	// ---------------------------------------- show, hide and interface to peote-layout
-	var lastPeoteView:PeoteView = null;
-	
-	public function show():Void {
-		if (peoteView == null && lastPeoteView != null) {
-			lastPeoteView.addDisplay(this);
-		} 
-	}
-	
-	public function hide():Void{
-		if (peoteView != null) {
-			lastPeoteView = peoteView;
-			peoteView.removeDisplay(this);
-		}		
-	}
-		
 }
 
 

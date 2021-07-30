@@ -31,7 +31,7 @@ import peote.layout.Size;
 class SimpleLayouted extends Application
 {
 	var peoteView:PeoteView;
-	var uiDisplay:LayoutedUIDisplay;
+	var layoutedUIDisplay:LayoutedUIDisplay;
 	
 	var simlpeSkin = new SimpleSkin();
 	var roundedSkin = new RoundedSkin();
@@ -51,8 +51,8 @@ class SimpleLayouted extends Application
 	public function initPeoteView(window:Window) {
 		try {			
 			peoteView = new PeoteView(window.context, window.width, window.height);
-			uiDisplay = new LayoutedUIDisplay(0, 0, window.width, window.height, Color.GREY3);
-			peoteView.addDisplay(uiDisplay);
+			layoutedUIDisplay = new LayoutedUIDisplay(0, 0, window.width, window.height, Color.GREY3);
+			peoteView.addDisplay(layoutedUIDisplay);
 			
 			// load the FONT:
 			new Font<FontStyleTiled>("assets/fonts/tiled/hack_ascii.json").load( onFontLoaded );
@@ -67,20 +67,20 @@ class SimpleLayouted extends Application
 			var green = new LayoutedElement(simlpeSkin, new SimpleStyle(Color.GREEN));
 			var blue  = new LayoutedElement(roundedSkin, new SimpleStyle(Color.BLUE));
 			var yellow= new LayoutedElement(roundedSkin, new SimpleStyle(Color.YELLOW));
-/*			yellow.onPointerOver = function(elem:InteraktiveElement, e:PointerEvent) {
+			yellow.onPointerOver = function(elem:InteractiveElement, e:PointerEvent) {
 				elem.style.color = Color.YELLOW - 0x00550000;
 				elem.update();
 			}
 			
-			yellow.onPointerOut = function(elem:InteraktiveElement, e:PointerEvent) {
+			yellow.onPointerOut = function(elem:InteractiveElement, e:PointerEvent) {
 				elem.style.color = Color.YELLOW;
 				elem.update();
 			}
-*/			
-			uiDisplay.add(red);
-			uiDisplay.add(green);
-			uiDisplay.add(blue);
-			uiDisplay.add(yellow);
+			
+			layoutedUIDisplay.add(red);
+			layoutedUIDisplay.add(green);
+			layoutedUIDisplay.add(blue);
+			layoutedUIDisplay.add(yellow);
 
 			var fontStyleTiled:FontStyleTiled = font.createFontStyle(); // (at least here it needs the FontStyleTiled Type!)
 			//var fontStyleTiled = font.createFontStyle();
@@ -91,12 +91,13 @@ class SimpleLayouted extends Application
 			
 			//var textLine1 = new LayoutedTextLine<FontStyleTiled>(0, 0, 112, 25, 0, "hello", font, fontStyleTiled);
 			var textLine1:LayoutedTextLine<FontStyleTiled> = font.createLayoutedTextLine(0, 0, 300, 25, 0, false, "hello world", fontStyleTiled);
-			uiDisplay.add(textLine1);
+			layoutedUIDisplay.add(textLine1);
 			
+			// masked -> true
 			var textLine2 = font.createLayoutedTextLine(0, 0, 300, 25, 0, true, "hello world", font.createFontStyle());			
-			uiDisplay.add(textLine2);
+			layoutedUIDisplay.add(textLine2);
 			
-			uiLayoutContainer = new Box( uiDisplay , { width:Size.limit(100,700), relativeChildPositions:true },
+			uiLayoutContainer = new Box( layoutedUIDisplay , { width:Size.limit(100,700), relativeChildPositions:true },
 			[                                                          
 				new Box( red , { width:Size.limit(100,600) },
 				[                                                      
@@ -138,12 +139,12 @@ class SimpleLayouted extends Application
 	var sizeEmulation = false;
 	
 	public override function onMouseMove (x:Float, y:Float) {
-		uiDisplay.mouseMove(x, y);
+		layoutedUIDisplay.mouseMove(x, y);
 		if (sizeEmulation) uiLayoutContainer.update(Std.int(x),Std.int(y));
 	}
 	
 	public override  function onMouseUp (x:Float, y:Float, button:MouseButton) {
-		uiDisplay.mouseUp(x, y, button);
+		layoutedUIDisplay.mouseUp(x, y, button);
 		sizeEmulation = !sizeEmulation; 
 		if (sizeEmulation) uiLayoutContainer.update(x,y);
 		else uiLayoutContainer.update(peoteView.width, peoteView.height);
@@ -158,7 +159,7 @@ class SimpleLayouted extends Application
 			case KeyCode.F: window.fullscreen = !window.fullscreen;
 			default:
 		}
-		uiDisplay.keyDown(keyCode, modifier);
+		layoutedUIDisplay.keyDown(keyCode, modifier);
 	}
 	
 	// ----------------- WINDOWS EVENTS ----------------------------

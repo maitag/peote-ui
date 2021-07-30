@@ -1,14 +1,13 @@
 package peote.ui.layouted;
 
 import peote.layout.LayoutContainer;
+import peote.ui.interactive.InteractiveDisplay;
 
 import peote.view.Color;
 
-import peote.ui.UIDisplay;
-
 
 //@:generic class LayoutDisplay<O,P> extends UIDisplay implements peote.layout.LayoutElement
-class LayoutedUIDisplay extends UIDisplay implements peote.layout.ILayoutElement
+class LayoutedDisplay extends InteractiveDisplay implements peote.layout.ILayoutElement
 {	
 	//var options:O;
 	//var params:P;
@@ -16,9 +15,9 @@ class LayoutedUIDisplay extends UIDisplay implements peote.layout.ILayoutElement
 	// TODO:
 	//var innerDisplays:Array<Display>;
 	
-	public function new(x:Int, y:Int, width:Int, height:Int, color:Color=0x00000000, maxTouchpoints:Int = 3) 
+	public function new(xPosition:Int=0, yPosition:Int=0, width:Int=100, height:Int=100, zIndex:Int=0, color = 0x00000000) 
 	{
-		super(x, y, width, height, color, maxTouchpoints);
+		super(xPosition, yPosition, width, height, zIndex, color);
 	}	
 	
 	
