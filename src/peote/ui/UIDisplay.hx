@@ -135,6 +135,11 @@ class UIDisplay extends Display
 	
 	public function add(uiElement:Interactive):Void {
 		//TODO
+		if (uiElement.isVisible && uiElement.uiDisplay != null) {
+			if (uiElement.uiDisplay == this) return; // is already added
+			uiElement.uiDisplay.remove(uiElement); // remove from old one
+		}
+
 		uiElements.push(uiElement);
 		uiElement.onAddToDisplay(this);
 	}

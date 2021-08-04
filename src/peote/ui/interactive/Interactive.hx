@@ -23,17 +23,33 @@ class Pickable implements Element
 	public function new( uiElement:Interactive )
 	{
 		this.uiElement = uiElement;
-		update(uiElement);
+		update(uiElement, -1, -1, -1, -1);
 	}
 
-	public inline function update( uiElement:Interactive ):Void
+	public inline function update( uiElement:Interactive, mx:Int, my:Int, mw:Int, mh:Int ):Void
 	{
 		this.uiElement = uiElement;
+		z = uiElement.z;
+
+		#if (peoteui_no_masking)
 		x = uiElement.x;
 		y = uiElement.y;
 		w = uiElement.width;
 		h = uiElement.height;
-		z = uiElement.z;
+		#else
+		if (maskX >= 0) { // if some of the edges is cut by mask for scroll-area
+			x = uiElement.x + mx;
+			y = uiElement.y + my;
+			w = mw;
+			h = mh;
+		} else {
+			x = uiElement.x;
+			y = uiElement.y;
+			w = uiElement.width;
+			h = uiElement.height;
+		}
+		#end
+		
 	}
 }
 
@@ -63,6 +79,7 @@ class Interactive
 	// ---------------------------------------------------------
 	
 	var uiDisplay:UIDisplay = null;
+	var isVisible:Bool = false;
 
 	var pickableMove:Pickable = null;
 	var pickableClick:Pickable = null;
@@ -155,29 +172,27 @@ class Interactive
 	}
 	
 	
-	public function update():Void
+	public function update(mx:Int=-1, my:Int=-1, mw:Int=-1, mh:Int=-1):Void
 	{
-		if (uiDisplay != null) 
-		{
-			updateVisible();
-			
-			if ( hasMoveEvent  != 0 ) {
-				pickableMove.update(this);
-				uiDisplay.movePickBuffer.updateElement( pickableMove );
-			}
-			if ( hasClickEvent != 0 ) {
-				pickableClick.update(this);
-				uiDisplay.clickPickBuffer.updateElement( pickableClick );		
-			}
+		updateVisible(mx, my, mw, mh);
+		
+		if ( hasMoveEvent  != 0 ) {
+			pickableMove.update(this, mx, my, mw, mh);
+			if (isVisible) uiDisplay.movePickBuffer.updateElement( pickableMove );
+		}
+		if ( hasClickEvent != 0 ) {
+			pickableClick.update(this, mx, my, mw, mh);
+			if (isVisible) uiDisplay.clickPickBuffer.updateElement( pickableClick );		
 		}
 	}
 	
-	function updateVisible():Void {} // to override by childclasses
+	function updateVisible(mx:Int, my:Int, mw:Int, mh:Int):Void {} // to override by childclasses
 	// -----------------
 	
 	private function onAddToDisplay(uiDisplay:UIDisplay)
 	{
 		this.uiDisplay = uiDisplay;
+		isVisible = true;
 		onAddVisibleToDisplay();
 		if ( hasMoveEvent  != 0 ) addPickableMove();	
 		if ( hasClickEvent != 0 ) addPickableClick();
@@ -192,11 +207,26 @@ class Interactive
 		onRemoveVisibleFromDisplay();
 		if ( hasMoveEvent  != 0 ) removePickableMove();
 		if ( hasClickEvent != 0 ) removePickableClick();		
-		this.uiDisplay = null;
+		isVisible = false;
 	}
 	
 	function onRemoveVisibleFromDisplay():Void {} // to override by childclasses
 	
+	// -----------------
+
+	public function show():Void {trace("show", isVisible);
+		if (!isVisible && uiDisplay != null) {
+			isVisible = true;
+			uiDisplay.add(this);
+		} 
+	}
+	
+	public function hide():Void {
+		if (isVisible) {
+			isVisible = false;
+			uiDisplay.remove(this);
+		}		
+	}
 	// ----------------- Dragging ----------------------------
 	
 	var dragMinX:Int = -0x7fff;
@@ -237,7 +267,7 @@ class Interactive
 	@:access(peote.view.Display)
 	public function startDragging(e:PointerEvent)
 	{
-		if (uiDisplay != null) {
+		if (isVisible) {
 			dragOriginX = Std.int(e.x / uiDisplay.peoteView.zoom / uiDisplay.zoom) - x;
 			dragOriginY = Std.int(e.y / uiDisplay.peoteView.zoom / uiDisplay.zoom) - y;
 			uiDisplay.startDragging(this, e);
@@ -246,7 +276,7 @@ class Interactive
 	
 	public function stopDragging(e:PointerEvent)
 	{
-		if (uiDisplay != null) uiDisplay.stopDragging(this, e);
+		if (isVisible) uiDisplay.stopDragging(this, e);
 	}
 	
 	// ----------------- Event-Bindings ----------------------
@@ -385,44 +415,28 @@ class Interactive
 	{
 		//trace("addPickableOver");
 		if (pickableMove==null) pickableMove = new Pickable(this);
-		if (uiDisplay!=null) uiDisplay.movePickBuffer.addElement( pickableMove );
+		if (isVisible) uiDisplay.movePickBuffer.addElement( pickableMove );
 	}
 	
 	private function removePickableMove()
 	{
 		//trace("removePickableOver");
-		if (uiDisplay!=null) uiDisplay.movePickBuffer.removeElement( pickableMove );  //pickableOver=null
+		if (isVisible) uiDisplay.movePickBuffer.removeElement( pickableMove );  //pickableOver=null
 	}
 	
 	private function addPickableClick()
 	{
 		//trace("addPickableClick");
 		if (pickableClick==null) pickableClick = new Pickable(this);
-		if (uiDisplay!=null) uiDisplay.clickPickBuffer.addElement( pickableClick );
+		if (isVisible) uiDisplay.clickPickBuffer.addElement( pickableClick );
 	}
 	
 	private function removePickableClick()
 	{
 		//trace("removePickableClick");
-		if (uiDisplay!=null) uiDisplay.clickPickBuffer.removeElement( pickableClick ); //pickableClick=null
+		if (isVisible) uiDisplay.clickPickBuffer.removeElement( pickableClick ); //pickableClick=null
 	}
 	
 	
-	// ----------------- show, hide and layout-interface
-
-	var lastUsedDisplay:UIDisplay = null;
-	
-	public function show():Void {
-		if (uiDisplay == null && lastUsedDisplay != null) {
-			lastUsedDisplay.add(this);
-		} 
-	}
-	
-	public function hide():Void {
-		if (uiDisplay != null) {
-			lastUsedDisplay = uiDisplay;
-			uiDisplay.remove(this);
-		}		
-	}
 				
 }

@@ -29,14 +29,14 @@ class SimpleSkinElement implements SkinElement implements Element
 	public inline function new(uiElement:InteractiveElement, defaultStyle:SimpleStyle, buffer:Buffer<SimpleSkinElement>)
 	{
 		this.buffer = buffer;
-		_update(uiElement, defaultStyle);
+		_update(uiElement, defaultStyle, -1, -1, -1, -1);
 		buffer.addElement(this);
 	}
 	
-	public inline function update(uiElement:InteractiveElement, defaultStyle:Dynamic)
+	public inline function update(uiElement:InteractiveElement, defaultStyle:Dynamic, mx:Int, my:Int, mw:Int, mh:Int)
 	{
-		_update(uiElement, defaultStyle);
-		buffer.updateElement(this);
+		_update(uiElement, defaultStyle, mx, my, mw, mh);
+		if (uiElement.isVisible) buffer.updateElement(this);
 	}
 	
 	public inline function remove():Bool
@@ -45,15 +45,30 @@ class SimpleSkinElement implements SkinElement implements Element
 		return (buffer.length() == 0);
 	}
 	
-	inline function _update(uiElement:InteractiveElement, defaultStyle:Dynamic)
+	inline function _update(uiElement:InteractiveElement, defaultStyle:Dynamic, mx:Int, my:Int, mw:Int, mh:Int)
 	{
+		z = uiElement.z;
+		color = (uiElement.style.color != null) ? uiElement.style.color : defaultStyle.color;
+		
+		#if (peoteui_no_masking)
 		x = uiElement.x;
 		y = uiElement.y;
 		w = uiElement.width;
 		h = uiElement.height;
-		z = uiElement.z;
+		#else
+		if (maskX >= 0) { // if some of the edges is cut by mask for scroll-area
+			x = uiElement.x + mx;
+			y = uiElement.y + my;
+			w = mw;
+			h = mh;
+		} else {
+			x = uiElement.x;
+			y = uiElement.y;
+			w = uiElement.width;
+			h = uiElement.height;
+		}
+		#end
 		
-		color = (uiElement.style.color != null) ? uiElement.style.color : defaultStyle.color;
 	}
 }
 
@@ -110,7 +125,7 @@ class SimpleSkin implements Skin
 	
 	public function removeElement(uiDisplay:UIDisplay, uiElement:InteractiveElement)
 	{
-		if (uiElement.skinElement.remove()) 
+		if (uiElement.isVisible && uiElement.skinElement.remove()) 
 		{
 			// for the last element into buffer remove from displays bitmask
 			displays &= ~(1 << uiDisplay.number);
@@ -127,9 +142,9 @@ class SimpleSkin implements Skin
 		}
 	}
 	
-	public function updateElement(uiDisplay:UIDisplay, uiElement:InteractiveElement)
+	public function updateElement(uiDisplay:UIDisplay, uiElement:InteractiveElement, mx:Int, my:Int, mw:Int, mh:Int)
 	{
-		uiElement.skinElement.update(uiElement, defaultStyle);
+		uiElement.skinElement.update(uiElement, defaultStyle, mx, my, mw, mh);
 	}
 	
 	public function setCompatibleStyle(style:Dynamic):Dynamic {

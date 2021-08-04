@@ -26,6 +26,14 @@ class RoundedSkinElement implements SkinElement implements Element
 	@sizeX @varying public var w:Int=100;
 	@sizeY @varying public var h:Int=100;
 	@zIndex public var z:Int = 0;
+	
+	#if (!peoteui_no_masking)
+	@custom("mx") @varying public var mx:Int = 0;
+	@custom("my") @varying public var my:Int = 0;
+	@custom("mw") @varying public var mw:Int = 0;
+	@custom("mh") @varying public var mh:Int = 0;
+	#end
+	
 	//var OPTIONS = {  };
 	
 	var buffer:Buffer<RoundedSkinElement>;
@@ -33,14 +41,14 @@ class RoundedSkinElement implements SkinElement implements Element
 	public inline function new(uiElement:InteractiveElement, defaultStyle:RoundedStyle, buffer:Buffer<RoundedSkinElement>)
 	{
 		this.buffer = buffer;
-		_update(uiElement, defaultStyle);
+		_update(uiElement, defaultStyle, -1, -1, -1, -1);
 		buffer.addElement(this);
 	}
 	
-	public inline function update(uiElement:InteractiveElement, defaultStyle:Dynamic)
+	public inline function update(uiElement:InteractiveElement, defaultStyle:Dynamic, mx:Int, my:Int, mw:Int, mh:Int)
 	{
-		_update(uiElement, defaultStyle);
-		buffer.updateElement(this);
+		_update(uiElement, defaultStyle, mx, my, mw, mh);
+		if (uiElement.isVisible) buffer.updateElement(this);
 	}
 	
 	public inline function remove():Bool
@@ -49,7 +57,7 @@ class RoundedSkinElement implements SkinElement implements Element
 		return (buffer.length() == 0);
 	}
 	
-	inline function _update(uiElement:InteractiveElement, defaultStyle:Dynamic)
+	inline function _update(uiElement:InteractiveElement, defaultStyle:Dynamic, mx:Int, my:Int, mw:Int, mh:Int)
 	{
 		x = uiElement.x;
 		y = uiElement.y;
@@ -60,7 +68,16 @@ class RoundedSkinElement implements SkinElement implements Element
 		color = (uiElement.style.color!=null) ? uiElement.style.color : defaultStyle.color;
 		borderColor = (uiElement.style.borderColor!=null) ? uiElement.style.borderColor : defaultStyle.borderColor;
 		borderSize = (uiElement.style.borderSize!=null) ? uiElement.style.borderSize : defaultStyle.borderSize;
-		borderRadius = (uiElement.style.borderRadius!=null) ? uiElement.style.borderRadius : defaultStyle.borderRadius;
+		borderRadius = (uiElement.style.borderRadius != null) ? uiElement.style.borderRadius : defaultStyle.borderRadius;
+		
+		#if (!peoteui_no_masking)
+		if (maskX >= 0) { // if some of the edges is cut by mask for scroll-area
+			this.mx = mx;
+			this.my = my;
+			this.mw = mw;
+			this.mh = mh;
+		}
+		#end
 	}
 }
 
@@ -117,7 +134,7 @@ class RoundedSkin implements Skin
 	
 	public function removeElement(uiDisplay:UIDisplay, uiElement:InteractiveElement)
 	{
-		if (uiElement.skinElement.remove())
+		if (uiElement.isVisible && uiElement.skinElement.remove())
 		{
 			// for the last element into buffer remove from displays bitmask
 			displays &= ~(1 << uiDisplay.number);
@@ -134,9 +151,9 @@ class RoundedSkin implements Skin
 		}
 	}
 	
-	public function updateElement(uiDisplay:UIDisplay, uiElement:InteractiveElement)
+	public function updateElement(uiDisplay:UIDisplay, uiElement:InteractiveElement, mx:Int, my:Int, mw:Int, mh:Int)
 	{
-		uiElement.skinElement.update(uiElement, defaultStyle);
+		uiElement.skinElement.update(uiElement, defaultStyle, mx, my, mw, mh);
 	}
 	
 	public function createDefaultStyle():Dynamic {
@@ -191,8 +208,24 @@ class RoundedSkin implements Skin
 				return smoothstep( 0.5+s, 0.5-s, abs(d / thickness)  );
 				//return smoothstep( 0.5+s, 0.5-s, abs( d / thickness ) * (1.0 + s) );
 			}
+			"+
+			#if (!peoteui_no_masking)
+			"
+			float rectMask (vec2 pos, vec2 size, vec4 mask)
+			{
+				pos = pos * size;
+				if (pos.x < mask.x || pos.x > mask.z || pos.y < mask.y || pos.y > mask.w) return 0.0;
+				else return 1.0;
+			}
+			"+
+			#end
 			
-			vec4 compose (vec4 c, vec4 borderColor, float borderSize, float borderRadius)
+			#if peoteui_no_masking
+			"vec4 compose (vec4 c, vec4 borderColor, float borderSize, float borderRadius)"+
+			#else
+			"vec4 compose (vec4 c, vec4 borderColor, float borderSize, float borderRadius, vec4 mask)"+
+			#end
+			"
 			{
 				float radius =  max(borderSize+1.0, min(borderRadius, min(vSize.x, vSize.y) / 2.0));
 				
@@ -201,13 +234,21 @@ class RoundedSkin implements Skin
 				c = mix(c, vec4(borderColor.rgb, 0.0), roundedBox(vTexCoord, vSize, borderSize, radius));				
 				// border
 				c = mix(c, borderColor, roundedBorder(vTexCoord, vSize, borderSize, radius));
-				
+			"+
+				#if (!peoteui_no_masking)
+				"c = c * rectMask(vTexCoord, vSize, mask);"+
+				#end
+			"
 				return c;
 			}
 			"
 		);
 		
+		#if peoteui_no_masking
 		program.setColorFormula('compose(color, borderColor, borderSize, borderRadius)');
+		#else
+		program.setColorFormula('compose(color, borderColor, borderSize, borderRadius, vec4(mx, my, mw, mh))');
+		#end
 		program.discardAtAlpha(0.9);
 		program.alphaEnabled = true;
 		return program;

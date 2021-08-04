@@ -90,7 +90,7 @@ class $className extends peote.ui.interactive.Interactive
 	}
 	
 	
-	override inline function updateVisible():Void
+	override inline function updateVisible(mx:Int, my:Int, mw:Int, mh:Int):Void
 	{
 		
 		if (masked) {
@@ -148,8 +148,8 @@ class $className extends peote.ui.interactive.Interactive
 				//height= Std.int(line.fullHeight);
 				
 				// fit interactive pickables to new width and height
-				if ( hasMoveEvent  != 0 ) pickableMove.update(this);
-				if ( hasClickEvent != 0 ) pickableClick.update(this);				
+				if ( hasMoveEvent  != 0 ) pickableMove.update(this, x, y, width, height);
+				if ( hasClickEvent != 0 ) pickableClick.update(this, x, y, width, height);				
 			}
 		}
 		else fontProgram.addLine(line);
@@ -157,7 +157,7 @@ class $className extends peote.ui.interactive.Interactive
 	}
 	
 	override inline function onRemoveVisibleFromDisplay()
-	{
+	{	trace("onRemoveVisibleFromDisplay");
 		fontProgram.removeLine(line);
 		
 		if (fontProgram.numberOfGlyphes()==0) 

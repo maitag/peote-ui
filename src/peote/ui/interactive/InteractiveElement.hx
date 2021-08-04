@@ -15,7 +15,7 @@ private typedef IAElementWheelEventParams = InteractiveElement->WheelEvent->Void
 class InteractiveElement extends Interactive
 {	
 	public var skin:Skin = null; // TODO: use a setter to change the skin at runtime
-	
+		
 	public var style(default, set):Dynamic = null;
 	inline function set_style(s:Dynamic):Dynamic 
 	{
@@ -31,7 +31,7 @@ class InteractiveElement extends Interactive
 	
 	var skinElement:SkinElement;
 	
-	public function new(xPosition:Int=0, yPosition:Int=0, width:Int=100, height:Int=100, zIndex:Int=0, skin:Skin=null, style:Dynamic=null) 
+	public function new(xPosition:Int=0, yPosition:Int=0, width:Int=100, height:Int=100, zIndex:Int=0, skin:Skin=null, style:Dynamic=null)
 	{
 		super(xPosition, yPosition, width, height, zIndex);
 		
@@ -40,9 +40,9 @@ class InteractiveElement extends Interactive
 	}
 	
 	
-	override inline function updateVisible():Void
+	override inline function updateVisible(mx:Int, my:Int, mw:Int, mh:Int):Void
 	{
-		if (skin != null) skin.updateElement(uiDisplay, this);
+		if (skin != null) skin.updateElement(uiDisplay, this, mx, my, mw, mh);
 	}
 	
 	// -----------------

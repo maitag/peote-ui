@@ -88,7 +88,7 @@ class SimpleText extends Application
 				//textLine2.update();
 				
 				uiDisplay.remove(textLine);
-				haxe.Timer.delay(function() {					
+				haxe.Timer.delay(function() {
 					uiDisplay.add(textLine);
 				}, 1000);
 				
