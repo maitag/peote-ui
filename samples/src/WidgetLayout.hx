@@ -71,6 +71,9 @@ class WidgetLayout extends Application
 			fontStyleTiled.color = Color.WHITE;
 			
 			ui = new PeoteUI(ContainerType.BOX, {
+				#if peotelayout_debug
+				name: "PeoteUI",
+				#end
 				bgColor:Color.GREY1,
 				//left:10,
 				//right:10,
@@ -80,6 +83,9 @@ class WidgetLayout extends Application
 				// later into widget-component
 				new Div(
 				{
+					#if peotelayout_debug
+					name: "Div",
+					#end
 					top:20,
 					//left:20,
 					width:Size.limit(200, 300),
@@ -116,6 +122,9 @@ class WidgetLayout extends Application
 				[   // TODO:
 					new TextLine( font, fontStyleTiled, "TextLine",
 					{
+						#if peotelayout_debug
+						name: "TextLine",
+						#end
 						width:Size.limit(100, 200),
 						//top:Size.span(0.2),
 						//bottom:Size.span(0.2),
@@ -180,7 +189,7 @@ class WidgetLayout extends Application
 			#if android
 			ui.mouseEnabled = false;
 			#end
-			PeoteUI.registerEvents(window); // to fetch all input events (todo)
+			PeoteUI.registerEvents(window); // to fetch all input events
 			
 		}
 		catch (e:Dynamic) trace("ERROR:", e);

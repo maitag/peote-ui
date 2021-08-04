@@ -1,5 +1,6 @@
 package peote.ui.layouted;
 
+import peote.layout.LayoutContainer;
 import peote.ui.interactive.InteractiveElement;
 import peote.ui.skin.interfaces.Skin;
 
@@ -19,41 +20,48 @@ class LayoutedElement extends InteractiveElement implements peote.layout.ILayout
 	public inline function showByLayout():Void show();
 	public inline function hideByLayout():Void hide();
 
-	
-	// TODO
-	
-	var layoutWasHidden = false;
-	public function updateByLayout(layoutContainer:peote.layout.LayoutContainer) 
-	{
-		if (!layoutWasHidden && layoutContainer.isHidden) { // if it is full outside of the Mask (so invisible)
-			hideByLayout();
-			layoutWasHidden = true;
+	public inline function updateByLayout(layoutContainer:LayoutContainer) {
+		// TODO: layoutContainer.updateMask() from here to make it only on-need
+		
+		if (isVisible)
+		{ 
+			if (layoutContainer.isHidden) // if it is full outside of the Mask (so invisible)
+			{
+				#if peotelayout_debug
+				//trace("removed", layoutContainer.layout.name);
+				#end
+				hide();
+			}
+			else {
+				_update(layoutContainer);
+			}
 		}
-		else {
-			x = Math.round(layoutContainer.x);
-			y = Math.round(layoutContainer.y);
-			width = Math.round(layoutContainer.width);
-			height = Math.round(layoutContainer.height);
-			
-			if (layoutContainer.isMasked) { // if some of the edges is cut by mask for scroll-area
-				//maskX = Math.round(layoutContainer.maskX);
-				//maskY = Math.round(layoutContainer.maskY);
-				//maskWidth = maskX + Math.round(layoutContainer.maskWidth);
-				//maskHeight = maskY + Math.round(layoutContainer.maskHeight);
-			}
-			else { // if its fully displayed
-				//maskX = 0;
-				//maskY = 0;
-				//maskWidth = w;
-				//maskHeight = h;
-			}
-			
-			if (layoutWasHidden) {
-				showByLayout();
-				layoutWasHidden = false;
-			}
-			else update();
+		else if (!layoutContainer.isHidden) // not full outside of the Mask anymore
+		{
+			#if peotelayout_debug
+			//trace("showed", layoutContainer.layout.name);
+			#end
+			_update(layoutContainer);
+			show();
+		}		
+	}
+	
+	public inline function _update(layoutContainer:LayoutContainer) {
+		x = Math.round(layoutContainer.x);
+		y = Math.round(layoutContainer.y);
+		z = Math.round(layoutContainer.depth);
+		width = Math.round(layoutContainer.width);
+		height = Math.round(layoutContainer.height);
+		
+		if (layoutContainer.isMasked) { // if some of the edges is cut by mask for scroll-area
+			update(
+				Math.round(layoutContainer.maskX),
+				Math.round(layoutContainer.maskY),
+				Math.round(layoutContainer.maskX + layoutContainer.maskWidth),
+				Math.round(layoutContainer.maskY + layoutContainer.maskHeight)
+			);
 		}
-	}	
+		else update(); // if its fully displayed
+	}
 		
 }
