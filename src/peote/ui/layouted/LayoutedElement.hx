@@ -54,11 +54,19 @@ class LayoutedElement extends InteractiveElement implements peote.layout.ILayout
 		height = Math.round(layoutContainer.height);
 		
 		if (layoutContainer.isMasked) { // if some of the edges is cut by mask for scroll-area
+/*			trace("origin:",x,y,width,height);
+			trace("isMasked",
+				Math.round(layoutContainer.maskX),
+				Math.round(layoutContainer.maskY),
+				Math.round(layoutContainer.maskWidth),
+				Math.round(layoutContainer.maskHeight)
+			);
+*/			
 			update(
 				Math.round(layoutContainer.maskX),
 				Math.round(layoutContainer.maskY),
-				Math.round(layoutContainer.maskX + layoutContainer.maskWidth),
-				Math.round(layoutContainer.maskY + layoutContainer.maskHeight)
+				Math.round(layoutContainer.maskWidth),
+				Math.round(layoutContainer.maskHeight)
 			);
 		}
 		else update(); // if its fully displayed

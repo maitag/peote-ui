@@ -14,6 +14,7 @@ import peote.view.Color;
 
 import peote.text.Font;
 import peote.ui.fontstyle.FontStyleTiled;
+import peote.ui.fontstyle.FontStylePacked;
 
 import peote.ui.layouted.LayoutedUIDisplay;
 import peote.ui.layouted.LayoutedElement;
@@ -25,16 +26,22 @@ import peote.ui.skin.RoundedSkin;
 import peote.ui.style.RoundedStyle;
 
 import peote.layout.LayoutContainer;
+import peote.layout.LayoutContainer.Box;
+import peote.layout.LayoutContainer.HBox;
+import peote.layout.LayoutContainer.VBox;
 import peote.layout.Size;
 
 
-class SimpleLayouted extends Application
+class SimpleMasked extends Application
 {
 	var peoteView:PeoteView;
 	var layoutedUIDisplay:LayoutedUIDisplay;
 	
 	var simpleSkin = new SimpleSkin();
 	var roundedSkin = new RoundedSkin();
+	
+	var tiledFont:Font<FontStyleTiled>;
+	var packedFont:Font<FontStylePacked>;
 		
 	var uiLayoutContainer:LayoutContainer;
 	
@@ -55,75 +62,89 @@ class SimpleLayouted extends Application
 			peoteView.addDisplay(layoutedUIDisplay);
 			
 			// load the FONT:
-			new Font<FontStyleTiled>("assets/fonts/tiled/hack_ascii.json").load( onFontLoaded );
+			new Font<FontStyleTiled>("assets/fonts/tiled/hack_ascii.json").load( function(_tiledFont:Font<FontStyleTiled>) {
+				tiledFont = _tiledFont;
+				new Font<FontStylePacked>("assets/fonts/packed/hack/config.json").load( function(_packedFont:Font<FontStylePacked>) {
+					packedFont = _packedFont;
+					onAllFontLoaded();
+				});				
+			});
 		}
 		catch (e:Dynamic) trace("ERROR:", e);
 	}
 	
-	public function onFontLoaded(font:Font<FontStyleTiled>) { // don'T forget argument-type or force at least the style to FontStyleTiled-Type (see below!)
-	//public function onFontLoaded(font) {
+	public function onAllFontLoaded() {
 		try {			
-			var red   = new LayoutedElement(simpleSkin, new SimpleStyle(Color.RED));
-			var green = new LayoutedElement(simpleSkin, new SimpleStyle(Color.GREEN));
-			var blue  = new LayoutedElement(roundedSkin, new SimpleStyle(Color.BLUE));
-			var yellow= new LayoutedElement(roundedSkin, new SimpleStyle(Color.YELLOW));
-			yellow.onPointerOver = function(elem:InteractiveElement, e:PointerEvent) {
-				elem.style.color = Color.YELLOW - 0x00550000;
-				elem.update();
-			}
+			var fontStyleTiled = new FontStyleTiled();
+			fontStyleTiled.height = 16.0;
+			fontStyleTiled.width = 16.0;
+			fontStyleTiled.color = Color.BLACK;
 			
-			yellow.onPointerOut = function(elem:InteractiveElement, e:PointerEvent) {
-				elem.style.color = Color.YELLOW;
-				elem.update();
+			var fontStylePacked = new FontStylePacked();
+			fontStylePacked.height = 30.0;
+			fontStylePacked.width = 30.0;
+			fontStylePacked.color = Color.WHITE;
+			
+			var textLinePacked = new LayoutedTextLine<FontStylePacked>(0, 0, 300, 25, 0, true, "packed font", packedFont, fontStylePacked);	// masked -> true		
+			
+			var red   = new LayoutedElement(roundedSkin, new RoundedStyle(Color.RED, Color.BLACK, 0, 10));
+			var green = new LayoutedElement(simpleSkin, new SimpleStyle(Color.GREEN));
+			var blue  = new LayoutedElement(roundedSkin, new RoundedStyle(Color.BLUE, Color.BLACK, 0, 10));
+			
+/*					new Box( blue,   { width:Size.span(50, 150), height:Size.limit(100, 300), left:Size.min(50) },
+					[
+						new Box( textLineTiled, {width:Size.min(130), height:30, top:5, left:5, bottom:Size.min(5) }),
+					]),
+					new Box( yellow, { width:Size.limit(30, 200), height:Size.limit(200, 200), left:Size.span(0, 100), right:50 },
+					[
+						new Box( textLinePacked, {width:Size.min(30), height:30, top:50, left:5, bottom:Size.min(5) }),					
+					]),
+*/			
+					
+			var redBoxes = new Array<Box>();
+			for (i in 0...6) {
+				var button = new LayoutedElement(roundedSkin, new RoundedStyle(Color.YELLOW));
+				button.onPointerOver = function(elem:InteractiveElement, e:PointerEvent) {
+					elem.style.color = Color.YELLOW - 0x00550000;
+					elem.update();
+				}
+				button.onPointerOut = function(elem:InteractiveElement, e:PointerEvent) {
+					elem.style.color = Color.YELLOW;
+					elem.update();
+				}
+				layoutedUIDisplay.add(button);
+				
+				// TODO: Textlinemasking 
+				//var textLineTiled = new LayoutedTextLine<FontStyleTiled>(0, 0, 130, 16, 0, false, 'button $i', tiledFont, fontStyleTiled);
+				//layoutedUIDisplay.add(textLineTiled);
+				
+				redBoxes.push(
+					new Box( button,  { left:10, right:10, height:Size.limit(50, 80) }, [
+						//new Box( textLineTiled, { width:130, height:30 })
+					])
+				);
 			}
+
+			
 			
 			layoutedUIDisplay.add(red);
 			layoutedUIDisplay.add(green);
 			layoutedUIDisplay.add(blue);
-			layoutedUIDisplay.add(yellow);
+			//layoutedUIDisplay.add(yellow);
+			//layoutedUIDisplay.add(textLineTiled);
+			//layoutedUIDisplay.add(textLinePacked);
 
-			var fontStyleTiled:FontStyleTiled = font.createFontStyle(); // (at least here it needs the FontStyleTiled Type!)
-			//var fontStyleTiled = font.createFontStyle();
-			//var fontStyleTiled = new FontStyleTiled();
-			fontStyleTiled.height = 30.0;
-			fontStyleTiled.width = 30.0;
-			fontStyleTiled.color = Color.BLACK;
 			
-			//var textLine1 = new LayoutedTextLine<FontStyleTiled>(0, 0, 112, 25, 0, "hello", font, fontStyleTiled);
-			var textLine1:LayoutedTextLine<FontStyleTiled> = font.createLayoutedTextLine(0, 0, 300, 25, 0, false, "hello world", fontStyleTiled);
-			layoutedUIDisplay.add(textLine1);
-			
-			// masked -> true
-			var textLine2 = font.createLayoutedTextLine(0, 0, 300, 25, 0, true, "hello world", font.createFontStyle());			
-			layoutedUIDisplay.add(textLine2);
-			
-			uiLayoutContainer = new Box( layoutedUIDisplay , { width:Size.limit(100,700), relativeChildPositions:true },
+			uiLayoutContainer = new HBox( layoutedUIDisplay , { width:Size.max(650), relativeChildPositions:true },
 			[                                                          
-				new Box( red , { width:Size.limit(100,600) },
-				[                                                      
-					new Box( green,  { width:Size.limit(50, 300), height:Size.limit(100,400) }),							
-					new HBox( blue,   { width:Size.span(50, 150), height:Size.limit(100, 300), left:Size.min(50) },
-					[
-					]),
-					new Box( yellow, { width:Size.limit(30, 200), height:Size.limit(200, 200), left:Size.span(0, 100), right:50 },
-					[
-						new Box( textLine1, {width:Size.min(130), height:30, top:5, left:5, bottom:Size.min(5) }),
-						new Box( textLine2, {width:Size.min(30), height:30, top:50, left:5, bottom:Size.min(5) }),					
-					]),
-				])
+				new VBox( red ,  { top:20, bottom:20, width:Size.limit(100, 200), limitMinHeightToChilds: false }, redBoxes ),
+				new VBox( green, { top:20, bottom:20, width:Size.limit(100, 200) }, [] ),							
+				new VBox( blue,  { top:20, bottom:20, width:Size.limit(100, 200) }, [] ),						
 			]);
 			
 			uiLayoutContainer.init();
 			uiLayoutContainer.update(peoteView.width, peoteView.height);
 			
-			haxe.Timer.delay(function() {
-				//trace("change style after");
-				textLine2.fontStyle.color = Color.RED;
-				textLine2.fontStyle.height = 30;
-				textLine2.updateStyle();
-				textLine2.update();
-				
-			}, 1000);
 		}
 		catch (e:Dynamic) trace("ERROR:", e);
 	}

@@ -37,7 +37,7 @@ class Pickable implements Element
 		w = uiElement.width;
 		h = uiElement.height;
 		#else
-		if (maskX >= 0) { // if some of the edges is cut by mask for scroll-area
+		if (mx >= 0) { // if some of the edges is cut by mask for scroll-area
 			x = uiElement.x + mx;
 			y = uiElement.y + my;
 			w = mw;
@@ -214,7 +214,7 @@ class Interactive
 	
 	// -----------------
 
-	public function show():Void {trace("show", isVisible);
+	public function show():Void {
 		if (!isVisible && uiDisplay != null) {
 			isVisible = true;
 			uiDisplay.add(this);

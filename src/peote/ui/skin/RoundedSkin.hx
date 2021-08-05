@@ -71,11 +71,17 @@ class RoundedSkinElement implements SkinElement implements Element
 		borderRadius = (uiElement.style.borderRadius != null) ? uiElement.style.borderRadius : defaultStyle.borderRadius;
 		
 		#if (!peoteui_no_masking)
-		if (maskX >= 0) { // if some of the edges is cut by mask for scroll-area
+		if (mx >= 0) { // if some of the edges is cut by mask for scroll-area
 			this.mx = mx;
 			this.my = my;
-			this.mw = mw;
-			this.mh = mh;
+			this.mw = mx + mw;
+			this.mh = my + mh;
+		} else
+		{
+			this.mx = 0;
+			this.my = 0;
+			this.mw = w;
+			this.mh = h;
 		}
 		#end
 	}

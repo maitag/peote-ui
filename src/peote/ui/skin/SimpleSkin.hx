@@ -56,9 +56,9 @@ class SimpleSkinElement implements SkinElement implements Element
 		w = uiElement.width;
 		h = uiElement.height;
 		#else
-		if (maskX >= 0) { // if some of the edges is cut by mask for scroll-area
-			x = uiElement.x + mx;
-			y = uiElement.y + my;
+		if (mx >= 0) { // if some of the edges is cut by mask for scroll-area
+			x = mx;
+			y = my;
 			w = mw;
 			h = mh;
 		} else {
