@@ -40,9 +40,9 @@ class InteractiveElement extends Interactive
 	}
 	
 	
-	override inline function updateVisible(mx:Int, my:Int, mw:Int, mh:Int):Void
+	override inline function updateVisible():Void
 	{
-		if (skin != null) skin.updateElement(uiDisplay, this, mx, my, mw, mh);
+		if (skin != null) skin.updateElement(uiDisplay, this);
 	}
 	
 	// -----------------

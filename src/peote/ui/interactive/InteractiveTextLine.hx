@@ -67,17 +67,17 @@ class $className extends peote.ui.interactive.Interactive
 	public var text:String;
 	public var line:peote.text.Line<$styleType> = null;
 	//public var line:$lineType;
+		
+	public var textMasked:Bool;
 	
-	public var masked:Bool;
-	
-	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int, masked:Bool = false,
+	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int, textMasked:Bool = false,
 	                    //text:String, font:$fontType, fontStyle:$styleType) 
 	                    text:String, font:peote.text.Font<$styleType>, fontStyle:$styleType) 
 	{
 		//trace("NEW InteractiveTextLine");
 		super(xPosition, yPosition, width, height, zIndex);
 
-		this.masked = masked;
+		this.textMasked = textMasked;
 		
 		this.text = text;
 		this.font = font;
@@ -90,10 +90,10 @@ class $className extends peote.ui.interactive.Interactive
 	}
 	
 	
-	override inline function updateVisible(mx:Int, my:Int, mw:Int, mh:Int):Void
+	override inline function updateVisible():Void
 	{
 		
-		if (masked) {
+		if (textMasked) {
 			line.maxX = x + width;
 			line.maxY = y + height;
 			fontProgram.lineSetXOffset(line, 0); // need if mask changed
@@ -103,7 +103,7 @@ class $className extends peote.ui.interactive.Interactive
 		fontProgram.lineSetStyle(line, fontStyle); // TODO: BUG inside peote-text -> if maxX/maxY changed to much in size (RESIZE-EVENT ONLY)?
 		fontProgram.updateLine(line);
 		
-		if (!masked) {
+		if (!textMasked) {
 			width = Std.int(line.fullWidth);
 			// TODO:
 			//height= Std.int(line.fullHeight);
@@ -135,21 +135,21 @@ class $className extends peote.ui.interactive.Interactive
 		if (line == null) {
 			//line = fontProgram.createLine(text, x, y, fontStyle);
 			line = new peote.text.Line<$styleType>();
-			if (masked) {
+			if (textMasked) {
 				line.maxX = x + width;
 				line.maxY = y + height;
 			}
 			
 			fontProgram.setLine(line, text, x, y, fontStyle);
 			
-			if (!masked) {
+			if (!textMasked) {
 				width = Std.int(line.fullWidth);
 				// TODO:
 				//height= Std.int(line.fullHeight);
 				
 				// fit interactive pickables to new width and height
-				if ( hasMoveEvent  != 0 ) pickableMove.update(this, x, y, width, height);
-				if ( hasClickEvent != 0 ) pickableClick.update(this, x, y, width, height);				
+				if ( hasMoveEvent  != 0 ) pickableMove.update(this);
+				if ( hasClickEvent != 0 ) pickableClick.update(this);				
 			}
 		}
 		else fontProgram.addLine(line);

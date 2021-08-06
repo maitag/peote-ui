@@ -78,15 +78,17 @@ class $className extends $interactiveTextLineType implements peote.layout.ILayou
 		width = Math.round(layoutContainer.width);
 		height = Math.round(layoutContainer.height);
 		
+		#if (!peoteui_no_masking)
 		if (layoutContainer.isMasked) { // if some of the edges is cut by mask for scroll-area
-			update(
-				Math.round(layoutContainer.maskX),
-				Math.round(layoutContainer.maskY),
-				Math.round(layoutContainer.maskX + layoutContainer.maskWidth),
-				Math.round(layoutContainer.maskY + layoutContainer.maskHeight)
-			);
+			maskX = Math.round(layoutContainer.maskX);
+			maskY = Math.round(layoutContainer.maskY);
+			maskWidth  = Math.round(layoutContainer.maskWidth);
+			maskHeight = Math.round(layoutContainer.maskHeight);
 		}
-		else update(); // if its fully displayed
+		masked = layoutContainer.isMasked;
+		#end
+		
+		update(); // if its fully displayed
 	}
 	
 }

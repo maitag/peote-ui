@@ -41,13 +41,13 @@ class RoundedSkinElement implements SkinElement implements Element
 	public inline function new(uiElement:InteractiveElement, defaultStyle:RoundedStyle, buffer:Buffer<RoundedSkinElement>)
 	{
 		this.buffer = buffer;
-		_update(uiElement, defaultStyle, -1, -1, -1, -1);
+		_update(uiElement, defaultStyle);
 		buffer.addElement(this);
 	}
 	
-	public inline function update(uiElement:InteractiveElement, defaultStyle:Dynamic, mx:Int, my:Int, mw:Int, mh:Int)
+	public inline function update(uiElement:InteractiveElement, defaultStyle:Dynamic)
 	{
-		_update(uiElement, defaultStyle, mx, my, mw, mh);
+		_update(uiElement, defaultStyle);
 		if (uiElement.isVisible) buffer.updateElement(this);
 	}
 	
@@ -57,7 +57,7 @@ class RoundedSkinElement implements SkinElement implements Element
 		return (buffer.length() == 0);
 	}
 	
-	inline function _update(uiElement:InteractiveElement, defaultStyle:Dynamic, mx:Int, my:Int, mw:Int, mh:Int)
+	inline function _update(uiElement:InteractiveElement, defaultStyle:Dynamic)
 	{
 		x = uiElement.x;
 		y = uiElement.y;
@@ -71,17 +71,17 @@ class RoundedSkinElement implements SkinElement implements Element
 		borderRadius = (uiElement.style.borderRadius != null) ? uiElement.style.borderRadius : defaultStyle.borderRadius;
 		
 		#if (!peoteui_no_masking)
-		if (mx >= 0) { // if some of the edges is cut by mask for scroll-area
-			this.mx = mx;
-			this.my = my;
-			this.mw = mx + mw;
-			this.mh = my + mh;
+		if (uiElement.masked) { // if some of the edges is cut by mask for scroll-area
+			mx = uiElement.maskX;
+			my = uiElement.maskY;
+			mw = mx + uiElement.maskWidth;
+			mh = my + uiElement.maskHeight;
 		} else
 		{
-			this.mx = 0;
-			this.my = 0;
-			this.mw = w;
-			this.mh = h;
+			mx = 0;
+			my = 0;
+			mw = w;
+			mh = h;
 		}
 		#end
 	}
@@ -157,9 +157,9 @@ class RoundedSkin implements Skin
 		}
 	}
 	
-	public function updateElement(uiDisplay:UIDisplay, uiElement:InteractiveElement, mx:Int, my:Int, mw:Int, mh:Int)
+	public function updateElement(uiDisplay:UIDisplay, uiElement:InteractiveElement)
 	{
-		uiElement.skinElement.update(uiElement, defaultStyle, mx, my, mw, mh);
+		uiElement.skinElement.update(uiElement, defaultStyle);
 	}
 	
 	public function createDefaultStyle():Dynamic {

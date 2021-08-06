@@ -23,10 +23,10 @@ class Pickable implements Element
 	public function new( uiElement:Interactive )
 	{
 		this.uiElement = uiElement;
-		update(uiElement, -1, -1, -1, -1);
+		update(uiElement);
 	}
 
-	public inline function update( uiElement:Interactive, mx:Int, my:Int, mw:Int, mh:Int ):Void
+	public inline function update( uiElement:Interactive ):Void
 	{
 		this.uiElement = uiElement;
 		z = uiElement.z;
@@ -37,11 +37,11 @@ class Pickable implements Element
 		w = uiElement.width;
 		h = uiElement.height;
 		#else
-		if (mx >= 0) { // if some of the edges is cut by mask for scroll-area
-			x = uiElement.x + mx;
-			y = uiElement.y + my;
-			w = mw;
-			h = mh;
+		if (uiElement.masked) { // if some of the edges is cut by mask for scroll-area
+			x = uiElement.x + uiElement.maskX;
+			y = uiElement.y + uiElement.maskY;
+			w = uiElement.maskWidth;
+			h = uiElement.maskHeight;
 		} else {
 			x = uiElement.x;
 			y = uiElement.y;
@@ -126,6 +126,14 @@ class Interactive
 	public var height:Int;
 	public var z:Int;
 	
+	#if (!peoteui_no_masking)
+	public var masked:Bool;
+	public var maskX:Int;
+	public var maskY:Int;
+	public var maskWidth:Int;
+	public var maskHeight:Int;	
+	#end
+	
 	var pointerOver :PointerEvent->Void;
 	var pointerOut  :PointerEvent->Void;
 	var pointerMove :PointerEvent->Void;
@@ -172,21 +180,21 @@ class Interactive
 	}
 	
 	
-	public function update(mx:Int=-1, my:Int=-1, mw:Int=-1, mh:Int=-1):Void
+	public function update():Void
 	{
-		updateVisible(mx, my, mw, mh);
+		updateVisible();
 		
 		if ( hasMoveEvent  != 0 ) {
-			pickableMove.update(this, mx, my, mw, mh);
+			pickableMove.update(this);
 			if (isVisible) uiDisplay.movePickBuffer.updateElement( pickableMove );
 		}
 		if ( hasClickEvent != 0 ) {
-			pickableClick.update(this, mx, my, mw, mh);
+			pickableClick.update(this);
 			if (isVisible) uiDisplay.clickPickBuffer.updateElement( pickableClick );		
 		}
 	}
 	
-	function updateVisible(mx:Int, my:Int, mw:Int, mh:Int):Void {} // to override by childclasses
+	function updateVisible():Void {} // to override by childclasses
 	// -----------------
 	
 	private function onAddToDisplay(uiDisplay:UIDisplay)
@@ -216,15 +224,15 @@ class Interactive
 
 	public function show():Void {
 		if (!isVisible && uiDisplay != null) {
-			isVisible = true;
 			uiDisplay.add(this);
+			isVisible = true;
 		} 
 	}
 	
 	public function hide():Void {
 		if (isVisible) {
-			isVisible = false;
 			uiDisplay.remove(this);
+			isVisible = false;
 		}		
 	}
 	// ----------------- Dragging ----------------------------

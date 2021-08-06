@@ -6,6 +6,7 @@ import lime.app.Application;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.graphics.RenderContext;
+import peote.layout.Align;
 import peote.ui.event.PointerEvent;
 import peote.ui.interactive.InteractiveElement;
 
@@ -91,15 +92,6 @@ class SimpleMasked extends Application
 			var green = new LayoutedElement(simpleSkin, new SimpleStyle(Color.GREEN));
 			var blue  = new LayoutedElement(roundedSkin, new RoundedStyle(Color.BLUE, Color.BLACK, 0, 10));
 			
-/*					new Box( blue,   { width:Size.span(50, 150), height:Size.limit(100, 300), left:Size.min(50) },
-					[
-						new Box( textLineTiled, {width:Size.min(130), height:30, top:5, left:5, bottom:Size.min(5) }),
-					]),
-					new Box( yellow, { width:Size.limit(30, 200), height:Size.limit(200, 200), left:Size.span(0, 100), right:50 },
-					[
-						new Box( textLinePacked, {width:Size.min(30), height:30, top:50, left:5, bottom:Size.min(5) }),					
-					]),
-*/			
 					
 			var redBoxes = new Array<Box>();
 			for (i in 0...6) {
@@ -137,7 +129,7 @@ class SimpleMasked extends Application
 			
 			uiLayoutContainer = new HBox( layoutedUIDisplay , { width:Size.max(650), relativeChildPositions:true },
 			[                                                          
-				new VBox( red ,  { top:20, bottom:20, width:Size.limit(100, 200), limitMinHeightToChilds: false }, redBoxes ),
+				new VBox( red ,  { top:20, bottom:20, width:Size.limit(100, 200), limitMinHeightToChilds:false, alignChildsOnOversizeY:Align.LAST }, redBoxes ),
 				new VBox( green, { top:20, bottom:20, width:Size.limit(100, 200) }, [] ),							
 				new VBox( blue,  { top:20, bottom:20, width:Size.limit(100, 200) }, [] ),						
 			]);

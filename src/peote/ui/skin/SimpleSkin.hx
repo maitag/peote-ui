@@ -29,13 +29,13 @@ class SimpleSkinElement implements SkinElement implements Element
 	public inline function new(uiElement:InteractiveElement, defaultStyle:SimpleStyle, buffer:Buffer<SimpleSkinElement>)
 	{
 		this.buffer = buffer;
-		_update(uiElement, defaultStyle, -1, -1, -1, -1);
+		_update(uiElement, defaultStyle);
 		buffer.addElement(this);
 	}
 	
-	public inline function update(uiElement:InteractiveElement, defaultStyle:Dynamic, mx:Int, my:Int, mw:Int, mh:Int)
+	public inline function update(uiElement:InteractiveElement, defaultStyle:Dynamic)
 	{
-		_update(uiElement, defaultStyle, mx, my, mw, mh);
+		_update(uiElement, defaultStyle);
 		if (uiElement.isVisible) buffer.updateElement(this);
 	}
 	
@@ -45,7 +45,7 @@ class SimpleSkinElement implements SkinElement implements Element
 		return (buffer.length() == 0);
 	}
 	
-	inline function _update(uiElement:InteractiveElement, defaultStyle:Dynamic, mx:Int, my:Int, mw:Int, mh:Int)
+	inline function _update(uiElement:InteractiveElement, defaultStyle:Dynamic)
 	{
 		z = uiElement.z;
 		color = (uiElement.style.color != null) ? uiElement.style.color : defaultStyle.color;
@@ -56,11 +56,11 @@ class SimpleSkinElement implements SkinElement implements Element
 		w = uiElement.width;
 		h = uiElement.height;
 		#else
-		if (mx >= 0) { // if some of the edges is cut by mask for scroll-area
-			x = mx;
-			y = my;
-			w = mw;
-			h = mh;
+		if (uiElement.masked) { // if some of the edges is cut by mask for scroll-area
+			x = uiElement.x + uiElement.maskX;
+			y = uiElement.y + uiElement.maskY;
+			w = uiElement.maskWidth;
+			h = uiElement.maskHeight;
 		} else {
 			x = uiElement.x;
 			y = uiElement.y;
@@ -142,9 +142,9 @@ class SimpleSkin implements Skin
 		}
 	}
 	
-	public function updateElement(uiDisplay:UIDisplay, uiElement:InteractiveElement, mx:Int, my:Int, mw:Int, mh:Int)
+	public function updateElement(uiDisplay:UIDisplay, uiElement:InteractiveElement)
 	{
-		uiElement.skinElement.update(uiElement, defaultStyle, mx, my, mw, mh);
+		uiElement.skinElement.update(uiElement, defaultStyle);
 	}
 	
 	public function setCompatibleStyle(style:Dynamic):Dynamic {

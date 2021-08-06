@@ -53,6 +53,7 @@ class LayoutedElement extends InteractiveElement implements peote.layout.ILayout
 		width = Math.round(layoutContainer.width);
 		height = Math.round(layoutContainer.height);
 		
+		#if (!peoteui_no_masking)
 		if (layoutContainer.isMasked) { // if some of the edges is cut by mask for scroll-area
 /*			trace("origin:",x,y,width,height);
 			trace("isMasked",
@@ -62,14 +63,15 @@ class LayoutedElement extends InteractiveElement implements peote.layout.ILayout
 				Math.round(layoutContainer.maskHeight)
 			);
 */			
-			update(
-				Math.round(layoutContainer.maskX),
-				Math.round(layoutContainer.maskY),
-				Math.round(layoutContainer.maskWidth),
-				Math.round(layoutContainer.maskHeight)
-			);
+			maskX = Math.round(layoutContainer.maskX);
+			maskY = Math.round(layoutContainer.maskY);
+			maskWidth  = Math.round(layoutContainer.maskWidth);
+			maskHeight = Math.round(layoutContainer.maskHeight);
 		}
-		else update(); // if its fully displayed
+		masked = layoutContainer.isMasked;
+		#end
+		
+		update(); // if its fully displayed
 	}
 		
 }
