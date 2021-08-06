@@ -101,7 +101,7 @@ class $className extends peote.ui.interactive.Interactive
 		
 		fontProgram.lineSetPosition(line, x, y);
 		fontProgram.lineSetStyle(line, fontStyle); // TODO: BUG inside peote-text -> if maxX/maxY changed to much in size (RESIZE-EVENT ONLY)?
-		fontProgram.updateLine(line);
+		if (isVisible) fontProgram.updateLine(line);
 		
 		if (!textMasked) {
 			width = Std.int(line.fullWidth);
@@ -160,7 +160,7 @@ class $className extends peote.ui.interactive.Interactive
 	{	trace("onRemoveVisibleFromDisplay");
 		fontProgram.removeLine(line);
 		
-		if (fontProgram.numberOfGlyphes()==0) 
+		if (fontProgram.numberOfGlyphes()==0)
 		{
 			// for the last element into buffer remove from displays bitmask
 			displays &= ~(1 << uiDisplay.number);
