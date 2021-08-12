@@ -1,6 +1,9 @@
 package;
 
+import haxe.CallStack;
+
 import lime.app.Application;
+import lime.ui.Window;
 import lime.graphics.RenderContext;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
@@ -12,6 +15,7 @@ import peote.view.PeoteView;
 import peote.view.Color;
 
 import peote.text.Font;
+
 import peote.ui.fontstyle.FontStyleTiled;
 import peote.ui.fontstyle.FontStylePacked;
 
@@ -26,35 +30,33 @@ class SimpleText extends Application
 	var peoteView:PeoteView;
 	var uiDisplay:UIDisplay;
 	
-	public function new() super();
-	
-	public override function onWindowCreate() {
+	override function onWindowCreate():Void
+	{
 		switch (window.context.type)
 		{
-			case WEBGL, OPENGL, OPENGLES: initPeoteView();
+			case WEBGL, OPENGL, OPENGLES:
+				try startSample(window)
+				catch (_) trace(CallStack.toString(CallStack.exceptionStack()), _);
 			default: throw("Sorry, only works with OpenGL.");
 		}
 	}
-	
-	public function initPeoteView() {
 
-		peoteView = new PeoteView(window.context, window.width, window.height);
+	public function startSample(window:Window)
+	{
+		peoteView = new PeoteView(window);
 		uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY1);
 		peoteView.addDisplay(uiDisplay);
 			
-		try {			
-			// load the FONT:
-			new Font<FontStyleTiled>("assets/fonts/tiled/hack_ascii.json").load( onTiledFontLoaded );
-			new Font<FontStylePacked>("assets/fonts/packed/hack/config.json").load( onPackedFontLoaded );
-						
-			//peoteView.zoom = 2;
+		// load the FONT:
+		new Font<FontStyleTiled>("assets/fonts/tiled/hack_ascii.json").load( onTiledFontLoaded );
+		new Font<FontStylePacked>("assets/fonts/packed/hack/config.json").load( onPackedFontLoaded );
+					
+		//peoteView.zoom = 2;
 
-			#if android
-			uiDisplay.mouseEnabled = false;
-			peoteView.zoom = 3;
-			#end
-		}
-		catch (e:Dynamic) trace("ERROR:", e);
+		#if android
+		uiDisplay.mouseEnabled = false;
+		peoteView.zoom = 3;
+		#end
 	}
 		
 	public function onTiledFontLoaded(font:Font<FontStyleTiled>) { // don'T forget argument-type here !
@@ -140,64 +142,51 @@ class SimpleText extends Application
 	// ----------------- LIME EVENTS ------------------------------
 	// ------------------------------------------------------------	
 
-	public override function onPreloadComplete() {
-		// access embeded assets here
-	}
-
-	public override function update(deltaTime:Int) {
-		// for game-logic update
-	}
-
-	public override function render(context:RenderContext)
-	{
-		#if (! html5)
-		onMouseMoveFrameSynced();
-		#end
-		peoteView.render(); // rendering all Displays -> Programs - Buffer
-	}
-	
+	// override function onPreloadComplete() {}
+	// override function update(deltaTime:Int) {}
 	// public override function onRenderContextLost ():Void trace(" --- WARNING: LOST RENDERCONTEXT --- ");		
 	// public override function onRenderContextRestored (context:RenderContext):Void trace(" --- onRenderContextRestored --- ");		
 
+
 	// ----------------- MOUSE EVENTS ------------------------------
-	public override function onMouseMove (x:Float, y:Float) {
+	#if (! html5)
+		var isMouseMove = false;
+		var lastMouseMoveX:Float = 0.0;
+		var lastMouseMoveY:Float = 0.0;
+		override function render(context:RenderContext)
+		{
+			if (isMouseMove) {
+				isMouseMove = false;
+				onMouseMoveFrameSynced(lastMouseMoveX, lastMouseMoveY);
+			}
+		}
+	#end
+	
+	override function onMouseMove (x:Float, y:Float) {
 		#if (html5)
-		_onMouseMove(x, y);
+		onMouseMoveFrameSynced(x, y);
 		#else
 		lastMouseMoveX = x;
 		lastMouseMoveY = y;
 		isMouseMove = true;
 		#end		
 	}
+		
+	inline function onMouseMoveFrameSynced (x:Float, y:Float) uiDisplay.mouseMove(x, y);
 	
-	#if (! html5)
-	var isMouseMove = false;
-	var lastMouseMoveX:Float = 0.0;
-	var lastMouseMoveY:Float = 0.0;
-	inline function onMouseMoveFrameSynced()
-	{
-		if (isMouseMove) {
-			isMouseMove = false;
-			_onMouseMove(lastMouseMoveX, lastMouseMoveY);
-		}
-	}
-	#end
-	
-	inline function _onMouseMove (x:Float, y:Float) uiDisplay.mouseMove(x, y);
-	
-	public override function onMouseDown (x:Float, y:Float, button:MouseButton) uiDisplay.mouseDown(x, y, button);
-	public override function onMouseUp (x:Float, y:Float, button:MouseButton) uiDisplay.mouseUp(x, y, button);
-	public override function onMouseWheel (dx:Float, dy:Float, mode:MouseWheelMode) uiDisplay.mouseWheel(dx, dy, mode);
+	override function onMouseDown (x:Float, y:Float, button:MouseButton) uiDisplay.mouseDown(x, y, button);
+	override function onMouseUp (x:Float, y:Float, button:MouseButton) uiDisplay.mouseUp(x, y, button);
+	override function onMouseWheel (dx:Float, dy:Float, mode:MouseWheelMode) uiDisplay.mouseWheel(dx, dy, mode);
 	// public override function onMouseMoveRelative (x:Float, y:Float):Void {}
 
 	// ----------------- TOUCH EVENTS ------------------------------
-	public override function onTouchStart (touch:Touch) uiDisplay.touchStart(touch);
-	public override function onTouchMove (touch:Touch)	 uiDisplay.touchMove(touch);
-	public override function onTouchEnd (touch:Touch)  uiDisplay.touchEnd(touch);
-	public override function onTouchCancel (touch:Touch)  uiDisplay.touchCancel(touch);
+	override function onTouchStart (touch:Touch) uiDisplay.touchStart(touch);
+	override function onTouchMove (touch:Touch)	 uiDisplay.touchMove(touch);
+	override function onTouchEnd (touch:Touch)  uiDisplay.touchEnd(touch);
+	override function onTouchCancel (touch:Touch)  uiDisplay.touchCancel(touch);
 	
 	// ----------------- KEYBOARD EVENTS ---------------------------
-	public override function onKeyDown (keyCode:KeyCode, modifier:KeyModifier) {
+	override function onKeyDown (keyCode:KeyCode, modifier:KeyModifier) {
 		switch (keyCode) {
 			#if html5
 			case KeyCode.TAB: untyped __js__('event.preventDefault();');
@@ -208,28 +197,28 @@ class SimpleText extends Application
 		uiDisplay.keyDown(keyCode, modifier);
 	}
 	
-	public override function onKeyUp (keyCode:KeyCode, modifier:KeyModifier) uiDisplay.keyUp(keyCode, modifier);
+	override function onKeyUp (keyCode:KeyCode, modifier:KeyModifier) uiDisplay.keyUp(keyCode, modifier);
 	// public override function onTextEdit(text:String, start:Int, length:Int) {}
 	// public override function onTextInput (text:String)	{}
 
 	// ----------------- WINDOWS EVENTS ----------------------------
-	public override function onWindowResize (width:Int, height:Int) peoteView.resize(width, height);
 	public override function onWindowLeave() {
 		#if (! html5)
 		lastMouseMoveX = lastMouseMoveY = -1; // fix for another onMouseMoveFrameSynced() by render-loop
 		#end
 		uiDisplay.windowLeave();
 	}
-	// public override function onWindowEnter():Void { trace("onWindowEnter"); }
-	// public override function onWindowActivate():Void { trace("onWindowActivate"); }
-	// public override function onWindowDeactivate():Void { trace("onWindowDeactivate"); }
-	// public override function onWindowClose():Void { trace("onWindowClose"); }
-	// public override function onWindowDropFile(file:String):Void { trace("onWindowDropFile"); }
-	// public override function onWindowExpose():Void { trace("onWindowExpose"); }
-	// public override function onWindowFocusIn():Void { trace("onWindowFocusIn"); }
-	// public override function onWindowFocusOut():Void { trace("onWindowFocusOut"); }
-	// public override function onWindowFullscreen():Void { trace("onWindowFullscreen"); }
-	// public override function onWindowMove(x:Float, y:Float):Void { trace("onWindowMove"); }
-	// public override function onWindowMinimize():Void { trace("onWindowMinimize"); }
-	// public override function onWindowRestore():Void { trace("onWindowRestore"); }
+	// override function onWindowResize (width:Int, height:Int) { trace("onWindowResize"); }
+	// override function onWindowEnter():Void { trace("onWindowEnter"); }
+	// override function onWindowActivate():Void { trace("onWindowActivate"); }
+	// override function onWindowDeactivate():Void { trace("onWindowDeactivate"); }
+	// override function onWindowClose():Void { trace("onWindowClose"); }
+	// override function onWindowDropFile(file:String):Void { trace("onWindowDropFile"); }
+	// override function onWindowExpose():Void { trace("onWindowExpose"); }
+	// override function onWindowFocusIn():Void { trace("onWindowFocusIn"); }
+	// override function onWindowFocusOut():Void { trace("onWindowFocusOut"); }
+	// override function onWindowFullscreen():Void { trace("onWindowFullscreen"); }
+	// override function onWindowMove(x:Float, y:Float):Void { trace("onWindowMove"); }
+	// override function onWindowMinimize():Void { trace("onWindowMinimize"); }
+	// override function onWindowRestore():Void { trace("onWindowRestore"); }
 }
