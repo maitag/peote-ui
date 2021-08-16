@@ -230,7 +230,7 @@ class UIDisplay extends Display
 				
 				// Over/Out
 				if (pickedIndex != lastMouseOverIndex) 
-				{					
+				{				 
 					if (lastMouseOverIndex >= 0) 
 					{
 						var lastElem = movePickBuffer.getElement(lastMouseOverIndex).uiElement;

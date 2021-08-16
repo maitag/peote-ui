@@ -41,6 +41,7 @@
 	
 	<define name="peoteui_maxDisplays" value="1" /> <!-- for optimization use "1" (max is 32) -->
 	<!--<haxedef name="peoteui_no_masking" />--> <!-- to disable masking of ui-elements for more performance -->
+	<!--<haxedef name="peoteui_no_textmasking" />--> <!-- to disable masking of ui-elements for more performance -->
 	
 	<haxedef name="peoteui_debug_macro" />
 	<haxedef name="peotetext_debug_macro" />

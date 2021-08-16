@@ -109,7 +109,7 @@ class SimpleText extends Application
 			fontStylePacked.width = 25;
 			
 			//var textLine = new InteractiveTextLine<FontStylePacked>(0, 80, 112, 25, "hello Button", fontPacked, fontStylePacked); //, selectionFontStyle
-			var textLine = font.createInteractiveTextLine(250, 0, 50, 25, 0, true, "Masked", fontStylePacked); //, selectionFontStyle
+			var textLine = font.createInteractiveTextLine(250, 0, 70, 18, 0, true, "Masked", fontStylePacked); //, selectionFontStyle
 
 			textLine.onPointerOver = function(t:InteractiveTextLine<FontStylePacked>, e:PointerEvent) {
 				trace("onPointerOver");
@@ -125,6 +125,19 @@ class SimpleText extends Application
 			}
 						
 			uiDisplay.add(textLine);
+			
+			haxe.Timer.delay(function() {
+				//trace("change style after");
+				//textLine2.fontStyle = fontStyleTiled;
+				//textLine2.updateStyle();
+				//textLine2.update();
+				
+				uiDisplay.remove(textLine);
+				haxe.Timer.delay(function() {
+					uiDisplay.add(textLine);
+				}, 1000);
+				
+			}, 1000);
 	}
 	
 	

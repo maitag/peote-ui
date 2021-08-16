@@ -70,6 +70,10 @@ class $className extends peote.ui.interactive.Interactive
 		
 	public var textMasked:Bool;
 	
+	#if (!peoteui_no_textmasking)
+	var maskElement:peote.text.MaskElement;
+	#end
+	
 	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int, textMasked:Bool = false,
 	                    //text:String, font:$fontType, fontStyle:$styleType) 
 	                    text:String, font:peote.text.Font<$styleType>, fontStyle:$styleType) 
@@ -78,6 +82,10 @@ class $className extends peote.ui.interactive.Interactive
 		super(xPosition, yPosition, width, height, zIndex);
 
 		this.textMasked = textMasked;
+		
+		#if (!peoteui_no_textmasking)
+		maskElement = new peote.text.MaskElement(xPosition, yPosition, width, height);
+		#end
 		
 		this.text = text;
 		this.font = font;
@@ -92,32 +100,42 @@ class $className extends peote.ui.interactive.Interactive
 	
 	override inline function updateVisible():Void
 	{
-		
-		if (textMasked) {
+		//trace("updateVisible");
+		if (textMasked ) {
 			line.maxX = x + width;
-			line.maxY = y + height;
-			fontProgram.lineSetXOffset(line, 0); // need if mask changed
+			//line.maxY = y + height;
+			if (isVisible ) fontProgram.lineSetXOffset(line, 0); // need if mask changed
 		}
 		
 		fontProgram.lineSetPosition(line, x, y);
-		fontProgram.lineSetStyle(line, fontStyle); // TODO: BUG inside peote-text -> if maxX/maxY changed to much in size (RESIZE-EVENT ONLY)?
-		if (isVisible) fontProgram.updateLine(line);
+		
+		if (isVisible ) {
+			fontProgram.lineSetStyle(line, fontStyle); // TODO: BUG inside peote-text -> if maxX/maxY changed to much in size (RESIZE-EVENT ONLY)?
+			fontProgram.updateLine(line);
+		}
 		
 		if (!textMasked) {
 			width = Std.int(line.fullWidth);
 			// TODO:
 			//height= Std.int(line.fullHeight);
 		}
+		
+		#if (!peoteui_no_textmasking)
+		if (masked && textMasked) maskElement.update(x + maskX, y + maskY, maskWidth, maskHeight);
+		else maskElement.update(x, y, width, height);
+		if (isVisible) fontProgram.updateMask(maskElement);
+		#end
+		
 	}
 	
 	// -----------------
 	
 	override inline function onAddVisibleToDisplay()
-	{		
+	{	//trace("onAddVisibleToDisplay");	
 		if (notIntoDisplay(uiDisplay))
 		{
 			displays |= 1 << uiDisplay.number;
-			fontProgram = font.createFontProgram(fontStyle);
+			fontProgram = font.createFontProgram(fontStyle, true);
 			#if (peoteui_maxDisplays == "1")
 				displayFontProgram = fontProgram;
 			#else
@@ -125,19 +143,19 @@ class $className extends peote.ui.interactive.Interactive
 			#end
 			uiDisplay.addProgram(fontProgram); // TODO: better also uiDisplay.addFontProgram() to let clear all skins at once from inside UIDisplay
 		}
-		else
+		else {
 			#if (peoteui_maxDisplays == "1")
 				fontProgram = displayFontProgram;
 			#else
 				fontProgram = displayFontProgram.get(uiDisplay.number));
 			#end
-		
+		}
 		if (line == null) {
 			//line = fontProgram.createLine(text, x, y, fontStyle);
 			line = new peote.text.Line<$styleType>();
 			if (textMasked) {
 				line.maxX = x + width;
-				line.maxY = y + height;
+				//line.maxY = y + height;
 			}
 			
 			fontProgram.setLine(line, text, x, y, fontStyle);
@@ -151,14 +169,25 @@ class $className extends peote.ui.interactive.Interactive
 				if ( hasMoveEvent  != 0 ) pickableMove.update(this);
 				if ( hasClickEvent != 0 ) pickableClick.update(this);				
 			}
+			#if (!peoteui_no_textmasking)
+			maskElement = fontProgram.createMask(x, y, width, height);
+			#end
 		}
-		else fontProgram.addLine(line);
+		else {
+			fontProgram.addLine(line);
+			#if (!peoteui_no_textmasking)
+			fontProgram.addMask(maskElement);
+			#end
+		}
 		
 	}
 	
 	override inline function onRemoveVisibleFromDisplay()
-	{	trace("onRemoveVisibleFromDisplay");
+	{	//trace("onRemoveVisibleFromDisplay");
 		fontProgram.removeLine(line);
+		#if (!peoteui_no_textmasking)
+		fontProgram.removeMask(maskElement);
+		#end
 		
 		if (fontProgram.numberOfGlyphes()==0)
 		{

@@ -116,13 +116,13 @@ class SimpleMasked extends Application
 			button.wheelEventsBubbleTo = red;
 			
 			// TODO: Textlinemasking 
-			var textLineTiled = new LayoutedTextLine<FontStyleTiled>(0, 0, 130, 16, 0, false, 'button $i', tiledFont, fontStyleTiled);
+			var textLineTiled = new LayoutedTextLine<FontStyleTiled>(0, 0, 130, 16, 0, true, 'button$i', tiledFont, fontStyleTiled);
 			//var textLinePacked = new LayoutedTextLine<FontStylePacked>(0, 0, 130, 25, 0, true, "packed font", packedFont, fontStylePacked);	// masked -> true		
 			layoutedUIDisplay.add(textLineTiled);
 			
 			redBoxes.push(
 				new Box( button,  { left:10, right:10, height:Size.limit(50, 80) }, [
-					new Box( textLineTiled, { width:130, height:30 })
+					new Box( textLineTiled, {  left:Size.min(10), width:Size.limit(110, 150),  right:Size.min(10), height:Size.limit(25, 50) })
 				])
 			);
 		}
@@ -140,11 +140,11 @@ class SimpleMasked extends Application
 		
 		uiLayoutContainer = new HBox( layoutedUIDisplay , { width:Size.max(650), relativeChildPositions:true },
 		[                                                          
-			new VBox( red ,  { top:40, bottom:20, width:Size.limit(100, 200),
+			new VBox( red ,  { top:40, bottom:20, width:Size.limit(100, 250),
 				scrollY:true, // TODO: better error-handling if this is forgotten here!
 				limitMinHeightToChilds:false, alignChildsOnOversizeY:Align.LAST }, redBoxes ),
-			new VBox( green, { top:40, bottom:20, width:Size.limit(100, 200) }, [] ),							
-			new VBox( blue,  { top:40, bottom:20, width:Size.limit(100, 200) }, [] ),						
+			new VBox( green, { top:40, bottom:20, width:Size.limit(100, 250) }, [] ),							
+			new VBox( blue,  { top:40, bottom:20, width:Size.limit(100, 250) }, [] ),						
 		]);
 		
 		uiLayoutContainer.init();
