@@ -135,7 +135,7 @@ class $className extends peote.ui.interactive.Interactive
 		if (notIntoDisplay(uiDisplay))
 		{
 			displays |= 1 << uiDisplay.number;
-			fontProgram = font.createFontProgram(fontStyle, true);
+			fontProgram = font.createFontProgram(fontStyle, #if (peoteui_no_textmasking) false #else true #end);
 			#if (peoteui_maxDisplays == "1")
 				displayFontProgram = fontProgram;
 			#else

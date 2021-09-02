@@ -101,7 +101,7 @@ class SimpleMasked extends Application
 
 				
 		var redBoxes = new Array<Box>();
-		for (i in 0...6) {
+		for (i in 0...10) {
 			var button = new LayoutedElement(roundedSkin, new RoundedStyle(Color.YELLOW));
 			button.onPointerOver = function(elem:InteractiveElement, e:PointerEvent) {
 				elem.style.color = Color.YELLOW - 0x00550000;
@@ -116,13 +116,16 @@ class SimpleMasked extends Application
 			button.wheelEventsBubbleTo = red;
 			
 			// TODO: Textlinemasking 
-			var textLineTiled = new LayoutedTextLine<FontStyleTiled>(0, 0, 130, 16, 0, true, 'button$i', tiledFont, fontStyleTiled);
+			var textLineTiled = new LayoutedTextLine<FontStyleTiled>(0, 0, 130, 16, 0, true, 'button${i+1}', tiledFont, fontStyleTiled);
 			//var textLinePacked = new LayoutedTextLine<FontStylePacked>(0, 0, 130, 25, 0, true, "packed font", packedFont, fontStylePacked);	// masked -> true		
+			//trace("KK", textLineTiled.line.fullWidth); // TODO: line is null
+			
 			layoutedUIDisplay.add(textLineTiled);
 			
 			redBoxes.push(
 				new Box( button,  { left:10, right:10, height:Size.limit(50, 80) }, [
-					new Box( textLineTiled, {  left:Size.min(10), width:Size.limit(110, 150),  right:Size.min(10), height:Size.limit(25, 50) })
+					//new Box( textLineTiled, {  left:Size.min(10), width:Size.limit(95, 125), right:Size.min(10), height:18 })
+					new Box( textLineTiled, { left:Size.min(10), width:Size.limit(textLineTiled.width, 125), right:Size.min(10), height:18 })
 				])
 			);
 		}
@@ -142,7 +145,7 @@ class SimpleMasked extends Application
 		[                                                          
 			new VBox( red ,  { top:40, bottom:20, width:Size.limit(100, 250),
 				scrollY:true, // TODO: better error-handling if this is forgotten here!
-				limitMinHeightToChilds:false, alignChildsOnOversizeY:Align.LAST }, redBoxes ),
+				limitMinHeightToChilds:false, alignChildsOnOversizeY:Align.FIRST }, redBoxes ),
 			new VBox( green, { top:40, bottom:20, width:Size.limit(100, 250) }, [] ),							
 			new VBox( blue,  { top:40, bottom:20, width:Size.limit(100, 250) }, [] ),						
 		]);
@@ -154,7 +157,7 @@ class SimpleMasked extends Application
 		
 		red.onMouseWheel = function(b:InteractiveElement, e:WheelEvent) {
 			if (e.deltaY != 0) {
-				var yScroll = uiLayoutContainer.getChild(0).yScroll + e.deltaY*5;
+				var yScroll = uiLayoutContainer.getChild(0).yScroll - e.deltaY*5;
 				//if (xScroll >= 0 && xScroll <= uiLayoutContainer.getChild(0).xScrollMax) {
 					uiLayoutContainer.getChild(0).yScroll = yScroll;
 					uiLayoutContainer.update();

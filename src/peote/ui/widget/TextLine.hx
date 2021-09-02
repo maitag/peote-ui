@@ -41,8 +41,17 @@ abstract TextLine(Widget) from Widget to Widget
 	}
 	
 	// TODO:
-	//public inline function getFontStyle<T>():T return (cast this.layoutElement).fontStyle;
 	public inline function getLayoutedTextLine<T>():T return cast this.layoutElement;
+	
+	public var fontStyle(get, set):Dynamic;
+	//inline function get_fontStyle() return (this.layoutElement:Dynamic).fontStyle;
+	//inline function set_fontStyle(fontStyle) return (this.layoutElement:Dynamic).fontStyle = fontStyle;
+	inline function get_fontStyle<T>():T return (cast this.layoutElement).fontStyle;
+	inline function set_fontStyle<T>(fontStyle:T):T return (cast this.layoutElement).fontStyle = fontStyle;
+	
+	public function update() {
+		(this.layoutElement:Dynamic).update();
+	}
 
 
 }

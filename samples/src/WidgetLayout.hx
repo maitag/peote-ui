@@ -98,25 +98,33 @@ class WidgetLayout extends Application
 				
 				onPointerOver:onOverOut.bind(Color.BLUE),
 				onPointerOut:onOverOut.bind(Color.GREY1),
-				onPointerDown: function(widget:Div, e:PointerEvent) {
-					//widget.style.color = Color.YELLOW;
-					//widget.parent.style.color = Color.YELLOW;
-					
+				onPointerDown: function(widget:Div, e:PointerEvent)
+				{					
 					var t:TextLine = widget.childs[0];
-					var layoutedTextLine:LayoutedTextLine<FontStyleTiled> = t.getLayoutedTextLine();
-					layoutedTextLine.fontStyle.color = Color.BLACK;
-					layoutedTextLine.updateStyle();
-					layoutedTextLine.update();
 					
+					// 1)
+					//var layoutedTextLine:LayoutedTextLine<FontStyleTiled> = t.getLayoutedTextLine();
+					//layoutedTextLine.fontStyle.color = Color.BLACK;
+					//layoutedTextLine.updateStyle();
+					//layoutedTextLine.update();
+					
+					// 2)
+					t.fontStyle.color = Color.BLACK;
+					t.update();
+					
+					widget.style.color = Color.YELLOW;
+					//widget.parent.style.color = Color.YELLOW;
 					widget.layoutElement.update();
 				},
 				onPointerUp: function(widget:Div, e:PointerEvent) {
 					var t:TextLine = widget.childs[0];
 					var layoutedTextLine:LayoutedTextLine<FontStyleTiled> = t.getLayoutedTextLine();
-					layoutedTextLine.fontStyle.color = Color.WHITE;
-					layoutedTextLine.updateStyle();
-					layoutedTextLine.update();
 					
+					t.fontStyle.color = Color.WHITE;
+					t.update();
+					
+					widget.style.color = Color.BLUE;
+					//widget.parent.style.color = Color.YELLOW;
 					widget.layoutElement.update();
 				},
 				
@@ -134,26 +142,29 @@ class WidgetLayout extends Application
 					
 					onPointerOver:
 						function (t:TextLine, e:PointerEvent) {
-							trace("onOverTextfield");
+							trace("onPointerOver:Textfield");
 							
-							//var fontStyle:FontStyleTiled = t.getFontStyle();
-							//var fontStyle = t.getFontStyle();
+							// 1)
+							//t.fontStyle.color = Color.RED;
+							//var fontStyle:FontStyleTiled = t.fontStyle;
+							//trace(Type.typeof(fontStyle));
 							//fontStyle.color = Color.RED;
 							
-							var layoutedTextLine:LayoutedTextLine<FontStyleTiled> = t.getLayoutedTextLine();
-							layoutedTextLine.fontStyle.color = Color.RED;
-							layoutedTextLine.updateStyle();
+							// 2)
+							//var fs = new FontStyleTiled();
+							//fs.color = Color.RED;
+							//t.fontStyle = fs;
 							
-							layoutedTextLine.update();
+							// 3)
+							fontStyleTiled.color = Color.RED;
+							t.fontStyle = fontStyleTiled;
+							
+							t.update();
 						}
 					,	
 					onPointerOut:
 						function (t:TextLine, e:PointerEvent) {
-							trace("onOutTextfield");
-							
-							//var fontStyle:FontStyleTiled = t.getFontStyle();
-							//var fontStyle = t.getFontStyle();
-							//fontStyle.color = Color.RED;
+							trace("onPointerOut:Textfield");
 							
 							var layoutedTextLine:LayoutedTextLine<FontStyleTiled> = t.getLayoutedTextLine();
 							layoutedTextLine.fontStyle.color = Color.WHITE;
