@@ -113,18 +113,17 @@ class WidgetLayout extends Application
 					t.update();
 					
 					widget.style.color = Color.YELLOW;
-					//widget.parent.style.color = Color.YELLOW;
+					//widget.parent.bgColor = Color.YELLOW; // TODO
 					widget.layoutElement.update();
 				},
 				onPointerUp: function(widget:Div, e:PointerEvent) {
 					var t:TextLine = widget.childs[0];
-					var layoutedTextLine:LayoutedTextLine<FontStyleTiled> = t.getLayoutedTextLine();
 					
 					t.fontStyle.color = Color.WHITE;
 					t.update();
 					
 					widget.style.color = Color.BLUE;
-					//widget.parent.style.color = Color.YELLOW;
+					//widget.parent.bgColor = Color.YELLOW; // TODO
 					widget.layoutElement.update();
 				},
 				
@@ -146,18 +145,20 @@ class WidgetLayout extends Application
 							
 							// 1)
 							//t.fontStyle.color = Color.RED;
+							
+							// 2)
 							//var fontStyle:FontStyleTiled = t.fontStyle;
 							//trace(Type.typeof(fontStyle));
 							//fontStyle.color = Color.RED;
 							
-							// 2)
+							// 3)
 							//var fs = new FontStyleTiled();
 							//fs.color = Color.RED;
 							//t.fontStyle = fs;
 							
-							// 3)
-							fontStyleTiled.color = Color.RED;
-							t.fontStyle = fontStyleTiled;
+							// 4)
+							//fontStyleTiled.color = Color.RED;
+							//t.fontStyle = fontStyleTiled;
 							
 							t.update();
 						}

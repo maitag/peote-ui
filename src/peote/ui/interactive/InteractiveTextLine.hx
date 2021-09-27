@@ -101,13 +101,10 @@ class $className extends peote.ui.interactive.Interactive
 	override inline function updateVisible():Void
 	{
 		//trace("updateVisible");
-		if (textMasked ) {
-			line.maxX = x + width;
-			//line.maxY = y + height;
-			if (isVisible ) fontProgram.lineSetXOffset(line, 0); // need if mask changed
+		if (textMasked && isVisible) {
+			fontProgram.lineSetPositionSize(line, x, y, x + width); // need if mask changed
 		}
-		
-		fontProgram.lineSetPosition(line, x, y);
+		else fontProgram.lineSetPosition(line, x, y);
 		
 		if (isVisible ) {
 			fontProgram.lineSetStyle(line, fontStyle); // TODO: BUG inside peote-text -> if maxX/maxY changed to much in size (RESIZE-EVENT ONLY)?
@@ -115,9 +112,7 @@ class $className extends peote.ui.interactive.Interactive
 		}
 		
 		if (!textMasked) {
-			width = Std.int(line.fullWidth);
-			// TODO:
-			//height= Std.int(line.fullHeight);
+			width = Std.int(line.textSize);
 		}
 		
 		#if (!peoteui_no_textmasking)
@@ -153,15 +148,11 @@ class $className extends peote.ui.interactive.Interactive
 		if (line == null) {
 			//line = fontProgram.createLine(text, x, y, fontStyle);
 			line = new peote.text.Line<$styleType>();
-			if (textMasked) {
-				line.maxX = x + width;
-				//line.maxY = y + height;
-			}
 			
-			fontProgram.setLine(line, text, x, y, fontStyle);
+			fontProgram.setLine(line, text, x, y, (textMasked) ? x + width : null, null, fontStyle);
 			
 			if (!textMasked) {
-				width = Std.int(line.fullWidth);
+				width = Std.int(line.textSize);
 				// TODO:
 				//height= Std.int(line.fullHeight);
 				
