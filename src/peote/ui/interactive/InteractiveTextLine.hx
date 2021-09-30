@@ -102,7 +102,7 @@ class $className extends peote.ui.interactive.Interactive
 	{
 		//trace("updateVisible");
 		if (textMasked && isVisible) {
-			fontProgram.lineSetPositionSize(line, x, y, x + width); // need if mask changed
+			fontProgram.lineSetPositionSize(line, x, y, width);
 		}
 		else fontProgram.lineSetPosition(line, x, y);
 		
@@ -149,12 +149,10 @@ class $className extends peote.ui.interactive.Interactive
 			//line = fontProgram.createLine(text, x, y, fontStyle);
 			line = new peote.text.Line<$styleType>();
 			
-			fontProgram.setLine(line, text, x, y, (textMasked) ? x + width : null, null, fontStyle);
+			fontProgram.setLine(line, text, x, y, (textMasked) ? width : null, null, fontStyle);
 			
 			if (!textMasked) {
-				width = Std.int(line.textSize);
-				// TODO:
-				//height= Std.int(line.fullHeight);
+				width = Std.int(line.textSize); // TODO
 				
 				// fit interactive pickables to new width and height
 				if ( hasMoveEvent  != 0 ) pickableMove.update(this);
