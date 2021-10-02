@@ -23,13 +23,13 @@ class InteractiveTextLineMacro
 			Macro.debug(className, classPackage, stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
 			
 			//var glyphType = peote.text.Glyph.GlyphMacro.buildClass("Glyph", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType);
-			//var fontType = peote.text.Font.FontMacro.buildClass("Font", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
+			var fontType = peote.text.Font.FontMacro.buildClass("Font", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
 			//var fontProgramType = peote.text.FontProgram.FontProgramMacro.buildClass("FontProgram", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
 			//var lineType  = peote.text.Line.LineMacro.buildClass("Line", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
 			
-			//var fontType = TPath({ pack:["peote","text"], name:"Font" + Macro.classNameExtension(styleName, styleModule), params:[] });
-			//var fontProgramType = TPath({ pack:["peote","text"], name:"FontProgram" + Macro.classNameExtension(styleName, styleModule), params:[] });
-			//var lineType = TPath({ pack:["peote","text"], name:"Line" + Macro.classNameExtension(styleName, styleModule), params:[] });
+			var fontPath = TPath({ pack:["peote","text"], name:"Font" + Macro.classNameExtension(styleName, styleModule), params:[] });
+			//var fontProgramPath = TPath({ pack:["peote","text"], name:"FontProgram" + Macro.classNameExtension(styleName, styleModule), params:[] });
+			//var linePath = TPath({ pack:["peote","text"], name:"Line" + Macro.classNameExtension(styleName, styleModule), params:[] });
 
 			
 			//var glyphStyleHasMeta = peote.text.Glyph.GlyphMacro.parseGlyphStyleMetas(styleModule+"."+styleName); // trace("FontProgram: glyphStyleHasMeta", glyphStyleHasMeta);
@@ -42,31 +42,13 @@ class InteractiveTextLineMacro
 
 class $className extends peote.ui.interactive.Interactive
 {	
-	static var displays:Int = 0;
-	
-	#if (peoteui_maxDisplays == "1")
-		//static var displayFontProgram:$fontProgramType;
-		static var displayFontProgram:peote.text.FontProgram<$styleType>;
-	#else
-		//static var displayFontProgram = new haxe.ds.Vector<$fontProgramType>(peote.ui.UIDisplay.MAX_DISPLAYS);
-		static var displayFontProgram = new haxe.ds.Vector<peote.text.FontProgram<$styleType>;>(peote.ui.UIDisplay.MAX_DISPLAYS);
-	#end
-	
-	public static inline function notIntoDisplay(uiDisplay:peote.ui.UIDisplay):Bool {
-		return ((displays & (1 << uiDisplay.number))==0);
-	}
-	
-	//var fontProgram:$fontProgramType;
-	var fontProgram:peote.text.FontProgram<$styleType>;
-	
-	//public var font:$fontType;
-	public var font:peote.text.Font<$styleType>;
+	public var fontProgram:peote.text.FontProgram<$styleType>; //$fontProgramType	
+	public var font:peote.text.Font<$styleType>; //$fontType
 	
 	public var fontStyle:$styleType;
 	
 	public var text:String;
-	public var line:peote.text.Line<$styleType> = null;
-	//public var line:$lineType;
+	public var line:peote.text.Line<$styleType> = null; //$lineType
 		
 	public var textMasked:Bool;
 	
@@ -126,26 +108,18 @@ class $className extends peote.ui.interactive.Interactive
 	// -----------------
 	
 	override inline function onAddVisibleToDisplay()
-	{	//trace("onAddVisibleToDisplay");	
-		if (notIntoDisplay(uiDisplay))
-		{
-			displays |= 1 << uiDisplay.number;
-			fontProgram = font.createFontProgram(fontStyle, #if (peoteui_no_textmasking) false #else true #end);
-			#if (peoteui_maxDisplays == "1")
-				displayFontProgram = fontProgram;
-			#else
-				displayFontProgram.set(uiDisplay.number, fontProgram);
-			#end
-			uiDisplay.addProgram(fontProgram); // TODO: better also uiDisplay.addFontProgram() to let clear all skins at once from inside UIDisplay
-		}
-		else {
-			#if (peoteui_maxDisplays == "1")
-				fontProgram = displayFontProgram;
-			#else
-				fontProgram = displayFontProgram.get(uiDisplay.number));
-			#end
-		}
+	{
+		//trace("onAddVisibleToDisplay");	
 		if (line == null) {
+			if (font.notIntoUiDisplay(uiDisplay.number)) {
+				fontProgram = font.createFontProgramForUiDisplay(uiDisplay.number, fontStyle, #if (peoteui_no_textmasking) false #else true #end);
+				uiDisplay.addProgram(fontProgram); // TODO: better also uiDisplay.addFontProgram() to let clear all skins at once from inside UIDisplay
+			}
+			else {
+				fontProgram = font.getFontProgramByUiDisplay(uiDisplay.number);
+				if (fontProgram.numberOfGlyphes()==0) uiDisplay.addProgram(fontProgram);
+			}
+			
 			//line = fontProgram.createLine(text, x, y, fontStyle);
 			line = new peote.text.Line<$styleType>();
 			
@@ -163,6 +137,7 @@ class $className extends peote.ui.interactive.Interactive
 			#end
 		}
 		else {
+			if (fontProgram.numberOfGlyphes()==0) uiDisplay.addProgram(fontProgram);
 			fontProgram.addLine(line);
 			#if (!peoteui_no_textmasking)
 			fontProgram.addMask(maskElement);
@@ -180,15 +155,7 @@ class $className extends peote.ui.interactive.Interactive
 		
 		if (fontProgram.numberOfGlyphes()==0)
 		{
-			// for the last element into buffer remove from displays bitmask
-			displays &= ~(1 << uiDisplay.number);
-			
-			#if (peoteui_maxDisplays == "1")
-				uiDisplay.removeProgram(displayFontProgram);
-			#else
-				uiDisplay.removeProgram(displayFontProgram.get(uiDisplay.number));
-			#end			
-						
+			uiDisplay.removeProgram(font.removeFontProgramFromUiDisplay(uiDisplay.number));
 			// TODO:
 			//d.buffer.clear();
 			//d.program.clear();
