@@ -50,6 +50,9 @@ abstract TextLine(Widget) from Widget to Widget
 	inline function set_fontStyle<T>(fontStyle:T):T return (cast this.layoutElement).fontStyle = fontStyle;
 	
 	public function update() {
+		// TODO: need to be inside Interactive!
+		//(this.layoutElement:Dynamic).updateStyle();
+		
 		(this.layoutElement:Dynamic).update();
 	}
 

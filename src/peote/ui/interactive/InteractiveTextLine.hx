@@ -23,11 +23,11 @@ class InteractiveTextLineMacro
 			Macro.debug(className, classPackage, stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
 			
 			//var glyphType = peote.text.Glyph.GlyphMacro.buildClass("Glyph", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType);
-			var fontType = peote.text.Font.FontMacro.buildClass("Font", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
+			//var fontType = peote.text.Font.FontMacro.buildClass("Font", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
 			//var fontProgramType = peote.text.FontProgram.FontProgramMacro.buildClass("FontProgram", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
 			//var lineType  = peote.text.Line.LineMacro.buildClass("Line", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
 			
-			var fontPath = TPath({ pack:["peote","text"], name:"Font" + Macro.classNameExtension(styleName, styleModule), params:[] });
+			//var fontPath = TPath({ pack:["peote","text"], name:"Font" + Macro.classNameExtension(styleName, styleModule), params:[] });
 			//var fontProgramPath = TPath({ pack:["peote","text"], name:"FontProgram" + Macro.classNameExtension(styleName, styleModule), params:[] });
 			//var linePath = TPath({ pack:["peote","text"], name:"Line" + Macro.classNameExtension(styleName, styleModule), params:[] });
 
@@ -75,6 +75,7 @@ class $className extends peote.ui.interactive.Interactive
 		
 	}
 	
+	//TODO: override of Interactive!
 	public function updateStyle(from:Int = 0, to:Null<Int> = null) {
 		fontProgram.lineSetStyle(line, fontStyle, from, to);
 	}
@@ -86,10 +87,11 @@ class $className extends peote.ui.interactive.Interactive
 		if (textMasked && isVisible) {
 			fontProgram.lineSetPositionSize(line, x, y, width);
 		}
-		else fontProgram.lineSetPosition(line, x, y);
+		else {
+			fontProgram.lineSetPosition(line, x, y);
+		}
 		
-		if (isVisible ) {
-			fontProgram.lineSetStyle(line, fontStyle); // TODO: BUG inside peote-text -> if maxX/maxY changed to much in size (RESIZE-EVENT ONLY)?
+		if (isVisible) {
 			fontProgram.updateLine(line);
 		}
 		
@@ -100,6 +102,7 @@ class $className extends peote.ui.interactive.Interactive
 		#if (!peoteui_no_textmasking)
 		if (masked && textMasked) maskElement.update(x + maskX, y + maskY, maskWidth, maskHeight);
 		else maskElement.update(x, y, width, height);
+		
 		if (isVisible) fontProgram.updateMask(maskElement);
 		#end
 		

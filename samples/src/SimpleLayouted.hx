@@ -118,7 +118,7 @@ class SimpleLayouted extends Application
 		uiLayoutContainer.init();
 		uiLayoutContainer.update(peoteView.width, peoteView.height);
 		
-		haxe.Timer.delay(function() {
+/*		haxe.Timer.delay(function() {
 			//trace("change style after");
 			textLine2.fontStyle.color = Color.RED;
 			textLine2.fontStyle.height = 30;
@@ -126,6 +126,7 @@ class SimpleLayouted extends Application
 			textLine2.update();
 			
 		}, 1000);
+*/	
 	}
 
 	

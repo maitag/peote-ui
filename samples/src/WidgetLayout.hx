@@ -144,7 +144,7 @@ class WidgetLayout extends Application
 							trace("onPointerOver:Textfield");
 							
 							// 1)
-							//t.fontStyle.color = Color.RED;
+							t.fontStyle.color = Color.RED;
 							
 							// 2)
 							//var fontStyle:FontStyleTiled = t.fontStyle;
