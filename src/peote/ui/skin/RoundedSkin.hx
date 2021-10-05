@@ -41,13 +41,27 @@ class RoundedSkinElement implements SkinElement implements Element
 	public inline function new(uiElement:InteractiveElement, defaultStyle:RoundedStyle, buffer:Buffer<RoundedSkinElement>)
 	{
 		this.buffer = buffer;
-		_update(uiElement, defaultStyle);
+		_updateStyle(uiElement, defaultStyle);
+		_updateLayout(uiElement, defaultStyle);
 		buffer.addElement(this);
 	}
 	
 	public inline function update(uiElement:InteractiveElement, defaultStyle:Dynamic)
 	{
-		_update(uiElement, defaultStyle);
+		_updateStyle(uiElement, defaultStyle);
+		_updateLayout(uiElement, defaultStyle);
+		if (uiElement.isVisible) buffer.updateElement(this);
+	}
+	
+	public inline function updateLayout(uiElement:InteractiveElement, defaultStyle:Dynamic)
+	{
+		_updateLayout(uiElement, defaultStyle);
+		if (uiElement.isVisible) buffer.updateElement(this);
+	}
+	
+	public inline function updateStyle(uiElement:InteractiveElement, defaultStyle:Dynamic)
+	{
+		_updateStyle(uiElement, defaultStyle);
 		if (uiElement.isVisible) buffer.updateElement(this);
 	}
 	
@@ -57,7 +71,15 @@ class RoundedSkinElement implements SkinElement implements Element
 		return (buffer.length() == 0);
 	}
 	
-	inline function _update(uiElement:InteractiveElement, defaultStyle:Dynamic)
+	inline function _updateStyle(uiElement:InteractiveElement, defaultStyle:Dynamic)
+	{
+		color = (uiElement.style.color!=null) ? uiElement.style.color : defaultStyle.color;
+		borderColor = (uiElement.style.borderColor!=null) ? uiElement.style.borderColor : defaultStyle.borderColor;
+		borderSize = (uiElement.style.borderSize!=null) ? uiElement.style.borderSize : defaultStyle.borderSize;
+		borderRadius = (uiElement.style.borderRadius != null) ? uiElement.style.borderRadius : defaultStyle.borderRadius;
+	}
+	
+	inline function _updateLayout(uiElement:InteractiveElement, defaultStyle:Dynamic)
 	{
 		x = uiElement.x;
 		y = uiElement.y;
@@ -65,19 +87,13 @@ class RoundedSkinElement implements SkinElement implements Element
 		h = uiElement.height;
 		z = uiElement.z;
 		
-		color = (uiElement.style.color!=null) ? uiElement.style.color : defaultStyle.color;
-		borderColor = (uiElement.style.borderColor!=null) ? uiElement.style.borderColor : defaultStyle.borderColor;
-		borderSize = (uiElement.style.borderSize!=null) ? uiElement.style.borderSize : defaultStyle.borderSize;
-		borderRadius = (uiElement.style.borderRadius != null) ? uiElement.style.borderRadius : defaultStyle.borderRadius;
-		
 		#if (!peoteui_no_masking)
 		if (uiElement.masked) { // if some of the edges is cut by mask for scroll-area
 			mx = uiElement.maskX;
 			my = uiElement.maskY;
 			mw = mx + uiElement.maskWidth;
 			mh = my + uiElement.maskHeight;
-		} else
-		{
+		} else {
 			mx = 0;
 			my = 0;
 			mw = w;
@@ -113,7 +129,7 @@ class RoundedSkin implements Skin
 		return ((displays & (1 << uiDisplay.number))==0);
 	}
 	
-	public function addElement(uiDisplay:UIDisplay, uiElement:InteractiveElement)
+	public inline function addElement(uiDisplay:UIDisplay, uiElement:InteractiveElement)
 	{
 		if (notIntoDisplay(uiDisplay))
 		{
@@ -138,7 +154,7 @@ class RoundedSkin implements Skin
 			#end
 	}
 	
-	public function removeElement(uiDisplay:UIDisplay, uiElement:InteractiveElement)
+	public inline function removeElement(uiDisplay:UIDisplay, uiElement:InteractiveElement)
 	{
 		if (uiElement.isVisible && uiElement.skinElement.remove())
 		{
@@ -157,16 +173,26 @@ class RoundedSkin implements Skin
 		}
 	}
 	
-	public function updateElement(uiDisplay:UIDisplay, uiElement:InteractiveElement)
+	public inline function updateElement(uiDisplay:UIDisplay, uiElement:InteractiveElement)
 	{
 		uiElement.skinElement.update(uiElement, defaultStyle);
 	}
 	
-	public function createDefaultStyle():Dynamic {
+	public inline function updateElementStyle(uiDisplay:UIDisplay, uiElement:InteractiveElement)
+	{
+		uiElement.skinElement.updateStyle(uiElement, defaultStyle);
+	}
+	
+	public inline function updateElementLayout(uiDisplay:UIDisplay, uiElement:InteractiveElement)
+	{
+		uiElement.skinElement.updateLayout(uiElement, defaultStyle);
+	}
+	
+	public inline function createDefaultStyle():Dynamic {
 		return new RoundedStyle();
 	}
 	
-	public function setCompatibleStyle(style:Dynamic):Dynamic {
+	public inline function setCompatibleStyle(style:Dynamic):Dynamic {
 		
 		if (style == null) return defaultStyle;
 		else if (style.compatibleSkins & type > 0) return style;
@@ -180,7 +206,7 @@ class RoundedSkin implements Skin
 		}
 	}
 	
-	private function createProgram(buffer:Buffer<RoundedSkinElement>):Program {
+	inline function createProgram(buffer:Buffer<RoundedSkinElement>):Program {
 		var program = new Program(buffer);
 		
 		// ------- ShaderStyle -------------

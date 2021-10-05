@@ -122,7 +122,7 @@ class SimpleElements extends Application
 		dragBackground.onMouseWheel = function(b:InteractiveElement, e:WheelEvent) {
 			trace("MouseWheel:", e);
 			dragger.x = Std.int(Math.max(dragBackground.x, Math.min(dragBackground.x+dragBackground.width-dragger.width, (dragger.x + e.deltaY * 20))));
-			dragger.update();
+			dragger.updateLayout();
 			// trigger mouse-move here also for html5 (maybe also x and y position forlastMouseMoveX)!
 			//uiDisplay.mouseMove(lastMouseMoveX, lastMouseMoveY);
 		}
@@ -144,12 +144,12 @@ class SimpleElements extends Application
 			trace(" -----> onPointerDown", e);
 			b.startDragging(e);
 			b.style.borderColor = Color.YELLOW;
-			b.update();
+			b.updateStyle();
 		}
 		dragger.onPointerUp = function(b:InteractiveElement, e:PointerEvent) {
 			trace(" -----> onPointerUp", e);
 			b.style.borderColor = Color.GREY7;
-			b.update();
+			b.updateStyle();
 			b.stopDragging(e); // this need to be at End because it can be trigger the OUT-event after
 		}
 		uiDisplay.add(dragger);
@@ -172,13 +172,13 @@ class SimpleElements extends Application
 			trace(" -----> onPointerDown", e);
 			b.startDragging(e);
 			b.style.color = Color.YELLOW;
-			b.update();
+			b.updateStyle();
 		}
 		draggArea.onPointerUp = function(b:InteractiveElement, e:PointerEvent) {
 			trace(" -----> onPointerUp", e);
 			b.stopDragging(e);
 			b.style.color = Color.GREY1;
-			b.update();
+			b.updateStyle();
 		}
 		uiDisplay.add(draggArea);
 		
@@ -203,7 +203,7 @@ class SimpleElements extends Application
 		if (uiElement.style.compatibleSkins & SkinType.Rounded > 0) {
 			uiElement.style.borderColor = Color.GREY7;
 		}
-		uiElement.update();
+		uiElement.updateStyle();
 	}
 	
 	public inline function onOut(color:Color, uiElement:InteractiveElement, e:PointerEvent) {
@@ -212,7 +212,7 @@ class SimpleElements extends Application
 		if (uiElement.style.compatibleSkins & SkinType.Rounded > 0) {
 			uiElement.style.borderColor = Color.GREY5;
 		}
-		uiElement.update();
+		uiElement.updateStyle();
 	}
 	
 	public inline function onMove(uiElement:InteractiveElement, e:PointerEvent) {
@@ -223,8 +223,8 @@ class SimpleElements extends Application
 		trace(" -----> onPointerDown", e);
 		if (uiElement.style.compatibleSkins & SkinType.Rounded > 0) {
 			uiElement.style.borderColor = borderColor;
-			//uiElement.x += 30;
-			uiElement.update();
+			//uiElement.x += 30;  uiElement.update();
+			uiElement.updateStyle();
 		}
 	}
 	
@@ -232,13 +232,13 @@ class SimpleElements extends Application
 		trace(" -----> onPointerUp", e);
 		if (uiElement.style.compatibleSkins & SkinType.Rounded > 0) {
 			uiElement.style.borderColor = borderColor;
-			uiElement.update();
+			uiElement.updateStyle();
 		}
 	}
 	
 	public inline function onClick(uiElement:InteractiveElement, e:PointerEvent) {
 		trace(" -----> onPointerClick", e);
-		//uiElement.y += 30; uiElement.update();
+		//uiElement.y += 30; uiElement.updateLayout();
 	}
 	
 	

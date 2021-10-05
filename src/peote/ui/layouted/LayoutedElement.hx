@@ -71,7 +71,7 @@ class LayoutedElement extends InteractiveElement implements peote.layout.ILayout
 		masked = layoutContainer.isMasked;
 		#end
 		
-		update(); // if its fully displayed
+		updateLayout();
 	}
 		
 }

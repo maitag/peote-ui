@@ -105,11 +105,11 @@ class SimpleMasked extends Application
 			var button = new LayoutedElement(roundedSkin, new RoundedStyle(Color.YELLOW));
 			button.onPointerOver = function(elem:InteractiveElement, e:PointerEvent) {
 				elem.style.color = Color.YELLOW - 0x00550000;
-				elem.update();
+				elem.updateStyle();
 			}
 			button.onPointerOut = function(elem:InteractiveElement, e:PointerEvent) {
 				elem.style.color = Color.YELLOW;
-				elem.update();
+				elem.updateStyle();
 			}
 			layoutedUIDisplay.add(button);
 			

@@ -58,5 +58,17 @@ abstract Div(Widget) from Widget to Widget
 	inline function set_style(style:Dynamic):Dynamic {
 		return layoutElement.style = style;
 	}
+
+	public function update() {
+		(this.layoutElement:Dynamic).update();
+	}
+
+	public function updateStyle() {
+		(this.layoutElement:Dynamic).updateStyle();
+	}
+
+	public function updateLayout() {
+		(this.layoutElement:Dynamic).updateLayout();
+	}
 	
 }

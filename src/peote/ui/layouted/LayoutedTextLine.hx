@@ -88,7 +88,7 @@ class $className extends $interactiveTextLineType implements peote.layout.ILayou
 		masked = layoutContainer.isMasked;
 		#end
 		
-		update(); // if its fully displayed
+		updateLayout();
 	}
 	
 }

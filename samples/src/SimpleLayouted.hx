@@ -71,12 +71,12 @@ class SimpleLayouted extends Application
 		var yellow= new LayoutedElement(roundedSkin, new SimpleStyle(Color.YELLOW));
 		yellow.onPointerOver = function(elem:InteractiveElement, e:PointerEvent) {
 			elem.style.color = Color.YELLOW - 0x00550000;
-			elem.update();
+			elem.updateStyle();
 		}
 		
 		yellow.onPointerOut = function(elem:InteractiveElement, e:PointerEvent) {
 			elem.style.color = Color.YELLOW;
-			elem.update();
+			elem.updateStyle();
 		}
 		
 		layoutedUIDisplay.add(red);
@@ -118,15 +118,13 @@ class SimpleLayouted extends Application
 		uiLayoutContainer.init();
 		uiLayoutContainer.update(peoteView.width, peoteView.height);
 		
-/*		haxe.Timer.delay(function() {
+		haxe.Timer.delay(function() {
 			//trace("change style after");
 			textLine2.fontStyle.color = Color.RED;
-			textLine2.fontStyle.height = 30;
+			//textLine2.fontStyle.height = 30;
 			textLine2.updateStyle();
-			textLine2.update();
-			
 		}, 1000);
-*/	
+	
 	}
 
 	

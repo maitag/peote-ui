@@ -9,5 +9,7 @@ interface Skin
 	public function addElement(uiDisplay:UIDisplay, uiElement:InteractiveElement):Void;
 	public function removeElement(uiDisplay:UIDisplay, uiElement:InteractiveElement):Void;
 	public function updateElement(uiDisplay:UIDisplay, uiElement:InteractiveElement):Void;
+	public function updateElementStyle(uiDisplay:UIDisplay, uiElement:InteractiveElement):Void;
+	public function updateElementLayout(uiDisplay:UIDisplay, uiElement:InteractiveElement):Void;
 	public function setCompatibleStyle(style:Dynamic):Dynamic;
 }

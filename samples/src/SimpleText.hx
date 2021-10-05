@@ -72,13 +72,11 @@ class SimpleText extends Application
 				trace("onPointerOver");
 				t.fontStyle.color = Color.YELLOW;
 				t.updateStyle();
-				t.update();
 			}
 			textLine.onPointerOut = function(t:InteractiveTextLine<FontStyleTiled>, e:PointerEvent) {
 				trace("onPointerOut");
 				t.fontStyle.color = Color.GREEN;
 				t.updateStyle();
-				t.update();
 			}
 						
 			uiDisplay.add(textLine);
@@ -86,9 +84,7 @@ class SimpleText extends Application
 			haxe.Timer.delay(function() {
 				//trace("change style after");
 				//textLine2.fontStyle = fontStyleTiled;
-				//textLine2.updateStyle();
-				//textLine2.update();
-				
+				//textLine2.updateStyle();				
 				uiDisplay.remove(textLine);
 				haxe.Timer.delay(function() {
 					uiDisplay.add(textLine);
@@ -115,13 +111,11 @@ class SimpleText extends Application
 				trace("onPointerOver");
 				t.fontStyle.color = Color.YELLOW;
 				t.updateStyle();
-				t.update();
 			}
 			textLine.onPointerOut = function(t:InteractiveTextLine<FontStylePacked>, e:PointerEvent) {
 				trace("onPointerOut");
 				t.fontStyle.color = Color.GREEN;
 				t.updateStyle();
-				t.update();
 			}
 						
 			uiDisplay.add(textLine);
@@ -129,9 +123,7 @@ class SimpleText extends Application
 			haxe.Timer.delay(function() {
 				//trace("change style after");
 				//textLine2.fontStyle = fontStyleTiled;
-				//textLine2.updateStyle();
-				//textLine2.update();
-				
+				//textLine2.updateStyle();				
 				uiDisplay.remove(textLine);
 				haxe.Timer.delay(function() {
 					uiDisplay.add(textLine);
@@ -140,16 +132,6 @@ class SimpleText extends Application
 			}, 1000);
 	}
 	
-	
-	// ----------------- Eventhandler ----------------------
-	
-/*	public inline function onOver(color:Color, uiElement:UIButton, e:PointerEvent) {
-		uiElement.style.color = color;
-		uiElement.style.borderColor = Color.GREY7;
-		uiElement.update();
-		trace(" -----> onPointerOver", e);
-	}
-*/	
 	
 	// ------------------------------------------------------------
 	// ----------------- LIME EVENTS ------------------------------

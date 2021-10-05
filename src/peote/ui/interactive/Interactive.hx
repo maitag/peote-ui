@@ -180,10 +180,29 @@ class Interactive
 	}
 	
 	
+	public function updateStyle():Void
+	{
+		updateVisibleStyle();
+	}
+	
+	public function updateLayout():Void
+	{
+		updateVisibleLayout();
+		updatePickable();
+	}
+	
 	public function update():Void
 	{
 		updateVisible();
-		
+		updatePickable();
+	}
+	
+	function updateVisibleStyle():Void {} // to override by childclasses
+	function updateVisibleLayout():Void {} // to override by childclasses
+	function updateVisible():Void {} // to override by childclasses	
+	
+	inline function updatePickable():Void
+	{
 		if ( hasMoveEvent  != 0 ) {
 			pickableMove.update(this);
 			if (isVisible) uiDisplay.movePickBuffer.updateElement( pickableMove );
@@ -194,10 +213,9 @@ class Interactive
 		}
 	}
 	
-	function updateVisible():Void {} // to override by childclasses
 	// -----------------
 	
-	private function onAddToDisplay(uiDisplay:UIDisplay)
+	inline function onAddToDisplay(uiDisplay:UIDisplay)
 	{
 		this.uiDisplay = uiDisplay;
 		isVisible = true;
@@ -209,7 +227,7 @@ class Interactive
 	function onAddVisibleToDisplay():Void {} // to override by childclasses
 	// -----------------
 	
-	private function onRemoveFromDisplay(uiDisplay:UIDisplay)
+	inline function onRemoveFromDisplay(uiDisplay:UIDisplay)
 	{		
 		if (uiDisplay != this.uiDisplay) throw('Error, $this is not inside uiDisplay: $uiDisplay');
 		onRemoveVisibleFromDisplay();
@@ -247,7 +265,7 @@ class Interactive
 	var dragOriginX:Int = 0;
 	var dragOriginY:Int = 0;
 	
-	public function setDragArea(dragAreaX:Int, dragAreaY:Int, dragAreaWidth:Int, dragAreaHeight:Int) 
+	public inline function setDragArea(dragAreaX:Int, dragAreaY:Int, dragAreaWidth:Int, dragAreaHeight:Int) 
 	{
 		dragMinX = dragAreaX;
 		dragMinY = dragAreaY;
@@ -256,7 +274,7 @@ class Interactive
 	}
 	
 	@:access(peote.view.Display)
-	private inline function dragTo(dragToX:Int, dragToY:Int):Void
+	inline function dragTo(dragToX:Int, dragToY:Int):Void
 	{
 		dragToX = Std.int(dragToX / uiDisplay.peoteView.zoom / uiDisplay.zoom);
 		dragToY = Std.int(dragToY / uiDisplay.peoteView.zoom / uiDisplay.zoom);

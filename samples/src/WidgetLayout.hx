@@ -139,8 +139,7 @@ class WidgetLayout extends Application
 					//bottom:Size.span(0.2),
 					height:25, // <- TODO: by FontSize !
 					
-					onPointerOver:
-						function (t:TextLine, e:PointerEvent) {
+					onPointerOver: function (t:TextLine, e:PointerEvent) {
 							trace("onPointerOver:Textfield");
 							
 							// 1)
@@ -160,18 +159,17 @@ class WidgetLayout extends Application
 							//fontStyleTiled.color = Color.RED;
 							//t.fontStyle = fontStyleTiled;
 							
-							t.update();
+							t.updateStyle();
 						}
 					,	
 					onPointerOut:
 						function (t:TextLine, e:PointerEvent) {
 							trace("onPointerOut:Textfield");
 							
+							// 5
 							var layoutedTextLine:LayoutedTextLine<FontStyleTiled> = t.getLayoutedTextLine();
 							layoutedTextLine.fontStyle.color = Color.WHITE;
 							layoutedTextLine.updateStyle();
-							
-							layoutedTextLine.update();
 						}
 						
 				}),
@@ -218,10 +216,7 @@ class WidgetLayout extends Application
 		
 		widget.style.color = color;
 		widget.style.borderColor = Color.GREY7;
-		//TODO: widget.updateStyle();
-		widget.layoutElement.update();
-		//TODO: widget.updateLayout();
-		//TODO: widget.update();
+		widget.updateStyle();
 	}
 	
 

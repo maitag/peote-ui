@@ -75,15 +75,15 @@ class $className extends peote.ui.interactive.Interactive
 		
 	}
 	
-	//TODO: override of Interactive!
-	public function updateStyle(from:Int = 0, to:Null<Int> = null) {
-		fontProgram.lineSetStyle(line, fontStyle, from, to);
+	override inline function updateVisibleStyle() {
+		fontProgram.lineSetStyle(line, fontStyle);
+		if (isVisible) {
+			fontProgram.updateLine(line);
+		}		
 	}
 	
-	
-	override inline function updateVisible():Void
+	override inline function updateVisibleLayout():Void
 	{
-		//trace("updateVisible");
 		if (textMasked && isVisible) {
 			fontProgram.lineSetPositionSize(line, x, y, width);
 		}
@@ -105,7 +105,12 @@ class $className extends peote.ui.interactive.Interactive
 		
 		if (isVisible) fontProgram.updateMask(maskElement);
 		#end
-		
+	}
+	
+	override inline function updateVisible():Void
+	{
+		fontProgram.lineSetStyle(line, fontStyle);
+		updateVisibleLayout();
 	}
 	
 	// -----------------

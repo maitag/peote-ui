@@ -29,13 +29,27 @@ class SimpleSkinElement implements SkinElement implements Element
 	public inline function new(uiElement:InteractiveElement, defaultStyle:SimpleStyle, buffer:Buffer<SimpleSkinElement>)
 	{
 		this.buffer = buffer;
-		_update(uiElement, defaultStyle);
+		_updateStyle(uiElement, defaultStyle);
+		_updateLayout(uiElement, defaultStyle);
 		buffer.addElement(this);
 	}
 	
 	public inline function update(uiElement:InteractiveElement, defaultStyle:Dynamic)
 	{
-		_update(uiElement, defaultStyle);
+		_updateStyle(uiElement, defaultStyle);
+		_updateLayout(uiElement, defaultStyle);
+		if (uiElement.isVisible) buffer.updateElement(this);
+	}
+	
+	public inline function updateLayout(uiElement:InteractiveElement, defaultStyle:Dynamic)
+	{
+		_updateLayout(uiElement, defaultStyle);
+		if (uiElement.isVisible) buffer.updateElement(this);
+	}
+	
+	public inline function updateStyle(uiElement:InteractiveElement, defaultStyle:Dynamic)
+	{
+		_updateStyle(uiElement, defaultStyle);
 		if (uiElement.isVisible) buffer.updateElement(this);
 	}
 	
@@ -45,10 +59,14 @@ class SimpleSkinElement implements SkinElement implements Element
 		return (buffer.length() == 0);
 	}
 	
-	inline function _update(uiElement:InteractiveElement, defaultStyle:Dynamic)
+	inline function _updateStyle(uiElement:InteractiveElement, defaultStyle:Dynamic)
+	{
+		color = (uiElement.style.color != null) ? uiElement.style.color : defaultStyle.color;
+	}
+	
+	inline function _updateLayout(uiElement:InteractiveElement, defaultStyle:Dynamic)
 	{
 		z = uiElement.z;
-		color = (uiElement.style.color != null) ? uiElement.style.color : defaultStyle.color;
 		
 		#if (peoteui_no_masking)
 		x = uiElement.x;
@@ -67,8 +85,7 @@ class SimpleSkinElement implements SkinElement implements Element
 			w = uiElement.width;
 			h = uiElement.height;
 		}
-		#end
-		
+		#end		
 	}
 }
 
@@ -98,7 +115,7 @@ class SimpleSkin implements Skin
 		return ((displays & (1 << uiDisplay.number))==0);
 	}
 
-	public function addElement(uiDisplay:UIDisplay, uiElement:InteractiveElement)
+	public inline function addElement(uiDisplay:UIDisplay, uiElement:InteractiveElement)
 	{
 		if (notIntoDisplay(uiDisplay))
 		{
@@ -123,7 +140,7 @@ class SimpleSkin implements Skin
 			#end
 	}
 	
-	public function removeElement(uiDisplay:UIDisplay, uiElement:InteractiveElement)
+	public inline function removeElement(uiDisplay:UIDisplay, uiElement:InteractiveElement)
 	{
 		if (uiElement.isVisible && uiElement.skinElement.remove()) 
 		{
@@ -142,12 +159,22 @@ class SimpleSkin implements Skin
 		}
 	}
 	
-	public function updateElement(uiDisplay:UIDisplay, uiElement:InteractiveElement)
+	public inline function updateElement(uiDisplay:UIDisplay, uiElement:InteractiveElement)
 	{
 		uiElement.skinElement.update(uiElement, defaultStyle);
 	}
 	
-	public function setCompatibleStyle(style:Dynamic):Dynamic {
+	public inline function updateElementStyle(uiDisplay:UIDisplay, uiElement:InteractiveElement)
+	{
+		uiElement.skinElement.updateStyle(uiElement, defaultStyle);
+	}
+	
+	public inline function updateElementLayout(uiDisplay:UIDisplay, uiElement:InteractiveElement)
+	{
+		uiElement.skinElement.updateLayout(uiElement, defaultStyle);
+	}
+	
+	public inline function setCompatibleStyle(style:Dynamic):Dynamic {
 		if (style == null) return defaultStyle;
 		else if (style.compatibleSkins & type > 0) return style;
 		else {

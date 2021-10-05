@@ -40,6 +40,16 @@ class InteractiveElement extends Interactive
 	}
 	
 	
+	override inline function updateVisibleStyle():Void
+	{
+		if (skin != null) skin.updateElementStyle(uiDisplay, this);
+	}
+	
+	override inline function updateVisibleLayout():Void
+	{
+		if (skin != null) skin.updateElementLayout(uiDisplay, this);
+	}
+	
 	override inline function updateVisible():Void
 	{
 		if (skin != null) skin.updateElement(uiDisplay, this);
