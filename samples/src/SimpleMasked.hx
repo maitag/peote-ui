@@ -116,7 +116,7 @@ class SimpleMasked extends Application
 			button.wheelEventsBubbleTo = red;
 			
 			// TODO: Textlinemasking 
-			var textLineTiled = new LayoutedTextLine<FontStyleTiled>(0, 0, 130, 16, 0, true, 'button${i+1}', tiledFont, fontStyleTiled);
+			var textLineTiled = new LayoutedTextLine<FontStyleTiled>(0, 0, 130, 16, 0, true, 'button${i+1}', tiledFont, fontStyleTiled, Color.random());
 			//var textLinePacked = new LayoutedTextLine<FontStylePacked>(0, 0, 130, 25, 0, true, "packed font", packedFont, fontStylePacked);	// masked -> true		
 			//trace("KK", textLineTiled.line.fullWidth); // TODO: line is null
 			
@@ -157,7 +157,7 @@ class SimpleMasked extends Application
 		
 		red.onMouseWheel = function(b:InteractiveElement, e:WheelEvent) {
 			if (e.deltaY != 0) {
-				var yScroll = uiLayoutContainer.getChild(0).yScroll - e.deltaY*5;
+				var yScroll = uiLayoutContainer.getChild(0).yScroll - e.deltaY*10;
 				//if (xScroll >= 0 && xScroll <= uiLayoutContainer.getChild(0).xScrollMax) {
 					uiLayoutContainer.getChild(0).yScroll = yScroll;
 					uiLayoutContainer.update();

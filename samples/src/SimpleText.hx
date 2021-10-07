@@ -104,12 +104,12 @@ class SimpleText extends Application
 			fontStylePacked.height = 25;
 			fontStylePacked.width = 25;
 			
-			//var textLine = new InteractiveTextLine<FontStylePacked>(0, 80, 112, 25, "hello Button", fontPacked, fontStylePacked); //, selectionFontStyle
-			var textLine = font.createInteractiveTextLine(250, 0, 70, 18, 0, true, "Masked", fontStylePacked); //, selectionFontStyle
+			//var textLine = new InteractiveTextLine<FontStylePacked>(0, 80, 112, 25, "hello Button", fontPacked, fontStylePacked, Color.YELLOW); //, selectionFontStyle
+			var textLine = font.createInteractiveTextLine(250, 0, 70, 18, 0, true, "Masked", fontStylePacked, Color.YELLOW); //, selectionFontStyle
 
 			textLine.onPointerOver = function(t:InteractiveTextLine<FontStylePacked>, e:PointerEvent) {
 				trace("onPointerOver");
-				t.fontStyle.color = Color.YELLOW;
+				t.fontStyle.color = Color.RED;
 				t.updateStyle();
 			}
 			textLine.onPointerOut = function(t:InteractiveTextLine<FontStylePacked>, e:PointerEvent) {

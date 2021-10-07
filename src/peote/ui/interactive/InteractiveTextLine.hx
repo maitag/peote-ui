@@ -34,6 +34,8 @@ class InteractiveTextLineMacro
 			
 			//var glyphStyleHasMeta = peote.text.Glyph.GlyphMacro.parseGlyphStyleMetas(styleModule+"."+styleName); // trace("FontProgram: glyphStyleHasMeta", glyphStyleHasMeta);
 			//var glyphStyleHasField = peote.text.Glyph.GlyphMacro.parseGlyphStyleFields(styleModule+"."+styleName); // trace("FontProgram: glyphStyleHasField", glyphStyleHasField);
+			var glyphStyleHasMeta = Macro.parseGlyphStyleMetas(styleModule+"."+styleName); // trace("FontProgram: glyphStyleHasMeta", glyphStyleHasMeta);
+			var glyphStyleHasField = Macro.parseGlyphStyleFields(styleModule+"."+styleName); // trace("FontProgram: glyphStyleHasField", glyphStyleHasField);
 
 			var c = macro
 
@@ -52,25 +54,35 @@ class $className extends peote.ui.interactive.Interactive
 		
 	public var textMasked:Bool;
 	
-	#if (!peoteui_no_textmasking)
+	public var backgroundColor:peote.view.Color;
+	var backgroundElement:peote.text.BackgroundElement;
+	
+	#if (!peoteui_no_textmasking && !peoteui_no_masking)
 	var maskElement:peote.text.MaskElement;
 	#end
 	
 	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int, textMasked:Bool = false,
-	                    //text:String, font:$fontType, fontStyle:$styleType) 
-	                    text:String, font:peote.text.Font<$styleType>, fontStyle:$styleType) 
+	                    //text:String, font:$fontType, fontStyle:$styleType, backgroundColor:peote.view.Color = 0) 
+	                    text:String, font:peote.text.Font<$styleType>, fontStyle:$styleType, backgroundColor:peote.view.Color = 0)
 	{
 		//trace("NEW InteractiveTextLine");
 		super(xPosition, yPosition, width, height, zIndex);
 
 		this.textMasked = textMasked;
+		this.backgroundColor = backgroundColor;
 		
-		#if (!peoteui_no_textmasking)
+		#if (!peoteui_no_textmasking && !peoteui_no_masking)
 		maskElement = new peote.text.MaskElement(xPosition, yPosition, width, height);
 		#end
 		
 		this.text = text;
 		this.font = font;
+		
+		${switch (glyphStyleHasField.local_zIndex) {
+			case true: macro fontStyle.zIndex = zIndex;
+			default: macro {}
+		}}		
+		
 		this.fontStyle = fontStyle;
 		
 	}
@@ -84,22 +96,40 @@ class $className extends peote.ui.interactive.Interactive
 	
 	override inline function updateVisibleLayout():Void
 	{
+		// TODO:
 		if (textMasked && isVisible) {
 			fontProgram.lineSetPositionSize(line, x, y, width);
 		}
 		else {
 			fontProgram.lineSetPosition(line, x, y);
+			if (backgroundColor != 0) fontProgram.setLineBackground(backgroundElement, line, false);
 		}
 		
 		if (isVisible) {
+			
+			// TODO: optimize setting z-index in depend of styletyp and better allways adding fontprograms at end od uiDisplay (onAddVisibleToDisplay)
+			${switch (glyphStyleHasField.local_zIndex) {
+				case true: macro {
+					if (fontStyle.zIndex != z) {
+						fontStyle.zIndex = z;
+						fontProgram.lineSetStyle(line, fontStyle);
+					}
+				}
+				default: macro {}
+			}}		
+		
 			fontProgram.updateLine(line);
+			
+			if (backgroundColor != 0) fontProgram.setLineBackground(backgroundElement, line);
 		}
+		
+		
 		
 		if (!textMasked) {
 			width = Std.int(line.textSize);
 		}
 		
-		#if (!peoteui_no_textmasking)
+		#if (!peoteui_no_textmasking && !peoteui_no_masking)
 		if (masked && textMasked) maskElement.update(x + maskX, y + maskY, maskWidth, maskHeight);
 		else maskElement.update(x, y, width, height);
 		
@@ -120,18 +150,24 @@ class $className extends peote.ui.interactive.Interactive
 		//trace("onAddVisibleToDisplay");	
 		if (line == null) {
 			if (font.notIntoUiDisplay(uiDisplay.number)) {
-				fontProgram = font.createFontProgramForUiDisplay(uiDisplay.number, fontStyle, #if (peoteui_no_textmasking) false #else true #end);
+				fontProgram = font.createFontProgramForUiDisplay(uiDisplay.number, fontStyle, #if (peoteui_no_textmasking) false #else true #end, true);
 				uiDisplay.addProgram(fontProgram); // TODO: better also uiDisplay.addFontProgram() to let clear all skins at once from inside UIDisplay
 			}
 			else {
 				fontProgram = font.getFontProgramByUiDisplay(uiDisplay.number);
-				if (fontProgram.numberOfGlyphes()==0) uiDisplay.addProgram(fontProgram);
+				if (fontProgram.numberOfGlyphes()==0) uiDisplay.addProgram(fontProgram);//TODO: adding mask & bg
 			}
+			
+			${switch (glyphStyleHasField.local_zIndex) {
+				case true: macro fontStyle.zIndex = z;
+				default: macro {}
+			}}		
 			
 			//line = fontProgram.createLine(text, x, y, fontStyle);
 			line = new peote.text.Line<$styleType>();
-			
 			fontProgram.setLine(line, text, x, y, (textMasked) ? width : null, null, fontStyle);
+			
+			if (backgroundColor != 0) backgroundElement = fontProgram.createLineBackground(line, backgroundColor);
 			
 			if (!textMasked) {
 				width = Std.int(line.textSize); // TODO
@@ -140,16 +176,17 @@ class $className extends peote.ui.interactive.Interactive
 				if ( hasMoveEvent  != 0 ) pickableMove.update(this);
 				if ( hasClickEvent != 0 ) pickableClick.update(this);				
 			}
-			#if (!peoteui_no_textmasking)
+			#if (!peoteui_no_textmasking && !peoteui_no_masking)
 			maskElement = fontProgram.createMask(x, y, width, height);
 			#end
 		}
 		else {
-			if (fontProgram.numberOfGlyphes()==0) uiDisplay.addProgram(fontProgram);
-			fontProgram.addLine(line);
-			#if (!peoteui_no_textmasking)
+			if (fontProgram.numberOfGlyphes() == 0) uiDisplay.addProgram(fontProgram);//TODO: adding mask & bg
+			#if (!peoteui_no_textmasking && !peoteui_no_masking)
 			fontProgram.addMask(maskElement);
 			#end
+			if (backgroundColor != 0) fontProgram.addBackground(backgroundElement);
+			fontProgram.addLine(line);
 		}
 		
 	}
@@ -157,13 +194,14 @@ class $className extends peote.ui.interactive.Interactive
 	override inline function onRemoveVisibleFromDisplay()
 	{	//trace("onRemoveVisibleFromDisplay");
 		fontProgram.removeLine(line);
-		#if (!peoteui_no_textmasking)
+		if (backgroundColor != 0) fontProgram.removeBackground(backgroundElement);
+		#if (!peoteui_no_textmasking && !peoteui_no_masking)
 		fontProgram.removeMask(maskElement);
 		#end
 		
 		if (fontProgram.numberOfGlyphes()==0)
 		{
-			uiDisplay.removeProgram(font.removeFontProgramFromUiDisplay(uiDisplay.number));
+			uiDisplay.removeProgram(font.removeFontProgramFromUiDisplay(uiDisplay.number)); //TODO: removing mask & bg
 			// TODO:
 			//d.buffer.clear();
 			//d.program.clear();

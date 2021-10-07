@@ -91,12 +91,12 @@ class SimpleLayouted extends Application
 		fontStyleTiled.width = 30.0;
 		fontStyleTiled.color = Color.BLACK;
 		
-		//var textLine1 = new LayoutedTextLine<FontStyleTiled>(0, 0, 112, 25, 0, "hello", font, fontStyleTiled);
-		var textLine1:LayoutedTextLine<FontStyleTiled> = font.createLayoutedTextLine(0, 0, 300, 25, 0, false, "hello world", fontStyleTiled);
+		//var textLine1 = new LayoutedTextLine<FontStyleTiled>(0, 0, 112, 25, 0, "hello", font, fontStyleTiled, Color.BLUE);
+		var textLine1:LayoutedTextLine<FontStyleTiled> = font.createLayoutedTextLine(0, 0, 300, 25, 0, false, "hello world", fontStyleTiled, Color.RED);
 		layoutedUIDisplay.add(textLine1);
 		
 		// masked -> true
-		var textLine2 = font.createLayoutedTextLine(0, 0, 300, 25, 0, true, "hello world", font.createFontStyle());			
+		var textLine2 = font.createLayoutedTextLine(0, 0, 300, 25, 0, true, "hello world", font.createFontStyle(), Color.BLACK);			
 		layoutedUIDisplay.add(textLine2);
 		
 		uiLayoutContainer = new Box( layoutedUIDisplay , { width:Size.limit(100,700), relativeChildPositions:true },

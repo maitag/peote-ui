@@ -32,11 +32,11 @@ class $className extends $interactiveTextLineType implements peote.layout.ILayou
 {
 	
 	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int, masked:Bool = false,
-	                    //text:String, font:$fontType, fontStyle:$styleType) 
-	                    text:String, font:peote.text.Font<$styleType>, fontStyle:$styleType) 
+	                    //text:String, font:$fontType, fontStyle:$styleType, backgroundColor:peote.view.Color = 0) 
+	                    text:String, font:peote.text.Font<$styleType>, fontStyle:$styleType, backgroundColor:peote.view.Color = 0) 
 	{
 		//trace("NEW LayoutedTextLine");
-		super(xPosition, yPosition, width, height, zIndex, masked, text, font, fontStyle);
+		super(xPosition, yPosition, width, height, zIndex, masked, text, font, fontStyle, backgroundColor);
 	}
 		
 	

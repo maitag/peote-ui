@@ -2,6 +2,7 @@ package peote.ui.widget;
 
 import peote.layout.ContainerType;
 import peote.layout.LayoutOptions;
+import peote.view.Color;
 
 import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
@@ -24,7 +25,7 @@ abstract TextLine(Widget) from Widget to Widget
 	public inline function new(font, fontStyle, text:String, textLineOptions:TextLineOptions)
 	{
 		this = new Widget(ContainerType.BOX,
-			font.createLayoutedTextLine(0, 0, 0, 0, 0, true, text, fontStyle),
+			font.createLayoutedTextLine(0, 0, 0, 0, 0, true, text, fontStyle, 0),
 			textLineOptions
 		);
 		
