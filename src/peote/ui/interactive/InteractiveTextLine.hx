@@ -150,7 +150,7 @@ class $className extends peote.ui.interactive.Interactive
 		//trace("onAddVisibleToDisplay");	
 		if (line == null) {
 			if (font.notIntoUiDisplay(uiDisplay.number)) {
-				fontProgram = font.createFontProgramForUiDisplay(uiDisplay.number, fontStyle, #if (peoteui_no_textmasking) false #else true #end, true);
+				fontProgram = font.createFontProgramForUiDisplay(uiDisplay.number, fontStyle, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end, true);
 				uiDisplay.addProgram(fontProgram); // TODO: better also uiDisplay.addFontProgram() to let clear all skins at once from inside UIDisplay
 			}
 			else {
