@@ -1,6 +1,9 @@
 package peote.ui;
 
 import haxe.ds.Vector;
+
+import lime.graphics.RenderContext;
+import lime.ui.Window;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.ui.MouseButton;
@@ -223,20 +226,20 @@ class UIDisplay extends Display
 			var y = Std.int(mouseY);
 			
 			var pickedIndex = (isPointInside(x, y)) ? peoteView.getElementAt(mouseX, mouseY, this, movePickProgram) : -1;
-
+			
 			if (draggingMouseElements.length == 0)	
 			{	
 				//var pickedIndex = (isPointInside(x, y)) ? peoteView.getElementAt(mouseX, mouseY, this, movePickProgram) : -1;
 				
 				// Over/Out
 				if (pickedIndex != lastMouseOverIndex) 
-				{				 
+				{	
 					if (lastMouseOverIndex >= 0) 
 					{
 						var lastElem = movePickBuffer.getElement(lastMouseOverIndex).uiElement;
 						
 						if (pickedIndex >= 0)
-						{
+						{	
 							var pickedElem = movePickBuffer.getElement(pickedIndex).uiElement;
 							
 							if (lastElem.intoOverOutEventBubbleOf(pickedElem))
@@ -423,7 +426,7 @@ class UIDisplay extends Display
 			var y = Std.int(mouseY);
 			
 			if (isPointInside(x, y))
-			{			
+			{	
 				var pickedIndex = peoteView.getElementAt(mouseX, mouseY, this, clickPickProgram) ;
 				if (pickedIndex >= 0) {
 					var pickedElem = clickPickBuffer.getElement(pickedIndex).uiElement;
@@ -621,9 +624,13 @@ class UIDisplay extends Display
 	public inline function keyDown (keyCode:KeyCode, modifier:KeyModifier):Void
 	{
 		switch (keyCode) {
-			//case KeyCode.NUMPAD_PLUS:
+			#if html5
+			case KeyCode.TAB: untyped __js__('event.preventDefault();');
+			#end
+			//case KeyCode.F: window.fullscreen = !window.fullscreen;
 			default:
 		}
+		
 	}
 	
 	public inline function keyUp (keyCode:KeyCode, modifier:KeyModifier):Void
@@ -637,7 +644,124 @@ class UIDisplay extends Display
 		
 	}
 
+	// override function onTextEdit(text:String, start:Int, length:Int) {}
+	// override function onTextInput (text:String)	{}
 	
+	
+	
+	
+	// -------- register Events from Lime Application ----------
+	
+	public var pointerEnabled(get, set):Bool;
+	public inline function set_pointerEnabled(b:Bool):Bool {
+		if (b) activate(this) else deactivate(this);
+		return b;
+	}
+
+	#if (peoteui_maxDisplays == "1")
+		public inline function get_pointerEnabled():Bool return (activeUIDisplay == this);
+		
+		static var activeUIDisplay:UIDisplay;
+
+		static public function activate(uiDisplay:UIDisplay) {
+			activeUIDisplay = uiDisplay;
+		}
+		static public function deactivate(uiDisplay:UIDisplay) {
+			activeUIDisplay = null;
+		}
+		
+		static public inline function mouseMoveActive(mouseX:Float, mouseY:Float) if (activeUIDisplay!=null) activeUIDisplay.mouseMove(mouseX, mouseY);	
+		static public inline function mouseDownActive(mouseX:Float, mouseY:Float, button:MouseButton) if (activeUIDisplay!=null) activeUIDisplay.mouseDown(mouseX, mouseY, button);
+		static public inline function mouseUpActive(mouseX:Float, mouseY:Float, button:MouseButton) if (activeUIDisplay!=null) activeUIDisplay.mouseUp(mouseX, mouseY, button);
+		static public inline function mouseWheelActive(dx:Float, dy:Float, mode:MouseWheelMode) if (activeUIDisplay!=null) activeUIDisplay.mouseWheel(dx, dy, mode);
+		
+		static public inline function touchStartActive(touch:Touch) if (activeUIDisplay!=null) activeUIDisplay.touchStart(touch);
+		static public inline function touchMoveActive(touch:Touch) if (activeUIDisplay!=null) activeUIDisplay.touchMove(touch);
+		static public inline function touchEndActive(touch:Touch) if (activeUIDisplay!=null) activeUIDisplay.touchEnd(touch);
+		static public inline function touchCancelActive(touch:Touch) if (activeUIDisplay!=null) activeUIDisplay.touchCancel(touch);
+
+		static public inline function windowLeaveActive() if (activeUIDisplay!=null) activeUIDisplay.windowLeave();
+
+	#else
+		public inline function get_pointerEnabled():Bool return (activeUIDisplay.indexOf(this) >= 0);
+
+		static var activeUIDisplay = new Array<UIDisplay>();
+		
+		static public function activate(uiDisplay:UIDisplay) {
+			if (activeUIDisplay.indexOf(uiDisplay) < 0) activeUIDisplay.push(uiDisplay);
+		}
+		static public function deactivate(uiDisplay:UIDisplay) {
+			activeUIDisplay.remove(uiDisplay);
+		}
+		
+		static public inline function mouseMoveActive(mouseX:Float, mouseY:Float) for (ui in activeUIDisplay) ui.mouseMove(mouseX, mouseY);	
+		static public inline function mouseUpActive(mouseX:Float, mouseY:Float, button:MouseButton) for (ui in activeUIDisplay) ui.mouseUp(mouseX, mouseY, button);
+		static public inline function mouseDownActive(mouseX:Float, mouseY:Float, button:MouseButton) for (ui in activeUIDisplay) ui.mouseDown(mouseX, mouseY, button);
+		static public inline function mouseWheelActive(dx:Float, dy:Float, mode:MouseWheelMode) for (ui in activeUIDisplay) ui.mouseWheel(dx, dy, mode);
+		
+		static public inline function touchStartActive(touch:Touch) for (ui in activeUIDisplay) ui.touchStart(touch);
+		static public inline function touchMoveActive(touch:Touch) for (ui in activeUIDisplay) ui.touchMove(touch);
+		static public inline function touchEndActive(touch:Touch) for (ui in activeUIDisplay) ui.touchEnd(touch);
+		static public inline function touchCancelActive(touch:Touch) for (ui in activeUIDisplay) ui.touchCancel(touch);
+
+		static public inline function windowLeaveActive() for (ui in activeUIDisplay) ui.windowLeave();
+	#end
+
+	// -------- register Events from Lime Application ----------
+	
+	public static function registerEvents(window:Window) {
+		
+		window.onMouseUp.add(mouseUpActive);
+		window.onMouseDown.add(mouseDownActive);
+		window.onMouseWheel.add(mouseWheelActive);
+		
+		// TODO: keyboard & text
+		
+		Touch.onStart.add(touchStartActive);
+		Touch.onMove.add(touchMoveActive);
+		Touch.onEnd.add(touchEndActive);
+		Touch.onCancel.add(touchCancelActive);
+
+		#if (! html5)
+		window.onRender.add(_mouseMoveFrameSynced);
+		window.onMouseMove.add(_mouseMove);
+		window.onLeave.add(_windowLeave);
+		#else
+		window.onMouseMove.add(mouseMove);
+		window.onLeave.add(windowLeave);
+		#end
+	}
+	
+	#if (! html5)
+		static var isMouseMove = false;
+		static var lastMouseMoveX:Float = 0.0;
+		static var lastMouseMoveY:Float = 0.0;
+		
+		static inline function _mouseMove (x:Float, y:Float) {
+			lastMouseMoveX = x;
+			lastMouseMoveY = y;
+			isMouseMove = true;
+		}
+		
+		static inline function _mouseMoveFrameSynced(context:RenderContext):Void {
+			if (isMouseMove) {
+				isMouseMove = false;
+				mouseMoveActive(lastMouseMoveX, lastMouseMoveY);
+			}
+		}
+		
+		static inline function _windowLeave() {
+			lastMouseMoveX = lastMouseMoveY = -1; // fix for another onMouseMoveFrameSynced() by render-loop
+			windowLeaveActive();
+		}
+	#end
+
+	// TODO:
+	public static function unRegisterEvents(window:Window) {
+		
+		
+	}
+			
 }
 
 

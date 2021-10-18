@@ -4,12 +4,6 @@ import haxe.CallStack;
 
 import lime.app.Application;
 import lime.ui.Window;
-import lime.graphics.RenderContext;
-import lime.ui.KeyCode;
-import lime.ui.KeyModifier;
-import lime.ui.MouseButton;
-import lime.ui.MouseWheelMode;
-import lime.ui.Touch;
 import peote.ui.skin.SkinType;
 
 import peote.view.PeoteView;
@@ -192,6 +186,11 @@ class SimpleElements extends Application
 		uiDisplay.mouseEnabled = false;
 		peoteView.zoom = 3;
 		#end
+		
+		uiDisplay.pointerEnabled = true;
+		
+		// TODO: set what events to register (mouse, touch, keyboard ...)
+		UIDisplay.registerEvents(window);
 			
 	}
 	
@@ -251,68 +250,6 @@ class SimpleElements extends Application
 	// public override function onRenderContextLost ():Void trace(" --- WARNING: LOST RENDERCONTEXT --- ");		
 	// public override function onRenderContextRestored (context:RenderContext):Void trace(" --- onRenderContextRestored --- ");		
 
-
-	// ----------------- MOUSE EVENTS ------------------------------
-	#if (! html5)
-		var isMouseMove = false;
-		var lastMouseMoveX:Float = 0.0;
-		var lastMouseMoveY:Float = 0.0;
-		override function render(context:RenderContext)
-		{
-			if (isMouseMove) {
-				isMouseMove = false;
-				onMouseMoveFrameSynced(lastMouseMoveX, lastMouseMoveY);
-			}
-		}
-	#end
-	
-	override function onMouseMove (x:Float, y:Float) {
-		#if (html5)
-		onMouseMoveFrameSynced(x, y);
-		#else
-		lastMouseMoveX = x;
-		lastMouseMoveY = y;
-		isMouseMove = true;
-		#end		
-	}
-		
-	inline function onMouseMoveFrameSynced (x:Float, y:Float) uiDisplay.mouseMove(x, y);
-	
-	override function onMouseDown (x:Float, y:Float, button:MouseButton) uiDisplay.mouseDown(x, y, button);
-	override function onMouseUp (x:Float, y:Float, button:MouseButton) uiDisplay.mouseUp(x, y, button);
-	override function onMouseWheel (dx:Float, dy:Float, mode:MouseWheelMode) uiDisplay.mouseWheel(dx, dy, mode);
-	// public override function onMouseMoveRelative (x:Float, y:Float):Void {}
-
-	// ----------------- TOUCH EVENTS ------------------------------
-	override function onTouchStart (touch:Touch) uiDisplay.touchStart(touch);
-	override function onTouchMove (touch:Touch)	 uiDisplay.touchMove(touch);
-	override function onTouchEnd (touch:Touch)  uiDisplay.touchEnd(touch);
-	override function onTouchCancel (touch:Touch)  uiDisplay.touchCancel(touch);
-	
-	// ----------------- KEYBOARD EVENTS ---------------------------
-	override function onKeyDown (keyCode:KeyCode, modifier:KeyModifier) {
-		switch (keyCode) {
-			#if html5
-			case KeyCode.TAB: untyped __js__('event.preventDefault();');
-			#end
-			case KeyCode.F: window.fullscreen = !window.fullscreen;
-			default:
-		}
-		uiDisplay.keyDown(keyCode, modifier);
-	}
-	
-	override function onKeyUp (keyCode:KeyCode, modifier:KeyModifier) uiDisplay.keyUp(keyCode, modifier);
-	// override function onTextEdit(text:String, start:Int, length:Int) {}
-	// override function onTextInput (text:String)	{}
-
-	// ----------------- WINDOWS EVENTS ----------------------------
-	override function onWindowLeave() {
-		#if (! html5)
-		lastMouseMoveX = lastMouseMoveY = -1; // fix for another onMouseMoveFrameSynced() by render-loop
-		#end
-		uiDisplay.windowLeave();
-	}
-	
 	// override function onWindowResize (width:Int, height:Int) { trace("onWindowResize"); }
 	// override function onWindowActivate():Void { trace("onWindowActivate"); }
 	// override function onWindowDeactivate():Void { trace("onWindowDeactivate"); }

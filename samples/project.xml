@@ -7,12 +7,13 @@
 	<!-- <meta build-number="714" /> --> <!-- let set the buildnumber manual (android) -->
 	<!-- check this for GG-Playstore: <setenv name="ANDROID_GRADLE_TASK" value=":app:bundleRelease" /> -->
 	
-	<app main="SimpleMasked" path="bin" file="Main" />
+	<app main="SimpleElements" path="bin" file="Main" />
 	<!--
 		SimpleElements,
 		SimpleText,
 		SimpleLayouted,
 		SimpleMasked,
+		MultiUIDisplays,
 		WidgetLayout,
 		...
 	-->
@@ -39,7 +40,7 @@
 	
 	<!-- TODO: --><!-- <haxedef name="peoteui_multitouch" /> -->
 	
-	<define name="peoteui_maxDisplays" value="1" /> <!-- for optimization use "1" (max is 32) -->
+	<define name="peoteui_maxDisplays" value="10" /> <!-- for optimization use "1" (max is 32) -->
 	<!--<haxedef name="peoteui_no_masking" />--> <!-- to disable masking of ui-elements for more performance -->
 	<!--<haxedef name="peoteui_no_textmasking" />--> <!-- to disable masking of ui-elements for more performance -->
 	
