@@ -40,6 +40,9 @@ abstract PeoteUI(LayoutContainer) from LayoutContainer to LayoutContainer {
 			peoteUiOptions,
 			widgets
 		);
+		
+		// TODO: only if visible
+		PeoteUI.activate(this);
 			
 		addChildsToDisplay(this);
 	}
@@ -93,8 +96,40 @@ abstract PeoteUI(LayoutContainer) from LayoutContainer to LayoutContainer {
 	public inline function get_pointerEnabled():Bool return display.pointerEnabled;
 	public inline function set_pointerEnabled(b:Bool):Bool return display.pointerEnabled = b;
 	
-	public static function registerEvents(window:Window) UIDisplay.registerEvents(window);
-	public static function unRegisterEvents(window:Window) UIDisplay.unRegisterEvents(window);
+	public static function registerEvents(window:Window) {
+		UIDisplay.registerEvents(window);
+		window.onResize.add(windowResize);
+	}
+	public static function unRegisterEvents(window:Window) {
+		UIDisplay.unRegisterEvents(window);
+		window.onResize.remove(windowResize);
+	}
 	
+// ---------------- global Input-Eventhandlers ----------------
+	
+	#if (peoteui_maxDisplays == "1")
+		static var activeUI:PeoteUI;
+
+		static public function activate(peoteUI:PeoteUI) {
+			activeUI = peoteUI;
+		}
+		static public function deactivate(peoteUI:PeoteUI) {
+			activeUI = null;
+		}
+		
+		static public inline function windowResize(width:Int, height:Int) if (activeUI != null) activeUI.update(width, height);
+
+	#else
+		static var activeUI = new Array<PeoteUI>();
+		
+		static public function activate(peoteUI:PeoteUI) {
+			if (activeUI.indexOf(peoteUI) < 0) activeUI.push(peoteUI);
+		}
+		static public function deactivate(peoteUI:PeoteUI) {
+			activeUI.remove(peoteUI);
+		}
+		
+		static public inline function windowResize(width:Int, height:Int) for (ui in activeUI) ui.update(width, height);
+	#end
 	
 }
