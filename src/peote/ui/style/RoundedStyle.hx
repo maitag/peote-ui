@@ -8,9 +8,9 @@ class RoundedStyle //extends SimpleStyle
 {	
 	public var compatibleSkins(default, null):SkinType = SkinType.Simple | SkinType.Rounded;
 
-	public var color      :Null<Color> = Color.GREY2;
-	public var borderColor:Null<Color> = Color.GREY6;
-	public var borderSize:Null<Float>   =  4.0;
+	public var color       :Null<Color> = Color.GREY2;
+	public var borderColor :Null<Color> = Color.GREY6;
+	public var borderSize  :Null<Float> =  4.0;
 	public var borderRadius:Null<Float> = 20.0;
 	
 	public function new(
@@ -26,6 +26,16 @@ class RoundedStyle //extends SimpleStyle
 		if (borderColor != null) this.borderColor = borderColor;
 		if (borderSize != null) this.borderSize = borderSize;
 		if (borderRadius != null) this.borderRadius = borderRadius;
+	}
+	
+	public inline function copy():RoundedStyle
+	{
+		return new RoundedStyle(
+			color,
+			borderColor,
+			borderSize,
+			borderRadius
+		);
 	}
 	
 }

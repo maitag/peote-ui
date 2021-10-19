@@ -115,6 +115,14 @@ class UIDisplay extends Display
 		super.removeFromPeoteView(peoteView);
 	}
 
+	// optimized function to check if mouseposition inside UIDisplay
+	@:access(peote.view.PeoteView)	
+	inline function _isPointInside(px:Int, py:Int) {
+		px = Std.int(px / peoteView.xz - peoteView.xOffset);
+		py = Std.int(py / peoteView.yz - peoteView.yOffset);
+		return (px >= x && px < x + width && py >= y && py < y + height);
+	}
+
 	// -------------------------------------------------------
 		
 	public inline function show() {
@@ -218,6 +226,15 @@ class UIDisplay extends Display
 	var lockMouseDown:Int = 0;	
 
 	
+	// ------------ PointerEvents ond the UIDisplay itselfs ----------
+	
+	public var onPointerOver:UIDisplay->PointerEvent->Void = null;
+	public var onPointerOut:UIDisplay->PointerEvent->Void = null;
+	public var onPointerDown:UIDisplay->PointerEvent->Void = null;
+	public var onPointerUp:UIDisplay->PointerEvent->Void = null;
+	public var onPointerClick:UIDisplay->PointerEvent->Void = null;
+	
+	
 	
 	public inline function mouseMove (mouseX:Float, mouseY:Float):Void {
 		if (mouseEnabled && peoteView != null)
@@ -225,11 +242,11 @@ class UIDisplay extends Display
 			var x = Std.int(mouseX);
 			var y = Std.int(mouseY);
 			
-			var pickedIndex = (isPointInside(x, y)) ? peoteView.getElementAt(mouseX, mouseY, this, movePickProgram) : -1;
+			var pickedIndex = (_isPointInside(x, y)) ? peoteView.getElementAt(mouseX, mouseY, this, movePickProgram) : -1;
 			
 			if (draggingMouseElements.length == 0)	
 			{	
-				//var pickedIndex = (isPointInside(x, y)) ? peoteView.getElementAt(mouseX, mouseY, this, movePickProgram) : -1;
+				//var pickedIndex = (_isPointInside(x, y)) ? peoteView.getElementAt(mouseX, mouseY, this, movePickProgram) : -1;
 				
 				// Over/Out
 				if (pickedIndex != lastMouseOverIndex) 
@@ -326,11 +343,11 @@ class UIDisplay extends Display
 			
 			var draggingTouchElemArray = draggingTouchElements.get(touch.id);
 			
-			var pickedIndex = (isPointInside(x, y)) ? peoteView.getElementAt(x, y, this, movePickProgram) : -1;
+			var pickedIndex = (_isPointInside(x, y)) ? peoteView.getElementAt(x, y, this, movePickProgram) : -1;
 			
 			if (draggingTouchElemArray.length == 0)
 			{	
-				//var pickedIndex = (isPointInside(x, y)) ? peoteView.getElementAt(x, y, this, movePickProgram) : -1;
+				//var pickedIndex = (_isPointInside(x, y)) ? peoteView.getElementAt(x, y, this, movePickProgram) : -1;
 				var lastOverIndex:Int = lastTouchOverIndex.get(touch.id);
 				
 				// touch Over/Out
@@ -425,8 +442,8 @@ class UIDisplay extends Display
 			var x = Std.int(mouseX);
 			var y = Std.int(mouseY);
 			
-			if (isPointInside(x, y))
-			{	
+			if (_isPointInside(x, y))
+			{
 				var pickedIndex = peoteView.getElementAt(mouseX, mouseY, this, clickPickProgram) ;
 				if (pickedIndex >= 0) {
 					var pickedElem = clickPickBuffer.getElement(pickedIndex).uiElement;
@@ -450,7 +467,7 @@ class UIDisplay extends Display
 			var x:Int = Math.round(touch.x * peoteView.width);
 			var y:Int = Math.round(touch.y * peoteView.height);
 			
-			if (isPointInside(x, y))
+			if (_isPointInside(x, y))
 			{			
 				// Over
 				var pickedIndex = peoteView.getElementAt(x, y, this, movePickProgram);
@@ -490,7 +507,7 @@ class UIDisplay extends Display
 			if (_lastMouseDownIndex >= 0) {
 				var lastMouseDownElem = clickPickBuffer.getElement(_lastMouseDownIndex).uiElement;
 				var startClick = false;
-				var pickedIndex = (isPointInside(x, y)) ? peoteView.getElementAt(mouseX, mouseY, this, clickPickProgram) : -1;
+				var pickedIndex = (_isPointInside(x, y)) ? peoteView.getElementAt(mouseX, mouseY, this, clickPickProgram) : -1;
 				var pickedElem:Interactive = null;
 				if (pickedIndex >= 0) {
 					pickedElem = clickPickBuffer.getElement(pickedIndex).uiElement;
@@ -526,7 +543,7 @@ class UIDisplay extends Display
 			if (_lastTouchDownIndex >= 0) {
 				var lastTouchDownElem = clickPickBuffer.getElement(_lastTouchDownIndex).uiElement;
 				var startClick = false;
-				pickedIndex = (isPointInside(x, y)) ? peoteView.getElementAt(x, y, this, clickPickProgram) : -1;
+				pickedIndex = (_isPointInside(x, y)) ? peoteView.getElementAt(x, y, this, clickPickProgram) : -1;
 				if (pickedIndex >=0 ) {
 					pickedElem = clickPickBuffer.getElement(pickedIndex).uiElement;
 					if (lastTouchDownElem.intoUpDownEventBubbleOf(pickedElem)) startClick = true;
@@ -543,7 +560,7 @@ class UIDisplay extends Display
 			}
 			
 			// Out
-			pickedIndex = (isPointInside(x, y)) ? peoteView.getElementAt(x, y, this, movePickProgram) : -1;
+			pickedIndex = (_isPointInside(x, y)) ? peoteView.getElementAt(x, y, this, movePickProgram) : -1;
 			if (pickedIndex >=0 && pickedIndex == lastTouchOverIndex.get(touch.id)) {
 				pickedElem = movePickBuffer.getElement(pickedIndex).uiElement;
 				while (pickedElem != null) {
@@ -650,6 +667,7 @@ class UIDisplay extends Display
 	
 	
 	
+	
 	// -------- register Events from Lime Application ----------
 	
 	public var pointerEnabled(get, set):Bool;
@@ -696,7 +714,19 @@ class UIDisplay extends Display
 		
 		static public inline function mouseMoveActive(mouseX:Float, mouseY:Float) for (ui in activeUIDisplay) ui.mouseMove(mouseX, mouseY);	
 		static public inline function mouseUpActive(mouseX:Float, mouseY:Float, button:MouseButton) for (ui in activeUIDisplay) ui.mouseUp(mouseX, mouseY, button);
-		static public inline function mouseDownActive(mouseX:Float, mouseY:Float, button:MouseButton) for (ui in activeUIDisplay) ui.mouseDown(mouseX, mouseY, button);
+		static public inline function mouseDownActive(mouseX:Float, mouseY:Float, button:MouseButton) {
+			//for (ui in activeUIDisplay) ui.mouseDown(mouseX, mouseY, button);
+			for (ui in activeUIDisplay) {
+				// TODO:
+				//if (ui.mouseDown(mouseX, mouseY, button) && ui.onPointerDown != null) {
+					//onPointerDown(this, {x:x, y:y, type:PointerType.MOUSE, mouseButton:button});
+				//}
+				ui.mouseDown(mouseX, mouseY, button);
+				if (ui._isPointInside(Std.int(mouseX), Std.int(mouseY)) && ui.onPointerDown != null) {
+					ui.onPointerDown(ui, {x:Std.int(mouseX), y:Std.int(mouseY), type:PointerType.MOUSE, mouseButton:button});
+				}
+			}
+		}
 		static public inline function mouseWheelActive(dx:Float, dy:Float, mode:MouseWheelMode) for (ui in activeUIDisplay) ui.mouseWheel(dx, dy, mode);
 		
 		static public inline function touchStartActive(touch:Touch) for (ui in activeUIDisplay) ui.touchStart(touch);
@@ -727,8 +757,8 @@ class UIDisplay extends Display
 		window.onMouseMove.add(_mouseMove);
 		window.onLeave.add(_windowLeave);
 		#else
-		window.onMouseMove.add(mouseMove);
-		window.onLeave.add(windowLeave);
+		window.onMouseMove.add(mouseMoveActive);
+		window.onLeave.add(windowLeaveActive);
 		#end
 	}
 	
@@ -759,6 +789,25 @@ class UIDisplay extends Display
 	// TODO:
 	public static function unRegisterEvents(window:Window) {
 		
+		window.onMouseUp.remove(mouseUpActive);
+		window.onMouseDown.remove(mouseDownActive);
+		window.onMouseWheel.remove(mouseWheelActive);
+		
+		// TODO: keyboard & text
+		
+		Touch.onStart.remove(touchStartActive);
+		Touch.onMove.remove(touchMoveActive);
+		Touch.onEnd.remove(touchEndActive);
+		Touch.onCancel.remove(touchCancelActive);
+
+		#if (! html5)
+		window.onRender.remove(_mouseMoveFrameSynced);
+		window.onMouseMove.remove(_mouseMove);
+		window.onLeave.remove(_windowLeave);
+		#else
+		window.onMouseMove.remove(mouseMoveActive);
+		window.onLeave.remove(windowLeaveActive);
+		#end
 		
 	}
 			

@@ -273,11 +273,11 @@ class Interactive
 		dragMaxY = dragAreaY + dragAreaHeight;
 	}
 	
-	@:access(peote.view.Display)
+	@:access(peote.view.Display, peote.view.PeoteView)
 	inline function dragTo(dragToX:Int, dragToY:Int):Void
 	{
-		dragToX = Std.int(dragToX / uiDisplay.peoteView.zoom / uiDisplay.zoom);
-		dragToY = Std.int(dragToY / uiDisplay.peoteView.zoom / uiDisplay.zoom);
+		dragToX = Std.int(dragToX / uiDisplay.peoteView.xz / uiDisplay.xz);
+		dragToY = Std.int(dragToY / uiDisplay.peoteView.yz / uiDisplay.yz);
 		
 		if (dragToX >= (dragMinX + dragOriginX)) {
 			if (dragToX < (dragMaxX - width + dragOriginX)) x = dragToX - dragOriginX;
@@ -290,12 +290,12 @@ class Interactive
 		} else y = dragMinY;
 	}
 
-	@:access(peote.view.Display)
+	@:access(peote.view.Display, peote.view.PeoteView)
 	public function startDragging(e:PointerEvent)
 	{
 		if (isVisible) {
-			dragOriginX = Std.int(e.x / uiDisplay.peoteView.zoom / uiDisplay.zoom) - x;
-			dragOriginY = Std.int(e.y / uiDisplay.peoteView.zoom / uiDisplay.zoom) - y;
+			dragOriginX = Std.int(e.x / uiDisplay.peoteView.xz / uiDisplay.xz) - x;
+			dragOriginY = Std.int(e.y / uiDisplay.peoteView.yz / uiDisplay.yz) - y;
 			uiDisplay.startDragging(this, e);
 		}
 	}

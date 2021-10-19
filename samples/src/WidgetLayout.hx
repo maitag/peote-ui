@@ -196,6 +196,7 @@ class WidgetLayout extends Application
 		ui.init();
 		peoteView.addDisplay(ui);
 		ui.update(peoteView.width, peoteView.height);
+		
 		ui.pointerEnabled = true;
 		
 		#if android

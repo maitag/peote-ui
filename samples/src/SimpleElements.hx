@@ -181,7 +181,7 @@ class SimpleElements extends Application
 		//uiDisplay.mouseEnabled = false;
 		//uiDisplay.touchEnabled = false;
 		peoteView.zoom = 2;
-
+		
 		#if android
 		uiDisplay.mouseEnabled = false;
 		peoteView.zoom = 3;

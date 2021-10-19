@@ -16,4 +16,9 @@ class SimpleStyle
 		if (color != null) this.color = color;
 	}
 	
+	public inline function copy():RoundedStyle
+	{
+		return new RoundedStyle(color);
+	}
+	
 }

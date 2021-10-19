@@ -50,8 +50,14 @@ class MultiUIDisplays extends Application
 		myStyle.borderRadius = 40.0;
 		
 		
+		
 		// ----------------------------- left UIDisplay -----------------------------------
 		uiDisplayLeft = new UIDisplay(25, 25, 350, 550, Color.GREY1);
+		uiDisplayLeft.onPointerOver  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerOver", e); uiDisplay.color = Color.GREY2; };
+		uiDisplayLeft.onPointerOut   = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerOut", e); uiDisplay.color = Color.GREY1; };
+		uiDisplayLeft.onPointerDown  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerDown", e); };
+		uiDisplayLeft.onPointerUp    = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerUp", e); };
+		uiDisplayLeft.onPointerClick = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerClick", e); };
 		peoteView.addDisplay(uiDisplayLeft);
 		
 		var buttonLeft1 = new InteractiveElement(20, 20, 200, 100, roundedSkin, myStyle);		
@@ -65,10 +71,15 @@ class MultiUIDisplays extends Application
 		
 		// ----------------------------- right UIDisplay -----------------------------------
 
-		uiDisplayRight = new UIDisplay(400, 25, 350, 550, Color.GREY2);
+		uiDisplayRight = new UIDisplay(300, 125, 350, 550, Color.GREY2);
+		uiDisplayRight.onPointerOver  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerOver", e); uiDisplay.color = Color.GREY3; };
+		uiDisplayRight.onPointerOut   = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerOut", e); uiDisplay.color = Color.GREY2; };
+		uiDisplayRight.onPointerDown  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerDown", e); };
+		uiDisplayRight.onPointerUp    = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerUp", e); };
+		uiDisplayRight.onPointerClick = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerClick", e); };
 		peoteView.addDisplay(uiDisplayRight);
 		
-		var buttonRight1 = new InteractiveElement(20, 20, 200, 100, roundedSkin, myStyle);		
+		var buttonRight1 = new InteractiveElement(20, 20, 200, 100, roundedSkin, myStyle.copy());  // if sharing the same style and not copy here it result crazy behavior if not set all style-properties inside the eventhandler
 		buttonRight1.onPointerOver = onOver.bind(Color.GREY2);
 		buttonRight1.onPointerOut = onOut.bind(Color.GREY1);
 		buttonRight1.onPointerDown = onDown.bind(Color.RED);
@@ -77,13 +88,10 @@ class MultiUIDisplays extends Application
 
 		uiDisplayRight.add(buttonRight1);
 		
-
+		//peoteView.zoom = 0.5;
+		//peoteView.xOffset = 300;
 		
-		// TODO: make uiElement to switch between
-		//uiDisplay.mouseEnabled = false;
-		//uiDisplay.touchEnabled = false;
-		//peoteView.zoom = 2;
-
+		//uiDisplayLeft.touchEnabled = false;
 		#if android
 		uiDisplayLeft.mouseEnabled = false;
 		uiDisplayRight.mouseEnabled = false;
@@ -94,7 +102,8 @@ class MultiUIDisplays extends Application
 		uiDisplayRight.pointerEnabled = true;
 		
 		UIDisplay.registerEvents(window);
-			
+		
+		//UIDisplay.unRegisterEvents(window);			
 	}
 	
 	// ----------------- InteractiveElement Eventhandler ----------------------
