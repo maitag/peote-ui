@@ -92,10 +92,6 @@ abstract PeoteUI(LayoutContainer) from LayoutContainer to LayoutContainer {
 	public inline function get_touchEnabled():Bool return display.touchEnabled;
 	public inline function set_touchEnabled(b:Bool):Bool return display.touchEnabled = b;
 	
-	public var pointerEnabled(get, set):Bool;
-	public inline function get_pointerEnabled():Bool return display.pointerEnabled;
-	public inline function set_pointerEnabled(b:Bool):Bool return display.pointerEnabled = b;
-	
 	public static function registerEvents(window:Window) {
 		UIDisplay.registerEvents(window);
 		window.onResize.add(windowResize);
@@ -120,7 +116,7 @@ abstract PeoteUI(LayoutContainer) from LayoutContainer to LayoutContainer {
 		static public inline function windowResize(width:Int, height:Int) if (activeUI != null) activeUI.update(width, height);
 
 	#else
-		static var activeUI = new Array<PeoteUI>();
+		static var activeUI = new Array<PeoteUI>();// TODO: vector
 		
 		static public function activate(peoteUI:PeoteUI) {
 			if (activeUI.indexOf(peoteUI) < 0) activeUI.push(peoteUI);

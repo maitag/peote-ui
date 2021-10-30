@@ -179,7 +179,7 @@ class WidgetLayout extends Application
 			// button for quick resize testing
 			new Div({
 				width:50, height:50, right:0, bottom:0, skin:mySkin, style:new RoundedStyle(),
-				onPointerDown: function(widget:Div, e:PointerEvent) {uiResizeMode = true; ui.pointerEnabled = false;} ,
+				onPointerDown: function(widget:Div, e:PointerEvent) {uiResizeMode = true; ui.mouseEnabled = false;} ,
 				onPointerOver: onOverOut.bind(Color.BLUE),
 				onPointerOut: onOverOut.bind(Color.GREY1),
 			}),			
@@ -196,8 +196,6 @@ class WidgetLayout extends Application
 		ui.init();
 		peoteView.addDisplay(ui);
 		ui.update(peoteView.width, peoteView.height);
-		
-		ui.pointerEnabled = true;
 		
 		#if android
 		ui.mouseEnabled = false;
@@ -235,7 +233,7 @@ class WidgetLayout extends Application
 		if (uiResizeMode) {
 			uiResizeMode = false;
 			ui.update(peoteView.width, peoteView.height);
-			ui.pointerEnabled = true;
+			ui.mouseEnabled = true;
 		}
 	}
 
@@ -250,7 +248,7 @@ class WidgetLayout extends Application
 		if (uiResizeMode) {
 			uiResizeMode = false;
 			ui.update(peoteView.width, peoteView.height);
-			ui.pointerEnabled = true;
+			ui.mouseEnabled = true;
 		}
 	}
 	

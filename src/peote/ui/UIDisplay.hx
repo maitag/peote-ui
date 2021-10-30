@@ -12,16 +12,19 @@ import lime.ui.Touch;
 
 import peote.ui.event.PointerEvent;
 import peote.ui.event.PointerType;
-import peote.view.PeoteView;
 
+import peote.view.PeoteView;
 import peote.view.Display;
 import peote.view.Buffer;
 import peote.view.Program;
 import peote.view.Color;
 
+import peote.view.utils.RenderListItem;
+
 import peote.ui.interactive.Interactive;
 
 
+@:access(peote.view)
 @:allow(peote.ui.interactive)
 class UIDisplay extends Display
 {
@@ -58,9 +61,6 @@ class UIDisplay extends Display
 	
 	var maxTouchpoints:Int;
 
-	var _peoteView:PeoteView = null;
-	var isVisible(default, null):Bool = false;
-	
 	public function new(x:Int, y:Int, width:Int, height:Int, color:Color=0x00000000, maxTouchpoints:Int = 3) 
 	{
 		number = getFreeNumber();  trace('MAX_DISPLAYs: $MAX_DISPLAYS', 'UIDisplay NUMBER is $number');
@@ -102,17 +102,55 @@ class UIDisplay extends Display
 	
 	override public function addToPeoteView(peoteView:PeoteView, ?atDisplay:Display, addBefore:Bool=false)
 	{
-		_peoteView = peoteView;
-		isVisible = true;
 		super.addToPeoteView(peoteView, atDisplay, addBefore);
 		movePickProgram.setNewGLContext(peoteView.gl);
 		clickPickProgram.setNewGLContext(peoteView.gl);
+		
+		#if (peoteui_maxDisplays == "1")
+		activeUIDisplay = uiDisplay;
+		#else
+		//TODO: check order for activeUIDisplay array
+		if (atDisplay == null) {
+			activeIndex = maxActiveIndex;
+		}
+		else {
+			var displayListItem:RenderListItem<Display>;
+			if (addBefore) displayListItem = peoteView.displayList.itemMap.get(atDisplay);
+			else displayListItem = peoteView.displayList.itemMap.get(this).next;
+			var firstFoundIndex = -1;
+			while (displayListItem != null)
+			{
+				if ( Std.isOfType(displayListItem.value, UIDisplay) ) { //TODO: check for older haxe-version and Std.is() instead
+					var d:UIDisplay = cast displayListItem.value;
+					if (firstFoundIndex == -1) firstFoundIndex = d.activeIndex;
+					d.activeIndex++;
+					activeUIDisplay.set(d.activeIndex, d);
+				}
+				displayListItem = displayListItem.next;
+			}
+			
+			if (firstFoundIndex == -1) activeIndex = maxActiveIndex;
+			else activeIndex = firstFoundIndex;			
+		}
+		
+		maxActiveIndex++;
+		activeUIDisplay.set(activeIndex, this);
+		trace(activeIndex,maxActiveIndex);
+		#end
+		
 	}
 	
 	override public function removeFromPeoteView(peoteView:PeoteView)
 	{
-		isVisible = false;
 		super.removeFromPeoteView(peoteView);
+		#if (peoteui_maxDisplays == "1")
+			for (i in activeIndex + 1...maxActiveIndex) {
+				activeUIDisplay.set(i-1, activeUIDisplay.get(i));
+			}
+			maxActiveIndex--;
+		#else
+		activeUIDisplay = null;
+		#end
 	}
 
 	// optimized function to check if mouseposition inside UIDisplay
@@ -123,25 +161,6 @@ class UIDisplay extends Display
 		return (px >= x && px < x + width && py >= y && py < y + height);
 	}
 
-	// -------------------------------------------------------
-		
-	public inline function show() {
-		if (!isVisible) {
-			if (_peoteView == null) throw("Error, UIDisplay needs to add to PeoteView first");
-			else {
-				isVisible = true;
-				_peoteView.addDisplay(this);
-			} 
-		}
-	}
-	
-	public inline function hide() {
-		if (isVisible) {
-			isVisible = false;
-			_peoteView.removeDisplay(this);
-		}
-	}
-	
 	// -------------------------------------------------------
 	
 	public function add(uiElement:Interactive):Void {
@@ -670,24 +689,19 @@ class UIDisplay extends Display
 	
 	// -------- register Events from Lime Application ----------
 	
-	public var pointerEnabled(get, set):Bool;
+/*	public var pointerEnabled(get, set):Bool;
 	public inline function set_pointerEnabled(b:Bool):Bool {
 		if (b) activate(this) else deactivate(this);
 		return b;
 	}
+*/
+	public var bubbleMouseDown:Bool = false;
 
 	#if (peoteui_maxDisplays == "1")
-		public inline function get_pointerEnabled():Bool return (activeUIDisplay == this);
+		//public inline function get_pointerEnabled():Bool return (activeUIDisplay == this);
 		
 		static var activeUIDisplay:UIDisplay;
 
-		static public function activate(uiDisplay:UIDisplay) {
-			activeUIDisplay = uiDisplay;
-		}
-		static public function deactivate(uiDisplay:UIDisplay) {
-			activeUIDisplay = null;
-		}
-		
 		static public inline function mouseMoveActive(mouseX:Float, mouseY:Float) if (activeUIDisplay!=null) activeUIDisplay.mouseMove(mouseX, mouseY);	
 		static public inline function mouseDownActive(mouseX:Float, mouseY:Float, button:MouseButton) if (activeUIDisplay!=null) activeUIDisplay.mouseDown(mouseX, mouseY, button);
 		static public inline function mouseUpActive(mouseX:Float, mouseY:Float, button:MouseButton) if (activeUIDisplay!=null) activeUIDisplay.mouseUp(mouseX, mouseY, button);
@@ -701,40 +715,48 @@ class UIDisplay extends Display
 		static public inline function windowLeaveActive() if (activeUIDisplay!=null) activeUIDisplay.windowLeave();
 
 	#else
-		public inline function get_pointerEnabled():Bool return (activeUIDisplay.indexOf(this) >= 0);
+		//public inline function get_pointerEnabled():Bool return (activeUIDisplay.indexOf(this) >= 0);
 
-		static var activeUIDisplay = new Array<UIDisplay>();
+		var activeIndex:Int = 0;
+		static var maxActiveIndex:Int = 0;
+		static var activeUIDisplay = new Vector<UIDisplay>(MAX_DISPLAYS);
 		
-		static public function activate(uiDisplay:UIDisplay) {
-			if (activeUIDisplay.indexOf(uiDisplay) < 0) activeUIDisplay.push(uiDisplay);
-		}
-		static public function deactivate(uiDisplay:UIDisplay) {
-			activeUIDisplay.remove(uiDisplay);
-		}
-		
-		static public inline function mouseMoveActive(mouseX:Float, mouseY:Float) for (ui in activeUIDisplay) ui.mouseMove(mouseX, mouseY);	
-		static public inline function mouseUpActive(mouseX:Float, mouseY:Float, button:MouseButton) for (ui in activeUIDisplay) ui.mouseUp(mouseX, mouseY, button);
+		static public inline function mouseMoveActive(mouseX:Float, mouseY:Float) for (i in 0...maxActiveIndex) activeUIDisplay.get(i).mouseMove(mouseX, mouseY);	
+		static public inline function mouseUpActive(mouseX:Float, mouseY:Float, button:MouseButton) for (i in 0...maxActiveIndex) activeUIDisplay.get(i).mouseUp(mouseX, mouseY, button);
 		static public inline function mouseDownActive(mouseX:Float, mouseY:Float, button:MouseButton) {
-			//for (ui in activeUIDisplay) ui.mouseDown(mouseX, mouseY, button);
-			for (ui in activeUIDisplay) {
-				// TODO:
-				//if (ui.mouseDown(mouseX, mouseY, button) && ui.onPointerDown != null) {
-					//onPointerDown(this, {x:x, y:y, type:PointerType.MOUSE, mouseButton:button});
-				//}
-				ui.mouseDown(mouseX, mouseY, button);
-				if (ui._isPointInside(Std.int(mouseX), Std.int(mouseY)) && ui.onPointerDown != null) {
-					ui.onPointerDown(ui, {x:Std.int(mouseX), y:Std.int(mouseY), type:PointerType.MOUSE, mouseButton:button});
+			for (i in 0...maxActiveIndex) {
+				var ui:UIDisplay = activeUIDisplay.get(maxActiveIndex-i-1);
+				// TODO : in den handlern (peoteView != null) durch isVisible ersetzen und zurückgeben wenn innerhalb des Displays
+				if (ui.isVisible) {
+					// TODO: depth-sorted iteration and STOP THE LOOP if triggered (so no bubbling between the UIDisplays)
+					//if (ui.mouseDown(mouseX, mouseY, button) && ui.onPointerDown != null) {
+						//ui.onPointerDown(ui, {x:Std.int(mouseX), y:Std.int(mouseY), type:PointerType.MOUSE, mouseButton:button});
+						//break;
+					//}
+					ui.mouseDown(mouseX, mouseY, button);
+					if (ui._isPointInside(Std.int(mouseX), Std.int(mouseY)) && ui.onPointerDown != null) {
+						ui.onPointerDown(ui, {x:Std.int(mouseX), y:Std.int(mouseY), type:PointerType.MOUSE, mouseButton:button});
+						if (!ui.bubbleMouseDown) break;
+						//while (ui != null) {
+							//ui.mouseDown(mouseX, mouseY, button);
+							//if (ui._isPointInside(Std.int(mouseX), Std.int(mouseY)) && ui.onPointerDown != null) {
+								//ui.onPointerDown(ui, {x:Std.int(mouseX), y:Std.int(mouseY), type:PointerType.MOUSE, mouseButton:button});
+							//}
+							//ui = ui.upDownEventsBubbleTo;
+						//}					
+						
+					}
 				}
 			}
 		}
-		static public inline function mouseWheelActive(dx:Float, dy:Float, mode:MouseWheelMode) for (ui in activeUIDisplay) ui.mouseWheel(dx, dy, mode);
+		static public inline function mouseWheelActive(dx:Float, dy:Float, mode:MouseWheelMode) for (i in 0...maxActiveIndex) activeUIDisplay.get(i).mouseWheel(dx, dy, mode);
 		
-		static public inline function touchStartActive(touch:Touch) for (ui in activeUIDisplay) ui.touchStart(touch);
-		static public inline function touchMoveActive(touch:Touch) for (ui in activeUIDisplay) ui.touchMove(touch);
-		static public inline function touchEndActive(touch:Touch) for (ui in activeUIDisplay) ui.touchEnd(touch);
-		static public inline function touchCancelActive(touch:Touch) for (ui in activeUIDisplay) ui.touchCancel(touch);
+		static public inline function touchStartActive(touch:Touch) for (i in 0...maxActiveIndex) activeUIDisplay.get(i).touchStart(touch);
+		static public inline function touchMoveActive(touch:Touch) for (i in 0...maxActiveIndex) activeUIDisplay.get(i).touchMove(touch);
+		static public inline function touchEndActive(touch:Touch) for (i in 0...maxActiveIndex) activeUIDisplay.get(i).touchEnd(touch);
+		static public inline function touchCancelActive(touch:Touch) for (i in 0...maxActiveIndex) activeUIDisplay.get(i).touchCancel(touch);
 
-		static public inline function windowLeaveActive() for (ui in activeUIDisplay) ui.windowLeave();
+		static public inline function windowLeaveActive() for (i in 0...maxActiveIndex) activeUIDisplay.get(i).windowLeave();
 	#end
 
 	// -------- register Events from Lime Application ----------

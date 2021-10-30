@@ -42,6 +42,9 @@ class MultiUIDisplays extends Application
 	{
 		peoteView = new PeoteView(window);
 
+		var bgDisplay = new peote.view.Display(10, 10, window.width-20, window.height-20, Color.GREY1);
+		peoteView.addDisplay(bgDisplay);
+		
 		var roundedSkin = new RoundedSkin();
 		var myStyle = new RoundedStyle();
 		myStyle.color = Color.GREY1;
@@ -52,12 +55,13 @@ class MultiUIDisplays extends Application
 		
 		
 		// ----------------------------- left UIDisplay -----------------------------------
-		uiDisplayLeft = new UIDisplay(25, 25, 350, 550, Color.GREY1);
-		uiDisplayLeft.onPointerOver  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerOver", e); uiDisplay.color = Color.GREY2; };
-		uiDisplayLeft.onPointerOut   = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerOut", e); uiDisplay.color = Color.GREY1; };
+		uiDisplayLeft = new UIDisplay(25, 25, 350, 550, Color.GREY2);
+		uiDisplayLeft.onPointerOver  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerOver", e); uiDisplay.color = Color.GREY3; };
+		uiDisplayLeft.onPointerOut   = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerOut", e); uiDisplay.color = Color.GREY2; };
 		uiDisplayLeft.onPointerDown  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerDown", e); };
 		uiDisplayLeft.onPointerUp    = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerUp", e); };
 		uiDisplayLeft.onPointerClick = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerClick", e); };
+		
 		peoteView.addDisplay(uiDisplayLeft);
 		
 		var buttonLeft1 = new InteractiveElement(20, 20, 200, 100, roundedSkin, myStyle);		
@@ -65,26 +69,37 @@ class MultiUIDisplays extends Application
 		buttonLeft1.onPointerOut = onOut.bind(Color.GREY1);
 		buttonLeft1.onPointerDown = onDown.bind(Color.YELLOW);
 		buttonLeft1.onPointerUp = onUp.bind(Color.GREY5);
-		buttonLeft1.onPointerClick = onClick;
+		buttonLeft1.onPointerClick = function onClick(uiElement:InteractiveElement, e:PointerEvent) {
+			// show or hide the other display
+			if (uiDisplayRight.isVisible) uiDisplayRight.hide() else uiDisplayRight.show();
+		};
 		
 		uiDisplayLeft.add(buttonLeft1);
 		
 		// ----------------------------- right UIDisplay -----------------------------------
 
-		uiDisplayRight = new UIDisplay(300, 125, 350, 550, Color.GREY2);
+		uiDisplayRight = new UIDisplay(300, 125, 350, 550, Color.GREY3);
 		uiDisplayRight.onPointerOver  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerOver", e); uiDisplay.color = Color.GREY3; };
 		uiDisplayRight.onPointerOut   = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerOut", e); uiDisplay.color = Color.GREY2; };
 		uiDisplayRight.onPointerDown  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerDown", e); };
 		uiDisplayRight.onPointerUp    = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerUp", e); };
 		uiDisplayRight.onPointerClick = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerClick", e); };
-		peoteView.addDisplay(uiDisplayRight);
+		
+		//peoteView.addDisplay(uiDisplayRight);
+		// inserting before the left one into RenderList
+		peoteView.addDisplay(uiDisplayRight, uiDisplayLeft, true);
+		// let mouseDown Event bubble to the UIDisplays throught (to the ones that is behind)
+		uiDisplayLeft.bubbleMouseDown = true;
 		
 		var buttonRight1 = new InteractiveElement(20, 20, 200, 100, roundedSkin, myStyle.copy());  // if sharing the same style and not copy here it result crazy behavior if not set all style-properties inside the eventhandler
 		buttonRight1.onPointerOver = onOver.bind(Color.GREY2);
 		buttonRight1.onPointerOut = onOut.bind(Color.GREY1);
 		buttonRight1.onPointerDown = onDown.bind(Color.RED);
 		buttonRight1.onPointerUp = onUp.bind(Color.GREY5);
-		buttonRight1.onPointerClick = onClick;
+		buttonRight1.onPointerClick = function onClick(uiElement:InteractiveElement, e:PointerEvent) {
+			// show or hide the other display
+			if (uiDisplayLeft.isVisible) uiDisplayLeft.hide() else uiDisplayLeft.show();
+		};
 
 		uiDisplayRight.add(buttonRight1);
 		
@@ -98,8 +113,8 @@ class MultiUIDisplays extends Application
 		peoteView.zoom = 3;
 		#end
 		
-		uiDisplayLeft.pointerEnabled = true;
-		uiDisplayRight.pointerEnabled = true;
+		//uiDisplayLeft.pointerEnabled = true;
+		//uiDisplayRight.pointerEnabled = true;
 		
 		UIDisplay.registerEvents(window);
 		
@@ -146,12 +161,7 @@ class MultiUIDisplays extends Application
 			uiElement.updateStyle();
 		}
 	}
-	
-	public inline function onClick(uiElement:InteractiveElement, e:PointerEvent) {
-		trace(" -----> onPointerClick", e);
-		//uiElement.y += 30; uiElement.updateLayout();
-	}
-	
+		
 	
 	// ------------------------------------------------------------
 	// ----------------- LIME EVENTS ------------------------------

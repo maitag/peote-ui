@@ -187,8 +187,6 @@ class SimpleElements extends Application
 		peoteView.zoom = 3;
 		#end
 		
-		uiDisplay.pointerEnabled = true;
-		
 		// TODO: set what events to register (mouse, touch, keyboard ...)
 		UIDisplay.registerEvents(window);
 			
