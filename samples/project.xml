@@ -7,7 +7,7 @@
 	<!-- <meta build-number="714" /> --> <!-- let set the buildnumber manual (android) -->
 	<!-- check this for GG-Playstore: <setenv name="ANDROID_GRADLE_TASK" value=":app:bundleRelease" /> -->
 	
-	<app main="MultiUIDisplays" path="bin" file="Main" />
+	<app main="SimpleElements" path="bin" file="Main" />
 	<!--
 		SimpleElements,
 		MultiUIDisplays,
@@ -62,7 +62,7 @@
 	<!--<haxedef name="peoteview_debug_macro" />-->
 	<!--<haxedef name="peoteview_debug_buffer" />-->
 	<!--<haxedef name="peoteview_debug_view" />-->
-	<!--<haxedef name="peoteview_debug_display" />-->
+	<!--<haxedef name="peoteview_debug_display" />
 	<!--<haxedef name="peoteview_debug_program" />-->
 	<!--<haxedef name="peoteview_debug_texture" />-->
 	<!--<haxedef name="peoteview_debug_shader" />-->

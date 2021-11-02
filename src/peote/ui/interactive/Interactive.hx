@@ -84,6 +84,7 @@ class Interactive
 	var pickableMove:Pickable = null;
 	var pickableClick:Pickable = null;
 	
+	public var overOutEventsBubbleToDisplay:Bool = true;
 	public var overOutEventsBubbleTo:Interactive = null;
 	public function intoOverOutEventBubbleOf(e:Interactive):Bool {
 		while (e.overOutEventsBubbleTo != null) {
@@ -93,6 +94,7 @@ class Interactive
 		return false;
 	}
 	
+	public var moveEventsBubbleToDisplay:Bool = false;
 	public var moveEventsBubbleTo:Interactive = null;
 /*	public function intoMoveEventBubbleOf(e:InteractiveElement):Bool {
 		while (e.moveEventsBubbleTo != null) {
@@ -102,6 +104,7 @@ class Interactive
 		return false;
 	}
 */	
+	public var upDownEventsBubbleToDisplay:Bool = false;
 	public var upDownEventsBubbleTo:Interactive = null;
 	public function intoUpDownEventBubbleOf(e:Interactive):Bool {
 		while (e.upDownEventsBubbleTo != null) {
@@ -111,6 +114,7 @@ class Interactive
 		return false;
 	}
 	
+	public var wheelEventsBubbleToDisplay:Bool = false;
 	public var wheelEventsBubbleTo:Interactive = null;
 /*	public function intoWheelEventBubbleOf(e:InteractiveElement):Bool {
 		while (e.wheelEventsBubbleTo != null) {
