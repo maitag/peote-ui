@@ -56,11 +56,11 @@ class MultiUIDisplays extends Application
 		
 		// ----------------------------- left UIDisplay -----------------------------------
 		uiDisplayLeft = new UIDisplay(25, 25, 350, 550, Color.GREY2);
-		uiDisplayLeft.onPointerOver  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerOver", e); uiDisplay.color = Color.GREY3; };
-		uiDisplayLeft.onPointerOut   = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerOut", e); uiDisplay.color = Color.GREY2; };
-		uiDisplayLeft.onPointerDown  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerDown", e); };
-		uiDisplayLeft.onPointerUp    = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerUp", e); };
-		uiDisplayLeft.onPointerClick = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerClick", e); };
+		uiDisplayLeft.onPointerOver  = function(uiDisplay:UIDisplay, e:PointerEvent) { uiDisplay.color = Color.RED; };
+		uiDisplayLeft.onPointerOut   = function(uiDisplay:UIDisplay, e:PointerEvent) { uiDisplay.color = Color.GREY2; };
+		uiDisplayLeft.onPointerDown  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerDown"); };
+		uiDisplayLeft.onPointerUp    = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerUp"); };
+		uiDisplayLeft.onPointerClick = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerClick"); };
 		
 		peoteView.addDisplay(uiDisplayLeft);
 		
@@ -82,23 +82,26 @@ class MultiUIDisplays extends Application
 		};
 		uiDisplayLeft.add(buttonLeft2);
 		
+
+		
 		// ----------------------------- right UIDisplay -----------------------------------
 
 		uiDisplayRight = new UIDisplay(300, 125, 350, 550, Color.GREY3);
-		uiDisplayRight.onPointerOver  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerOver", e); uiDisplay.color = Color.GREY4; };
-		uiDisplayRight.onPointerOut   = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerOut", e); uiDisplay.color = Color.GREY3; };
-		uiDisplayRight.onPointerDown  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerDown", e); };
-		uiDisplayRight.onPointerUp    = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerUp", e); };
-		uiDisplayRight.onPointerClick = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerClick", e); };
+		uiDisplayRight.onPointerOver  = function(uiDisplay:UIDisplay, e:PointerEvent) { uiDisplay.color = Color.BLUE; };
+		uiDisplayRight.onPointerOut   = function(uiDisplay:UIDisplay, e:PointerEvent) { uiDisplay.color = Color.GREY3; };
+		uiDisplayRight.onPointerDown  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerDown"); };
+		uiDisplayRight.onPointerUp    = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerUp"); };
+		uiDisplayRight.onPointerClick = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerClick"); };
 		
 		peoteView.addDisplay(uiDisplayRight);
 		// inserting before the left one into RenderList
-		peoteView.addDisplay(uiDisplayRight, uiDisplayLeft, true);
-		// let mouseDown Event bubble to the UIDisplays throught (to the ones that is behind)
-		//uiDisplayLeft.upDownEventsBubble = true;
-		//uiDisplayLeft.upDownEventsBubble = true;
+		//peoteView.addDisplay(uiDisplayRight, uiDisplayLeft, true);
 		
-		var buttonRight1 = new InteractiveElement(20, 20, 200, 100, roundedSkin, myStyle.copy());  // if sharing the same style and not copy here it result crazy behavior if not set all style-properties inside the eventhandler
+		// let mouse Event bubble to the UIDisplays behind
+		uiDisplayRight.upDownEventsBubble = true;
+		uiDisplayRight.overOutEventsBubble = true;
+		
+		var buttonRight1 = new InteractiveElement(20, -10, 200, 100, roundedSkin, myStyle.copy());  // if sharing the same style and not copy here it result crazy behavior if not set all style-properties inside the eventhandler
 		buttonRight1.onPointerOver = onOver.bind(Color.GREY2);
 		buttonRight1.onPointerOut = onOut.bind(Color.GREY1);
 		buttonRight1.onPointerDown = onDown.bind(Color.RED);
@@ -107,17 +110,20 @@ class MultiUIDisplays extends Application
 			// show or hide the other display
 			if (uiDisplayLeft.isVisible) uiDisplayLeft.hide() else uiDisplayLeft.show();
 		};
+		
 		buttonRight1.overOutEventsBubbleToDisplay = false; // don't bubble the over/out events to the UIDisplay
 
 		uiDisplayRight.add(buttonRight1);
 		
-		var buttonRight2 = new InteractiveElement(120, 100, 200, 100, roundedSkin, myStyle.copy());  // if sharing the same style and not copy here it result crazy behavior if not set all style-properties inside the eventhandler
+		var buttonRight2 = new InteractiveElement(120, 90, 200, 100, roundedSkin, myStyle.copy());  // if sharing the same style and not copy here it result crazy behavior if not set all style-properties inside the eventhandler
 		buttonRight2.onPointerOver = onOver.bind(Color.GREY2);
 		buttonRight2.onPointerOut = onOut.bind(Color.GREY1);
 		buttonRight2.onPointerDown = onDown.bind(Color.RED);
 		buttonRight2.onPointerUp = onUp.bind(Color.GREY5);
-		//buttonRight2.onPointerClick = function onClick(uiElement:InteractiveElement, e:PointerEvent) {
-		//};
+		buttonRight2.onPointerClick = function onClick(uiElement:InteractiveElement, e:PointerEvent) {
+			uiDisplayRight.overOutEventsBubble = !uiDisplayRight.overOutEventsBubble;
+		};
+		
 		//buttonRight2.overOutEventsBubbleToDisplay = false; // don't bubble the over/out events to the UIDisplay
 		//buttonRight2.overOutEventsBubbleTo = buttonRight1; // bubble the over/out events to the underlaying Button
 

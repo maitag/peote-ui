@@ -239,22 +239,31 @@ class UIDisplay extends Display
 	public var onPointerClick:UIDisplay->PointerEvent->Void = null;
 	
 	
-	var wasMouseOver:Bool = false;
+	var mouseIsOver:Bool = false;
+	var mouseIsOut:Bool = true;
+	var bubbleOut = false;
 	
-	public inline function mouseMove (mouseX:Float, mouseY:Float):Bool {
+	public inline function mouseMove (mouseX:Float, mouseY:Float):Bool 
+	{
 		var hasEventOver = false;
 		var hasEventOut = false;
+		
 		if (mouseEnabled && peoteView != null)
 		{
 			var x = Std.int(mouseX);
 			var y = Std.int(mouseY);
 			
-			var pickedIndex = (_isPointInside(x, y)) ? peoteView.getElementAt(mouseX, mouseY, this, movePickProgram) : -1;
+			var isInside:Bool = false;
+			var pickedIndex = -1;
+			
+			if ( _isPointInside(x, y) ) {
+				isInside = true;
+				pickedIndex = peoteView.getElementAt(mouseX, mouseY, this, movePickProgram);
+			}
+			
 			
 			if (draggingMouseElements.length == 0)	
 			{	
-				//var pickedIndex = (_isPointInside(x, y)) ? peoteView.getElementAt(mouseX, mouseY, this, movePickProgram) : -1;
-				
 				// Over/Out
 				if (pickedIndex != lastMouseOverIndex) 
 				{	
@@ -268,7 +277,7 @@ class UIDisplay extends Display
 							
 							if (lastElem.intoOverOutEventBubbleOf(pickedElem))
 							{
-								trace("AAAAAAAAAAAAAAAAAAAAAAA");
+								// trace("AAAAAAAAAAAAAAAAAAAAAAA");
 								while (pickedElem != null && pickedElem != lastElem) {
 									pickedElem.pointerOver({x:x, y:y, type:PointerType.MOUSE});
 									if (pickedElem.overOutEventsBubbleTo==null && !pickedElem.overOutEventsBubbleToDisplay) hasEventOut = true;
@@ -277,7 +286,7 @@ class UIDisplay extends Display
 							} 
 							else
 							{
-								trace("BBBBBBBBBBBBBBBBBBBBBBB");
+								// trace("BBBBBBBBBBBBBBBBBBBBBBB");
 								while (lastElem != null && lastElem != pickedElem) {
 									lastElem.pointerOut({x:x, y:y, type:PointerType.MOUSE});
 									if (lastElem.overOutEventsBubbleTo==null && !lastElem.overOutEventsBubbleToDisplay) hasEventOver = true;
@@ -293,7 +302,7 @@ class UIDisplay extends Display
 						} 
 						else
 						{
-							trace("CCCCCCCCCCCCCCCCCCCCCCCCCC");
+							// trace("CCCCCCCCCCCCCCCCCCCCCCCCCC");
 							while (lastElem != null) {
 								lastElem.pointerOut({x:x, y:y, type:PointerType.MOUSE});
 								if (lastElem.overOutEventsBubbleTo==null && !lastElem.overOutEventsBubbleToDisplay) hasEventOver = true;
@@ -303,7 +312,7 @@ class UIDisplay extends Display
 					}
 					else
 					{
-						trace("DDDDDDDDDDDDDDDDDDDDDDDDDD");
+						// trace("DDDDDDDDDDDDDDDDDDDDDDDDDD");
 						if (pickedIndex >= 0) {
 							var pickedElem = movePickBuffer.getElement(pickedIndex).uiElement;
 							while (pickedElem != null) {
@@ -342,31 +351,49 @@ class UIDisplay extends Display
 					pickedElem = pickedElem.moveEventsBubbleTo;
 				}					
 			}
-				
-			//_isPointInside(x, y)
-			if (hasEventOver) {trace(this.number, "hasEventOver");}
-			if (hasEventOut) {trace(this.number, "hasEventOut");}
-		}
-		
-/*		if (hasEventOver) {// trace(this.number, "hasEventOver");
-			if (!wasMouseOver) {
-				if (onPointerOver != null) onPointerOver(this, {x:x, y:y, type:PointerType.MOUSE});
-				wasMouseOver = true;
-				hasEventOver = overOutEventsBubble;
+			
+			
+			if (isInside) {
+				if (!mouseIsOver)
+				{
+					mouseIsOver = true;
+					bubbleOut = true;
+					if (!hasEventOut) {
+						mouseIsOut = false; //trace(this.number, "display OVER");
+						if (onPointerOver != null) onPointerOver(this, {x:x, y:y, type:PointerType.MOUSE});
+						
+					} //else mouseIsOut = true;
+				}
+				else if (hasEventOut)
+				{
+					if (!mouseIsOut) {
+						mouseIsOut = true; //trace(this.number, "display OUT button");
+						if(onPointerOut != null) onPointerOut(this, {x:x, y:y, type:PointerType.MOUSE});
+					}
+					
+				}
+				else if (hasEventOver) 
+				{
+					mouseIsOut = false; //trace(this.number, "display OVER button");
+					if (onPointerOver != null) onPointerOver(this, {x:x, y:y, type:PointerType.MOUSE});
+					bubbleOut = true;
+				}
 			}
-		}
-		
-		if (hasEventOut) {// trace(this.number, "hasEventOut");
-			if (wasMouseOver) {
-				if(onPointerOut != null) onPointerOut(this, {x:x, y:y, type:PointerType.MOUSE});
-				wasMouseOver = false;
-				hasEventOut = overOutEventsBubble;
+			else {
+				if (mouseIsOver) 
+				{
+					mouseIsOver = false;
+					if (!mouseIsOut) {
+						mouseIsOut = true; //trace(this.number, "not Inside - display OUT");
+						if(onPointerOut != null) onPointerOut(this, {x:x, y:y, type:PointerType.MOUSE});
+					}
+				}
 			}
+			
+			
 		}
 		
-		return (hasEventOver || hasEventOut);
-*/		
-		return false;
+		return (mouseIsOver && mouseIsOut) || (mouseIsOver && !overOutEventsBubble);
 	}
 	
 	public inline function touchMove (touch:Touch):Void {
@@ -879,7 +906,22 @@ class UIDisplay extends Display
 			maxActiveIndex--;
 		}
 		
-		static public inline function mouseMoveActive(mouseX:Float, mouseY:Float) for (i in 0...maxActiveIndex) if (activeUIDisplay.get(i).mouseMove(mouseX, mouseY)) break;
+		static public inline function mouseMoveActive(mouseX:Float, mouseY:Float) {
+			for (i in 0...maxActiveIndex) {
+				var d = activeUIDisplay.get(i);
+				if (d.mouseMove(mouseX, mouseY)) 
+				{
+					if (d.bubbleOut) {
+						d.bubbleOut = false;
+						for (j in i + 1...maxActiveIndex) {
+							activeUIDisplay.get(j).mouseMove(0xffffffff, 0xffffffff);
+						}
+					}
+					
+					break;
+				}
+			}
+		}
 		static public inline function mouseUpActive(mouseX:Float, mouseY:Float, button:MouseButton) for (i in 0...maxActiveIndex) if (activeUIDisplay.get(i).mouseUp(mouseX, mouseY, button)) break;
 		static public inline function mouseDownActive(mouseX:Float, mouseY:Float, button:MouseButton) for (i in 0...maxActiveIndex) if (activeUIDisplay.get(i).mouseDown(mouseX, mouseY, button)) break;
 
