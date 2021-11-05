@@ -513,22 +513,35 @@ class UIDisplay extends Display
 					var pickedElem = clickPickBuffer.getElement(pickedIndex).uiElement;
 					while (pickedElem != null) {
 						pickedElem.pointerDown({x:x, y:y, type:PointerType.MOUSE, mouseButton:button});
-						if (!hasEvent && pickedElem.upDownEventsBubbleToDisplay) hasEvent = true;
+						if (pickedElem.upDownEventsBubbleToDisplay) hasEvent = true;
 						pickedElem = pickedElem.upDownEventsBubbleTo;
 					}					
 
 					lockMouseDown = lockMouseDown | (1 << (button+1));
 					lastMouseDownIndex.set(button, pickedIndex);
+					
+					if (hasEvent) {
+						if (onPointerDown != null) onPointerDown(this, {x:x, y:y, type:PointerType.MOUSE, mouseButton:button});
+						wasMouseDown = true;
+						hasEvent = !upDownEventsBubble;
+					} else hasEvent=true;
+
 				}
-				else hasEvent = true;
-			} 
+				//else hasEvent = true;
+				 else {
+					if (onPointerDown != null) onPointerDown(this, {x:x, y:y, type:PointerType.MOUSE, mouseButton:button});
+					wasMouseDown = true;
+					hasEvent = !upDownEventsBubble;
+				}
+
+			}
 		}
 		
-		if (hasEvent) {
-			if (onPointerDown != null) onPointerDown(this, {x:x, y:y, type:PointerType.MOUSE, mouseButton:button});
-			wasMouseDown = true;
-			hasEvent = !upDownEventsBubble;
-		}
+		//if (hasEvent) {
+			//if (onPointerDown != null) onPointerDown(this, {x:x, y:y, type:PointerType.MOUSE, mouseButton:button});
+			//wasMouseDown = true;
+			//hasEvent = !upDownEventsBubble;
+		//}
 		
 		//var pickedElements = peoteView.getAllElementsAt(x, y, display, clickProgram);
 		//trace(pickedElements);
@@ -590,8 +603,8 @@ class UIDisplay extends Display
 		return (hasEventOver || hasEvent);
 	}
 	
-	public inline function mouseUp (mouseX:Float, mouseY:Float, button:MouseButton):Bool {
-		var hasEvent = false;
+	public inline function mouseUp (mouseX:Float, mouseY:Float, button:MouseButton)
+	{		
 		if (mouseEnabled && peoteView != null)
 		{			
 			var x = Std.int(mouseX);
@@ -610,11 +623,8 @@ class UIDisplay extends Display
 					if (lastMouseDownElem.intoUpDownEventBubbleOf(pickedElem)) startClick = true;
 				}
 				
-				if (lastMouseDownElem == null) hasEvent = true;
-				
 				while (lastMouseDownElem != null) {
 					lastMouseDownElem.pointerUp({x:x, y:y, type:PointerType.MOUSE, mouseButton:button});
-					if (!hasEvent && lastMouseDownElem.upDownEventsBubbleToDisplay) hasEvent = true;
 					// Click
 					if (!startClick && pickedElem == lastMouseDownElem) startClick = true;
 					if (startClick) lastMouseDownElem.pointerClick({x:x, y:y, type:PointerType.MOUSE, mouseButton:button});
@@ -624,22 +634,19 @@ class UIDisplay extends Display
 				lastMouseDownIndex.set(button, -1);
 				lockMouseDown = lockMouseDown - (1 << (button+1));
 			} 
-			else hasEvent = (_isPointInside(x, y));
+			
+			// UIDisplay event
+			if (wasMouseDown) {
+				if (onPointerUp != null) onPointerUp(this, {x:x, y:y, type:PointerType.MOUSE, mouseButton:button});
+				
+				if (_isPointInside(x, y) && onPointerClick != null) {
+					onPointerClick(this, {x:x, y:y, type:PointerType.MOUSE, mouseButton:button});
+				}
+				wasMouseDown = false;
+			}
+			
 		}			
 		
-		if (hasEvent) {
-			if (onPointerUp != null) onPointerUp(this, {x:x, y:y, type:PointerType.MOUSE, mouseButton:button});
-			if (wasMouseDown && onPointerClick != null) {
-				onPointerClick(this, {x:x, y:y, type:PointerType.MOUSE, mouseButton:button});
-			}
-			wasMouseDown = false;
-			hasEvent = !upDownEventsBubble;
-		}
-		
-		
-		//var pickedElements = peoteView.getAllElementsAt(x, y, display, clickProgram);
-		//trace(pickedElements);
-		return (hasEvent);
 	}
 	
 	public inline function touchEnd (touch:Touch):Bool {
@@ -922,7 +929,7 @@ class UIDisplay extends Display
 				}
 			}
 		}
-		static public inline function mouseUpActive(mouseX:Float, mouseY:Float, button:MouseButton) for (i in 0...maxActiveIndex) if (activeUIDisplay.get(i).mouseUp(mouseX, mouseY, button)) break;
+		static public inline function mouseUpActive(mouseX:Float, mouseY:Float, button:MouseButton) for (i in 0...maxActiveIndex) activeUIDisplay.get(i).mouseUp(mouseX, mouseY, button);
 		static public inline function mouseDownActive(mouseX:Float, mouseY:Float, button:MouseButton) for (i in 0...maxActiveIndex) if (activeUIDisplay.get(i).mouseDown(mouseX, mouseY, button)) break;
 
 		static public inline function mouseWheelActive(dx:Float, dy:Float, mode:MouseWheelMode) for (i in 0...maxActiveIndex) activeUIDisplay.get(i).mouseWheel(dx, dy, mode);

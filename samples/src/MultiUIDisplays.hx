@@ -98,10 +98,10 @@ class MultiUIDisplays extends Application
 		//peoteView.addDisplay(uiDisplayRight, uiDisplayLeft, true);
 		
 		// let mouse Event bubble to the UIDisplays behind
-		uiDisplayRight.upDownEventsBubble = true;
-		uiDisplayRight.overOutEventsBubble = true;
+		// uiDisplayRight.upDownEventsBubble = true;
+		// uiDisplayRight.overOutEventsBubble = true;
 		
-		var buttonRight1 = new InteractiveElement(20, -10, 200, 100, roundedSkin, myStyle.copy());  // if sharing the same style and not copy here it result crazy behavior if not set all style-properties inside the eventhandler
+		var buttonRight1 = new InteractiveElement(20, -1, 200, 100, roundedSkin, myStyle.copy());  // if sharing the same style and not copy here it result crazy behavior if not set all style-properties inside the eventhandler
 		buttonRight1.onPointerOver = onOver.bind(Color.GREY2);
 		buttonRight1.onPointerOut = onOut.bind(Color.GREY1);
 		buttonRight1.onPointerDown = onDown.bind(Color.RED);
@@ -111,21 +111,23 @@ class MultiUIDisplays extends Application
 			if (uiDisplayLeft.isVisible) uiDisplayLeft.hide() else uiDisplayLeft.show();
 		};
 		
-		buttonRight1.overOutEventsBubbleToDisplay = false; // don't bubble the over/out events to the UIDisplay
+		buttonRight1.upDownEventsBubbleToDisplay = true; // bubble the over/out events of this button to the UIDisplay		
+		//buttonRight1.overOutEventsBubbleToDisplay = false; // don't bubble the over/out events of this button to the UIDisplay
 
 		uiDisplayRight.add(buttonRight1);
 		
-		var buttonRight2 = new InteractiveElement(120, 90, 200, 100, roundedSkin, myStyle.copy());  // if sharing the same style and not copy here it result crazy behavior if not set all style-properties inside the eventhandler
+		var buttonRight2 = new InteractiveElement(30, 25, 180, 50, roundedSkin, myStyle.copy());  // if sharing the same style and not copy here it result crazy behavior if not set all style-properties inside the eventhandler
 		buttonRight2.onPointerOver = onOver.bind(Color.GREY2);
 		buttonRight2.onPointerOut = onOut.bind(Color.GREY1);
 		buttonRight2.onPointerDown = onDown.bind(Color.RED);
 		buttonRight2.onPointerUp = onUp.bind(Color.GREY5);
 		buttonRight2.onPointerClick = function onClick(uiElement:InteractiveElement, e:PointerEvent) {
 			uiDisplayRight.overOutEventsBubble = !uiDisplayRight.overOutEventsBubble;
+			uiDisplayRight.upDownEventsBubble = !uiDisplayRight.upDownEventsBubble;
 		};
 		
-		//buttonRight2.overOutEventsBubbleToDisplay = false; // don't bubble the over/out events to the UIDisplay
-		//buttonRight2.overOutEventsBubbleTo = buttonRight1; // bubble the over/out events to the underlaying Button
+		//buttonRight2.overOutEventsBubbleToDisplay = false; // don't bubble the over/out events of this button to the UIDisplay
+		buttonRight2.overOutEventsBubbleTo = buttonRight1; // bubble the over/out events of this button to the underlaying Button
 
 		uiDisplayRight.add(buttonRight2);
 		
