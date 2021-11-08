@@ -61,6 +61,7 @@ class MultiUIDisplays extends Application
 		uiDisplayLeft.onPointerDown  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerDown"); };
 		uiDisplayLeft.onPointerUp    = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerUp"); };
 		uiDisplayLeft.onPointerClick = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerClick"); };
+		uiDisplayLeft.onPointerMove =  function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerMove"); };
 		
 		peoteView.addDisplay(uiDisplayLeft);
 		
@@ -92,6 +93,7 @@ class MultiUIDisplays extends Application
 		uiDisplayRight.onPointerDown  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerDown"); };
 		uiDisplayRight.onPointerUp    = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerUp"); };
 		uiDisplayRight.onPointerClick = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerClick"); };
+		uiDisplayRight.onPointerMove  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerMove"); };
 		
 		peoteView.addDisplay(uiDisplayRight);
 		// inserting before the left one into RenderList
@@ -112,7 +114,8 @@ class MultiUIDisplays extends Application
 		};
 		
 		buttonRight1.upDownEventsBubbleToDisplay = true; // bubble the over/out events of this button to the UIDisplay		
-		//buttonRight1.overOutEventsBubbleToDisplay = false; // don't bubble the over/out events of this button to the UIDisplay
+		buttonRight1.overOutEventsBubbleToDisplay = false; // don't bubble the over/out events of this button to the UIDisplay
+		buttonRight1.moveEventsBubbleToDisplay = true; // don't bubble the move events of this button to the UIDisplay
 
 		uiDisplayRight.add(buttonRight1);
 		
@@ -124,10 +127,16 @@ class MultiUIDisplays extends Application
 		buttonRight2.onPointerClick = function onClick(uiElement:InteractiveElement, e:PointerEvent) {
 			uiDisplayRight.overOutEventsBubble = !uiDisplayRight.overOutEventsBubble;
 			uiDisplayRight.upDownEventsBubble = !uiDisplayRight.upDownEventsBubble;
+			uiDisplayRight.moveEventsBubble = !uiDisplayRight.moveEventsBubble;
 		};
 		
-		//buttonRight2.overOutEventsBubbleToDisplay = false; // don't bubble the over/out events of this button to the UIDisplay
+		//buttonRight2.upDownEventsBubbleTo = buttonRight1; // bubble the up/down events of this button to the underlaying Button
 		buttonRight2.overOutEventsBubbleTo = buttonRight1; // bubble the over/out events of this button to the underlaying Button
+		//buttonRight2.moveEventsBubbleTo = buttonRight1; // bubble the move events of this button to the underlaying Button
+		
+		//buttonRight2.upDownEventsBubbleToDisplay = true; // don't bubble the up/down events of this button to the UIDisplay
+		//buttonRight2.overOutEventsBubbleToDisplay = false; // don't bubble the over/out events of this button to the UIDisplay
+		//buttonRight2.moveEventsBubbleToDisplay = true; // don't bubble the move events of this button to the UIDisplay
 
 		uiDisplayRight.add(buttonRight2);
 		
