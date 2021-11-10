@@ -171,6 +171,11 @@ class UIDisplay extends Display
 		//TODO
 	}
 	
+	public function swap(uiElement1:Interactive, uiElement2:Interactive):Void {
+		//TODO: if same z-index -> swap the elements and pickables inside buffer,
+		//      else -> swap only z-index
+	}
+	
 	public function update(uiElement:Interactive):Void {
 		uiElement.update();
 		//TODO
@@ -245,17 +250,10 @@ class UIDisplay extends Display
 	static inline var HAS_OVEROUT_MOVE:Int = 3;
 
 	var mouseIsOver:Bool = false;
-	var mouseIsOut:Bool = true;
-	var bubbleOut = false;
-	// TODO: var bubbleMove = false;
-	
+	var mouseIsOut:Bool = true;	
 	
 	public inline function mouseMove (mouseX:Float, mouseY:Float, checkForEvent:Int = HAS_OVEROUT_MOVE):Int
 	{
-		var hasEventOver = false; // todo: better renaming here! (maybe bubbleOutToDisplay)
-		var hasEventOut = false;
-		
-		
 		if (mouseEnabled && peoteView != null)
 		{
 			var x = Std.int(mouseX);
@@ -307,7 +305,15 @@ class UIDisplay extends Display
 				}
 			}
 			else
-			{	
+			{
+				var hasEventOver = false; // todo: better renaming here! (maybe bubbleOutToDisplay)
+				var hasEventOut = false;
+				
+				var bubbleOverToDisplay = false; // todo: better renaming here! (maybe bubbleOutToDisplay)
+				var bubbleOutToDisplay = false;
+		
+				//if (isInside) trace("--- isInside ---");
+				
 				// Over/Out
 				if (pickedIndex != lastMouseOverIndex) 
 				{	
@@ -322,7 +328,10 @@ class UIDisplay extends Display
 							if (lastElem.intoOverOutEventBubbleOf(pickedElem))
 							{
 								//trace("AAAAAAAAAAAAAAAAAAAAAAA");
-								if (pickedElem != null && pickedElem != lastElem && !pickedElem.overOutEventsBubbleToDisplay) hasEventOut = true; // UIDisplay event 
+								//if (pickedElem != null && pickedElem != lastElem && !pickedElem.overOutEventsBubbleToDisplay) hasEventOut = true; // UIDisplay event 
+								if (pickedElem != null && pickedElem != lastElem && pickedElem.overOutEventsBubbleToDisplay != lastElem.overOutEventsBubbleToDisplay) {
+									if (!pickedElem.overOutEventsBubbleToDisplay) hasEventOut = true else hasEventOver = true;// UIDisplay event 
+								}
 								while (pickedElem != null && pickedElem != lastElem) {
 									pickedElem.pointerOver({x:x, y:y, type:PointerType.MOUSE});
 									//if (pickedElem.overOutEventsBubbleTo==null && !pickedElem.overOutEventsBubbleToDisplay) hasEventOut = true; // UIDisplay event
@@ -333,7 +342,10 @@ class UIDisplay extends Display
 							else
 							{
 								//trace("BBBBBBBBBBBBBBBBBBBBBBB");
-								if (lastElem != null && lastElem != pickedElem && !lastElem.overOutEventsBubbleToDisplay) hasEventOver = true; // UIDisplay event 
+								//if (lastElem != null && lastElem != pickedElem && !lastElem.overOutEventsBubbleToDisplay) hasEventOver = true; // UIDisplay event 
+								if (pickedElem != null && pickedElem != lastElem && pickedElem.overOutEventsBubbleToDisplay != lastElem.overOutEventsBubbleToDisplay) {
+									if (!pickedElem.overOutEventsBubbleToDisplay) hasEventOut = true else hasEventOver = true;// UIDisplay event 
+								}
 								while (lastElem != null && lastElem != pickedElem) {
 									lastElem.pointerOut({x:x, y:y, type:PointerType.MOUSE});
 									//if (lastElem.overOutEventsBubbleTo==null && !lastElem.overOutEventsBubbleToDisplay) hasEventOver = true; // UIDisplay event
@@ -341,7 +353,7 @@ class UIDisplay extends Display
 									lastElem = lastElem.overOutEventsBubbleTo;
 								}
 								if (lastElem == null) {
-									if (pickedElem != null && !pickedElem.overOutEventsBubbleToDisplay) hasEventOut = true; // UIDisplay event 
+									//if (pickedElem != null && !pickedElem.overOutEventsBubbleToDisplay) hasEventOut = true; // UIDisplay event 
 									while (pickedElem != null) {
 										pickedElem.pointerOver({x:x, y:y, type:PointerType.MOUSE});
 										//if (pickedElem.overOutEventsBubbleTo==null && !pickedElem.overOutEventsBubbleToDisplay) hasEventOut = true; // UIDisplay event
@@ -353,7 +365,7 @@ class UIDisplay extends Display
 						} 
 						else
 						{
-							// trace("CCCCCCCCCCCCCCCCCCCCCCCCCC");
+							//trace("CCCCCCCCCCCCCCCCCCCCCCCCCC");
 							if (lastElem != null && !lastElem.overOutEventsBubbleToDisplay) hasEventOver = true; // UIDisplay event 
 							while (lastElem != null) {
 								lastElem.pointerOut({x:x, y:y, type:PointerType.MOUSE});
@@ -365,7 +377,7 @@ class UIDisplay extends Display
 					}
 					else
 					{
-						// trace("DDDDDDDDDDDDDDDDDDDDDDDDDD");
+						//trace("DDDDDDDDDDDDDDDDDDDDDDDDDD");
 						if (pickedIndex >= 0) {
 							var pickedElem = movePickBuffer.getElement(pickedIndex).uiElement;
 							if (pickedElem != null && !pickedElem.overOutEventsBubbleToDisplay) hasEventOut = true; // UIDisplay event 
@@ -381,11 +393,13 @@ class UIDisplay extends Display
 					lastMouseOverIndex = pickedIndex;
 				}
 				
+				//if (hasEventOver) trace("hasEventOver");
+				//if (hasEventOut) trace("hasEventOut");
+				
 				// UIDisplay event
 				if (isInside) {
 					if (!mouseIsOver) {
 						mouseIsOver = true;
-						bubbleOut = true;
 						if (!hasEventOut) {
 							mouseIsOut = false; //trace(this.number, "display OVER");
 							if (onPointerOver != null) onPointerOver(this, {x:x, y:y, type:PointerType.MOUSE});						
@@ -400,7 +414,6 @@ class UIDisplay extends Display
 					else if (hasEventOver) {
 						mouseIsOut = false; //trace(this.number, "display OVER button");
 						if (onPointerOver != null) onPointerOver(this, {x:x, y:y, type:PointerType.MOUSE});
-						bubbleOut = true;
 					}
 					
 					

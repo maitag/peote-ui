@@ -127,6 +127,7 @@ class $className extends peote.ui.interactive.Interactive
 		
 		if (!textMasked) {
 			width = Std.int(line.textSize);
+			height = Std.int(line.height);
 		}
 		
 		#if (!peoteui_no_textmasking && !peoteui_no_masking)
@@ -171,6 +172,7 @@ class $className extends peote.ui.interactive.Interactive
 			
 			if (!textMasked) {
 				width = Std.int(line.textSize); // TODO
+				height = Std.int(line.height);
 				
 				// fit interactive pickables to new width and height
 				if ( hasMoveEvent  != 0 ) pickableMove.update(this);

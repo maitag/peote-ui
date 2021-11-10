@@ -20,6 +20,10 @@ import peote.ui.style.RoundedStyle;
 import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
 
+import peote.text.Font;
+import peote.ui.fontstyle.FontStyleTiled;
+import peote.ui.interactive.InteractiveTextLine;
+
 
 class MultiUIDisplays extends Application
 {
@@ -38,107 +42,105 @@ class MultiUIDisplays extends Application
 		}
 	}
 
+	var skin:RoundedSkin = new RoundedSkin();
+	var style:RoundedStyle = new RoundedStyle(Color.GREY1, Color.GREY5, 2.0, 20.0);
+	
+	var font:Font<FontStyleTiled>;
+	var fontStyle:FontStyleTiled;
+	
 	public function startSample(window:Window)
 	{
+		fontStyle = new FontStyleTiled();
+		fontStyle.height = 12;
+		fontStyle.width = 8;
+		
+		// load the FONT:
+		new Font<FontStyleTiled>("assets/fonts/tiled/hack_ascii.json").load( onFontLoaded );
+	}
+	
+	public function onFontLoaded(font:Font<FontStyleTiled>)
+	{
+		this.font = font;
 		peoteView = new PeoteView(window);
 
 		var bgDisplay = new peote.view.Display(10, 10, window.width-20, window.height-20, Color.GREY1);
-		//peoteView.addDisplay(bgDisplay);
-		
-		var roundedSkin = new RoundedSkin();
-		var myStyle = new RoundedStyle();
-		myStyle.color = Color.GREY1;
-		myStyle.borderColor = Color.GREY5;
-		myStyle.borderSize = 4.0;
-		myStyle.borderRadius = 40.0;
-		
-		
+		//peoteView.addDisplay(bgDisplay);		
 		
 		// ----------------------------- left UIDisplay -----------------------------------
-		uiDisplayLeft = new UIDisplay(25, 25, 350, 550, Color.GREY2);
-		uiDisplayLeft.onPointerOver  = function(uiDisplay:UIDisplay, e:PointerEvent) { uiDisplay.color = Color.RED; };
+		
+		uiDisplayLeft = new UIDisplay(25, 0, 350, 400, Color.GREY2);
+		uiDisplayLeft.onPointerOver  = function(uiDisplay:UIDisplay, e:PointerEvent) { uiDisplay.color = Color.BLUE+0x33330000; };
 		uiDisplayLeft.onPointerOut   = function(uiDisplay:UIDisplay, e:PointerEvent) { uiDisplay.color = Color.GREY2; };
 		uiDisplayLeft.onPointerDown  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerDown"); };
 		uiDisplayLeft.onPointerUp    = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerUp"); };
 		uiDisplayLeft.onPointerClick = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerClick"); };
-		uiDisplayLeft.onPointerMove =  function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerMove"); };
+		//uiDisplayLeft.onPointerMove =  function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerMove"); };
 		
-		peoteView.addDisplay(uiDisplayLeft);
-		
-		var buttonLeft1 = new InteractiveElement(20, 20, 200, 100, roundedSkin, myStyle);		
-		buttonLeft1.onPointerOver = onOver.bind(Color.GREY2);
-		buttonLeft1.onPointerOut = onOut.bind(Color.GREY1);
-		buttonLeft1.onPointerDown = onDown.bind(Color.YELLOW);
-		buttonLeft1.onPointerUp = onUp.bind(Color.GREY5);
-		buttonLeft1.onPointerClick = function onClick(uiElement:InteractiveElement, e:PointerEvent) {
-			// show or hide the other display
+		createButton(uiDisplayLeft, "hide right uiDisplay", 25, 0).onPointerClick = function onClick(uiElement:InteractiveElement, e:PointerEvent) {
 			if (uiDisplayRight.isVisible) uiDisplayRight.hide() else uiDisplayRight.show();
 		};
-		uiDisplayLeft.add(buttonLeft1);
 		
-		var buttonLeft2 = new InteractiveElement(20, 120, 200, 100, roundedSkin, myStyle);		
-		buttonLeft2.onPointerClick = function onClick(uiElement:InteractiveElement, e:PointerEvent) {
-			// swap the displays order
+		// bubbling to other Display on/off
+		var bubbleToDisplay = new InteractiveElement(290, 10, 50, 50, skin, new RoundedStyle(Color.RED, Color.GREY5, 2.0, 20.0));
+		bubbleToDisplay.onPointerClick = function onClick(uiElement:InteractiveElement, e:PointerEvent) {
+			// turn bubbling to display on/off
+			uiDisplayLeft.moveEventsBubble = !uiDisplayLeft.moveEventsBubble;
+			uiDisplayLeft.overOutEventsBubble = !uiDisplayLeft.overOutEventsBubble;
+			uiDisplayLeft.upDownEventsBubble = !uiDisplayLeft.upDownEventsBubble;
+			uiDisplayLeft.wheelEventsBubble = !uiDisplayLeft.wheelEventsBubble;
+			if (uiDisplayLeft.moveEventsBubble) uiElement.style.color = Color.GREEN;
+			else uiElement.style.color = Color.RED;
+			uiElement.updateStyle();
+		};
+		uiDisplayLeft.add(bubbleToDisplay);
+
+		createButton(uiDisplayLeft, "swap uiDisplays", 25, 50).onPointerClick = function onClick(uiElement:InteractiveElement, e:PointerEvent) {
 			uiDisplayLeft.swapDisplay(uiDisplayRight);
 		};
-		uiDisplayLeft.add(buttonLeft2);
 		
 
+		peoteView.addDisplay(uiDisplayLeft);
 		
 		// ----------------------------- right UIDisplay -----------------------------------
 
-		uiDisplayRight = new UIDisplay(300, 125, 350, 550, Color.GREY3);
+		uiDisplayRight = new UIDisplay(300, 50, 350, 400, Color.GREY3);
 		uiDisplayRight.onPointerOver  = function(uiDisplay:UIDisplay, e:PointerEvent) { uiDisplay.color = Color.BLUE; };
 		uiDisplayRight.onPointerOut   = function(uiDisplay:UIDisplay, e:PointerEvent) { uiDisplay.color = Color.GREY3; };
 		uiDisplayRight.onPointerDown  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerDown"); };
 		uiDisplayRight.onPointerUp    = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerUp"); };
 		uiDisplayRight.onPointerClick = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerClick"); };
-		uiDisplayRight.onPointerMove  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerMove"); };
+		//uiDisplayRight.onPointerMove  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerMove"); };
 		
-		peoteView.addDisplay(uiDisplayRight);
 		// inserting before the left one into RenderList
 		//peoteView.addDisplay(uiDisplayRight, uiDisplayLeft, true);
 		
-		// let mouse Event bubble to the UIDisplays behind
-		// uiDisplayRight.upDownEventsBubble = true;
-		// uiDisplayRight.overOutEventsBubble = true;
-		
-		var buttonRight1 = new InteractiveElement(20, -1, 200, 100, roundedSkin, myStyle.copy());  // if sharing the same style and not copy here it result crazy behavior if not set all style-properties inside the eventhandler
-		buttonRight1.onPointerOver = onOver.bind(Color.GREY2);
-		buttonRight1.onPointerOut = onOut.bind(Color.GREY1);
-		buttonRight1.onPointerDown = onDown.bind(Color.RED);
-		buttonRight1.onPointerUp = onUp.bind(Color.GREY5);
-		buttonRight1.onPointerClick = function onClick(uiElement:InteractiveElement, e:PointerEvent) {
-			// show or hide the other display
+		createButton(uiDisplayRight, "hide left uiDisplay", 20, 0).onPointerClick = function onClick(uiElement:InteractiveElement, e:PointerEvent) {
 			if (uiDisplayLeft.isVisible) uiDisplayLeft.hide() else uiDisplayLeft.show();
 		};
 		
-		buttonRight1.upDownEventsBubbleToDisplay = true; // bubble the over/out events of this button to the UIDisplay		
-		buttonRight1.overOutEventsBubbleToDisplay = false; // don't bubble the over/out events of this button to the UIDisplay
-		buttonRight1.moveEventsBubbleToDisplay = true; // don't bubble the move events of this button to the UIDisplay
-
-		uiDisplayRight.add(buttonRight1);
-		
-		var buttonRight2 = new InteractiveElement(30, 25, 180, 50, roundedSkin, myStyle.copy());  // if sharing the same style and not copy here it result crazy behavior if not set all style-properties inside the eventhandler
-		buttonRight2.onPointerOver = onOver.bind(Color.GREY2);
-		buttonRight2.onPointerOut = onOut.bind(Color.GREY1);
-		buttonRight2.onPointerDown = onDown.bind(Color.RED);
-		buttonRight2.onPointerUp = onUp.bind(Color.GREY5);
-		buttonRight2.onPointerClick = function onClick(uiElement:InteractiveElement, e:PointerEvent) {
+		// bubbling to other Display on/off
+		var bubbleToDisplay = new InteractiveElement(290, 10, 50, 50, skin, new RoundedStyle(Color.RED, Color.GREY5, 2.0, 20.0));
+		bubbleToDisplay.onPointerClick = function onClick(uiElement:InteractiveElement, e:PointerEvent) {
+			// turn bubbling to display on/off
+			uiDisplayRight.moveEventsBubble = !uiDisplayRight.moveEventsBubble;
 			uiDisplayRight.overOutEventsBubble = !uiDisplayRight.overOutEventsBubble;
 			uiDisplayRight.upDownEventsBubble = !uiDisplayRight.upDownEventsBubble;
-			uiDisplayRight.moveEventsBubble = !uiDisplayRight.moveEventsBubble;
+			uiDisplayRight.wheelEventsBubble = !uiDisplayRight.wheelEventsBubble;
+			if (uiDisplayRight.moveEventsBubble) uiElement.style.color = Color.GREEN;
+			else uiElement.style.color = Color.RED;
+			uiElement.updateStyle();
 		};
+		uiDisplayRight.add(bubbleToDisplay);
 		
-		//buttonRight2.upDownEventsBubbleTo = buttonRight1; // bubble the up/down events of this button to the underlaying Button
-		buttonRight2.overOutEventsBubbleTo = buttonRight1; // bubble the over/out events of this button to the underlaying Button
-		//buttonRight2.moveEventsBubbleTo = buttonRight1; // bubble the move events of this button to the underlaying Button
-		
-		//buttonRight2.upDownEventsBubbleToDisplay = true; // don't bubble the up/down events of this button to the UIDisplay
-		//buttonRight2.overOutEventsBubbleToDisplay = false; // don't bubble the over/out events of this button to the UIDisplay
-		//buttonRight2.moveEventsBubbleToDisplay = true; // don't bubble the move events of this button to the UIDisplay
+		createButton(uiDisplayRight, 0, 150, 300, 250, true,
+			createButton(uiDisplayRight, 0, 250, 250, 150, 1, true,
+				createButton(uiDisplayRight, 0, 300, 150, 100, 2, true)	
+			)	
+		);
 
-		uiDisplayRight.add(buttonRight2);
+		peoteView.addDisplay(uiDisplayRight);
+		
+		// -----------------------------------------------------------------------------------
 		
 		//peoteView.zoom = 0.5;
 		//peoteView.xOffset = 300;
@@ -156,6 +158,81 @@ class MultiUIDisplays extends Application
 		UIDisplay.registerEvents(window);
 		
 		//UIDisplay.unRegisterEvents(window);			
+	}
+	
+	public function createButton(uiDisplay:UIDisplay, text = "", x:Int, y:Int, w:Int = 200, h:Int = 50, z:Int = 0, helpers = false, child:InteractiveElement = null ):InteractiveElement {
+		var button = new InteractiveElement(x, y, w, h, z, skin, style.copy());
+		button.onPointerOver = onOver.bind(Color.GREY2);
+		button.onPointerOut = onOut.bind(Color.GREY1);
+		button.onPointerDown = onDown.bind(Color.YELLOW);
+		button.onPointerUp = onUp.bind(Color.GREY5);
+		button.onPointerClick = function(uiElement:InteractiveElement, e:PointerEvent) { trace("uiElement onPointerClick"); };
+		uiDisplay.add(button);
+		
+		if (text != "") {
+			var textLine = new InteractiveTextLine<FontStyleTiled>(x + 10, y + 8, 10, 5, z, text, font, fontStyle);
+			uiDisplay.add(textLine);
+		}
+		
+		if (helpers) 
+		{
+			var bubbleStyle = style.copy();
+			bubbleStyle.color = Color.RED;
+			
+			var lw = Std.int(Math.max(10, Math.min(50, Std.int(w / 4))));
+			var lh = Std.int(Math.max(10, Math.min(50, h / 2.75)));
+			var gap =Std.int(Math.min(10, (h - 2 * lh) / 3));
+			
+			var bubbleToDisplay = new InteractiveElement(x + w - lw - gap, y + gap, lw, lh, z, skin, bubbleStyle);
+			button.overOutEventsBubbleToDisplay = false;
+			bubbleToDisplay.onPointerClick = function onClick(uiElement:InteractiveElement, e:PointerEvent) {
+				// turn bubbling to display on/off
+				button.moveEventsBubbleToDisplay = !button.moveEventsBubbleToDisplay;
+				button.overOutEventsBubbleToDisplay = !button.overOutEventsBubbleToDisplay;
+				button.upDownEventsBubbleToDisplay = !button.upDownEventsBubbleToDisplay;
+				button.wheelEventsBubbleToDisplay = !button.wheelEventsBubbleToDisplay;
+				
+				if (button.moveEventsBubbleToDisplay) uiElement.style.color = Color.GREEN;
+				else uiElement.style.color = Color.RED;
+				
+				uiElement.updateStyle();
+			};
+			uiDisplay.add(bubbleToDisplay);
+		}
+		
+		if (child != null)
+		{
+			var bubbleStyle = style.copy();
+			bubbleStyle.color = Color.RED;
+			bubbleStyle.borderRadius = 0;
+			
+			var lw = Std.int(Math.max(10, Math.min(50, child.width / 4)));			
+			var lh = Std.int(Math.max(10, Math.min(50, child.height / 2.75)));
+			var gap =Std.int(Math.min(10, (child.height - 2 * lh) / 3));
+		
+			var bubbleToParent = new InteractiveElement(child.x + child.width - lw - gap, child.y + gap + lh, lw, lh, child.z, skin, bubbleStyle);
+			bubbleToParent.onPointerClick = function onClick(uiElement:InteractiveElement, e:PointerEvent) {
+				// turn bubbling to parent on/off				
+				if (child.moveEventsBubbleTo == null) {
+					child.moveEventsBubbleTo = button;
+					child.overOutEventsBubbleTo = button;
+					child.upDownEventsBubbleTo = button;
+					child.wheelEventsBubbleTo = button;
+					uiElement.style.color = Color.GREEN;
+				}
+				else {
+					child.moveEventsBubbleTo = null;
+					child.overOutEventsBubbleTo = null;
+					child.upDownEventsBubbleTo = null;
+					child.wheelEventsBubbleTo = null;
+					uiElement.style.color = Color.RED;
+				}
+				uiElement.updateStyle();
+			};
+			uiDisplay.add(bubbleToParent);
+		}
+		
+		return button;
 	}
 	
 	// ----------------- InteractiveElement Eventhandler ----------------------
@@ -183,7 +260,7 @@ class MultiUIDisplays extends Application
 	}
 	
 	public inline function onDown(borderColor:Color, uiElement:InteractiveElement, e:PointerEvent) {
-		//trace(" -----> onPointerDown", e);
+		trace(" -----> onPointerDown", e);
 		if (uiElement.style.compatibleSkins & SkinType.Rounded > 0) {
 			uiElement.style.borderColor = borderColor;
 			//uiElement.x += 30;  uiElement.update();
@@ -192,7 +269,7 @@ class MultiUIDisplays extends Application
 	}
 	
 	public inline function onUp(borderColor:Color, uiElement:InteractiveElement, e:PointerEvent) {
-		//trace(" -----> onPointerUp", e);
+		trace(" -----> onPointerUp", e);
 		if (uiElement.style.compatibleSkins & SkinType.Rounded > 0) {
 			uiElement.style.borderColor = borderColor;
 			uiElement.updateStyle();
