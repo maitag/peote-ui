@@ -126,15 +126,16 @@ class MultiUIDisplays extends Application
 			uiDisplayRight.overOutEventsBubble = !uiDisplayRight.overOutEventsBubble;
 			uiDisplayRight.upDownEventsBubble = !uiDisplayRight.upDownEventsBubble;
 			uiDisplayRight.wheelEventsBubble = !uiDisplayRight.wheelEventsBubble;
-			if (uiDisplayRight.moveEventsBubble) uiElement.style.color = Color.GREEN;
+			if (uiDisplayRight.wheelEventsBubble) uiElement.style.color = Color.GREEN;
 			else uiElement.style.color = Color.RED;
 			uiElement.updateStyle();
 		};
 		uiDisplayRight.add(bubbleToDisplay);
+		//uiDisplayRight.moveEventsBubble = true;
 		
-		createButton(uiDisplayRight, 0, 150, 300, 250, true,
-			createButton(uiDisplayRight, 0, 250, 250, 150, 1, true,
-				createButton(uiDisplayRight, 0, 300, 150, 100, 2, true)	
+		createButton(uiDisplayRight, 0, 140, 300, 250, true,
+			createButton(uiDisplayRight, 0, 240, 250, 150, 1, true,
+				createButton(uiDisplayRight, 0, 290, 150, 100, 2, true)	
 			)	
 		);
 
