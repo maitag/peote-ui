@@ -510,11 +510,11 @@ class UIDisplay extends Display
 		}
 	}
 	
-	var wasMouseDown:Bool = false;
+	var isMouseDown:Int = 0;
 	
 	public inline function mouseDown (mouseX:Float, mouseY:Float, button:MouseButton):Bool
 	{
-		var hasEvent = false;
+		var hasEventDown = false;
 		if (mouseEnabled && (lockMouseDown & (1 << button)) == 0 && peoteView != null) 
 		{
 			var x = Std.int(mouseX);
@@ -527,24 +527,25 @@ class UIDisplay extends Display
 					var pickedElem = clickPickBuffer.getElement(pickedIndex).uiElement;
 					while (pickedElem != null) {
 						pickedElem.pointerDown({x:x, y:y, type:PointerType.MOUSE, mouseButton:button});
-						if (pickedElem.upDownEventsBubbleToDisplay) hasEvent = true; // UIDisplay event
+						if (pickedElem.upDownEventsBubbleTo==null && pickedElem.upDownEventsBubbleToDisplay) hasEventDown = true; // UIDisplay event
 						pickedElem = pickedElem.upDownEventsBubbleTo;
 					}					
 
 					lockMouseDown = lockMouseDown | (1 << button);
 					lastMouseDownIndex.set(button, pickedIndex);
 					
-					if (hasEvent) { // UIDisplay event
+					if (hasEventDown) { // UIDisplay event
 						if (onPointerDown != null) onPointerDown(this, {x:x, y:y, type:PointerType.MOUSE, mouseButton:button});
-						wasMouseDown = true;
-						hasEvent = !upDownEventsBubble;
-					} else hasEvent=true;
+						isMouseDown = isMouseDown | (1 << button);
+						hasEventDown = !upDownEventsBubble;
+					} 
+					else hasEventDown=true; // UIDisplay event
 
 				}
 				else { // UIDisplay event
 					if (onPointerDown != null) onPointerDown(this, {x:x, y:y, type:PointerType.MOUSE, mouseButton:button});
-					wasMouseDown = true;
-					hasEvent = !upDownEventsBubble;
+					isMouseDown = isMouseDown | (1 << button);
+					hasEventDown = !upDownEventsBubble;
 				}
 
 			}
@@ -552,13 +553,13 @@ class UIDisplay extends Display
 				
 		//var pickedElements = peoteView.getAllElementsAt(x, y, display, clickProgram);
 		//trace(pickedElements);
-		return hasEvent;
+		return hasEventDown;
 	}
 	
-	var wasTouchDown:Int = 0;
+	var isTouchDown:Int = 0;
 	
 	public inline function touchStart (touch:Touch):Bool {
-		var hasEvent = false;
+		var hasEventDown = false;
 		var hasEventOver = false;
 		if (touchEnabled && (lockTouchDown & (1 << touch.id)) == 0 && peoteView != null && touch.id < maxTouchpoints)
 		{
@@ -573,7 +574,7 @@ class UIDisplay extends Display
 					var pickedElem = movePickBuffer.getElement(pickedIndex).uiElement;
 					while (pickedElem != null) {
 						pickedElem.pointerOver({x:x, y:y, type:PointerType.TOUCH, touch:touch});
-						if (!hasEventOver && pickedElem.upDownEventsBubbleToDisplay) hasEventOver = true;
+						if (pickedElem.upDownEventsBubbleTo==null && pickedElem.upDownEventsBubbleToDisplay) hasEventOver = true; // UIDisplay event
 						pickedElem = pickedElem.overOutEventsBubbleTo;
 					}					
 					lastTouchOverIndex.set(touch.id, pickedIndex);
@@ -586,13 +587,13 @@ class UIDisplay extends Display
 					var pickedElem = clickPickBuffer.getElement(touchDownIndex).uiElement;
 					while (pickedElem != null) {
 						pickedElem.pointerDown({x:x, y:y, type:PointerType.TOUCH, touch:touch});
-						if (!hasEvent && pickedElem.upDownEventsBubbleToDisplay) hasEvent = true;
+						if (pickedElem.upDownEventsBubbleTo==null && pickedElem.upDownEventsBubbleToDisplay) hasEventDown = true; // UIDisplay event
 						pickedElem = pickedElem.upDownEventsBubbleTo;
 					}
 					lockTouchDown = lockTouchDown | (1 << touch.id);
 					lastTouchDownIndex.set(touch.id, touchDownIndex);
 				}
-				else hasEvent = true;
+				else hasEventDown = true; // UIDisplay event
 			}
 		}
 		
@@ -601,13 +602,13 @@ class UIDisplay extends Display
 			hasEventOver = !overOutEventsBubble;
 		}
 		
-		if (hasEvent) {
+		if (hasEventDown) {
 			if (onPointerDown != null) onPointerDown(this, {x:x, y:y, type:PointerType.TOUCH, touch:touch});
-			wasTouchDown = wasTouchDown | (1 << touch.id);
-			hasEvent = !upDownEventsBubble;
+			isTouchDown = isTouchDown | (1 << touch.id);
+			hasEventDown = !upDownEventsBubble;
 		}
 		
-		return (hasEventOver || hasEvent);
+		return (hasEventOver || hasEventDown);
 	}
 	
 	public inline function mouseUp (mouseX:Float, mouseY:Float, button:MouseButton)
@@ -643,13 +644,14 @@ class UIDisplay extends Display
 			} 
 			
 			// UIDisplay event
-			if (wasMouseDown) {
+			if (isMouseDown & (1 << button) != 0) {
 				if (onPointerUp != null) onPointerUp(this, {x:x, y:y, type:PointerType.MOUSE, mouseButton:button});
 				
-				if (onPointerClick != null && _isPointInside(x, y)) {
+				//if (onPointerClick != null && _isPointInside(x, y)) {
+				if (onPointerClick != null && isEventOver) {
 					onPointerClick(this, {x:x, y:y, type:PointerType.MOUSE, mouseButton:button});
 				}
-				wasMouseDown = false;
+				isMouseDown = isMouseDown - (1 << button);
 			}
 			
 		}			
@@ -657,7 +659,7 @@ class UIDisplay extends Display
 	}
 	
 	public inline function touchEnd (touch:Touch):Bool {
-		var hasEvent = false;
+		var hasEventUp = false;
 		var hasEventOut = false;
 		if (touchEnabled && peoteView != null && touch.id < maxTouchpoints) {
 			
@@ -678,11 +680,11 @@ class UIDisplay extends Display
 					if (lastTouchDownElem.intoUpDownEventBubbleOf(pickedElem)) startClick = true;
 				}
 				
-				if (lastTouchDownElem == null) hasEvent = true;
+				if (lastTouchDownElem == null) hasEventUp = true;
 				
 				while (lastTouchDownElem != null) {
 					lastTouchDownElem.pointerUp({x:x, y:y, type:PointerType.TOUCH, touch:touch});
-					if (!hasEvent && lastTouchDownElem.upDownEventsBubbleToDisplay) hasEvent = true;
+					if (!hasEventUp && lastTouchDownElem.upDownEventsBubbleToDisplay) hasEventUp = true;
 					
 					// Click
 					if (!startClick && pickedElem == lastTouchDownElem) startClick = true;
@@ -692,7 +694,7 @@ class UIDisplay extends Display
 				lastTouchDownIndex.set(touch.id, -1);
 				lockTouchDown = lockTouchDown - (1 << touch.id);				
 			}
-			else hasEvent = (_isPointInside(x, y));
+			else hasEventUp = (_isPointInside(x, y));
 			
 			// Out
 			pickedIndex = (_isPointInside(x, y)) ? peoteView.getElementAt(x, y, this, movePickProgram) : -1;
@@ -700,7 +702,7 @@ class UIDisplay extends Display
 				pickedElem = movePickBuffer.getElement(pickedIndex).uiElement;
 				while (pickedElem != null) {
 					pickedElem.pointerOut({x:x, y:y, type:PointerType.TOUCH, touch:touch});
-					if (!hasEventOut && pickedElem.upDownEventsBubbleToDisplay) hasEvent = true;
+					if (!hasEventOut && pickedElem.upDownEventsBubbleToDisplay) hasEventOut = true;
 					pickedElem = pickedElem.overOutEventsBubbleTo;
 				}					
 				lastTouchOverIndex.set(touch.id, -1);
@@ -708,13 +710,13 @@ class UIDisplay extends Display
 			else hasEventOut = true;
 		}	
 		
-		if (hasEvent) {
+		if (hasEventUp) {
 			if (onPointerUp != null) onPointerUp(this, {x:x, y:y, type:PointerType.TOUCH, touch:touch});
-			if ((wasTouchDown & (1 << touch.id))>0 && onPointerClick != null) {
+			if ((isTouchDown & (1 << touch.id))>0 && onPointerClick != null) {
 				onPointerClick(this, {x:x, y:y, type:PointerType.TOUCH, touch:touch});
 			}
-			wasTouchDown = wasTouchDown - (1 << touch.id);
-			hasEvent = !upDownEventsBubble;
+			isTouchDown = isTouchDown - (1 << touch.id);
+			hasEventUp = !upDownEventsBubble;
 		}
 		
 		if (hasEventOut) {
@@ -722,7 +724,7 @@ class UIDisplay extends Display
 			hasEventOut = !overOutEventsBubble;
 		}		
 		
-		return (hasEvent || hasEventOut);
+		return (hasEventUp || hasEventOut);
 	}
 
 	public inline function mouseWheel (deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode):Void {
