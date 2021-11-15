@@ -188,7 +188,7 @@ class UIDisplay extends Display
 	}
 	
 	// ----------------------------------------
-	public function startDragging(uiElement:Interactive, e:PointerEvent):Void {
+	public function startDraggingElement(uiElement:Interactive, e:PointerEvent):Void {
 		if (! uiElement.isDragging) {
 			uiElement.isDragging = true;
 			switch (e.type) {
@@ -200,7 +200,7 @@ class UIDisplay extends Display
 		} //TODO: #if peoteui_debug -> else WARNING: already in dragmode
 	}
 
-	public function stopDragging(uiElement:Interactive, e:PointerEvent):Void {
+	public function stopDraggingElement(uiElement:Interactive, e:PointerEvent):Void {
 		if (uiElement.isDragging) {
 			uiElement.isDragging = false;
 			switch (e.type) {
@@ -825,8 +825,18 @@ class UIDisplay extends Display
 			}
 		}
 		lockMouseDown = 0;
-
-		// touch
+		
+		
+		// TODO: trace(isMouseDown);
+/*		// UIDisplay event
+		if (isMouseDown != 0) {
+			if (onPointerUp != null) onPointerUp(this, {x:x, y:y, type:PointerType.MOUSE, mouseButton:1});
+			isMouseDown = 0;
+		}
+*/
+		
+		// -----------------touch ----------------
+		
 		for (i in 0...lastTouchOverIndex.length) {
 			lastIndex = lastTouchOverIndex.get(i) ;
 			if (lastIndex >= 0) {
@@ -880,6 +890,41 @@ class UIDisplay extends Display
 	
 	
 	
+	// ----------------- Dragging ----------------------------
+	
+	var dragMinX:Int = -0x7fff;
+	var dragMinY:Int = -0x7fff;
+	var dragMaxX:Int = 0x7fff;
+	var dragMaxY:Int = 0x7fff;
+	
+	public var isDragging(default, null):Bool = false;
+	
+	var dragOriginX:Int = 0;
+	var dragOriginY:Int = 0;
+	
+	public inline function setDragArea(dragAreaX:Int, dragAreaY:Int, dragAreaWidth:Int, dragAreaHeight:Int) 
+	{
+		dragMinX = dragAreaX;
+		dragMinY = dragAreaY;
+		dragMaxX = dragAreaX + dragAreaWidth;
+		dragMaxY = dragAreaY + dragAreaHeight;
+	}
+	
+	inline function dragTo(dragToX:Float, dragToY:Float):Void
+	{	
+		var toX:Int = Std.int(dragToX / peoteView.xz / xz);
+		var toY:Int = Std.int(dragToY / peoteView.yz / yz);
+		
+		if (toX >= (dragMinX + dragOriginX)) {
+			if (toX < (dragMaxX - width + dragOriginX)) x = toX - dragOriginX;
+			else x = dragMaxX - width;
+		} else x = dragMinX;
+		
+		if (toY >= dragMinY + dragOriginY) {
+			if (toY < dragMaxY - height + dragOriginY) y = toY - dragOriginY;
+			else y = dragMaxY - height;
+		} else y = dragMinY;
+	}
 	
 	
 	// -------- register Events from Lime Application ----------
@@ -890,6 +935,7 @@ class UIDisplay extends Display
 		return b;
 	}
 */
+	
 	#if (peoteui_maxDisplays == "1")
 		//public inline function get_pointerEnabled():Bool return (activeUIDisplay == this);
 		
@@ -897,13 +943,30 @@ class UIDisplay extends Display
 		inline function addToActiveUIDisplay(?atDisplay:Display, addBefore:Bool = false) activeUIDisplay = this;
 		inline function removeFromActiveUIDisplay() activeUIDisplay = null;
 
-		static public inline function mouseMoveActive(mouseX:Float, mouseY:Float) if (activeUIDisplay!=null) activeUIDisplay.mouseMove(mouseX, mouseY);	
+		public function startDragging(e:PointerEvent) {
+			if (!isDragging) {
+				dragOriginX = Std.int(e.x / peoteView.xz / xz) - x;
+				dragOriginY = Std.int(e.y / peoteView.yz / yz) - y;
+				isDragging = true;
+			}
+		}
+		
+		public function stopDragging(e:PointerEvent) {
+			isDragging = false;
+		}
+		
+		static public inline function mouseMoveActive(mouseX:Float, mouseY:Float) {
+			if (activeUIDisplay != null) {
+				if (activeUIDisplay.isDragging) activeUIDisplay.dragTo(mouseX, mouseY);
+				else activeUIDisplay.mouseMove(mouseX, mouseY);
+			}
+		}
 		static public inline function mouseDownActive(mouseX:Float, mouseY:Float, button:MouseButton) if (activeUIDisplay!=null) activeUIDisplay.mouseDown(mouseX, mouseY, button);
 		static public inline function mouseUpActive(mouseX:Float, mouseY:Float, button:MouseButton) if (activeUIDisplay!=null) activeUIDisplay.mouseUp(mouseX, mouseY, button);
 		static public inline function mouseWheelActive(dx:Float, dy:Float, mode:MouseWheelMode) if (activeUIDisplay!=null) activeUIDisplay.mouseWheel(dx, dy, mode);
 		
-		static public inline function touchStartActive(touch:Touch) if (activeUIDisplay!=null) activeUIDisplay.touchStart(touch);
 		static public inline function touchMoveActive(touch:Touch) if (activeUIDisplay!=null) activeUIDisplay.touchMove(touch);
+		static public inline function touchStartActive(touch:Touch) if (activeUIDisplay!=null) activeUIDisplay.touchStart(touch);
 		static public inline function touchEndActive(touch:Touch) if (activeUIDisplay!=null) activeUIDisplay.touchEnd(touch);
 		static public inline function touchCancelActive(touch:Touch) if (activeUIDisplay!=null) activeUIDisplay.touchCancel(touch);
 
@@ -981,10 +1044,32 @@ class UIDisplay extends Display
 			maxActiveIndex--;
 		}
 		
+		static var draggingMouseDisplays:Array<UIDisplay> = new Array<UIDisplay>();
+		
+		public function startDragging(e:PointerEvent) {
+			if (!isDragging) {
+				dragOriginX = Std.int(e.x / peoteView.xz / xz) - x;
+				dragOriginY = Std.int(e.y / peoteView.yz / yz) - y;
+				draggingMouseDisplays.push(this);
+				isDragging = true;
+			}
+		}
+		
+		public function stopDragging(e:PointerEvent) {
+			if (isDragging) {
+				isDragging = false;
+				draggingMouseDisplays.remove(this);
+			}
+		}
+		
 		static public inline function mouseMoveActive(mouseX:Float, mouseY:Float)
 		{
 			var checkForEvent:Int = HAS_OVEROUT_MOVE;
-			for (i in 0...maxActiveIndex) {
+			if (draggingMouseDisplays.length > 0) // Dragging
+			{
+				for (d in draggingMouseDisplays) d.dragTo(mouseX, mouseY);
+			}
+			else for (i in 0...maxActiveIndex) {
 				checkForEvent = activeUIDisplay.get(i).mouseMove(mouseX, mouseY, checkForEvent);
 				//if (i==0 && ( (checkForEvent & HAS_OVEROUT) >0)) trace("bubble OVER OUT");
 				//if (i==0 && ( (checkForEvent & HAS_MOVE) >0)) trace("bubble MOVE");

@@ -300,13 +300,13 @@ class Interactive
 		if (isVisible) {
 			dragOriginX = Std.int(e.x / uiDisplay.peoteView.xz / uiDisplay.xz) - x;
 			dragOriginY = Std.int(e.y / uiDisplay.peoteView.yz / uiDisplay.yz) - y;
-			uiDisplay.startDragging(this, e);
+			uiDisplay.startDraggingElement(this, e);
 		}
 	}
 	
 	public function stopDragging(e:PointerEvent)
 	{
-		if (isVisible) uiDisplay.stopDragging(this, e);
+		if (isVisible) uiDisplay.stopDraggingElement(this, e);
 	}
 	
 	// ----------------- Event-Bindings ----------------------

@@ -69,12 +69,15 @@ class MultiUIDisplays extends Application
 		// ----------------------------- left UIDisplay -----------------------------------
 		
 		uiDisplayLeft = new UIDisplay(25, 0, 350, 400, Color.GREY2);
+		uiDisplayLeft.setDragArea(0, 0, window.width, window.height);
 		uiDisplayLeft.onPointerOver  = function(uiDisplay:UIDisplay, e:PointerEvent) { uiDisplay.color = Color.BLUE+0x33330000; };
 		uiDisplayLeft.onPointerOut   = function(uiDisplay:UIDisplay, e:PointerEvent) { uiDisplay.color = Color.GREY2; };
-		uiDisplayLeft.onPointerDown  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerDown"); };
-		uiDisplayLeft.onPointerUp    = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerUp"); };
+		uiDisplayLeft.onPointerDown  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerDown"); uiDisplay.startDragging(e); };
+		uiDisplayLeft.onPointerUp    = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerUp"); uiDisplay.stopDragging(e); };
 		uiDisplayLeft.onPointerClick = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerClick"); };
 		//uiDisplayLeft.onPointerMove =  function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerMove"); };
+		
+		
 		
 		createButton(uiDisplayLeft, "hide right uiDisplay", 25, 0).onPointerClick = function onClick(uiElement:InteractiveElement, e:PointerEvent) {
 			if (uiDisplayRight.isVisible) uiDisplayRight.hide() else uiDisplayRight.show();
@@ -104,10 +107,11 @@ class MultiUIDisplays extends Application
 		// ----------------------------- right UIDisplay -----------------------------------
 
 		uiDisplayRight = new UIDisplay(300, 50, 350, 400, Color.GREY3);
+		uiDisplayRight.setDragArea(0, 0, window.width, window.height);
 		uiDisplayRight.onPointerOver  = function(uiDisplay:UIDisplay, e:PointerEvent) { uiDisplay.color = Color.BLUE; };
 		uiDisplayRight.onPointerOut   = function(uiDisplay:UIDisplay, e:PointerEvent) { uiDisplay.color = Color.GREY3; };
-		uiDisplayRight.onPointerDown  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerDown"); };
-		uiDisplayRight.onPointerUp    = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerUp"); };
+		uiDisplayRight.onPointerDown  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerDown"); uiDisplay.startDragging(e); };
+		uiDisplayRight.onPointerUp    = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerUp"); uiDisplay.stopDragging(e); };
 		uiDisplayRight.onPointerClick = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerClick"); };
 		//uiDisplayRight.onPointerMove  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayRight onPointerMove"); };
 		
