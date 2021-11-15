@@ -1,6 +1,7 @@
 package;
 
 import haxe.CallStack;
+import lime.ui.MouseButton;
 
 import lime.app.Application;
 import lime.ui.Window;
@@ -66,17 +67,20 @@ class MultiUIDisplays extends Application
 		var bgDisplay = new peote.view.Display(10, 10, window.width-20, window.height-20, Color.GREY1);
 		//peoteView.addDisplay(bgDisplay);		
 		
+		#if (peoteui_maxDisplays != "1")
 		// ----------------------------- left UIDisplay -----------------------------------
 		
 		uiDisplayLeft = new UIDisplay(25, 0, 350, 400, Color.GREY2);
 		uiDisplayLeft.setDragArea(0, 0, window.width, window.height);
 		uiDisplayLeft.onPointerOver  = function(uiDisplay:UIDisplay, e:PointerEvent) { uiDisplay.color = Color.BLUE+0x33330000; };
 		uiDisplayLeft.onPointerOut   = function(uiDisplay:UIDisplay, e:PointerEvent) { uiDisplay.color = Color.GREY2; };
-		uiDisplayLeft.onPointerDown  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerDown"); uiDisplay.startDragging(e); };
+		uiDisplayLeft.onPointerDown  = function(uiDisplay:UIDisplay, e:PointerEvent) {
+			trace("uiDisplayLeft onPointerDown"); 
+			if (e.mouseButton == MouseButton.LEFT || e.mouseButton == MouseButton.MIDDLE) uiDisplay.startDragging(e); // only drag on left or middle
+		};
 		uiDisplayLeft.onPointerUp    = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerUp"); uiDisplay.stopDragging(e); };
 		uiDisplayLeft.onPointerClick = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerClick"); };
 		//uiDisplayLeft.onPointerMove =  function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerMove"); };
-		
 		
 		
 		createButton(uiDisplayLeft, "hide right uiDisplay", 25, 0).onPointerClick = function onClick(uiElement:InteractiveElement, e:PointerEvent) {
@@ -104,6 +108,8 @@ class MultiUIDisplays extends Application
 
 		peoteView.addDisplay(uiDisplayLeft);
 		
+		#end
+
 		// ----------------------------- right UIDisplay -----------------------------------
 
 		uiDisplayRight = new UIDisplay(300, 50, 350, 400, Color.GREY3);
@@ -118,9 +124,11 @@ class MultiUIDisplays extends Application
 		// inserting before the left one into RenderList
 		//peoteView.addDisplay(uiDisplayRight, uiDisplayLeft, true);
 		
+		#if (peoteui_maxDisplays != "1")
 		createButton(uiDisplayRight, "hide left uiDisplay", 20, 0).onPointerClick = function onClick(uiElement:InteractiveElement, e:PointerEvent) {
 			if (uiDisplayLeft.isVisible) uiDisplayLeft.hide() else uiDisplayLeft.show();
 		};
+		#end
 		
 		// bubbling to other Display on/off
 		var bubbleToDisplay = new InteractiveElement(290, 10, 50, 50, skin, new RoundedStyle(Color.RED, Color.GREY5, 2.0, 20.0));

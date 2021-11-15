@@ -93,6 +93,7 @@ class UIDisplay extends Display
 		lastTouchOverIndex = new Vector<Int>(maxTouchpoints);
 		lastTouchDownIndex = new Vector<Int>(maxTouchpoints);
 		draggingTouchElements = new Vector<Array<Interactive>>(maxTouchpoints);
+				
 		for (i in 0...maxTouchpoints) {
 			lastTouchOverIndex.set(i, -1);
 			lastTouchDownIndex.set(i, -1);
@@ -427,8 +428,7 @@ class UIDisplay extends Display
 				pickedIndex = peoteView.getElementAt(x, y, this, movePickProgram);					
 			}
 			
-			var draggingTouchElemArray = draggingTouchElements.get(touch.id);
-						
+			var draggingTouchElemArray = draggingTouchElements.get(touch.id);						
 			if (draggingTouchElemArray.length > 0) // touch Dragging
 			{
 				for (uiElement in draggingTouchElemArray) {
@@ -897,7 +897,13 @@ class UIDisplay extends Display
 	var dragMaxX:Int = 0x7fff;
 	var dragMaxY:Int = 0x7fff;
 	
-	public var isDragging(default, null):Bool = false;
+	var draggingMouseButton:Int = 0;
+	var draggingTouchID:Int = 0;
+	
+	public var isDragging(get, never):Bool;
+	inline function get_isDragging():Bool {
+		return (draggingMouseButton != 0 || draggingTouchID != 0);
+	}
 	
 	var dragOriginX:Int = 0;
 	var dragOriginY:Int = 0;
@@ -911,6 +917,16 @@ class UIDisplay extends Display
 	}
 	
 	inline function dragTo(dragToX:Float, dragToY:Float):Void
+	{
+		if (peoteView != null) _dragTo(dragToX, dragToY);
+	}
+	
+	inline function dragToTouch(touch:Touch):Void
+	{
+		if (peoteView != null) _dragTo(Math.round(touch.x * peoteView.width), Math.round(touch.y * peoteView.height));
+	}
+	
+	inline function _dragTo(dragToX:Float, dragToY:Float):Void
 	{	
 		var toX:Int = Std.int(dragToX / peoteView.xz / xz);
 		var toY:Int = Std.int(dragToY / peoteView.yz / yz);
@@ -944,20 +960,32 @@ class UIDisplay extends Display
 		inline function removeFromActiveUIDisplay() activeUIDisplay = null;
 
 		public function startDragging(e:PointerEvent) {
-			if (!isDragging) {
-				dragOriginX = Std.int(e.x / peoteView.xz / xz) - x;
-				dragOriginY = Std.int(e.y / peoteView.yz / yz) - y;
-				isDragging = true;
-			}
+			dragOriginX = Std.int(e.x / peoteView.xz / xz) - x;
+			dragOriginY = Std.int(e.y / peoteView.yz / yz) - y;
+			switch (e.type) {
+				case MOUSE: draggingMouseButton = draggingMouseButton | (1 << e.mouseButton);
+				case TOUCH: draggingTouchID = draggingTouchID | (1 << e.touch.id);
+				case PEN: // TODO!
+			}				
 		}
 		
 		public function stopDragging(e:PointerEvent) {
-			isDragging = false;
+			if (isDragging) {
+				switch (e.type) {
+					case MOUSE:
+						if (draggingMouseButton & (1 << e.mouseButton) > 0) draggingMouseButton -= (1 << e.mouseButton);
+						if (draggingMouseButton == 0) mouseMove(e.x, e.y);
+					case TOUCH:
+						if (draggingTouchID & (1 << e.touch.id) > 0) draggingTouchID -= (1 << e.touch.id);
+						if (draggingTouchID == 0) touchMove(e.touch);
+					case PEN: // TODO!
+				}
+			}
 		}
 		
 		static public inline function mouseMoveActive(mouseX:Float, mouseY:Float) {
 			if (activeUIDisplay != null) {
-				if (activeUIDisplay.isDragging) activeUIDisplay.dragTo(mouseX, mouseY);
+				if (activeUIDisplay.draggingMouseButton > 0) activeUIDisplay.dragTo(mouseX, mouseY);
 				else activeUIDisplay.mouseMove(mouseX, mouseY);
 			}
 		}
@@ -965,7 +993,12 @@ class UIDisplay extends Display
 		static public inline function mouseUpActive(mouseX:Float, mouseY:Float, button:MouseButton) if (activeUIDisplay!=null) activeUIDisplay.mouseUp(mouseX, mouseY, button);
 		static public inline function mouseWheelActive(dx:Float, dy:Float, mode:MouseWheelMode) if (activeUIDisplay!=null) activeUIDisplay.mouseWheel(dx, dy, mode);
 		
-		static public inline function touchMoveActive(touch:Touch) if (activeUIDisplay!=null) activeUIDisplay.touchMove(touch);
+		static public inline function touchMoveActive(touch:Touch) {
+			if (activeUIDisplay != null) {
+				if (activeUIDisplay.draggingTouchID > 0) activeUIDisplay.dragToTouch(touch);
+				activeUIDisplay.touchMove(touch);
+			}
+		}
 		static public inline function touchStartActive(touch:Touch) if (activeUIDisplay!=null) activeUIDisplay.touchStart(touch);
 		static public inline function touchEndActive(touch:Touch) if (activeUIDisplay!=null) activeUIDisplay.touchEnd(touch);
 		static public inline function touchCancelActive(touch:Touch) if (activeUIDisplay!=null) activeUIDisplay.touchCancel(touch);
@@ -1045,28 +1078,49 @@ class UIDisplay extends Display
 		}
 		
 		static var draggingMouseDisplays:Array<UIDisplay> = new Array<UIDisplay>();
+		static var draggingTouchDisplays:Array<UIDisplay> = new Array<UIDisplay>();
 		
 		public function startDragging(e:PointerEvent) {
-			if (!isDragging) {
-				dragOriginX = Std.int(e.x / peoteView.xz / xz) - x;
-				dragOriginY = Std.int(e.y / peoteView.yz / yz) - y;
-				draggingMouseDisplays.push(this);
-				isDragging = true;
+			dragOriginX = Std.int(e.x / peoteView.xz / xz) - x;
+			dragOriginY = Std.int(e.y / peoteView.yz / yz) - y;
+			
+			switch (e.type) {
+				case MOUSE: 
+					if (draggingMouseButton == 0) draggingMouseDisplays.push(this);
+					draggingMouseButton = draggingMouseButton | (1 << e.mouseButton);
+				case TOUCH: 
+					if (draggingTouchID == 0)  draggingTouchDisplays.push(this);
+					draggingTouchID = draggingTouchID | (1 << e.touch.id);
+				case PEN: // TODO!
 			}
 		}
 		
 		public function stopDragging(e:PointerEvent) {
 			if (isDragging) {
-				isDragging = false;
-				draggingMouseDisplays.remove(this);
+				switch (e.type) {
+					case MOUSE:
+						if (draggingMouseButton & (1 << e.mouseButton) > 0) draggingMouseButton -= (1 << e.mouseButton);
+						if (draggingMouseButton == 0) {
+							draggingMouseDisplays.remove(this);
+							mouseMoveActive(e.x, e.y);
+						}
+					
+					case TOUCH:
+						if (draggingTouchID & (1 << e.touch.id) > 0) draggingTouchID -= (1 << e.touch.id);
+						if (draggingTouchID == 0) {
+							draggingTouchDisplays.remove(this);
+							touchMoveActive(e.touch);
+						}
+					
+					case PEN: // TODO!
+				}
 			}
 		}
 		
 		static public inline function mouseMoveActive(mouseX:Float, mouseY:Float)
 		{
 			var checkForEvent:Int = HAS_OVEROUT_MOVE;
-			if (draggingMouseDisplays.length > 0) // Dragging
-			{
+			if (draggingMouseDisplays.length > 0) { // Dragging
 				for (d in draggingMouseDisplays) d.dragTo(mouseX, mouseY);
 			}
 			else for (i in 0...maxActiveIndex) {
@@ -1081,7 +1135,10 @@ class UIDisplay extends Display
 		
 		static public inline function touchMoveActive(touch:Touch) {
 			var checkForEvent:Int = HAS_OVEROUT_MOVE;
-			for (i in 0...maxActiveIndex) checkForEvent = activeUIDisplay.get(i).touchMove(touch, checkForEvent);
+			if (draggingTouchDisplays.length > 0) { // touch Dragging			
+				for (d in draggingTouchDisplays) d.dragToTouch(touch); // TODO: store touch-point inside Display
+			}	
+			else for (i in 0...maxActiveIndex) checkForEvent = activeUIDisplay.get(i).touchMove(touch, checkForEvent);
 		}
 		static public inline function touchStartActive(touch:Touch) for (i in 0...maxActiveIndex) if (activeUIDisplay.get(i).touchStart(touch)) break;
 		static public inline function touchEndActive(touch:Touch) for (i in 0...maxActiveIndex) activeUIDisplay.get(i).touchEnd(touch);
