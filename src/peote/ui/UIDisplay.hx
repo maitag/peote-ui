@@ -825,15 +825,23 @@ class UIDisplay extends Display
 			}
 		}
 		lockMouseDown = 0;
-		
-		
-		// TODO: trace(isMouseDown);
-/*		// UIDisplay event
-		if (isMouseDown != 0) {
-			if (onPointerUp != null) onPointerUp(this, {x:x, y:y, type:PointerType.MOUSE, mouseButton:1});
-			isMouseDown = 0;
+				
+		// UIDisplay event
+		if (isMouseOver) {
+			if (onPointerOut != null) onPointerOut(this, {x:-1, y:-1, type:PointerType.MOUSE});					
+			isMouseInside = false;
+			isMouseOver = false;
 		}
-*/
+		
+		var button = 0;
+		while (isMouseDown > 0) {			
+			if (isMouseDown & (1 << button) > 0) {
+				if (onPointerUp != null) onPointerUp(this, {x:-1, y:-1, type:PointerType.MOUSE, mouseButton:button});
+				isMouseDown -= (1 << button);
+			}
+			button++;
+		}
+
 		
 		// -----------------touch ----------------
 		
@@ -860,6 +868,24 @@ class UIDisplay extends Display
 			}
 		}
 		lockTouchDown = 0;
+		
+		// UIDisplay event
+		// TODO: for all touch-ids ?
+		if (isTouchOver) {
+			if (onPointerOut != null) onPointerOut(this, {x:-1, y:-1, type:PointerType.TOUCH, touch:new Touch(-1, -1, 0, 0, 0, 0, 0)});					
+			isTouchInside = false;
+			isTouchOver = false;
+		}
+		
+		var touchID = 0;
+		while (isTouchDown > 0) {
+			if (isTouchDown & (1 << touchID) > 0) {
+				if (onPointerUp != null) onPointerUp(this, {x:-1, y:-1, type:PointerType.TOUCH, touch:new Touch(-1, -1, touchID, 0, 0, 0, 0)});
+				isTouchDown -= (1 << touchID);
+			}
+			touchID++;
+		}
+		
 	}
 	
 	public inline function keyDown (keyCode:KeyCode, modifier:KeyModifier):Void
