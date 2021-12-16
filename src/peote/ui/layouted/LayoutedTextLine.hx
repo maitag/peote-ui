@@ -31,12 +31,12 @@ class LayoutedTextLineMacro
 class $className extends $interactiveTextLineType implements peote.layout.ILayoutElement
 {
 	
-	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int, masked:Bool = false,
-	                    //text:String, font:$fontType, fontStyle:$styleType, backgroundColor:peote.view.Color = 0) 
-	                    text:String, font:peote.text.Font<$styleType>, fontStyle:$styleType, backgroundColor:peote.view.Color = 0) 
+	public function new(xPosition:Int, yPosition:Int, ?textSize:peote.ui.util.TextSize, zIndex:Int = 0, text:String, 
+	                    //font:$fontType, fontStyle:$styleType, backgroundColor:peote.view.Color = 0)
+	                    font:peote.text.Font<$styleType>, fontStyle:$styleType, backgroundColor:peote.view.Color = 0) 
 	{
 		//trace("NEW LayoutedTextLine");
-		super(xPosition, yPosition, width, height, zIndex, masked, text, font, fontStyle, backgroundColor);
+		super(xPosition, yPosition, textSize, zIndex, text, font, fontStyle, backgroundColor);
 	}
 		
 	

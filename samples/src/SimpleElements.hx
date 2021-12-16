@@ -40,8 +40,16 @@ class SimpleElements extends Application
 	public function startSample(window:Window)
 	{
 		peoteView = new PeoteView(window);
-		uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY1);
+		uiDisplay = new UIDisplay(0, 200, window.width, window.height, Color.GREY1);
 		peoteView.addDisplay(uiDisplay);
+		
+		uiDisplay.onPointerOver  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplay onPointerOver",e); };
+		uiDisplay.onPointerOut   = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplay onPointerOut",e); };
+		uiDisplay.onPointerDown  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplay onPointerDown",e); };
+		uiDisplay.onPointerUp    = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplay onPointerUp",e);  };
+		uiDisplay.onPointerClick = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplay onPointerClick",e); };
+		//uiDisplay.onPointerMove =  function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerMove",e); };
+		
 		
 		var simpleSkin = new SimpleSkin();
 		var roundedSkin = new RoundedSkin();
@@ -59,6 +67,9 @@ class SimpleElements extends Application
 		trace("NEW BUTTON -----");
 		var button1:InteractiveElement = new InteractiveElement(20, 0, 200, 100, roundedSkin, myStyle);
 		//var button1:InteractiveElement = new InteractiveElement(20, 0, 200, 100, roundedSkin, new SimpleStyle(Color.GREY1));
+		
+		button1.overOutEventsBubbleToDisplay = false;
+		button1.upDownEventsBubbleToDisplay = true;
 		uiDisplay.add(button1);
 		
 		button1.onPointerOver = onOver.bind(Color.GREY2);

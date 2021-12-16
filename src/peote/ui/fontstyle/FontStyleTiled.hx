@@ -25,18 +25,11 @@ class FontStyleTiled
 	//@global public var tilt:Float = 0.5;
 	public var tilt:Float = 0.0;
 	
-	//@global public var weight = 0.48;
-	public var weight:Float = 0.5;
-	
-	// TODO: additional spacing after each letter
-	//@global public var letterSpacing:Float = 0.0;
-	//public var letterSpacing:Float = 2.0;
-	
-	// TODO: for adjusting Glyphes inside Line
-	// letterSpace
-	
-	// TODO: bgColor:Color = Color.ORANGE
-	// TODO: outline/glow for distance field fonts
+	// additional spacing after each letter
+	//@global public var letterSpace:Float = 2.0;
+	//public var letterSpace:Float = 2.0;
+		
+	//public var bgColor:Color = Color.BLACK;
 	
 	public function new() {}
 }

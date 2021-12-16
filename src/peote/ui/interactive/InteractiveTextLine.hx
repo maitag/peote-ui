@@ -52,7 +52,11 @@ class $className extends peote.ui.interactive.Interactive
 	public var text:String;
 	public var line:peote.text.Line<$styleType> = null; //$lineType
 		
-	public var textMasked:Bool;
+	public var autoWidth:Bool = true;
+	public var autoHeight:Bool = true;
+	
+	public var hAlign:peote.ui.util.HAlign = peote.ui.util.HAlign.LEFT;
+	public var vAlign:peote.ui.util.VAlign = peote.ui.util.VAlign.CENTER;
 	
 	public var backgroundColor:peote.view.Color;
 	var backgroundElement:peote.text.BackgroundElement;
@@ -61,18 +65,30 @@ class $className extends peote.ui.interactive.Interactive
 	var maskElement:peote.text.MaskElement;
 	#end
 	
-	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int, textMasked:Bool = false,
-	                    //text:String, font:$fontType, fontStyle:$styleType, backgroundColor:peote.view.Color = 0) 
-	                    text:String, font:peote.text.Font<$styleType>, fontStyle:$styleType, backgroundColor:peote.view.Color = 0)
+	public function new(xPosition:Int, yPosition:Int, ?textSize:peote.ui.util.TextSize, zIndex:Int = 0, text:String,
+	                    //font:$fontType, fontStyle:$styleType, backgroundColor:peote.view.Color = 0) 
+	                    font:peote.text.Font<$styleType>, fontStyle:$styleType, backgroundColor:peote.view.Color = 0)
 	{
 		//trace("NEW InteractiveTextLine");
+		
+		var width:Int = 0;
+		var height:Int = 0;
+		if (textSize != null) {
+			if (textSize.width  != null) { width  = textSize.width;  autoWidth = false; }
+			if (textSize.height != null) { height = textSize.height; autoHeight = false; }
+			if (textSize.hAlign != null) hAlign = textSize.hAlign;
+			if (textSize.vAlign != null) vAlign = textSize.vAlign;
+		}
+		
+		// TODO: fontStyle also optional!
+		
 		super(xPosition, yPosition, width, height, zIndex);
 
-		this.textMasked = textMasked;
 		this.backgroundColor = backgroundColor;
 		
 		#if (!peoteui_no_textmasking && !peoteui_no_masking)
-		maskElement = new peote.text.MaskElement(xPosition, yPosition, width, height);
+		//maskElement = new peote.text.MaskElement(xPosition, yPosition, width, height);
+		//maskWidth = width;
 		#end
 		
 		this.text = text;
@@ -87,6 +103,11 @@ class $className extends peote.ui.interactive.Interactive
 		
 	}
 	
+	public function setText(text:String, autoWidth:Bool=false)
+	{
+		
+	}
+	
 	override inline function updateVisibleStyle() {
 		fontProgram.lineSetStyle(line, fontStyle);
 		if (isVisible) {
@@ -96,9 +117,15 @@ class $className extends peote.ui.interactive.Interactive
 	
 	override inline function updateVisibleLayout():Void
 	{
+		trace("updateVisibleLayout()");
 		// TODO:
-		if (textMasked && isVisible) {
+		if (!autoWidth && isVisible) {
+			//textAlign left
 			fontProgram.lineSetPositionSize(line, x, y, width);
+			//textAlign middle
+			//fontProgram.lineSetPositionSize(line, x, y, width, Math.min(0,(width - line.textSize) / 2));
+			//textAlign right
+			//fontProgram.lineSetPositionSize(line, x, y, width, Math.min(0,(width - line.textSize) ));
 		}
 		else {
 			fontProgram.lineSetPosition(line, x, y);
@@ -125,13 +152,13 @@ class $className extends peote.ui.interactive.Interactive
 		
 		
 		
-		if (!textMasked) {
+		if (autoWidth) {
 			width = Std.int(line.textSize);
 			height = Std.int(line.height);
 		}
 		
 		#if (!peoteui_no_textmasking && !peoteui_no_masking)
-		if (masked && textMasked) maskElement.update(x + maskX, y + maskY, maskWidth, maskHeight);
+		if (masked && !autoWidth) maskElement.update(x + maskX, y + maskY, maskWidth, maskHeight);
 		else maskElement.update(x, y, width, height);
 		
 		if (isVisible) fontProgram.updateMask(maskElement);
@@ -148,7 +175,7 @@ class $className extends peote.ui.interactive.Interactive
 	
 	override inline function onAddVisibleToDisplay()
 	{
-		//trace("onAddVisibleToDisplay");	
+		trace("onAddVisibleToDisplay()", autoWidth, autoHeight);	
 		if (line == null) {
 			if (font.notIntoUiDisplay(uiDisplay.number)) {
 				fontProgram = font.createFontProgramForUiDisplay(uiDisplay.number, fontStyle, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end, true);
@@ -164,20 +191,53 @@ class $className extends peote.ui.interactive.Interactive
 				default: macro {}
 			}}		
 			
+
 			//line = fontProgram.createLine(text, x, y, fontStyle);
 			line = new peote.text.Line<$styleType>();
-			fontProgram.setLine(line, text, x, y, (textMasked) ? width : null, null, fontStyle);
+			fontProgram.setLine(line, text, x, y, (!autoWidth) ? width : null, null, fontStyle);
 			
-			if (backgroundColor != 0) backgroundElement = fontProgram.createLineBackground(line, backgroundColor);
+			// vertically text alignment
+			var y_offset:Float = 0;
+			if (!autoHeight) {
+				if (vAlign == peote.ui.util.VAlign.CENTER) y_offset = (height - line.height) / 2;
+				else if (vAlign == peote.ui.util.VAlign.BOTTOM) y_offset = height - line.height;
+			}
 			
-			if (!textMasked) {
-				width = Std.int(line.textSize); // TODO
-				height = Std.int(line.height);
+			// horizontally text alignment
+			if (!autoWidth) {
+				if (hAlign == peote.ui.util.HAlign.CENTER) {
+					//fontProgram.lineSetOffset(line, (width - line.textSize) / 2); // TODO: bug for negative and non-packed fonts!
+					fontProgram.lineSetPosition(line, x, y + y_offset, (width - line.textSize) / 2); // TODO: bug for negative and non-packed fonts!
+					fontProgram.updateLine(line);
+				}
+				else if (hAlign == peote.ui.util.HAlign.RIGHT) {
+					//fontProgram.lineSetOffset(line, width - line.textSize);
+					fontProgram.lineSetPosition(line, x, y + y_offset, width - line.textSize);
+					fontProgram.updateLine(line);
+				}
+				else if (y_offset != 0) {
+					fontProgram.lineSetPosition(line, x, y + y_offset);
+					fontProgram.updateLine(line);
+				}
+				
+			} 
+			else if (y_offset != 0) { 
+				fontProgram.lineSetYPosition(line, y + y_offset);
+				fontProgram.updateLine(line);
+			}
+			
+			if (autoWidth || autoHeight) {
+				if (autoWidth) width = Std.int(line.textSize);
+				if (autoHeight) height = Std.int(line.height);
 				
 				// fit interactive pickables to new width and height
 				if ( hasMoveEvent  != 0 ) pickableMove.update(this);
 				if ( hasClickEvent != 0 ) pickableClick.update(this);				
 			}
+			
+			//if (backgroundColor != 0) backgroundElement = fontProgram.createLineBackground(line, backgroundColor);
+			if (backgroundColor != 0) backgroundElement = fontProgram.createBackground(x, y, width, height, z, backgroundColor);
+			
 			#if (!peoteui_no_textmasking && !peoteui_no_masking)
 			maskElement = fontProgram.createMask(x, y, width, height);
 			#end
@@ -191,10 +251,12 @@ class $className extends peote.ui.interactive.Interactive
 			fontProgram.addLine(line);
 		}
 		
+		
 	}
 	
 	override inline function onRemoveVisibleFromDisplay()
-	{	//trace("onRemoveVisibleFromDisplay");
+	{
+		trace("onRemoveVisibleFromDisplay()");
 		fontProgram.removeLine(line);
 		if (backgroundColor != 0) fontProgram.removeBackground(backgroundElement);
 		#if (!peoteui_no_textmasking && !peoteui_no_masking)

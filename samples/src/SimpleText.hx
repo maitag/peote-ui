@@ -1,6 +1,8 @@
 package;
 
 import haxe.CallStack;
+import peote.ui.util.HAlign;
+import peote.ui.util.VAlign;
 
 import lime.app.Application;
 import lime.ui.Window;
@@ -25,6 +27,20 @@ import peote.ui.interactive.InteractiveTextLine;
 import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
 
+#if packed 
+@packed // for ttfcompile types (gl3font)
+#end
+class FontStyle
+{
+	public var color:Color = Color.GREEN;
+		
+	#if packed 
+	@global public var weight = 0.48;
+	#end	
+	
+	public function new() {}
+}
+
 class SimpleText extends Application
 {
 	var peoteView:PeoteView;
@@ -48,9 +64,12 @@ class SimpleText extends Application
 		peoteView.addDisplay(uiDisplay);
 			
 		// load the FONT:
-		new Font<FontStyleTiled>("assets/fonts/tiled/hack_ascii.json").load( onTiledFontLoaded );
-		new Font<FontStylePacked>("assets/fonts/packed/hack/config.json").load( onPackedFontLoaded );
-					
+		#if packed 
+		new Font<FontStyle>("assets/fonts/packed/hack/config.json").load( onFontLoaded );
+		#else
+		new Font<FontStyle>("assets/fonts/tiled/hack_ascii.json").load( onFontLoaded );
+		#end
+		
 		//peoteView.zoom = 2;
 
 		#if android
@@ -63,95 +82,95 @@ class SimpleText extends Application
 
 	}
 		
-	public function onTiledFontLoaded(font:Font<FontStyleTiled>) { // don'T forget argument-type here !
-						
-			var fontStyleTiled = new FontStyleTiled();
-			fontStyleTiled.height = 25;
-			fontStyleTiled.width = 25;
+	public function onFontLoaded(font:Font<FontStyle>) // don'T forget argument-type here !
+	{					
+		var fontStyle = new FontStyle();
+		
+		var xOffset:Int = 200;
+		var yOffset:Int = 70;
+		var x:Int = 0; 
+		var y:Int = -yOffset;
+		
+		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, "hello", font, fontStyle, Color.BLACK); //, selectionFontStyle
+		//var textLine = font.createInteractiveTextLine(x, y+=yOffset, "hello", fontStyle, 0);
+		addAndSetEvents(textLine);
+		//textLine.height = 50;
+		//textLine.update();
+		
+		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50}, "hello", font, fontStyle, Color.BLACK);
+		addAndSetEvents(textLine);
 			
-			var textLine = new InteractiveTextLine<FontStyleTiled>(0, 0, 10, 25, 0, "hello", font, fontStyleTiled); //, selectionFontStyle
-			//var textLine = font.createInteractiveTextLine(0, 0, 112, 25, 0, "hello", fontStyleTiled); //, selectionFontStyle
-						
-			textLine.onPointerOver = function(t:InteractiveTextLine<FontStyleTiled>, e:PointerEvent) {
+		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.RIGHT}, "hello", font, fontStyle, Color.BLACK);
+		addAndSetEvents(textLine);
+			
+		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:150, hAlign:HAlign.RIGHT}, "hello", font, fontStyle, Color.BLACK);
+		addAndSetEvents(textLine);
+			
+		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.CENTER}, "hello", font, fontStyle, Color.BLACK);
+		addAndSetEvents(textLine);
+			
+		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:150, hAlign:HAlign.CENTER}, "hello", font, fontStyle, Color.BLACK);
+		addAndSetEvents(textLine);
+			
+		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {height:50, vAlign:VAlign.BOTTOM}, "hello", font, fontStyle, Color.BLACK);
+		addAndSetEvents(textLine);
+			
+		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50, height:20}, "hello", font, fontStyle, Color.BLACK);
+		addAndSetEvents(textLine);
+			
+			
+			
+			
+			
+/*		haxe.Timer.delay(function() {
+			//trace("change style after");
+			//textLine2.fontStyle = fontStyleTiled;
+			//textLine2.updateStyle();				
+			uiDisplay.remove(textLine);
+			// TODO
+			// textLine.set("new Text", 0, 0, fontStyle);
+			// textLine.setStyle(fontStyle, 1, 4);
+			haxe.Timer.delay(function() {
+				uiDisplay.add(textLine);
+				textLine.height = 50;
+				textLine.update();
+			}, 1000);
+			
+		}, 1000);
+*/
+			
+/*		// input line
+		
+		var fontStyleInput = new FontStyle();
+		fontStyleInput.height = 25;
+		fontStyleInput.width = 20;
+		fontStyleInput.color = Color.BLACK;
+		
+		var inputLine = font.createInteractiveTextLine(0, 50, 112, 25, 0, "input line", fontStyleInput, Color.WHITE); //, selectionFontStyle
+		uiDisplay.add(inputLine);
+		
+		inputLine.onPointerDown = function(t:InteractiveTextLine<FontStyle>, e:PointerEvent) {
+			trace("onPointerDown");
+			//t.setInputFocus();
+			//uiDisplay.setInputFocus(t);
+		}
+*/
+	}
+	
+	public function addAndSetEvents(textLine:InteractiveTextLine<FontStyle>) 
+	{
+			textLine.onPointerOver = function(t:InteractiveTextLine<FontStyle>, e:PointerEvent) {
 				trace("onPointerOver");
 				t.fontStyle.color = Color.YELLOW;
 				t.updateStyle();
 			}
-			textLine.onPointerOut = function(t:InteractiveTextLine<FontStyleTiled>, e:PointerEvent) {
+			textLine.onPointerOut = function(t:InteractiveTextLine<FontStyle>, e:PointerEvent) {
 				trace("onPointerOut");
 				t.fontStyle.color = Color.GREEN;
 				t.updateStyle();
 			}
-						
 			uiDisplay.add(textLine);
-			
-			haxe.Timer.delay(function() {
-				//trace("change style after");
-				//textLine2.fontStyle = fontStyleTiled;
-				//textLine2.updateStyle();				
-				uiDisplay.remove(textLine);
-				// TODO
-				// textLine.set("new Text", 0, 0, fontStyle);
-				// textLine.setStyle(fontStyle, 1, 4);
-				haxe.Timer.delay(function() {
-					uiDisplay.add(textLine);
-				}, 1000);
-				
-			}, 1000);
-
-			
-			// input line
-			
-			var fontStyleInput = new FontStyleTiled();
-			fontStyleInput.height = 25;
-			fontStyleInput.width = 20;
-			fontStyleInput.color = Color.BLACK;
-			
-			var inputLine = font.createInteractiveTextLine(0, 100, 112, 25, 0, "input line", fontStyleInput, Color.WHITE); //, selectionFontStyle
-			uiDisplay.add(inputLine);
-			
-			inputLine.onPointerDown = function(t:InteractiveTextLine<FontStyleTiled>, e:PointerEvent) {
-				trace("onPointerDown");
-				//t.setInputFocus();
-				//uiDisplay.setInputFocus(t);
-			}
-
 	}
-	
-	public function onPackedFontLoaded(font:Font<FontStylePacked>) {
-						
-			var fontStylePacked = new FontStylePacked();
-			fontStylePacked.height = 25;
-			fontStylePacked.width = 25;
-			
-			//var textLine = new InteractiveTextLine<FontStylePacked>(0, 80, 112, 25, "hello Button", fontPacked, fontStylePacked, Color.YELLOW); //, selectionFontStyle
-			var textLine = font.createInteractiveTextLine(250, 0, 70, 18, 0, true, "Masked", fontStylePacked, Color.YELLOW); //, selectionFontStyle
-
-			textLine.onPointerOver = function(t:InteractiveTextLine<FontStylePacked>, e:PointerEvent) {
-				trace("onPointerOver");
-				t.fontStyle.color = Color.RED;
-				t.updateStyle();
-			}
-			textLine.onPointerOut = function(t:InteractiveTextLine<FontStylePacked>, e:PointerEvent) {
-				trace("onPointerOut");
-				t.fontStyle.color = Color.GREEN;
-				t.updateStyle();
-			}
-						
-			uiDisplay.add(textLine);
-			
-			haxe.Timer.delay(function() {
-				//trace("change style after");
-				//textLine2.fontStyle = fontStyleTiled;
-				//textLine2.updateStyle();				
-				uiDisplay.remove(textLine);
-				haxe.Timer.delay(function() {
-					uiDisplay.add(textLine);
-				}, 1000);
-				
-			}, 1000);
-	}
-	
 	
 	// ------------------------------------------------------------
 	// ----------------- LIME EVENTS ------------------------------
