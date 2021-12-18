@@ -96,7 +96,7 @@ class SimpleLayouted extends Application
 		layoutedUIDisplay.add(textLine1);
 		
 		// masked -> true
-		var textLine2 = font.createLayoutedTextLine(0, 0, {width:300, height:25, hGrow:false}, 0, "hello world", font.createFontStyle(), Color.BLACK);			
+		var textLine2 = font.createLayoutedTextLine(0, 0, 0, "hello world", font.createFontStyle(), Color.BLACK);			
 		layoutedUIDisplay.add(textLine2);
 		
 		uiLayoutContainer = new Box( layoutedUIDisplay , { width:Size.limit(100,700), relativeChildPositions:true },

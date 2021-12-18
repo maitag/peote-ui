@@ -33,7 +33,8 @@ import peote.ui.event.WheelEvent;
 class FontStyle
 {
 	public var color:Color = Color.GREEN;
-		
+	public var width:Float = 20; // <- if this is MISSING -> TODO !!!!!!!!!!!!!!
+	
 	#if packed 
 	@global public var weight = 0.48;
 	#end	

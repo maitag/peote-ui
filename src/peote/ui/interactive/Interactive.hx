@@ -247,14 +247,14 @@ class Interactive
 	public function show():Void {
 		if (!isVisible && uiDisplay != null) {
 			uiDisplay.add(this);
-			isVisible = true;
+			isVisible = true; // TODO: is this need here?
 		} 
 	}
 	
 	public function hide():Void {
 		if (isVisible) {
 			uiDisplay.remove(this);
-			isVisible = false;
+			isVisible = false; // TODO: is this need here?
 		}		
 	}
 	// ----------------- Dragging ----------------------------

@@ -117,24 +117,24 @@ class $className extends peote.ui.interactive.Interactive
 	
 	override inline function updateVisibleLayout():Void
 	{
-		trace("updateVisibleLayout()");
-		// TODO:
-		if (!autoWidth && isVisible) {
-			//textAlign left
-			fontProgram.lineSetPositionSize(line, x, y, width);
-			//textAlign middle
-			//fontProgram.lineSetPositionSize(line, x, y, width, Math.min(0,(width - line.textSize) / 2));
-			//textAlign right
-			//fontProgram.lineSetPositionSize(line, x, y, width, Math.min(0,(width - line.textSize) ));
-		}
-		else {
-			fontProgram.lineSetPosition(line, x, y);
-			if (backgroundColor != 0) fontProgram.setLineBackground(backgroundElement, line, false);
-		}
+		//trace("updateVisibleLayout()");
 		
-		if (isVisible) {
+		// vertically text alignment
+		var y_offset:Float = 0;
+		if (vAlign == peote.ui.util.VAlign.CENTER) y_offset = (height - line.height) / 2;
+		else if (vAlign == peote.ui.util.VAlign.BOTTOM) y_offset = height - line.height;
+		
+		// horizontally text alignment
+		if (hAlign == peote.ui.util.HAlign.CENTER)
+			fontProgram.lineSetPositionSize(line, x, y + y_offset, width, (width - line.textSize)/2, isVisible); // TODO: bug at non-packed fonts without a width glyphstyle!
+		else if (hAlign == peote.ui.util.HAlign.RIGHT)
+			fontProgram.lineSetPositionSize(line, x, y + y_offset, width, width - line.textSize, isVisible);
+		else
+			fontProgram.lineSetPositionSize(line, x, y + y_offset, width, isVisible);
 			
-			// TODO: optimize setting z-index in depend of styletyp and better allways adding fontprograms at end od uiDisplay (onAddVisibleToDisplay)
+			
+		if (isVisible) {
+			// TODO: optimize setting z-index in depend of styletyp and better allways adding fontprograms at end of uiDisplay (onAddVisibleToDisplay)
 			${switch (glyphStyleHasField.local_zIndex) {
 				case true: macro {
 					if (fontStyle.zIndex != z) {
@@ -146,22 +146,13 @@ class $className extends peote.ui.interactive.Interactive
 			}}		
 		
 			fontProgram.updateLine(line);
+		}
+		
+		if (backgroundColor != 0) fontProgram.setBackground(backgroundElement, x, y, width, height, z, backgroundColor, isVisible);
 			
-			if (backgroundColor != 0) fontProgram.setLineBackground(backgroundElement, line);
-		}
-		
-		
-		
-		if (autoWidth) {
-			width = Std.int(line.textSize);
-			height = Std.int(line.height);
-		}
-		
 		#if (!peoteui_no_textmasking && !peoteui_no_masking)
-		if (masked && !autoWidth) maskElement.update(x + maskX, y + maskY, maskWidth, maskHeight);
-		else maskElement.update(x, y, width, height);
-		
-		if (isVisible) fontProgram.updateMask(maskElement);
+		if (masked) fontProgram.setMask(maskElement, x + maskX, y + maskY, maskWidth, maskHeight, isVisible);
+		else fontProgram.setMask(maskElement, x, y, width, height, isVisible);
 		#end
 	}
 	
@@ -175,7 +166,7 @@ class $className extends peote.ui.interactive.Interactive
 	
 	override inline function onAddVisibleToDisplay()
 	{
-		trace("onAddVisibleToDisplay()", autoWidth, autoHeight);	
+		//trace("onAddVisibleToDisplay()", autoWidth, autoHeight);	
 		if (line == null) {
 			if (font.notIntoUiDisplay(uiDisplay.number)) {
 				fontProgram = font.createFontProgramForUiDisplay(uiDisplay.number, fontStyle, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end, true);
@@ -256,7 +247,7 @@ class $className extends peote.ui.interactive.Interactive
 	
 	override inline function onRemoveVisibleFromDisplay()
 	{
-		trace("onRemoveVisibleFromDisplay()");
+		//trace("onRemoveVisibleFromDisplay()");
 		fontProgram.removeLine(line);
 		if (backgroundColor != 0) fontProgram.removeBackground(backgroundElement);
 		#if (!peoteui_no_textmasking && !peoteui_no_masking)

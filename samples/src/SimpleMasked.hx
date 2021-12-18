@@ -1,6 +1,8 @@
 package;
 
 import haxe.CallStack;
+import peote.ui.util.HAlign;
+import peote.ui.util.VAlign;
 
 import lime.app.Application;
 import lime.ui.Window;
@@ -116,7 +118,7 @@ class SimpleMasked extends Application
 			button.wheelEventsBubbleTo = red;
 			
 			// TODO: Textlinemasking 
-			var textLineTiled = new LayoutedTextLine<FontStyleTiled>(0, 0, {width:100, height:16, hGrow:false}, 'button${i+1}', tiledFont, fontStyleTiled, Color.random());
+			var textLineTiled = new LayoutedTextLine<FontStyleTiled>(0, 0, {hAlign:HAlign.CENTER, vAlign:VAlign.CENTER}, 'button${i+1}', tiledFont, fontStyleTiled, Color.random());
 			//var textLinePacked = new LayoutedTextLine<FontStylePacked>(0, 0, 130, 25, 0, true, "packed font", packedFont, fontStylePacked);	// masked -> true		
 			//trace("KK", textLineTiled.line.textSize); // TODO: line is null
 			
@@ -126,7 +128,7 @@ class SimpleMasked extends Application
 				new Box( button,  { left:10, right:10, height:Size.limit(50, 80) }, [
 					//new Box( textLineTiled, {  left:Size.min(10), width:Size.limit(95, 125), right:Size.min(10), height:18 })
 					//new Box( textLineTiled, { left:Size.min(10), width:Size.limit(textLineTiled.width, 125), right:Size.min(10), height:18 })
-					new Box( textLineTiled, { left:Size.min(10), width:Size.limit(95, 130), right:Size.min(10), height:18 })
+					new Box( textLineTiled, { left:Size.min(10), width:Size.limit(50, 130), right:Size.min(10), height:40 })
 				])
 			);
 		}

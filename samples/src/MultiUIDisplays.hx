@@ -191,7 +191,7 @@ class MultiUIDisplays extends Application
 		uiDisplay.add(button);
 		
 		if (text != "") {
-			var textLine = new InteractiveTextLine<FontStyleTiled>(x + 10, y + 8, 10, 5, z, text, font, fontStyle);
+			var textLine = new InteractiveTextLine<FontStyleTiled>(x + 10, y + 8, z, text, font, fontStyle);
 			uiDisplay.add(textLine);
 		}
 		

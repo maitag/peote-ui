@@ -25,7 +25,7 @@ abstract TextLine(Widget) from Widget to Widget
 	public inline function new(font, fontStyle, text:String, textLineOptions:TextLineOptions)
 	{
 		this = new Widget(ContainerType.BOX,
-			font.createLayoutedTextLine(0, 0, 0, 0, 0, true, text, fontStyle, 0),
+			font.createLayoutedTextLine(0, 0, null, 0, text, fontStyle, 0),
 			textLineOptions
 		);
 		

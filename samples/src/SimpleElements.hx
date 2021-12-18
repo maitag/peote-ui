@@ -40,7 +40,7 @@ class SimpleElements extends Application
 	public function startSample(window:Window)
 	{
 		peoteView = new PeoteView(window);
-		uiDisplay = new UIDisplay(0, 200, window.width, window.height, Color.GREY1);
+		uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY1);
 		peoteView.addDisplay(uiDisplay);
 		
 		uiDisplay.onPointerOver  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplay onPointerOver",e); };
