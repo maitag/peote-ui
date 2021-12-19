@@ -119,10 +119,13 @@ class $className extends peote.ui.interactive.Interactive
 	{
 		//trace("updateVisibleLayout()");
 		
-		// vertically text alignment
+		// vertically text alignment (thx alex for helping into this ;)
 		var y_offset:Float = 0;
-		if (vAlign == peote.ui.util.VAlign.CENTER) y_offset = (height - line.height) / 2;
-		else if (vAlign == peote.ui.util.VAlign.BOTTOM) y_offset = height - line.height;
+		
+		if (vAlign == peote.ui.util.VAlign.CENTER)
+			y_offset = (height - line.height) / 2;
+		else if (vAlign == peote.ui.util.VAlign.BOTTOM) 
+			y_offset = height - line.height;
 		
 		// horizontally text alignment
 		if (hAlign == peote.ui.util.HAlign.CENTER)
