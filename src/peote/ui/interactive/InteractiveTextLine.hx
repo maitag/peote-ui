@@ -52,8 +52,7 @@ class $className extends peote.ui.interactive.Interactive
 	public var text:String;
 	public var line:peote.text.Line<$styleType> = null; //$lineType
 		
-	public var autoWidth:Bool = true;
-	public var autoHeight:Bool = true;
+	var autoSize:Int = 0;
 	
 	public var hAlign:peote.ui.util.HAlign = peote.ui.util.HAlign.LEFT;
 	public var vAlign:peote.ui.util.VAlign = peote.ui.util.VAlign.CENTER;
@@ -74,22 +73,17 @@ class $className extends peote.ui.interactive.Interactive
 		var width:Int = 0;
 		var height:Int = 0;
 		if (textSize != null) {
-			if (textSize.width  != null) { width  = textSize.width;  autoWidth = false; }
-			if (textSize.height != null) { height = textSize.height; autoHeight = false; }
+			if (textSize.height != null) height = textSize.height else autoSize |= 1;
+			if (textSize.width  != null) width  = textSize.width  else autoSize |= 2;
 			if (textSize.hAlign != null) hAlign = textSize.hAlign;
 			if (textSize.vAlign != null) vAlign = textSize.vAlign;
-		}
+		} else autoSize = 3;
 		
 		// TODO: fontStyle also optional!
 		
 		super(xPosition, yPosition, width, height, zIndex);
 
 		this.backgroundColor = backgroundColor;
-		
-		#if (!peoteui_no_textmasking && !peoteui_no_masking)
-		//maskElement = new peote.text.MaskElement(xPosition, yPosition, width, height);
-		//maskWidth = width;
-		#end
 		
 		this.text = text;
 		this.font = font;
@@ -100,11 +94,6 @@ class $className extends peote.ui.interactive.Interactive
 		}}		
 		
 		this.fontStyle = fontStyle;
-		
-	}
-	
-	public function setText(text:String, autoWidth:Bool=false)
-	{
 		
 	}
 	
@@ -186,26 +175,22 @@ class $className extends peote.ui.interactive.Interactive
 			}}		
 			
 
-			//line = fontProgram.createLine(text, x, y, fontStyle);
-			line = new peote.text.Line<$styleType>();
-			fontProgram.setLine(line, text, x, y, (!autoWidth) ? width : null, null, fontStyle);
+			line = fontProgram.createLine(text, x, y, (autoSize & 2 == 0) ? width : null, null, fontStyle);
 			
 			// vertically text alignment
 			var y_offset:Float = 0;
-			if (!autoHeight) {
+			if (autoSize & 1 == 0) {
 				if (vAlign == peote.ui.util.VAlign.CENTER) y_offset = (height - line.height) / 2;
 				else if (vAlign == peote.ui.util.VAlign.BOTTOM) y_offset = height - line.height;
 			}
 			
 			// horizontally text alignment
-			if (!autoWidth) {
+			if (autoSize & 2 == 0) {
 				if (hAlign == peote.ui.util.HAlign.CENTER) {
-					//fontProgram.lineSetOffset(line, (width - line.textSize) / 2); // TODO: bug for negative and non-packed fonts!
 					fontProgram.lineSetPosition(line, x, y + y_offset, (width - line.textSize) / 2); // TODO: bug for negative and non-packed fonts!
 					fontProgram.updateLine(line);
 				}
 				else if (hAlign == peote.ui.util.HAlign.RIGHT) {
-					//fontProgram.lineSetOffset(line, width - line.textSize);
 					fontProgram.lineSetPosition(line, x, y + y_offset, width - line.textSize);
 					fontProgram.updateLine(line);
 				}
@@ -220,16 +205,15 @@ class $className extends peote.ui.interactive.Interactive
 				fontProgram.updateLine(line);
 			}
 			
-			if (autoWidth || autoHeight) {
-				if (autoWidth) width = Std.int(line.textSize);
-				if (autoHeight) height = Std.int(line.height);
+			if (autoSize > 0) {
+				if (autoSize & 1 > 0) height = Std.int(line.height);
+				if (autoSize & 2 > 0) width = Std.int(line.textSize);
 				
 				// fit interactive pickables to new width and height
 				if ( hasMoveEvent  != 0 ) pickableMove.update(this);
 				if ( hasClickEvent != 0 ) pickableClick.update(this);				
 			}
 			
-			//if (backgroundColor != 0) backgroundElement = fontProgram.createLineBackground(line, backgroundColor);
 			if (backgroundColor != 0) backgroundElement = fontProgram.createBackground(x, y, width, height, z, backgroundColor);
 			
 			#if (!peoteui_no_textmasking && !peoteui_no_masking)
@@ -266,6 +250,32 @@ class $className extends peote.ui.interactive.Interactive
 		}
 	}
 
+	// ----------------------- delegated methods from FontProgram -----------------------
+	
+	public inline function setText(text:String, fontStyle:Null<$styleType> = null, autoWidth = false, autoHeight = false)
+	{
+		this.text = text;
+		if (fontStyle != null) this.fontStyle = fontStyle;
+		
+		if (line != null) fontProgram.setLine(line, text, x, y, (!autoWidth) ? width : null, null, this.fontStyle, null, isVisible);
+		
+		if (autoHeight) setAutoHeight();
+		if (autoWidth) setAutoWidth();
+	}
+	
+	public inline function setAutoHeight() {
+		if (line != null) height = Std.int(line.height);
+		else autoSize |= 1;
+	}
+	
+	public inline function setAutoWidth() {
+		if (line != null) width = Std.int(line.textSize);
+		else autoSize |= 2;
+	}
+	
+	
+	// ----------- events ------------------
+	
 	public var onPointerOver(never, set):InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void;
 	inline function set_onPointerOver(f:InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void):InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void
 		return setOnPointerOver(this, f);

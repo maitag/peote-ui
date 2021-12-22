@@ -93,7 +93,7 @@ class SimpleText extends Application
 		var y:Int = -yOffset;
 		
 		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, "hello", font, fontStyle, Color.BLACK); //, selectionFontStyle
-		//var textLine = font.createInteractiveTextLine(x, y+=yOffset, "hello", fontStyle, 0);
+		//var textLine = font.createInteractiveTextLine(x, y+=yOffset, "hello", fontStyle, Color.BLACK);
 		addAndSetEvents(textLine);
 		//textLine.height = 50;
 		//textLine.update();
@@ -123,22 +123,35 @@ class SimpleText extends Application
 			
 			
 			
-/*		haxe.Timer.delay(function() {
+		haxe.Timer.delay(function() {
 			//trace("change style after");
-			//textLine2.fontStyle = fontStyleTiled;
-			//textLine2.updateStyle();				
-			uiDisplay.remove(textLine);
+			//textLine.fontStyle = fontStyleTiled;
+			//textLine.updateStyle();				
 			// TODO
-			// textLine.set("new Text", 0, 0, fontStyle);
+			textLine.width = 200;
+			textLine.setText("new Text", false, true);
+			textLine.hAlign = HAlign.RIGHT;
 			// textLine.setStyle(fontStyle, 1, 4);
+			textLine.update();
+			
+			//uiDisplay.remove(textLine);
 			haxe.Timer.delay(function() {
-				uiDisplay.add(textLine);
+				textLine.width = 140;
 				textLine.height = 50;
+				textLine.hAlign = HAlign.CENTER;
 				textLine.update();
+				//uiDisplay.add(textLine);
+				
+				haxe.Timer.delay(function() {
+					textLine.setAutoHeight();
+					textLine.update();
+				}, 1000);
+				
+				
 			}, 1000);
 			
 		}, 1000);
-*/
+
 			
 /*		// input line
 		
