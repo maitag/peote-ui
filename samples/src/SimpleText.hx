@@ -127,9 +127,10 @@ class SimpleText extends Application
 			//trace("change style after");
 			//textLine.fontStyle = fontStyleTiled;
 			//textLine.updateStyle();				
-			// TODO
+			
 			textLine.width = 200;
-			textLine.setText("new Text", false, true);
+			textLine.setText("new Text", false, true); //textLine.text = "new Text";
+			
 			textLine.hAlign = HAlign.RIGHT;
 			// textLine.setStyle(fontStyle, 1, 4);
 			textLine.update();
@@ -140,10 +141,13 @@ class SimpleText extends Application
 				textLine.height = 50;
 				textLine.hAlign = HAlign.CENTER;
 				textLine.update();
+					
+				trace(textLine.text);
 				//uiDisplay.add(textLine);
 				
 				haxe.Timer.delay(function() {
 					textLine.setAutoHeight();
+					textLine.backgroundColor = Color.GREY2;
 					textLine.update();
 				}, 1000);
 				

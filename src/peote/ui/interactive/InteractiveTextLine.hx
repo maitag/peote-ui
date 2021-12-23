@@ -44,13 +44,26 @@ class InteractiveTextLineMacro
 
 class $className extends peote.ui.interactive.Interactive
 {	
-	public var fontProgram:peote.text.FontProgram<$styleType>; //$fontProgramType	
-	public var font:peote.text.Font<$styleType>; //$fontType
+	var fontProgram:peote.text.FontProgram<$styleType>; //$fontProgramType	
+	var font:peote.text.Font<$styleType>; //$fontType
 	
 	public var fontStyle:$styleType;
 	
-	public var text:String;
-	public var line:peote.text.Line<$styleType> = null; //$lineType
+	@:isVar public var text(get, set):String = null;
+	inline function get_text():String {
+		if (line == null) return text;
+		else return fontProgram.lineGetChars(line);
+	}
+	inline function set_text(t:String):String {
+		if (line == null || t == null) return text = t;
+		else {
+			fontProgram.setLine(line, t, line.x, line.y, isVisible);
+			return t;
+		}
+	}
+	
+	
+	var line:peote.text.Line<$styleType> = null; //$lineType
 		
 	var autoSize:Int = 0;
 	
@@ -59,6 +72,9 @@ class $className extends peote.ui.interactive.Interactive
 	
 	public var backgroundColor:peote.view.Color;
 	var backgroundElement:peote.text.BackgroundElement;
+	
+	// TODO: xOffset and yOffset
+
 	
 	#if (!peoteui_no_textmasking && !peoteui_no_masking)
 	var maskElement:peote.text.MaskElement;
@@ -176,6 +192,7 @@ class $className extends peote.ui.interactive.Interactive
 			
 
 			line = fontProgram.createLine(text, x, y, (autoSize & 2 == 0) ? width : null, null, fontStyle);
+			text = null; // let GC clear the string (after this.line is created this.text is allways get by fontProgram)
 			
 			// vertically text alignment
 			var y_offset:Float = 0;
@@ -250,14 +267,14 @@ class $className extends peote.ui.interactive.Interactive
 		}
 	}
 
-	// ----------------------- delegated methods from FontProgram -----------------------
+	// ----------------------- change the text  -----------------------
 	
 	public inline function setText(text:String, fontStyle:Null<$styleType> = null, autoWidth = false, autoHeight = false)
 	{
-		this.text = text;
+		//this.text = text;
 		if (fontStyle != null) this.fontStyle = fontStyle;
 		
-		if (line != null) fontProgram.setLine(line, text, x, y, (!autoWidth) ? width : null, null, this.fontStyle, null, isVisible);
+		if (line != null) fontProgram.setLine(line, text, line.x, line.y, (!autoWidth) ? width : null, null, this.fontStyle, null, isVisible);
 		
 		if (autoHeight) setAutoHeight();
 		if (autoWidth) setAutoWidth();
@@ -271,6 +288,53 @@ class $className extends peote.ui.interactive.Interactive
 	public inline function setAutoWidth() {
 		if (line != null) width = Std.int(line.textSize);
 		else autoSize |= 2;
+	}
+	
+	// ----------------------- delegated methods from FontProgram -----------------------
+
+	public inline function setStyle(glyphStyle:$styleType, from:Int = 0, to:Null<Int> = null)
+	{
+		fontProgram.lineSetStyle(line, glyphStyle, from, to, isVisible);
+	}
+	
+	public inline function setChar(charcode:Int, position:Int = 0, glyphStyle:$styleType = null)
+	{
+		fontProgram.lineSetChar(line, charcode, position, glyphStyle, isVisible);
+	}
+	
+	public inline function setChars(chars:String, position:Int = 0, glyphStyle:$styleType = null)
+	{
+		fontProgram.lineSetChars(line, chars, position, glyphStyle, isVisible);		
+	}
+	
+	public inline function insertChar(charcode:Int, position:Int = 0, glyphStyle:$styleType = null)
+	{		
+		fontProgram.lineInsertChar(line, charcode, position, glyphStyle, isVisible);
+	}
+	
+	public inline function insertChars(chars:String, position:Int = 0, glyphStyle:$styleType = null)
+	{		
+		fontProgram.lineInsertChars(line, chars, position, glyphStyle, isVisible);
+	}
+	
+	public inline function appendChars(chars:String, glyphStyle:$styleType = null) 
+	{		
+		fontProgram.lineAppendChars(line, chars, glyphStyle, isVisible); 
+	}
+
+	public inline function deleteChar(position:Int = 0)
+	{
+		fontProgram.lineDeleteChar(line, position, isVisible);
+	}
+
+	public inline function deleteChars(from:Int = 0, to:Null<Int> = null)
+	{
+		fontProgram.lineDeleteChars(line, from, to, isVisible);
+	}
+	
+	public inline function cutChars(from:Int = 0, to:Null<Int> = null):String
+	{
+		return fontProgram.lineCutChars(line, from, to, isVisible);
 	}
 	
 	
