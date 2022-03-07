@@ -900,8 +900,15 @@ class UIDisplay extends Display
 		
 	}
 	
+	// ----------------- KEYBOARD - EVENTS ----------------------------
+	
+	// ------------ Input Events on the UIDisplay itselfs ----------
+	
+	//public var onKeyDown:UIDisplay->InputEvent->Void = null;
+
 	public inline function keyDown (keyCode:KeyCode, modifier:KeyModifier):Void
 	{
+		trace("key DOWN");
 		switch (keyCode) {
 			#if html5
 			case KeyCode.TAB: untyped __js__('event.preventDefault();');
@@ -914,18 +921,23 @@ class UIDisplay extends Display
 	
 	public inline function keyUp (keyCode:KeyCode, modifier:KeyModifier):Void
 	{
+		trace("key UP");
 		switch (keyCode) {
 			//case KeyCode.NUMPAD_PLUS:
 			default:
 		}
 	}
+	
 	public inline function textInput (text:String):Void {
-		
+		trace("textInput:", text);		
 	}
 
 	// override function onTextEdit(text:String, start:Int, length:Int) {}
 	// override function onTextInput (text:String)	{}
 	
+	
+	
+	// ------------ TODO: bindings to input2action-lib "action"s  ----------
 	
 	
 	// ----------------- Dragging ----------------------------
@@ -1181,6 +1193,10 @@ class UIDisplay extends Display
 		static public inline function touchStartActive(touch:Touch) for (i in 0...maxActiveIndex) if (activeUIDisplay.get(i).touchStart(touch)) break;
 		static public inline function touchEndActive(touch:Touch) for (i in 0...maxActiveIndex) activeUIDisplay.get(i).touchEnd(touch);
 		static public inline function touchCancelActive(touch:Touch) for (i in 0...maxActiveIndex) activeUIDisplay.get(i).touchCancel(touch);
+		
+		static public inline function keyDownActive(keyCode:KeyCode, modifier:KeyModifier) for (i in 0...maxActiveIndex) activeUIDisplay.get(i).keyDown(keyCode, modifier);
+		static public inline function keyUpActive(keyCode:KeyCode, modifier:KeyModifier) for (i in 0...maxActiveIndex) activeUIDisplay.get(i).keyUp(keyCode, modifier);
+		static public inline function textInputActive(text:String) for (i in 0...maxActiveIndex) activeUIDisplay.get(i).textInput(text);
 
 		static public inline function windowLeaveActive() for (i in 0...maxActiveIndex) activeUIDisplay.get(i).windowLeave();
 	#end
@@ -1192,8 +1208,6 @@ class UIDisplay extends Display
 		window.onMouseUp.add(mouseUpActive);
 		window.onMouseDown.add(mouseDownActive);
 		window.onMouseWheel.add(mouseWheelActive);
-		
-		// TODO: keyboard & text
 		
 		Touch.onStart.add(touchStartActive);
 		Touch.onMove.add(touchMoveActive);
@@ -1208,6 +1222,12 @@ class UIDisplay extends Display
 		window.onMouseMove.add(mouseMoveActive);
 		window.onLeave.add(windowLeaveActive);
 		#end
+		
+		// TODO: keyboard & text
+		window.onKeyDown.add(keyDownActive);
+		window.onKeyDown.add(keyUpActive);
+		window.onTextInput.add(textInputActive);
+		
 	}
 	
 	#if (! html5)
@@ -1234,14 +1254,11 @@ class UIDisplay extends Display
 		}
 	#end
 
-	// TODO:
 	public static function unRegisterEvents(window:Window) {
 		
 		window.onMouseUp.remove(mouseUpActive);
 		window.onMouseDown.remove(mouseDownActive);
 		window.onMouseWheel.remove(mouseWheelActive);
-		
-		// TODO: keyboard & text
 		
 		Touch.onStart.remove(touchStartActive);
 		Touch.onMove.remove(touchMoveActive);
@@ -1256,6 +1273,9 @@ class UIDisplay extends Display
 		window.onMouseMove.remove(mouseMoveActive);
 		window.onLeave.remove(windowLeaveActive);
 		#end
+		
+		// TODO: keyboard & text
+		
 		
 	}
 			

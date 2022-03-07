@@ -3,6 +3,7 @@ package;
 import haxe.CallStack;
 import lime.ui.MouseButton;
 import peote.ui.event.PointerType;
+import peote.ui.util.HAlign;
 
 import lime.app.Application;
 import lime.ui.Window;
@@ -191,7 +192,7 @@ class MultiUIDisplays extends Application
 		uiDisplay.add(button);
 		
 		if (text != "") {
-			var textLine = new InteractiveTextLine<FontStyleTiled>(x + 10, y + 8, z, text, font, fontStyle);
+			var textLine = new InteractiveTextLine<FontStyleTiled>(x, y, {width:w, height:h, hAlign:HAlign.CENTER}, z, text, font, fontStyle);
 			uiDisplay.add(textLine);
 		}
 		

@@ -142,7 +142,7 @@ class SimpleText extends Application
 				textLine.hAlign = HAlign.CENTER;
 				textLine.update();
 					
-				trace(textLine.text);
+				//trace(textLine.text);
 				//uiDisplay.add(textLine);
 				
 				haxe.Timer.delay(function() {
