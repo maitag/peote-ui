@@ -337,6 +337,14 @@ class $className extends peote.ui.interactive.Interactive
 		return fontProgram.lineCutChars(line, from, to, isVisible);
 	}
 	
+	// ----------------------- TextInput -----------------------
+	public inline function setInputFocus() {
+		if(uiDisplay != null) uiDisplay.setInputFocus(this);
+	}
+	override public inline function textInput(s:String) {
+		trace("InteractiveTextLine - textInput:", s);
+	}
+	
 	
 	// ----------- events ------------------
 	

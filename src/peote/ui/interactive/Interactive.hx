@@ -309,6 +309,12 @@ class Interactive
 		if (isVisible) uiDisplay.stopDraggingElement(this, e);
 	}
 	
+	
+	// -------------------- TextInput ------------------------
+	public function textInput(s:String):Void {}  // to override by childclasses
+
+	
+	
 	// ----------------- Event-Bindings ----------------------
 
 	private inline function setOnPointerOver<T>(object:T, f:T->PointerEvent->Void):T->PointerEvent->Void {

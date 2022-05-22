@@ -1,6 +1,7 @@
 package peote.ui;
 
 import haxe.ds.Vector;
+import peote.ui.interactive.InteractiveTextLine;
 
 import lime.graphics.RenderContext;
 import lime.ui.Window;
@@ -928,13 +929,24 @@ class UIDisplay extends Display
 		}
 	}
 	
-	public inline function textInput (text:String):Void {
-		trace("textInput:", text);		
+	static var inputFocusUIDisplay:UIDisplay = null;
+	static var inputFocusElement:Interactive = null;
+	//static var inputFocusElement:Dynamic = null;
+	
+	public inline function textInput (s:String):Void {
+		trace("textInput:", s);
+		if (inputFocusElement != null) inputFocusElement.textInput(s);
 	}
 
 	// override function onTextEdit(text:String, start:Int, length:Int) {}
 	// override function onTextInput (text:String)	{}
 	
+	
+	public inline function setInputFocus(t:Interactive) {
+		trace("setInputFocus", Type.typeof(t));
+		inputFocusUIDisplay = this;
+		inputFocusElement = t;
+	}
 	
 	
 	// ------------ TODO: bindings to input2action-lib "action"s  ----------
@@ -1052,6 +1064,10 @@ class UIDisplay extends Display
 		static public inline function touchStartActive(touch:Touch) if (activeUIDisplay!=null) activeUIDisplay.touchStart(touch);
 		static public inline function touchEndActive(touch:Touch) if (activeUIDisplay!=null) activeUIDisplay.touchEnd(touch);
 		static public inline function touchCancelActive(touch:Touch) if (activeUIDisplay!=null) activeUIDisplay.touchCancel(touch);
+
+		static public inline function keyDownActive(keyCode:KeyCode, modifier:KeyModifier) if (activeUIDisplay!=null) activeUIDisplay.keyDown(keyCode, modifier);
+		static public inline function keyUpActive(keyCode:KeyCode, modifier:KeyModifier) if (activeUIDisplay!=null) activeUIDisplay.keyUp(keyCode, modifier);
+		static public inline function textInputActive(text:String) if (activeUIDisplay!=null) activeUIDisplay.textInput(text);
 
 		static public inline function windowLeaveActive() if (activeUIDisplay!=null) activeUIDisplay.windowLeave();
 
@@ -1196,7 +1212,7 @@ class UIDisplay extends Display
 		
 		static public inline function keyDownActive(keyCode:KeyCode, modifier:KeyModifier) for (i in 0...maxActiveIndex) activeUIDisplay.get(i).keyDown(keyCode, modifier);
 		static public inline function keyUpActive(keyCode:KeyCode, modifier:KeyModifier) for (i in 0...maxActiveIndex) activeUIDisplay.get(i).keyUp(keyCode, modifier);
-		static public inline function textInputActive(text:String) for (i in 0...maxActiveIndex) activeUIDisplay.get(i).textInput(text);
+		static public inline function textInputActive(text:String) if (inputFocusUIDisplay != null) inputFocusUIDisplay.textInput(text);
 
 		static public inline function windowLeaveActive() for (i in 0...maxActiveIndex) activeUIDisplay.get(i).windowLeave();
 	#end
@@ -1223,9 +1239,9 @@ class UIDisplay extends Display
 		window.onLeave.add(windowLeaveActive);
 		#end
 		
-		// TODO: keyboard & text
+		// keyboard & text
 		window.onKeyDown.add(keyDownActive);
-		window.onKeyDown.add(keyUpActive);
+		window.onKeyUp.add(keyUpActive);
 		window.onTextInput.add(textInputActive);
 		
 	}
@@ -1274,7 +1290,10 @@ class UIDisplay extends Display
 		window.onLeave.remove(windowLeaveActive);
 		#end
 		
-		// TODO: keyboard & text
+		// keyboard & text
+		window.onKeyDown.remove(keyDownActive);
+		window.onKeyUp.remove(keyUpActive);
+		window.onTextInput.remove(textInputActive);
 		
 		
 	}

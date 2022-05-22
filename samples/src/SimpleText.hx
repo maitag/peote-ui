@@ -35,6 +35,8 @@ class FontStyle
 	public var color:Color = Color.GREEN;
 	public var width:Float = 20; // <- if this is MISSING -> TODO !!!!!!!!!!!!!!
 	
+	//public var height:Float = 25;
+	
 	#if packed 
 	@global public var weight = 0.48;
 	#end	
@@ -86,12 +88,14 @@ class SimpleText extends Application
 	public function onFontLoaded(font:Font<FontStyle>) // don'T forget argument-type here !
 	{					
 		var fontStyle = new FontStyle();
+		//fontStyleInput.height = 30;
+		//fontStyleInput.width = 20;
 		
 		var xOffset:Int = 200;
 		var yOffset:Int = 70;
 		var x:Int = 0; 
 		var y:Int = -yOffset;
-		
+				
 		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, "hello", font, fontStyle, Color.BLACK); //, selectionFontStyle
 		//var textLine = font.createInteractiveTextLine(x, y+=yOffset, "hello", fontStyle, Color.BLACK);
 		addAndSetEvents(textLine);
@@ -119,10 +123,7 @@ class SimpleText extends Application
 		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50, height:20}, "hello", font, fontStyle, Color.BLACK);
 		addAndSetEvents(textLine);
 			
-			
-			
-			
-			
+		// changing textlines afterwards
 		haxe.Timer.delay(function() {
 			//trace("change style after");
 			//textLine.fontStyle = fontStyleTiled;
@@ -157,22 +158,24 @@ class SimpleText extends Application
 		}, 1000);
 
 			
-/*		// input line
+		// ---------------- input lines ---------------------
+		y = -yOffset;
 		
 		var fontStyleInput = new FontStyle();
-		fontStyleInput.height = 25;
+		//fontStyleInput.height = 30;
 		fontStyleInput.width = 20;
-		fontStyleInput.color = Color.BLACK;
+		fontStyleInput.color = Color.GREY5;
 		
-		var inputLine = font.createInteractiveTextLine(0, 50, 112, 25, 0, "input line", fontStyleInput, Color.WHITE); //, selectionFontStyle
+		var inputLine = new InteractiveTextLine<FontStyle>(x+=xOffset, y+=yOffset, {width:250}, "input line", font, fontStyleInput, Color.BLACK);
+		//var inputLine = font.createInteractiveTextLine(x+=xOffset, y+=yOffset, {width:250}, "input line", fontStyleInput, Color.BLACK); //, selectionFontStyle
 		uiDisplay.add(inputLine);
 		
 		inputLine.onPointerDown = function(t:InteractiveTextLine<FontStyle>, e:PointerEvent) {
 			trace("onPointerDown");
-			//t.setInputFocus();
+			t.setInputFocus();
 			//uiDisplay.setInputFocus(t);
 		}
-*/
+
 	}
 	
 	public function addAndSetEvents(textLine:InteractiveTextLine<FontStyle>) 
