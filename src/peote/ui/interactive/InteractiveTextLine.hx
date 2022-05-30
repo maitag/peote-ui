@@ -42,7 +42,7 @@ class InteractiveTextLineMacro
 // -------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------
 
-class $className extends peote.ui.interactive.Interactive
+class $className extends peote.ui.interactive.Interactive implements peote.ui.interactive.interfaces.TextLine
 {	
 	var fontProgram:peote.text.FontProgram<$styleType>; //$fontProgramType	
 	var font:peote.text.Font<$styleType>; //$fontType
@@ -71,8 +71,9 @@ class $className extends peote.ui.interactive.Interactive
 	public var vAlign:peote.ui.util.VAlign = peote.ui.util.VAlign.CENTER;
 	
 	public var backgroundColor:peote.view.Color;
-	var backgroundElement:peote.text.BackgroundElement;
-	
+	var backgroundElement:peote.text.BackgroundElement;	
+	var cursorElement:peote.text.BackgroundElement;
+
 	// TODO: xOffset and yOffset
 
 	
@@ -157,6 +158,7 @@ class $className extends peote.ui.interactive.Interactive
 		}
 		
 		if (backgroundColor != 0) fontProgram.setBackground(backgroundElement, x, y, width, height, z, backgroundColor, isVisible);
+		updateCursor();
 			
 		#if (!peoteui_no_textmasking && !peoteui_no_masking)
 		if (masked) fontProgram.setMask(maskElement, x + maskX, y + maskY, maskWidth, maskHeight, isVisible);
@@ -232,17 +234,19 @@ class $className extends peote.ui.interactive.Interactive
 			}
 			
 			if (backgroundColor != 0) backgroundElement = fontProgram.createBackground(x, y, width, height, z, backgroundColor);
+			cursorElement = fontProgram.createBackground(fontProgram.lineGetPositionAtChar(line, cursor), y, 2, height, z, 0xFF0000FF, cursorIsVisible);
 			
 			#if (!peoteui_no_textmasking && !peoteui_no_masking)
 			maskElement = fontProgram.createMask(x, y, width, height);
 			#end
 		}
 		else {
-			if (fontProgram.numberOfGlyphes() == 0) uiDisplay.addProgram(fontProgram);//TODO: adding mask & bg
+			if (fontProgram.numberOfGlyphes() == 0) uiDisplay.addProgram(fontProgram);
 			#if (!peoteui_no_textmasking && !peoteui_no_masking)
 			fontProgram.addMask(maskElement);
 			#end
 			if (backgroundColor != 0) fontProgram.addBackground(backgroundElement);
+			if (cursorIsVisible) fontProgram.addBackground(cursorElement);
 			fontProgram.addLine(line);
 		}
 		
@@ -254,6 +258,8 @@ class $className extends peote.ui.interactive.Interactive
 		//trace("onRemoveVisibleFromDisplay()");
 		fontProgram.removeLine(line);
 		if (backgroundColor != 0) fontProgram.removeBackground(backgroundElement);
+		if (cursorIsVisible) fontProgram.removeBackground(cursorElement);
+		
 		#if (!peoteui_no_textmasking && !peoteui_no_masking)
 		fontProgram.removeMask(maskElement);
 		#end
@@ -267,6 +273,7 @@ class $className extends peote.ui.interactive.Interactive
 		}
 	}
 
+	
 	// ----------------------- change the text  -----------------------
 	
 	public inline function setText(text:String, fontStyle:Null<$styleType> = null, autoWidth = false, autoHeight = false)
@@ -290,61 +297,105 @@ class $className extends peote.ui.interactive.Interactive
 		else autoSize |= 2;
 	}
 	
+	
+	// ----------------------- TextInput -----------------------
+	
+	public inline function setInputFocus() {
+		if (uiDisplay != null) {
+			uiDisplay.setInputFocus(this);
+		}
+	}
+	
+	public inline function removeInputFocus() {
+		if (uiDisplay != null) {
+			uiDisplay.removeInputFocus(this);
+			cursorHide();
+		}
+	}
+	
+	override public inline function textInput(chars:String) {
+		//trace("InteractiveTextLine - textInput:", s);
+		insertChars(chars, 0, fontStyle);
+		fontProgram.updateLine(line);
+	}
+
+	
+	// ----------- TextEdit interface  -----------
+	
+	public var cursor(default,set):Int = 0;
+	inline function set_cursor(pos:Int):Int {
+		cursor = pos;
+		updateCursor();
+		return cursor;
+	}
+	inline function updateCursor() {
+		if (line != null) fontProgram.setBackground(cursorElement, fontProgram.lineGetPositionAtChar(line, cursor), y, 2, height, z, 0xFF0000FF, isVisible && cursorIsVisible);
+	}
+	
+	public var cursorIsVisible(default, set):Bool = false;
+	inline function set_cursorIsVisible(b:Bool):Bool {
+		if (b && !cursorIsVisible && line != null) fontProgram.addBackground(cursorElement);
+		else if (!b && cursorIsVisible && line != null) fontProgram.removeBackground(cursorElement);
+		return cursorIsVisible = b;
+	}
+	
+	public inline function cursorShow():Void cursorIsVisible = true;
+	public inline function cursorHide():Void cursorIsVisible = false;
+	
+	
+	inline function edit_textInput(chars:String):Void {
+		trace("InteractiveTextLine - edit_textInput:", chars);
+		insertChars(chars, 0, fontStyle);
+		fontProgram.updateLine(line);
+	}
+	
+	inline function cursorLeft(isShift:Bool, isCtrl:Bool)
+	{
+		trace("cursor left");
+	}
+
+	
+	
 	// ----------------------- delegated methods from FontProgram -----------------------
 
-	public inline function setStyle(glyphStyle:$styleType, from:Int = 0, to:Null<Int> = null)
-	{
+	public inline function setStyle(glyphStyle:$styleType, from:Int = 0, to:Null<Int> = null) {
 		fontProgram.lineSetStyle(line, glyphStyle, from, to, isVisible);
 	}
 	
-	public inline function setChar(charcode:Int, position:Int = 0, glyphStyle:$styleType = null)
-	{
+	public inline function setChar(charcode:Int, position:Int = 0, glyphStyle:$styleType = null) {
 		fontProgram.lineSetChar(line, charcode, position, glyphStyle, isVisible);
 	}
 	
-	public inline function setChars(chars:String, position:Int = 0, glyphStyle:$styleType = null)
-	{
+	public inline function setChars(chars:String, position:Int = 0, glyphStyle:$styleType = null) {
 		fontProgram.lineSetChars(line, chars, position, glyphStyle, isVisible);		
 	}
 	
-	public inline function insertChar(charcode:Int, position:Int = 0, glyphStyle:$styleType = null)
-	{		
+	public inline function insertChar(charcode:Int, position:Int = 0, glyphStyle:$styleType = null) {		
 		fontProgram.lineInsertChar(line, charcode, position, glyphStyle, isVisible);
 	}
 	
-	public inline function insertChars(chars:String, position:Int = 0, glyphStyle:$styleType = null)
-	{		
+	public inline function insertChars(chars:String, position:Int = 0, glyphStyle:$styleType = null) {		
 		fontProgram.lineInsertChars(line, chars, position, glyphStyle, isVisible);
 	}
 	
-	public inline function appendChars(chars:String, glyphStyle:$styleType = null) 
-	{		
+	public inline function appendChars(chars:String, glyphStyle:$styleType = null) {		
 		fontProgram.lineAppendChars(line, chars, glyphStyle, isVisible); 
 	}
 
-	public inline function deleteChar(position:Int = 0)
-	{
+	public inline function deleteChar(position:Int = 0) {
 		fontProgram.lineDeleteChar(line, position, isVisible);
 	}
 
-	public inline function deleteChars(from:Int = 0, to:Null<Int> = null)
-	{
+	public inline function deleteChars(from:Int = 0, to:Null<Int> = null) {
 		fontProgram.lineDeleteChars(line, from, to, isVisible);
 	}
 	
-	public inline function cutChars(from:Int = 0, to:Null<Int> = null):String
-	{
+	public inline function cutChars(from:Int = 0, to:Null<Int> = null):String {
 		return fontProgram.lineCutChars(line, from, to, isVisible);
 	}
 	
-	// ----------------------- TextInput -----------------------
-	public inline function setInputFocus() {
-		if(uiDisplay != null) uiDisplay.setInputFocus(this);
-	}
-	override public inline function textInput(s:String) {
-		trace("InteractiveTextLine - textInput:", s);
-	}
 	
+
 	
 	// ----------- events ------------------
 	

@@ -1,7 +1,6 @@
 package peote.ui;
 
 import haxe.ds.Vector;
-import peote.ui.interactive.InteractiveTextLine;
 
 import lime.graphics.RenderContext;
 import lime.ui.Window;
@@ -23,6 +22,9 @@ import peote.view.Color;
 import peote.view.utils.RenderListItem;
 
 import peote.ui.interactive.Interactive;
+import peote.ui.interactive.InteractiveTextLine;
+import peote.ui.interactive.edit.TextLineEdit;
+import peote.ui.interactive.interfaces.TextLine;
 
 
 @:access(peote.view)
@@ -930,24 +932,35 @@ class UIDisplay extends Display
 	}
 	
 	static var inputFocusUIDisplay:UIDisplay = null;
-	static var inputFocusElement:Interactive = null;
-	//static var inputFocusElement:Dynamic = null;
+	static var inputFocusElement:TextLine = null;
+	static var textLineEdit:TextLineEdit = null;
 	
-	public inline function textInput (s:String):Void {
-		trace("textInput:", s);
-		if (inputFocusElement != null) inputFocusElement.textInput(s);
+	public inline function textInput (chars:String):Void {
+		trace("textInput:", chars);
+		//if (inputFocusElement != null) inputFocusElement.textInput(chars);
+		if (inputFocusElement != null) textLineEdit.textInput(chars);
 	}
 
 	// override function onTextEdit(text:String, start:Int, length:Int) {}
 	// override function onTextInput (text:String)	{}
 	
 	
-	public inline function setInputFocus(t:Interactive) {
-		trace("setInputFocus", Type.typeof(t));
-		inputFocusUIDisplay = this;
-		inputFocusElement = t;
+	public inline function setInputFocus(t:TextLine) {
+		if (inputFocusElement != t) {
+			trace("setInputFocus");
+			inputFocusUIDisplay = this;
+			inputFocusElement = t;
+			if (textLineEdit == null) textLineEdit = new TextLineEdit();
+			textLineEdit.textLine = t;
+			t.cursorShow();
+		}
 	}
 	
+	public inline function removeInputFocus(t:TextLine) {
+		trace("removeInputFocus");
+		// TODO
+		t.cursorHide();
+	}
 	
 	// ------------ TODO: bindings to input2action-lib "action"s  ----------
 	

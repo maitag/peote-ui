@@ -1,6 +1,8 @@
 package;
 
 import haxe.CallStack;
+import haxe.Timer;
+
 import peote.ui.util.HAlign;
 import peote.ui.util.VAlign;
 
@@ -92,7 +94,7 @@ class SimpleText extends Application
 		//fontStyleInput.width = 20;
 		
 		var xOffset:Int = 200;
-		var yOffset:Int = 70;
+		var yOffset:Int = 60;
 		var x:Int = 0; 
 		var y:Int = -yOffset;
 				
@@ -122,6 +124,8 @@ class SimpleText extends Application
 			
 		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50, height:20}, "hello", font, fontStyle, Color.BLACK);
 		addAndSetEvents(textLine);
+		textLine.cursorShow();
+		textLine.cursor = 2;
 			
 		// changing textlines afterwards
 		haxe.Timer.delay(function() {
@@ -158,6 +162,30 @@ class SimpleText extends Application
 		}, 1000);
 
 			
+		// --------- InteractiveTextLine cursor, selection and editing ------------
+		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50, height:20}, "hello", font, fontStyle, Color.BLACK);
+		addAndSetEvents(textLine);
+		
+		textLine.cursorShow();
+		textLine.cursorHide();
+		var timer = new Timer(500);
+		timer.run = function() {
+			textLine.cursorIsVisible = !textLine.cursorIsVisible;
+		}
+		
+		textLine.cursor = 2;
+		//textLine.cursorToStart();
+		//textLine.cursorToEnd();
+		
+		var timer = new Timer(1000); Timer.delay(function() timer.stop(), 4100);
+		timer.run = function() {
+			//textLine.cursorRight();
+			var timer = new Timer(1000); Timer.delay(function() timer.stop(), 4100);
+			timer.run = function() {
+				//textLine.cursorLeft();
+			}		
+		}		
+		
 		// ---------------- input lines ---------------------
 		y = -yOffset;
 		
