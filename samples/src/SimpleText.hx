@@ -104,7 +104,14 @@ class SimpleText extends Application
 		//textLine.height = 50;
 		//textLine.update();
 		
-		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50, xOffset:5, yOffset:5}, "hello", font, fontStyle, Color.BLACK);
+		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50, xOffset:10, yOffset:10}, "hello", font, fontStyle, Color.BLACK);
+		var timer = new Timer(200);
+		timer.run = function() {
+			textLine.xOffset--;
+			textLine.yOffset--;
+			textLine.update();
+			if (textLine.xOffset == 0) timer.stop();
+		}
 		addOverOut(textLine);
 			
 		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.RIGHT}, "hello", font, fontStyle, Color.BLACK);
@@ -188,8 +195,15 @@ class SimpleText extends Application
 		inputLine.cursor = 3;
 		addInput(inputLine);
 		
-		var inputLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50, xOffset:5, yOffset:5}, "input", font, fontStyleInput, Color.BLACK);
+		var inputLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50, xOffset:10, yOffset:10}, "input", font, fontStyleInput, Color.BLACK);
 		addInput(inputLine);
+		var timer = new Timer(200);
+		timer.run = function() {
+			inputLine.xOffset--;
+			inputLine.yOffset--;
+			inputLine.update();
+			if (inputLine.xOffset == 0) timer.stop();
+		}
 		
 		var inputLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.RIGHT}, "input", font, fontStyleInput, Color.BLACK);
 		addInput(inputLine);

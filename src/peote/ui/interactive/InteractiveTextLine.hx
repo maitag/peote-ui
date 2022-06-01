@@ -132,9 +132,9 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		var y_offset:Float = yOffset;
 		
 		if (vAlign == peote.ui.util.VAlign.CENTER)
-			y_offset = (height - line.height) / 2;
+			y_offset = (height - line.height) / 2 + yOffset;
 		else if (vAlign == peote.ui.util.VAlign.BOTTOM) 
-			y_offset = height - line.height;
+			y_offset = height - line.height + yOffset;
 		
 		// horizontally text alignment
 		if (hAlign == peote.ui.util.HAlign.CENTER)
@@ -159,7 +159,7 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 			fontProgram.updateLine(line);
 		}
 		
-		if (backgroundColor != 0) fontProgram.setBackground(backgroundElement, x + xOffset, y, width, height, z, backgroundColor, isVisible);
+		if (backgroundColor != 0) fontProgram.setBackground(backgroundElement, x, y, width, height, z, backgroundColor, isVisible);
 		//if (selectable) 
 		fontProgram.setBackground(cursorElement, fontProgram.lineGetPositionAtChar(line, cursor), y + y_offset, 2, line.height, z, 0xFF0000FF, isVisible && cursorIsVisible);
 			
@@ -202,8 +202,8 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 			// vertically text alignment
 			var y_offset:Float = yOffset;
 			if (autoSize & 1 == 0) {
-				if (vAlign == peote.ui.util.VAlign.CENTER) y_offset = (height - line.height) / 2;
-				else if (vAlign == peote.ui.util.VAlign.BOTTOM) y_offset = height - line.height;
+				if (vAlign == peote.ui.util.VAlign.CENTER) y_offset = (height - line.height) / 2 + yOffset;
+				else if (vAlign == peote.ui.util.VAlign.BOTTOM) y_offset = height - line.height + yOffset;
 			}
 			
 			// horizontally text alignment
@@ -216,13 +216,13 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 					fontProgram.lineSetPosition(line, x, y + y_offset, width - line.textSize + xOffset);
 					fontProgram.updateLine(line);
 				}
-				else if (y_offset != 0) {
+				else if (y_offset != 0 || xOffset !=0) {
 					fontProgram.lineSetPosition(line, x, y + y_offset, xOffset);
 					fontProgram.updateLine(line);
 				}
 				
 			} 
-			else if (y_offset != 0 && xOffset != 0) { 
+			else if (y_offset != 0 || xOffset != 0) { 
 				fontProgram.lineSetPosition(line, x, y + y_offset, xOffset);
 				fontProgram.updateLine(line);
 			}
