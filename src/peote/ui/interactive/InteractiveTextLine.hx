@@ -57,22 +57,26 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	inline function set_text(t:String):String {
 		if (line == null || t == null) return text = t;
 		else {
-			fontProgram.setLine(line, t, line.x, line.y, isVisible);
+			fontProgram.setLine(line, t, line.x, line.y, null, xOffset, isVisible); // did not autosizing!
 			return t;
 		}
 	}
 	
 	
 	var line:peote.text.Line<$styleType> = null; //$lineType
-		
+	
 	var autoSize:Int = 0;
 	
 	public var hAlign:peote.ui.util.HAlign = peote.ui.util.HAlign.LEFT;
 	public var vAlign:peote.ui.util.VAlign = peote.ui.util.VAlign.CENTER;
 	
+	public var xOffset:Float = 0;
+	public var yOffset:Float = 0;
+	
 	public var backgroundColor:peote.view.Color;
 	var backgroundElement:peote.text.BackgroundElement;	
 	var cursorElement:peote.text.BackgroundElement;
+	var selectElem:peote.text.BackgroundElement;
 
 	// TODO: xOffset and yOffset
 
@@ -85,8 +89,7 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	                    //font:$fontType, fontStyle:$styleType, backgroundColor:peote.view.Color = 0) 
 	                    font:peote.text.Font<$styleType>, fontStyle:$styleType, backgroundColor:peote.view.Color = 0)
 	{
-		//trace("NEW InteractiveTextLine");
-		
+		//trace("NEW InteractiveTextLine");		
 		var width:Int = 0;
 		var height:Int = 0;
 		if (textSize != null) {
@@ -94,6 +97,8 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 			if (textSize.width  != null) width  = textSize.width  else autoSize |= 2;
 			if (textSize.hAlign != null) hAlign = textSize.hAlign;
 			if (textSize.vAlign != null) vAlign = textSize.vAlign;
+			if (textSize.xOffset != null) xOffset = textSize.xOffset;
+			if (textSize.yOffset != null) yOffset = textSize.yOffset;
 		} else autoSize = 3;
 		
 		// TODO: fontStyle also optional!
@@ -116,9 +121,7 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	
 	override inline function updateVisibleStyle() {
 		fontProgram.lineSetStyle(line, fontStyle);
-		if (isVisible) {
-			fontProgram.updateLine(line);
-		}		
+		if (isVisible) fontProgram.updateLine(line);
 	}
 	
 	override inline function updateVisibleLayout():Void
@@ -126,7 +129,7 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		//trace("updateVisibleLayout()");
 		
 		// vertically text alignment (thx alex for helping into this ;)
-		var y_offset:Float = 0;
+		var y_offset:Float = yOffset;
 		
 		if (vAlign == peote.ui.util.VAlign.CENTER)
 			y_offset = (height - line.height) / 2;
@@ -135,12 +138,11 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		
 		// horizontally text alignment
 		if (hAlign == peote.ui.util.HAlign.CENTER)
-			fontProgram.lineSetPositionSize(line, x, y + y_offset, width, (width - line.textSize)/2, isVisible); // TODO: bug at non-packed fonts without a width glyphstyle!
+			fontProgram.lineSetPositionSize(line, x, y + y_offset, width, (width - line.textSize)/2 + xOffset, isVisible); // TODO: bug at non-packed fonts without a width glyphstyle!
 		else if (hAlign == peote.ui.util.HAlign.RIGHT)
-			fontProgram.lineSetPositionSize(line, x, y + y_offset, width, width - line.textSize, isVisible);
+			fontProgram.lineSetPositionSize(line, x, y + y_offset, width, width - line.textSize + xOffset, isVisible);
 		else
-			fontProgram.lineSetPositionSize(line, x, y + y_offset, width, isVisible);
-			
+			fontProgram.lineSetPositionSize(line, x, y + y_offset, width, xOffset, isVisible);
 			
 		if (isVisible) {
 			// TODO: optimize setting z-index in depend of styletyp and better allways adding fontprograms at end of uiDisplay (onAddVisibleToDisplay)
@@ -157,8 +159,9 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 			fontProgram.updateLine(line);
 		}
 		
-		if (backgroundColor != 0) fontProgram.setBackground(backgroundElement, x, y, width, height, z, backgroundColor, isVisible);
-		updateCursor();
+		if (backgroundColor != 0) fontProgram.setBackground(backgroundElement, x + xOffset, y, width, height, z, backgroundColor, isVisible);
+		//if (selectable) 
+		fontProgram.setBackground(cursorElement, fontProgram.lineGetPositionAtChar(line, cursor), y + y_offset, 2, line.height, z, 0xFF0000FF, isVisible && cursorIsVisible);
 			
 		#if (!peoteui_no_textmasking && !peoteui_no_masking)
 		if (masked) fontProgram.setMask(maskElement, x + maskX, y + maskY, maskWidth, maskHeight, isVisible);
@@ -193,11 +196,11 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 			}}		
 			
 
-			line = fontProgram.createLine(text, x, y, (autoSize & 2 == 0) ? width : null, null, fontStyle);
+			line = fontProgram.createLine(text, x, y, (autoSize & 2 == 0) ? width : null, xOffset, fontStyle);
 			text = null; // let GC clear the string (after this.line is created this.text is allways get by fontProgram)
 			
 			// vertically text alignment
-			var y_offset:Float = 0;
+			var y_offset:Float = yOffset;
 			if (autoSize & 1 == 0) {
 				if (vAlign == peote.ui.util.VAlign.CENTER) y_offset = (height - line.height) / 2;
 				else if (vAlign == peote.ui.util.VAlign.BOTTOM) y_offset = height - line.height;
@@ -206,21 +209,21 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 			// horizontally text alignment
 			if (autoSize & 2 == 0) {
 				if (hAlign == peote.ui.util.HAlign.CENTER) {
-					fontProgram.lineSetPosition(line, x, y + y_offset, (width - line.textSize) / 2); // TODO: bug for negative and non-packed fonts!
+					fontProgram.lineSetPosition(line, x, y + y_offset, (width - line.textSize) / 2 + xOffset); // TODO: bug for negative and non-packed fonts!
 					fontProgram.updateLine(line);
 				}
 				else if (hAlign == peote.ui.util.HAlign.RIGHT) {
-					fontProgram.lineSetPosition(line, x, y + y_offset, width - line.textSize);
+					fontProgram.lineSetPosition(line, x, y + y_offset, width - line.textSize + xOffset);
 					fontProgram.updateLine(line);
 				}
 				else if (y_offset != 0) {
-					fontProgram.lineSetPosition(line, x, y + y_offset);
+					fontProgram.lineSetPosition(line, x, y + y_offset, xOffset);
 					fontProgram.updateLine(line);
 				}
 				
 			} 
-			else if (y_offset != 0) { 
-				fontProgram.lineSetYPosition(line, y + y_offset);
+			else if (y_offset != 0 && xOffset != 0) { 
+				fontProgram.lineSetPosition(line, x, y + y_offset, xOffset);
 				fontProgram.updateLine(line);
 			}
 			
@@ -234,7 +237,8 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 			}
 			
 			if (backgroundColor != 0) backgroundElement = fontProgram.createBackground(x, y, width, height, z, backgroundColor);
-			cursorElement = fontProgram.createBackground(fontProgram.lineGetPositionAtChar(line, cursor), y, 2, height, z, 0xFF0000FF, cursorIsVisible);
+			//if (selectable) selectElem = fontProgram.createBackground(fontProgram.lineGetPositionAtChar(line, selectFrom), y, 0, height, z, 0x555555FF, false);
+			cursorElement = fontProgram.createBackground(fontProgram.lineGetPositionAtChar(line, cursor), y + y_offset, 2, line.height, z, 0xFF0000FF, cursorIsVisible); // TODO: color, offset and size
 			
 			#if (!peoteui_no_textmasking && !peoteui_no_masking)
 			maskElement = fontProgram.createMask(x, y, width, height);
@@ -246,6 +250,7 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 			fontProgram.addMask(maskElement);
 			#end
 			if (backgroundColor != 0) fontProgram.addBackground(backgroundElement);
+			//if (selectable) fontProgram.addBackground(selectElem);
 			if (cursorIsVisible) fontProgram.addBackground(cursorElement);
 			fontProgram.addLine(line);
 		}
@@ -257,8 +262,9 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	{
 		//trace("onRemoveVisibleFromDisplay()");
 		fontProgram.removeLine(line);
-		if (backgroundColor != 0) fontProgram.removeBackground(backgroundElement);
 		if (cursorIsVisible) fontProgram.removeBackground(cursorElement);
+		//if (selectable) fontProgram.removeBackground(selectElem);
+		if (backgroundColor != 0) fontProgram.removeBackground(backgroundElement);
 		
 		#if (!peoteui_no_textmasking && !peoteui_no_masking)
 		fontProgram.removeMask(maskElement);
@@ -281,10 +287,13 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		//this.text = text;
 		if (fontStyle != null) this.fontStyle = fontStyle;
 		
-		if (line != null) fontProgram.setLine(line, text, line.x, line.y, (!autoWidth) ? width : null, null, this.fontStyle, null, isVisible);
+		if (line != null) fontProgram.setLine(line, text, line.x, line.y, (!autoWidth) ? width : null, xOffset, this.fontStyle, null, isVisible);
 		
 		if (autoHeight) setAutoHeight();
 		if (autoWidth) setAutoWidth();
+		
+		// TODO: update cursor if it is out of text.length (or only set it again!)
+		// TODO: remove selection
 	}
 	
 	public inline function setAutoHeight() {
@@ -309,29 +318,44 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	public inline function removeInputFocus() {
 		if (uiDisplay != null) {
 			uiDisplay.removeInputFocus(this);
-			cursorHide();
 		}
 	}
 	
-	override public inline function textInput(chars:String) {
+	public inline function textInput(chars:String):Void {
 		//trace("InteractiveTextLine - textInput:", s);
-		insertChars(chars, 0, fontStyle);
-		fontProgram.updateLine(line);
+		if (line != null) {
+			insertChars(chars, cursor, fontStyle);
+			fontProgram.updateLine(line);
+		}
+		
+		// TODO:
+		if (autoSize & 2 > 0) {
+			width = Std.int(line.textSize);
+		}
+		// TODO: only on halign etc.
+		updateVisibleLayout();
 	}
 
 	
 	// ----------- TextEdit interface  -----------
 	
 	public var cursor(default,set):Int = 0;
-	inline function set_cursor(pos:Int):Int {
-		cursor = pos;
-		updateCursor();
+	inline function set_cursor(pos:Int):Int {		
+		if (pos < 0) cursor = 0;
+		else {
+			if (line != null) {
+				if (pos > line.length) cursor = line.length;
+				else cursor = pos;
+			}
+			else {
+				if (pos > text.length) cursor = text.length;
+				else cursor = pos;
+			}
+		}		
+		if (line != null) fontProgram.setBackground(cursorElement, fontProgram.lineGetPositionAtChar(line, cursor), cursorElement.y, 2, line.height, z, 0xFF0000FF, isVisible && cursorIsVisible);
 		return cursor;
 	}
-	inline function updateCursor() {
-		if (line != null) fontProgram.setBackground(cursorElement, fontProgram.lineGetPositionAtChar(line, cursor), y, 2, height, z, 0xFF0000FF, isVisible && cursorIsVisible);
-	}
-	
+		
 	public var cursorIsVisible(default, set):Bool = false;
 	inline function set_cursorIsVisible(b:Bool):Bool {
 		if (b && !cursorIsVisible && line != null) fontProgram.addBackground(cursorElement);
@@ -341,14 +365,7 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	
 	public inline function cursorShow():Void cursorIsVisible = true;
 	public inline function cursorHide():Void cursorIsVisible = false;
-	
-	
-	inline function edit_textInput(chars:String):Void {
-		trace("InteractiveTextLine - edit_textInput:", chars);
-		insertChars(chars, 0, fontStyle);
-		fontProgram.updateLine(line);
-	}
-	
+		
 	inline function cursorLeft(isShift:Bool, isCtrl:Bool)
 	{
 		trace("cursor left");

@@ -4,5 +4,7 @@ typedef TextSize = {
 	?width:Int,
 	?height:Int,
 	?hAlign:HAlign,
-	?vAlign:VAlign
+	?vAlign:VAlign,
+	?xOffset:Float,
+	?yOffset:Float
 }

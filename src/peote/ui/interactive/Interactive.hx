@@ -229,6 +229,7 @@ class Interactive
 	}
 	
 	function onAddVisibleToDisplay():Void {} // to override by childclasses
+	
 	// -----------------
 	
 	inline function onRemoveFromDisplay(uiDisplay:UIDisplay)
@@ -257,6 +258,8 @@ class Interactive
 			isVisible = false; // TODO: is this need here?
 		}		
 	}
+	
+	
 	// ----------------- Dragging ----------------------------
 	
 	var dragMinX:Int = -0x7fff;
@@ -308,11 +311,6 @@ class Interactive
 	{
 		if (isVisible) uiDisplay.stopDraggingElement(this, e);
 	}
-	
-	
-	// -------------------- TextInput ------------------------
-	public function textInput(s:String):Void {}  // to override by childclasses
-
 	
 	
 	// ----------------- Event-Bindings ----------------------

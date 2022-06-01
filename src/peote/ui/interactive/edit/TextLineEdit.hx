@@ -1,6 +1,11 @@
 package peote.ui.interactive.edit;
 
+import input2action.Input2Action;
 import input2action.ActionMap;
+import input2action.ActionConfig;
+
+import lime.ui.KeyCode;
+
 import peote.ui.interactive.interfaces.TextLine;
 
 @:access(peote.ui.interactive)
@@ -9,18 +14,25 @@ class TextLineEdit
 	public var textLine:TextLine;
 	
 	public var actionMap:ActionMap;
+	var input2Action:Input2Action;
 	
 	public function new() {
 		actionMap = [
 			"cursorLeft"  => { action:cursorCharLeft },
 			//"cursorRight" => { action:cursorCharRight },
 		];
-		
+		var actionConfig:ActionConfig = [
+			{	action: "cursorLeft",
+				keyboard: KeyCode.LEFT
+			},
+		];
+		input2Action = new Input2Action(actionConfig, actionMap);
 	}
 	
 	public function textInput(chars:String)
 	{
 		trace("textInput:", chars);
+		textLine.textInput(chars);
 	}
 	
 	
