@@ -238,12 +238,12 @@ class SimpleText extends Application
 			t.updateStyle();
 		}
 		textLine.onPointerDown = function(t:InteractiveTextLine<FontStyle>, e:PointerEvent) {
-			trace("onPointerDown", e);
+			trace("onPointerDown");
 			t.startSelection(e);
 		}
 		textLine.onPointerUp = function(t:InteractiveTextLine<FontStyle>, e:PointerEvent) {
-			trace("onPointerUp", e);
-			t.stopSelection();
+			trace("onPointerUp");
+			t.stopSelection(e);
 		}
 		uiDisplay.add(textLine);
 	}
@@ -251,13 +251,13 @@ class SimpleText extends Application
 	public function addInput(textLine:InteractiveTextLine<FontStyle>) 
 	{
 		textLine.onPointerDown = function(t:InteractiveTextLine<FontStyle>, e:PointerEvent) {
-			trace("onPointerDown", e);
+			trace("onPointerDown");
 			t.setInputFocus(e); // alternatively: uiDisplay.setInputFocus(t);
 			t.startSelection(e);
 		}
 		textLine.onPointerUp = function(t:InteractiveTextLine<FontStyle>, e:PointerEvent) {
-			trace("onPointerUp", e);
-			t.stopSelection();
+			trace("onPointerUp");
+			t.stopSelection(e);
 		}
 		uiDisplay.add(textLine);
 	}

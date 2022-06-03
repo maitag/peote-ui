@@ -27,7 +27,7 @@ import peote.ui.interactive.edit.TextLineEdit;
 import peote.ui.interactive.interfaces.TextLine;
 
 
-@:access(peote.view)
+@:access(peote.view, peote.ui.interactive)
 @:allow(peote.ui.interactive)
 class UIDisplay extends Display
 {
@@ -273,7 +273,7 @@ class UIDisplay extends Display
 			
 			if (selectionTextLine != null) // text selection
 			{
-				selectionTextLine.select(mouseX);
+				selectionTextLine.select({x:x, y:y, type:PointerType.MOUSE});
 			}
 			else if (draggingMouseElements.length > 0) // Dragging
 			{
@@ -968,13 +968,13 @@ class UIDisplay extends Display
 	static var selectionTextLine:TextLine = null;
 
 	public function startSelection(t:TextLine, e:PointerEvent) {
-		trace("uiDisplay startSelection");
 		selectionTextLine = t;
+		t.selectStart(e);
 	}
 	
-	public function stopSelection(t:TextLine) {
-		trace("uiDisplay stopSelection");
+	public function stopSelection(t:TextLine, e:PointerEvent) {
 		selectionTextLine = null;
+		t.selectStop(e);
 	}
 		
 	// ------------ TODO: bindings to input2action-lib "action"s  ----------

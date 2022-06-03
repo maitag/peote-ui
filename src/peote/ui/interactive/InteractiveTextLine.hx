@@ -41,7 +41,6 @@ class InteractiveTextLineMacro
 
 // -------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------
-
 class $className extends peote.ui.interactive.Interactive implements peote.ui.interactive.interfaces.TextLine
 {	
 	var fontProgram:peote.text.FontProgram<$styleType>; //$fontProgramType	
@@ -306,33 +305,33 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	// -------------------------- selection  --------------------------
 	
 	public function startSelection(e:peote.ui.event.PointerEvent):Void {
-		if (uiDisplay != null) {
-			uiDisplay.startSelection(this, e);
-		}
+		if (uiDisplay != null) uiDisplay.startSelection(this, e);
 	}
 	
-	public function stopSelection():Void {
-		if (uiDisplay != null) {
-			uiDisplay.stopSelection(this);
-		}
+	public function stopSelection(e:peote.ui.event.PointerEvent = null):Void {
+		if (uiDisplay != null) uiDisplay.stopSelection(this, e);
 	}
 	
-	public function select(x:Float):Void {
-		trace("select", x);
+	function selectStart(e:peote.ui.event.PointerEvent):Void {
+		trace("selectStart", e.x);
+	}
+	
+	function select(e:peote.ui.event.PointerEvent):Void {
+		trace("select", e.x);
+	}
+
+	function selectStop(e:peote.ui.event.PointerEvent = null):Void {
+		trace("selectStop", (e != null) ? e.x : "");
 	}
 	
 	// ----------------------- TextInput -----------------------
 	
 	public inline function setInputFocus(e:peote.ui.event.PointerEvent=null) {
-		if (uiDisplay != null) {
-			uiDisplay.setInputFocus(this, e);
-		}
+		if (uiDisplay != null) uiDisplay.setInputFocus(this, e);
 	}
 	
 	public inline function removeInputFocus() {
-		if (uiDisplay != null) {
-			uiDisplay.removeInputFocus(this);
-		}
+		if (uiDisplay != null) uiDisplay.removeInputFocus(this);
 	}
 	
 	public inline function textInput(chars:String):Void {

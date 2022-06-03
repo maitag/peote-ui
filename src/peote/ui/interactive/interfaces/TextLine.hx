@@ -6,8 +6,11 @@ interface TextLine
 	public function textInput(chars:String):Void;
 	
 	public function startSelection(e:peote.ui.event.PointerEvent):Void;
-	public function stopSelection():Void;
-	public function select(x:Float):Void;
+	public function stopSelection(e:peote.ui.event.PointerEvent = null):Void;
+	
+	private function selectStart(e:peote.ui.event.PointerEvent):Void;
+	private function select(e:peote.ui.event.PointerEvent):Void;
+	private function selectStop(e:peote.ui.event.PointerEvent = null):Void;
 	
 	public var cursor(default, set):Int;
 	
