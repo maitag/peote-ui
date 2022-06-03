@@ -237,6 +237,14 @@ class SimpleText extends Application
 			t.fontStyle.color = Color.GREEN;
 			t.updateStyle();
 		}
+		textLine.onPointerDown = function(t:InteractiveTextLine<FontStyle>, e:PointerEvent) {
+			trace("onPointerDown", e);
+			t.startSelection(e);
+		}
+		textLine.onPointerUp = function(t:InteractiveTextLine<FontStyle>, e:PointerEvent) {
+			trace("onPointerUp", e);
+			t.stopSelection();
+		}
 		uiDisplay.add(textLine);
 	}
 	
@@ -244,7 +252,12 @@ class SimpleText extends Application
 	{
 		textLine.onPointerDown = function(t:InteractiveTextLine<FontStyle>, e:PointerEvent) {
 			trace("onPointerDown", e);
-			t.setInputFocus(); // alternatively: uiDisplay.setInputFocus(t);
+			t.setInputFocus(e); // alternatively: uiDisplay.setInputFocus(t);
+			t.startSelection(e);
+		}
+		textLine.onPointerUp = function(t:InteractiveTextLine<FontStyle>, e:PointerEvent) {
+			trace("onPointerUp", e);
+			t.stopSelection();
 		}
 		uiDisplay.add(textLine);
 	}

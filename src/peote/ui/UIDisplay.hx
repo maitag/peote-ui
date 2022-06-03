@@ -271,8 +271,11 @@ class UIDisplay extends Display
 				pickedIndex = peoteView.getElementAt(mouseX, mouseY, this, movePickProgram);					
 			}
 			
-			
-			if (draggingMouseElements.length > 0) // Dragging
+			if (selectionTextLine != null) // text selection
+			{
+				selectionTextLine.select(mouseX);
+			}
+			else if (draggingMouseElements.length > 0) // Dragging
 			{
 				for (uiElement in draggingMouseElements) {
 					uiElement.dragTo(x, y);
@@ -931,6 +934,8 @@ class UIDisplay extends Display
 		}
 	}
 	
+	// -------------------------- text inputfocus  --------------------------
+	
 	static var inputFocusUIDisplay:UIDisplay = null;
 	static var inputFocusElement:TextLine = null;
 	static var textLineEdit:TextLineEdit = null;
@@ -940,12 +945,8 @@ class UIDisplay extends Display
 		//if (inputFocusElement != null) inputFocusElement.textInput(chars);
 		if (inputFocusElement != null) textLineEdit.textInput(chars);
 	}
-
-	// override function onTextEdit(text:String, start:Int, length:Int) {}
-	// override function onTextInput (text:String)	{}
 	
-	
-	public inline function setInputFocus(t:TextLine) {
+	public inline function setInputFocus(t:TextLine, e:PointerEvent=null) {
 		if (inputFocusElement != t) {
 			trace("setInputFocus");
 			inputFocusUIDisplay = this;
@@ -962,6 +963,20 @@ class UIDisplay extends Display
 		t.cursorHide();
 	}
 	
+	// -------------------------- text selection  --------------------------
+	
+	static var selectionTextLine:TextLine = null;
+
+	public function startSelection(t:TextLine, e:PointerEvent) {
+		trace("uiDisplay startSelection");
+		selectionTextLine = t;
+	}
+	
+	public function stopSelection(t:TextLine) {
+		trace("uiDisplay stopSelection");
+		selectionTextLine = null;
+	}
+		
 	// ------------ TODO: bindings to input2action-lib "action"s  ----------
 	
 	

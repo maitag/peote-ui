@@ -138,6 +138,7 @@ class Interactive
 	public var maskHeight:Int;	
 	#end
 	
+	//public var pointerOver(default, null) :PointerEvent->Void; // TODO: let fire the event manually!
 	var pointerOver :PointerEvent->Void;
 	var pointerOut  :PointerEvent->Void;
 	var pointerMove :PointerEvent->Void;

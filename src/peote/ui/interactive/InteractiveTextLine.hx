@@ -77,9 +77,6 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	var backgroundElement:peote.text.BackgroundElement;	
 	var cursorElement:peote.text.BackgroundElement;
 	var selectElem:peote.text.BackgroundElement;
-
-	// TODO: xOffset and yOffset
-
 	
 	#if (!peoteui_no_textmasking && !peoteui_no_masking)
 	var maskElement:peote.text.MaskElement;
@@ -306,12 +303,29 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		else autoSize |= 2;
 	}
 	
+	// -------------------------- selection  --------------------------
+	
+	public function startSelection(e:peote.ui.event.PointerEvent):Void {
+		if (uiDisplay != null) {
+			uiDisplay.startSelection(this, e);
+		}
+	}
+	
+	public function stopSelection():Void {
+		if (uiDisplay != null) {
+			uiDisplay.stopSelection(this);
+		}
+	}
+	
+	public function select(x:Float):Void {
+		trace("select", x);
+	}
 	
 	// ----------------------- TextInput -----------------------
 	
-	public inline function setInputFocus() {
+	public inline function setInputFocus(e:peote.ui.event.PointerEvent=null) {
 		if (uiDisplay != null) {
-			uiDisplay.setInputFocus(this);
+			uiDisplay.setInputFocus(this, e);
 		}
 	}
 	
@@ -409,6 +423,14 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	
 	public inline function cutChars(from:Int = 0, to:Null<Int> = null):String {
 		return fontProgram.lineCutChars(line, from, to, isVisible);
+	}
+	
+	public inline function getPositionAtChar(position:Int):Float {
+		return fontProgram.lineGetPositionAtChar(line, position);
+	}
+	
+	public inline function getCharAtPosition(xPosition:Float):Int {
+		return fontProgram.lineGetCharAtPosition(line, xPosition);
 	}
 	
 	
