@@ -195,14 +195,20 @@ class SimpleText extends Application
 		inputLine.cursor = 3;
 		addInput(inputLine);
 		
-		var inputLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50, xOffset:10, yOffset:10}, "input", font, fontStyleInput, Color.BLACK);
+		var inputLine = new InteractiveTextLine<FontStyle>(x, y += yOffset, {width:50, xOffset:10, yOffset:10}, "input", font, fontStyleInput, Color.BLACK);
+		//inputLine.cursor = 3;
+		inputLine.cursorShow();
+		inputLine.select(0,3);
+		//inputLine.select(3,0);
 		addInput(inputLine);
-		var timer = new Timer(200);
+		var timer = new Timer(400);
 		timer.run = function() {
 			inputLine.xOffset--;
 			inputLine.yOffset--;
 			inputLine.update();
-			if (inputLine.xOffset == 0) timer.stop();
+			if (inputLine.xOffset == 5) inputLine.select(1,3);
+			if (inputLine.xOffset == -3) inputLine.cursor = 1;
+			if (inputLine.xOffset == -25) timer.stop();
 		}
 		
 		var inputLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.RIGHT}, "input", font, fontStyleInput, Color.BLACK);

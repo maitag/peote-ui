@@ -10,6 +10,7 @@
 	<app main="SimpleText" path="bin" file="Main" />
 	<!--
 		SimpleElements,
+		MultiInputEvents,
 		MultiUIDisplays,
 		SimpleText,
 		SimpleLayouted,
@@ -36,13 +37,18 @@
 	<haxelib name="peote-view" />
 	<haxelib name="peote-text" />
 	<haxelib name="peote-layout" />
+	<haxelib name="input2action" />
 	<haxelib name="peote-ui" />
 	
 	<!-- TODO: --><!-- <haxedef name="peoteui_multitouch" /> -->
 	
 	<define name="peoteui_maxDisplays" value="10" /> <!-- for optimization use "1" (max is 32) -->
-	<!--<haxedef name="peoteui_no_masking" />--> <!-- to disable masking of ui-elements for more performance -->
-	<!--<haxedef name="peoteui_no_textmasking" />--> <!-- to disable masking of ui-elements for more performance -->
+
+	<!-- to disable masking of ui-elements for more performance -->
+	<!--<haxedef name="peoteui_no_masking" />-->
+	
+	<!-- to disable masking of InteractiveTextlines for more performance -->
+	<!--<haxedef name="peoteui_no_textmasking" />-->
 	
 	<haxedef name="peoteui_debug_macro" />
 	<haxedef name="peotetext_debug_macro" />

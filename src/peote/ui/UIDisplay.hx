@@ -273,7 +273,7 @@ class UIDisplay extends Display
 			
 			if (selectionTextLine != null) // text selection
 			{
-				selectionTextLine.select({x:x, y:y, type:PointerType.MOUSE});
+				selectionTextLine.onSelect({x:x, y:y, type:PointerType.MOUSE});
 			}
 			else if (draggingMouseElements.length > 0) // Dragging
 			{
@@ -969,12 +969,12 @@ class UIDisplay extends Display
 
 	public function startSelection(t:TextLine, e:PointerEvent) {
 		selectionTextLine = t;
-		t.selectStart(e);
+		t.onSelectStart(e);
 	}
 	
 	public function stopSelection(t:TextLine, e:PointerEvent) {
 		selectionTextLine = null;
-		t.selectStop(e);
+		t.onSelectStop(e);
 	}
 		
 	// ------------ TODO: bindings to input2action-lib "action"s  ----------
