@@ -313,6 +313,17 @@ class Interactive
 		if (isVisible) uiDisplay.stopDraggingElement(this, e);
 	}
 	
+	// ----------------- Helpers -----------------------------
+	public inline function localX(globalX:Float):Float {
+		if (uiDisplay == null) throw("Error, ui-element has to add to an UIDisplay instance first");
+		return uiDisplay.localX(globalX) - x;
+	}
+	
+	public inline function localY(globalY:Float):Float {
+		if (uiDisplay == null) throw("Error, ui-element has to add to an UIDisplay instance first");
+		return uiDisplay.localY(globalY) - y;
+	}
+	
 	
 	// ----------------- Event-Bindings ----------------------
 

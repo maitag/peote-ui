@@ -40,7 +40,7 @@ class SimpleElements extends Application
 	public function startSample(window:Window)
 	{
 		peoteView = new PeoteView(window);
-		uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY1);
+		uiDisplay = new UIDisplay(20, 20, window.width-40, window.height-40, Color.GREY1);
 		peoteView.addDisplay(uiDisplay);
 		
 		uiDisplay.onPointerOver  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplay onPointerOver",e); };
@@ -191,7 +191,10 @@ class SimpleElements extends Application
 		// TODO: make uiElement to switch between
 		//uiDisplay.mouseEnabled = false;
 		//uiDisplay.touchEnabled = false;
-		peoteView.zoom = 2;
+		peoteView.zoom = 0.8;
+		peoteView.xOffset = 30;
+		uiDisplay.zoom = 1.7;
+		uiDisplay.xOffset = 50;
 		
 		#if android
 		uiDisplay.mouseEnabled = false;
@@ -224,7 +227,7 @@ class SimpleElements extends Application
 	}
 	
 	public inline function onMove(uiElement:InteractiveElement, e:PointerEvent) {
-		trace(" -----> onPointerMove", e);
+		trace(" -----> onPointerMove", e, uiElement.localX(e.x), uiElement.localY(e.y));
 	}
 	
 	public inline function onDown(borderColor:Color, uiElement:InteractiveElement, e:PointerEvent) {

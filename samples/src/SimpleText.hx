@@ -191,22 +191,22 @@ class SimpleText extends Application
 		fontStyleInput.color = Color.GREY5;
 		
 		var inputLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, "input", font, fontStyleInput, Color.BLACK);
-		//var inputLine = font.createInteractiveTextLine(x+=xOffset, y+=yOffset, {width:250}, "input line", fontStyleInput, Color.BLACK); //, selectionFontStyle		
+		//var inputLine = font.createInteractiveTextLine(x, y+=yOffset, "input", fontStyleInput, Color.BLACK);
 		inputLine.cursor = 3;
 		addInput(inputLine);
 		
 		var inputLine = new InteractiveTextLine<FontStyle>(x, y += yOffset, {width:50, xOffset:10, yOffset:10}, "input", font, fontStyleInput, Color.BLACK);
 		//inputLine.cursor = 3;
 		inputLine.cursorShow();
-		inputLine.select(0,3);
-		//inputLine.select(3,0);
+		//inputLine.select(0,3);
+		inputLine.select(3,0);
 		addInput(inputLine);
 		var timer = new Timer(400);
 		timer.run = function() {
 			inputLine.xOffset--;
 			inputLine.yOffset--;
 			inputLine.update();
-			if (inputLine.xOffset == 5) inputLine.select(1,3);
+			if (inputLine.xOffset == 5) inputLine.select(3,1);
 			if (inputLine.xOffset == -3) inputLine.cursor = 1;
 			if (inputLine.xOffset == -25) timer.stop();
 		}
@@ -229,6 +229,11 @@ class SimpleText extends Application
 		var inputLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:150, height:60, vAlign:VAlign.BOTTOM}, "input", font, fontStyleInput, Color.BLACK);
 		addInput(inputLine);
 
+		//uiDisplay.x = 50;
+		//uiDisplay.zoom = 1.2;
+		//uiDisplay.xOffset = 100;
+		//peoteView.zoom = 1.3;
+		//peoteView.xOffset = -170;
 	}
 	
 	public function addOverOut(textLine:InteractiveTextLine<FontStyle>)

@@ -378,6 +378,7 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		// TODO:
 		if (autoSize & 2 > 0) {
 			width = Std.int(line.textSize);
+			updatePickable();
 		}
 		// TODO: only on halign etc.
 		updateVisibleLayout();
@@ -453,8 +454,13 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	public inline function selectionHide():Void selectionIsVisible = false;
 	
 	public function select(from:Int, to:Int) {
-		selectFrom = from;
-		selectTo = to;
+		if (from <= to) {
+			selectFrom = from;
+			selectTo = to;
+		} else {
+			selectFrom = to;
+			selectTo = from;
+		}
 		if (line != null) 
 		{			
 			var selectX = Std.int(fontProgram.lineGetPositionAtChar(line, selectFrom));
@@ -488,11 +494,14 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	// events
 	function onSelectStart(e:peote.ui.event.PointerEvent):Void {
 		trace("selectStart", e.x);
+		cursor = fontProgram.lineGetCharAtPosition(line, uiDisplay.localX( e.x )  );
 		selectionIsVisible = true;
 	}
 	
 	function onSelect(e:peote.ui.event.PointerEvent):Void {
-		trace("select", e.x);
+		trace("select", localX(e.x));
+		if (localX(e.x) < 0) trace("scroll left");
+		if (localX(e.x) > width) trace("scroll right");
 	}
 
 	function onSelectStop(e:peote.ui.event.PointerEvent = null):Void {
