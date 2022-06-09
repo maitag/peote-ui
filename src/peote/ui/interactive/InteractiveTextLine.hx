@@ -56,7 +56,7 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	inline function set_text(t:String):String {
 		if (line == null || t == null) return text = t;
 		else {
-			fontProgram.setLine(line, t, line.x, line.y, null, xOffset, isVisible); // did not autosizing!
+			fontProgram.setLine(line, t, line.x, line.y, null, xOffset, isVisible); // the setter only did not autosizing!
 			return t;
 		}
 	}
@@ -64,7 +64,7 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	
 	var line:peote.text.Line<$styleType> = null; //$lineType
 	
-	var autoSize:Int = 0;
+	var autoSize:Int = 0; // first bit is autoheight, second bit is autowidth
 	
 	public var hAlign:peote.ui.util.HAlign = peote.ui.util.HAlign.LEFT;
 	public var vAlign:peote.ui.util.VAlign = peote.ui.util.VAlign.CENTER;
@@ -73,6 +73,7 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	public var yOffset:Float = 0;
 	
 	public var backgroundColor:peote.view.Color;
+	
 	var backgroundElement:peote.text.BackgroundElement;	
 	var cursorElement:peote.text.BackgroundElement;
 	var selectElement:peote.text.BackgroundElement;
@@ -155,13 +156,15 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 			fontProgram.updateLine(line);
 		}
 		
+		if (backgroundColor != 0) fontProgram.setBackground(backgroundElement, x, y, width, height, z, backgroundColor, isVisible);
+		
 		// ----------------------
-		var selectX = Std.int(fontProgram.lineGetPositionAtChar(line, selectFrom));
-		var selectWidth = Std.int(fontProgram.lineGetPositionAtChar(line, selectTo) - selectX);		
-		var cursorX = Std.int(fontProgram.lineGetPositionAtChar(line, cursor));
-		var cursorWidth = 2;		
+		var selectX = Std.int(getPositionAtChar(selectFrom));
+		var selectWidth = Std.int(getPositionAtChar(selectTo) - selectX);
+		var cursorX = Std.int(getPositionAtChar(cursor));
+		var cursorWidth = 2;
 		var selectCursorY = Std.int(y + y_offset);
-		var selectCursorHeight = Std.int(line.height);		
+		var selectCursorHeight = Std.int(line.height);
 			
 		#if (!peoteui_no_textmasking && !peoteui_no_masking)
 		var _x = x;
@@ -192,7 +195,6 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		if (selectCursorHeight < 0) selectCursorHeight = 0;
 		#end
 		
-		if (backgroundColor != 0) fontProgram.setBackground(backgroundElement, x, y, width, height, z, backgroundColor, isVisible);	
 		fontProgram.setBackground(selectElement, selectX, selectCursorY, selectWidth, selectCursorHeight, z, 0x555555FF, isVisible && selectionIsVisible);
 		fontProgram.setBackground(cursorElement, cursorX, selectCursorY, cursorWidth, selectCursorHeight, z, 0xFF0000FF, isVisible && cursorIsVisible);
 	}
@@ -212,10 +214,14 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 			if (font.notIntoUiDisplay(uiDisplay.number)) {
 				fontProgram = font.createFontProgramForUiDisplay(uiDisplay.number, fontStyle, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end, true);
 				uiDisplay.addProgram(fontProgram); // TODO: better also uiDisplay.addFontProgram() to let clear all skins at once from inside UIDisplay
+				trace("create new fontProgram for uiDisplay");
 			}
 			else {
 				fontProgram = font.getFontProgramByUiDisplay(uiDisplay.number);
-				if (fontProgram.numberOfGlyphes()==0) uiDisplay.addProgram(fontProgram);//TODO: adding mask & bg
+				if (fontProgram.numberOfGlyphes() == 0) {
+					uiDisplay.addProgram(fontProgram);
+					trace("add fontProgram to uiDisplay (was already used inside of uiDisplay)");
+				}
 			}
 			
 			${switch (glyphStyleHasField.local_zIndex) {
@@ -261,13 +267,18 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 				
 				// fit interactive pickables to new width and height
 				if ( hasMoveEvent  != 0 ) pickableMove.update(this);
-				if ( hasClickEvent != 0 ) pickableClick.update(this);				
+				if ( hasClickEvent != 0 ) pickableClick.update(this);
 			}
 			
+			// TODO: if set background later it have to be created again!
+			if (backgroundColor != 0) backgroundElement = fontProgram.createBackground(x, y, width, height, z, backgroundColor);
+			
 			// ----------------------
-			var selectX = Std.int(fontProgram.lineGetPositionAtChar(line, selectFrom));
-			var selectWidth = Std.int(fontProgram.lineGetPositionAtChar(line, selectTo) - selectX);		
-			var cursorX = Std.int(fontProgram.lineGetPositionAtChar(line, cursor));
+			// TODO: better create the selection and cursor only on demand and not here!
+			
+			var selectX = Std.int(getPositionAtChar(selectFrom));
+			var selectWidth = Std.int(getPositionAtChar(selectTo) - selectX);		
+			var cursorX = Std.int(getPositionAtChar(cursor));
 			var cursorWidth = 2;		
 			var selectCursorY = Std.int(y + y_offset);
 			var selectCursorHeight = Std.int(line.height);		
@@ -290,15 +301,20 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 			if (selectCursorHeight < 0) selectCursorHeight = 0;
 			#end
 			
-			if (backgroundColor != 0) backgroundElement = fontProgram.createBackground(x, y, width, height, z, backgroundColor);	
 			selectElement = fontProgram.createBackground(selectX, selectCursorY, selectWidth, selectCursorHeight, z, 0x555555FF, selectionIsVisible);
 			cursorElement = fontProgram.createBackground(cursorX, selectCursorY, cursorWidth, selectCursorHeight, z, 0xFF0000FF, cursorIsVisible);	
 		}
 		else {
-			if (fontProgram.numberOfGlyphes() == 0) uiDisplay.addProgram(fontProgram);
+			if (fontProgram.numberOfGlyphes() == 0) {
+				trace("add fontProgram to uiDisplay");
+				uiDisplay.addProgram(fontProgram);
+			}
 			#if (!peoteui_no_textmasking && !peoteui_no_masking)
 			fontProgram.addMask(maskElement);
 			#end
+			
+			// TODO: better checking if (backgroundElement != null) ?
+
 			if (backgroundColor != 0) fontProgram.addBackground(backgroundElement);
 			if (selectionIsVisible) fontProgram.addBackground(selectElement);
 			if (cursorIsVisible) fontProgram.addBackground(cursorElement);
@@ -323,7 +339,9 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		
 		if (fontProgram.numberOfGlyphes()==0)
 		{
-			uiDisplay.removeProgram(font.removeFontProgramFromUiDisplay(uiDisplay.number)); //TODO: removing mask & bg
+			uiDisplay.removeProgram(font.removeFontProgramFromUiDisplay(uiDisplay.number));
+			trace("remove fontProgram from uiDisplay");
+
 			// TODO:
 			//d.buffer.clear();
 			//d.program.clear();
@@ -360,7 +378,7 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	
 	// ----------------------- TextInput -----------------------
 	
-	public inline function setInputFocus(e:peote.ui.event.PointerEvent=null) {
+	public inline function setInputFocus(e:peote.ui.event.PointerEvent=null):Void {
 		if (uiDisplay != null) uiDisplay.setInputFocus(this, e);
 	}
 	
@@ -402,7 +420,7 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		}		
 		if (line != null) 
 		{
-			var cursorX = Std.int(fontProgram.lineGetPositionAtChar(line, cursor));
+			var cursorX = Std.int(getPositionAtChar(cursor));
 			var cursorWidth = 2;			
 			#if (!peoteui_no_textmasking && !peoteui_no_masking)
 			var _x = x;
@@ -463,8 +481,8 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		}
 		if (line != null) 
 		{			
-			var selectX = Std.int(fontProgram.lineGetPositionAtChar(line, selectFrom));
-			var selectWidth = Std.int(fontProgram.lineGetPositionAtChar(line, selectTo) - selectX);		
+			var selectX = Std.int(getPositionAtChar(selectFrom));
+			var selectWidth = Std.int(getPositionAtChar(selectTo) - selectX);		
 			#if (!peoteui_no_textmasking && !peoteui_no_masking)
 			var _x = x;
 			var _width = width;			
@@ -494,7 +512,7 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	// events
 	function onSelectStart(e:peote.ui.event.PointerEvent):Void {
 		trace("selectStart", e.x);
-		cursor = fontProgram.lineGetCharAtPosition(line, uiDisplay.localX( e.x )  );
+		cursor = getCharAtPosition(uiDisplay.localX(e.x));
 		selectionIsVisible = true;
 	}
 	

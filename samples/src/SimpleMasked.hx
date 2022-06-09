@@ -1,6 +1,7 @@
 package;
 
 import haxe.CallStack;
+import peote.ui.interactive.interfaces.TextLine;
 import peote.ui.util.HAlign;
 import peote.ui.util.VAlign;
 
@@ -117,7 +118,6 @@ class SimpleMasked extends Application
 			
 			button.wheelEventsBubbleTo = red;
 			
-			// TODO: Textlinemasking 
 			var textLineTiled = new LayoutedTextLine<FontStyleTiled>(0, 0, {hAlign:HAlign.CENTER, vAlign:VAlign.CENTER}, 'button${i+1}', tiledFont, fontStyleTiled, Color.random());
 			//var textLinePacked = new LayoutedTextLine<FontStylePacked>(0, 0, 130, 25, 0, true, "packed font", packedFont, fontStylePacked);	// masked -> true		
 			//trace("KK", textLineTiled.line.textSize); // TODO: line is null
@@ -141,6 +141,18 @@ class SimpleMasked extends Application
 		layoutedUIDisplay.add(green);
 		layoutedUIDisplay.add(blue);
 		
+		var inputLine = packedFont.createLayoutedTextLine(0, 0, {hAlign:HAlign.CENTER, vAlign:VAlign.CENTER}, 'input line', fontStylePacked, Color.BLUE);
+		inputLine.onPointerOver = function(t:TextLine, e:PointerEvent) {
+			trace("onPointerOver");
+			t.setInputFocus(e); // alternatively: uiDisplay.setInputFocus(t);
+			t.cursor = 2;
+			t.cursorShow();
+		}
+		inputLine.onPointerOut = function(t:TextLine, e:PointerEvent) {
+			trace("onPointerOut");
+			t.cursorHide();
+		}
+		layoutedUIDisplay.add(inputLine);
 		
 		// ----------- LAYOUT ---------------
 		
@@ -149,7 +161,10 @@ class SimpleMasked extends Application
 			new VBox( red ,  { top:40, bottom:20, width:Size.limit(100, 250),
 				scrollY:true, // TODO: better error-handling if this is forgotten here!
 				limitMinHeightToChilds:false, alignChildsOnOversizeY:Align.FIRST }, redBoxes ),
-			new VBox( green, { top:40, bottom:20, width:Size.limit(100, 250) }, [] ),							
+			new VBox( green, { top:40, bottom:20, width:Size.limit(100, 250) }, 
+			[
+				new Box( inputLine, { left:Size.min(10), width:Size.limit(50, 130), right:Size.min(10), top:10, height:Size.max(40), scrollY:true, limitMinHeightToChilds:false })
+			]),							
 			new VBox( blue,  { top:40, bottom:20, width:Size.limit(100, 250) }, [] ),						
 		]);
 		

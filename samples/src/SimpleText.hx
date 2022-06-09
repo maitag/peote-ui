@@ -205,7 +205,7 @@ class SimpleText extends Application
 		timer.run = function() {
 			inputLine.xOffset--;
 			inputLine.yOffset--;
-			inputLine.update();
+			inputLine.updateLayout();
 			if (inputLine.xOffset == 5) inputLine.select(3,1);
 			if (inputLine.xOffset == -3) inputLine.cursor = 1;
 			if (inputLine.xOffset == -25) timer.stop();
@@ -226,9 +226,12 @@ class SimpleText extends Application
 		var inputLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {height:60}, "input", font, fontStyleInput, Color.BLACK);
 		addInput(inputLine);
 			
-		var inputLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:150, height:60, vAlign:VAlign.BOTTOM}, "input", font, fontStyleInput, Color.BLACK);
+		var inputLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:150, height:60, vAlign:VAlign.BOTTOM}, "input", font, fontStyleInput);
 		addInput(inputLine);
-
+		// TODO:
+		//inputLine.backgroundColor = Color.BLUE;
+		//inputLine.hide();
+		
 		//uiDisplay.x = 50;
 		//uiDisplay.zoom = 1.2;
 		//uiDisplay.xOffset = 100;

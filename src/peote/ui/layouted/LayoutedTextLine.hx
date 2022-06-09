@@ -28,7 +28,7 @@ class LayoutedTextLineMacro
 // -------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------
 
-class $className extends $interactiveTextLineType implements peote.layout.ILayoutElement
+class $className extends $interactiveTextLineType implements peote.ui.interactive.interfaces.TextLine implements peote.layout.ILayoutElement
 {
 	
 	public function new(xPosition:Int, yPosition:Int, ?textSize:peote.ui.util.TextSize, zIndex:Int = 0, text:String, 

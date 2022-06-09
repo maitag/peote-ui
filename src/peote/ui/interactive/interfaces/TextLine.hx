@@ -2,7 +2,10 @@ package peote.ui.interactive.interfaces;
 
 
 interface TextLine 
-{	
+{
+	public function setInputFocus(e:peote.ui.event.PointerEvent = null):Void;
+	public function removeInputFocus():Void;
+	
 	public function textInput(chars:String):Void;
 	
 	public function startSelection(e:peote.ui.event.PointerEvent):Void;
