@@ -74,9 +74,9 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	
 	public var backgroundColor:peote.view.Color;
 	
-	var backgroundElement:peote.text.BackgroundElement;	
-	var cursorElement:peote.text.BackgroundElement;
-	var selectElement:peote.text.BackgroundElement;
+	var backgroundElement:peote.text.BackgroundElement = null;	
+	var cursorElement:peote.text.BackgroundElement = null;
+	var selectElement:peote.text.BackgroundElement = null;
 	
 	#if (!peoteui_no_textmasking && !peoteui_no_masking)
 	var maskElement:peote.text.MaskElement;
@@ -121,18 +121,71 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		if (isVisible) fontProgram.updateLine(line);
 	}
 	
+	inline function getAlignedYOffset():Float {
+		return switch (vAlign) {
+			case peote.ui.util.VAlign.CENTER: (height - line.height) / 2 + yOffset;
+			case peote.ui.util.VAlign.BOTTOM: height - line.height + yOffset;
+			default: yOffset;
+		}
+	}
+	
+	inline function setCreateSelection(_x:Int, _y:Int, _width:Int, _height:Int, y_offset:Float, create = false)
+	{		
+		var selectX = Std.int(getPositionAtChar(selectFrom));
+		var selectWidth = Std.int(getPositionAtChar(selectTo) - selectX);
+		var selectY = Std.int(y + y_offset);
+		var selectHeight = Std.int(line.height);
+		
+		#if (!peoteui_no_textmasking && !peoteui_no_masking)
+		// horizontally
+		if (selectX < _x) { selectWidth -= _x - selectX; selectX = _x; }
+		if (selectX + selectWidth > _x + _width) selectWidth = _x + _width - selectX;
+		if (selectWidth < 0) selectWidth = 0;
+
+		// vertically
+		if (selectY < _y) { selectHeight -= _y - selectY; selectY = _y; }
+		if (selectY + selectHeight > _y + _height) selectHeight = _y + _height - selectY;
+		if (selectHeight < 0) selectHeight = 0;
+		#end
+
+		// TODO: if(selectElement == null) -> create
+		
+		if (create)	selectElement = fontProgram.createBackground(selectX, selectY, selectWidth, selectHeight, z, 0x555555FF, selectionIsVisible);
+		else fontProgram.setBackground(selectElement, selectX, selectY, selectWidth, selectHeight, z, 0x555555FF, isVisible && selectionIsVisible);
+	}
+	
+	inline function setCreateCursor(_x:Int, _y:Int, _width:Int, _height:Int, y_offset:Float, create = false)
+	{		
+		var cursorX = Std.int(getPositionAtChar(cursor));
+		var cursorWidth = 2;
+		var cursorY = Std.int(y + y_offset);
+		var cursorHeight = Std.int(line.height);
+		
+		#if (!peoteui_no_textmasking && !peoteui_no_masking)
+		// horizontally
+		if (cursorX < _x) { cursorWidth -= _x - cursorX; cursorX = _x; }
+		if (cursorX + cursorWidth > _x + _width) cursorWidth = _x + _width - cursorX;
+		if (cursorWidth < 0) cursorWidth = 0;
+		
+		// vertically
+		if (cursorY < _y) { cursorHeight -= _y - cursorY; cursorY = _y; }
+		if (cursorY + cursorHeight > _y + _height) cursorHeight = _y + _height - cursorY;
+		if (cursorHeight < 0) cursorHeight = 0;
+		#end
+		
+		// TODO: if(cursorElement == null) -> create
+		
+		if (create) cursorElement = fontProgram.createBackground(cursorX, cursorY, cursorWidth, cursorHeight, z, 0xFF0000FF, cursorIsVisible);	
+		else fontProgram.setBackground(cursorElement, cursorX, cursorY, cursorWidth, cursorHeight, z, 0xFF0000FF, isVisible && cursorIsVisible);
+	}
+	
 	override inline function updateVisibleLayout():Void
 	{
 		//trace("updateVisibleLayout()");
 		
-		// vertically text alignment (thx alex for helping into this ;)
-		var y_offset:Float = yOffset;
-		
-		if (vAlign == peote.ui.util.VAlign.CENTER)
-			y_offset = (height - line.height) / 2 + yOffset;
-		else if (vAlign == peote.ui.util.VAlign.BOTTOM) 
-			y_offset = height - line.height + yOffset;
-		
+		// vertically alignment for text, cursor and selection
+		var y_offset:Float = getAlignedYOffset();
+				
 		// horizontally text alignment
 		if (hAlign == peote.ui.util.HAlign.CENTER)
 			fontProgram.lineSetPositionSize(line, x, y + y_offset, width, (width - line.textSize)/2 + xOffset, isVisible); // TODO: bug at non-packed fonts without a width glyphstyle!
@@ -158,11 +211,34 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		
 		if (backgroundColor != 0) fontProgram.setBackground(backgroundElement, x, y, width, height, z, backgroundColor, isVisible);
 		
+		#if (!peoteui_no_textmasking && !peoteui_no_masking)
+		var _x = x;
+		var _y = y;
+		var _width = width;
+		var _height = height;
+		
+		if (masked) {
+			_x += maskX;
+			_y += maskY;
+			_width = maskWidth;
+			_height = maskHeight;
+		}
+		fontProgram.setMask(maskElement, _x, _y, _width, _height, isVisible);
+		
+		setCreateSelection(_x, _y, _width, _height, y_offset);
+		setCreateCursor(_x, _y, _width, _height, y_offset);
+		#else
+		setCreateSelection(x, y, width, height, y_offset);
+		setCreateCursor(x, y, width, height, y_offset);
+		#end
+		
 		// ----------------------
-		var selectX = Std.int(getPositionAtChar(selectFrom));
+/*		var selectX = Std.int(getPositionAtChar(selectFrom));
 		var selectWidth = Std.int(getPositionAtChar(selectTo) - selectX);
+		
 		var cursorX = Std.int(getPositionAtChar(cursor));
 		var cursorWidth = 2;
+		
 		var selectCursorY = Std.int(y + y_offset);
 		var selectCursorHeight = Std.int(line.height);
 			
@@ -197,6 +273,7 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		
 		fontProgram.setBackground(selectElement, selectX, selectCursorY, selectWidth, selectCursorHeight, z, 0x555555FF, isVisible && selectionIsVisible);
 		fontProgram.setBackground(cursorElement, cursorX, selectCursorY, cursorWidth, selectCursorHeight, z, 0xFF0000FF, isVisible && cursorIsVisible);
+*/	
 	}
 	
 	override inline function updateVisible():Void
@@ -277,11 +354,11 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 			// TODO: better create the selection and cursor only on demand and not here!
 			
 			var selectX = Std.int(getPositionAtChar(selectFrom));
-			var selectWidth = Std.int(getPositionAtChar(selectTo) - selectX);		
+			var selectWidth = Std.int(getPositionAtChar(selectTo) - selectX);
 			var cursorX = Std.int(getPositionAtChar(cursor));
-			var cursorWidth = 2;		
+			var cursorWidth = 2;
 			var selectCursorY = Std.int(y + y_offset);
-			var selectCursorHeight = Std.int(line.height);		
+			var selectCursorHeight = Std.int(line.height);
 				
 			#if (!peoteui_no_textmasking && !peoteui_no_masking)
 			maskElement = fontProgram.createMask(x, y, width, height);
@@ -315,9 +392,9 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 			
 			// TODO: better checking if (backgroundElement != null) ?
 
-			if (backgroundColor != 0) fontProgram.addBackground(backgroundElement);
-			if (selectionIsVisible) fontProgram.addBackground(selectElement);
-			if (cursorIsVisible) fontProgram.addBackground(cursorElement);
+			if (backgroundColor != 0 && backgroundElement != null) fontProgram.addBackground(backgroundElement);
+			if (selectionIsVisible && selectElement != null) fontProgram.addBackground(selectElement);
+			if (cursorIsVisible && cursorElement != null) fontProgram.addBackground(cursorElement);
 			fontProgram.addLine(line);
 		}
 		
@@ -329,9 +406,9 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		//trace("onRemoveVisibleFromDisplay()");
 		fontProgram.removeLine(line);
 		
-		if (cursorIsVisible) fontProgram.removeBackground(cursorElement);
-		if (selectionIsVisible) fontProgram.removeBackground(selectElement);
-		if (backgroundColor != 0) fontProgram.removeBackground(backgroundElement);
+		if (cursorIsVisible && cursorElement != null) fontProgram.removeBackground(cursorElement);
+		if (selectionIsVisible && selectElement != null) fontProgram.removeBackground(selectElement);
+		if (backgroundColor != 0 && backgroundElement != null) fontProgram.removeBackground(backgroundElement);
 		
 		#if (!peoteui_no_textmasking && !peoteui_no_masking)
 		fontProgram.removeMask(maskElement);
