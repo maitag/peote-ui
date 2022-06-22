@@ -152,29 +152,38 @@ class SimpleText extends Application
 			
 			//uiDisplay.remove(textLine);
 			haxe.Timer.delay(function() {
-				//textLine.width = 100;
-				textLine.text = "new Text!";
-				//textLine.setAutoWidth();
-				textLine.height = 60;
+				textLine.height = 60; textLine.autoHeight = false;
+				textLine.text = "larger Text";
+				
 				textLine.hAlign = HAlign.RIGHT;
-				textLine.cursor += 1;
+				textLine.cursor += 4;
 				textLine.update();
 					
 				//trace(textLine.text);
 				//uiDisplay.add(textLine);
 				
 				haxe.Timer.delay(function() {
-					textLine.setAutoHeight();
 					textLine.backgroundColor = Color.GREY2;
 					textLine.hAlign = HAlign.LEFT;
-					textLine.cursor += 1;
+					textLine.cursor -= 4;
 					textLine.update();
-					//timer.stop(); textLine.cursorHide();
+					
+					haxe.Timer.delay(function() {
+						textLine.width = 100;
+						textLine.autoWidth = false;
+						textLine.hAlign = HAlign.CENTER;
+						textLine.cursor += 1;
+						textLine.updateLayout();
+						haxe.Timer.delay(function() {
+							textLine.xOffset = -10;
+							textLine.cursor += 1;
+							textLine.vAlign = VAlign.BOTTOM;
+							textLine.updateAlign();
+							//timer.stop(); textLine.cursorHide();
+						}, 1000);
+					}, 1000);
 				}, 1000);
-				
-				
 			}, 1000);
-			
 		}, 1000);
 
 		
@@ -228,7 +237,7 @@ class SimpleText extends Application
 		var inputLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {height:60}, "input", font, fontStyleInput, Color.BLACK);
 		addInput(inputLine);
 			
-		var inputLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:150, height:60, vAlign:VAlign.BOTTOM}, "input", font, fontStyleInput);
+		var inputLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:150, height:60, vAlign:VAlign.BOTTOM}, "input", font, new FontStyle()); // new FontStyle here to not affect the other inputLines
 		addInput(inputLine);
 		inputLine.backgroundColor = Color.BLUE;
 		haxe.Timer.delay(function() {
