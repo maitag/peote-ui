@@ -131,7 +131,8 @@ class SimpleText extends Application
 			
 		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {height:20}, "hello", font, fontStyle, Color.BLACK);
 		addOverOut(textLine);
-		//textLine.hide();
+		textLine.hide();
+		
 		textLine.cursorShow();
 		var timer = new Timer(500);
 		timer.run = function() {
@@ -145,7 +146,7 @@ class SimpleText extends Application
 			//textLine.updateStyle();				
 			
 			//textLine.width = 200;
-			textLine.setText("new Text", true, true);
+			textLine.setText("new Text", true, true); // forceAutoWidth and forceAutoHeight Booleans to fit size to textline-size
 			
 			textLine.select(4,6);
 			
@@ -198,9 +199,13 @@ class SimpleText extends Application
 								textLine.vAlign = VAlign.TOP;
 								textLine.updateLayout(); // updates layout (including size-changes)
 								
-								//textLine.show();
-								//addOverOut(textLine);
-								//timer.stop(); textLine.cursorHide();
+								haxe.Timer.delay(function() {
+									textLine.setText("smaller", true, true, true); // last param for autoupdate
+									
+									textLine.show();
+									//addOverOut(textLine);
+									//timer.stop(); textLine.cursorHide();
+								}, 1000);								
 							}, 1000);								
 						}, 1000);
 					}, 1000);

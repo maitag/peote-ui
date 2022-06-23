@@ -56,7 +56,6 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	inline function set_text(t:String):String {
 		if (line == null || t == null) return text = t;
 		else {
-			//fontProgram.setLine(line, t, line.x, line.y, null, xOffset, isVisible); // the setter only did not autosizing!
 			setText(t);
 			return t;
 		}
@@ -195,8 +194,9 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	}
 	
 	override inline function updateVisibleLayout():Void
-	{	if (line == null) return;
+	{
 		//trace("updateVisibleLayout()");
+		if (line == null) return;
 		
 		// vertically alignment for text, cursor and selection
 		var y_offset:Float = getAlignedYOffset();
@@ -222,9 +222,7 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 			}}		
 			fontProgram.updateLine(line);
 		}
-		
-		//if (backgroundColor != 0 && backgroundElement != null) fontProgram.setBackground(backgroundElement, x, y, width, height, z, backgroundColor, isVisible);
-		
+				
 		#if (!peoteui_no_textmasking && !peoteui_no_masking)
 		var _x = x;
 		var _y = y;
@@ -283,7 +281,31 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 			line = fontProgram.createLine(text, x, y, (autoWidth) ? null : width, xOffset, fontStyle);
 			text = null; // let GC clear the string (after this.line is created this.text is allways get by fontProgram)
 			
-			var y_offset = alignText();
+			// vertically text alignment
+			var y_offset:Float = (autoHeight) ? yOffset : getAlignedYOffset();
+
+			// horizontally text alignment
+			if (!autoWidth) {
+				if (hAlign == peote.ui.util.HAlign.CENTER) {
+					fontProgram.lineSetPosition(line, x, y + y_offset, (width - line.textSize) / 2 + xOffset, isVisible); // TODO: bug for negative and non-packed fonts!
+					if (isVisible) fontProgram.updateLine(line);
+				}
+				else if (hAlign == peote.ui.util.HAlign.RIGHT) {
+					fontProgram.lineSetPosition(line, x, y + y_offset, width - line.textSize + xOffset, isVisible);
+					if (isVisible) fontProgram.updateLine(line);
+				}
+				else if (y_offset != 0 || xOffset !=0) {
+					fontProgram.lineSetPosition(line, x, y + y_offset, xOffset, isVisible);
+					if (isVisible) fontProgram.updateLine(line);
+				}
+				
+			} 
+			else if (y_offset != 0 || xOffset != 0) { 
+				fontProgram.lineSetPosition(line, x, y + y_offset, xOffset, isVisible);
+				if (isVisible) fontProgram.updateLine(line);
+			}
+			
+			// auto aligning width and height to textsize
 			sizeToTextSize();
 			
 			#if (!peoteui_no_textmasking && !peoteui_no_masking)
@@ -337,38 +359,6 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		}
 	}
 
-	inline function alignText():Float
-	{
-		// vertically text alignment
-		var y_offset:Float = yOffset;
-		if (!autoHeight) {
-			y_offset = getAlignedYOffset();
-		}
-
-		// horizontally text alignment
-		if (!autoWidth) {
-			if (hAlign == peote.ui.util.HAlign.CENTER) {
-				fontProgram.lineSetPosition(line, x, y + y_offset, (width - line.textSize) / 2 + xOffset, isVisible); // TODO: bug for negative and non-packed fonts!
-				if (isVisible) fontProgram.updateLine(line);
-			}
-			else if (hAlign == peote.ui.util.HAlign.RIGHT) {
-				fontProgram.lineSetPosition(line, x, y + y_offset, width - line.textSize + xOffset, isVisible);
-				if (isVisible) fontProgram.updateLine(line);
-			}
-			else if (y_offset != 0 || xOffset !=0) {
-				fontProgram.lineSetPosition(line, x, y + y_offset, xOffset, isVisible);
-				if (isVisible) fontProgram.updateLine(line);
-			}
-			
-		} 
-		else if (y_offset != 0 || xOffset != 0) { 
-			fontProgram.lineSetPosition(line, x, y + y_offset, xOffset, isVisible);
-			if (isVisible) fontProgram.updateLine(line);
-		}
-
-		return y_offset;
-	}
-	
 	inline function sizeToTextSize()
 	{
 		if (autoSize > 0) {
@@ -381,34 +371,9 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		}
 	}
 	
-	inline function updateTextAlign()
-	{
-		var y_offset = alignText();
-		sizeToTextSize();
-		// updating cursor and selection
-		#if (!peoteui_no_textmasking && !peoteui_no_masking)
-		if (masked) {
-			setCreateCursor(x + maskX, y + maskY, maskWidth, maskHeight, y_offset, (cursorElement == null) ? true : false);
-			setCreateSelection(x + maskX, y + maskY, maskWidth, maskHeight, y_offset, (selectElement == null) ? true : false);
-		}
-		else {
-			setCreateCursor(x, y, width, height, y_offset, (cursorElement == null) ? true : false);
-			setCreateSelection(x, y, width, height, y_offset, (selectElement == null) ? true : false);
-		}
-		#else
-		setCreateCursor(x, y, width, height, y_offset, (cursorElement == null) ? true : false);
-		setCreateSelection(x, y, width, height, y_offset, (selectElement == null) ? true : false);
-		#end
-	}
-	
-	public function updateAlign()
-	{
-		if (line != null) updateTextAlign();
-	}
-	
 	// ----------------------- change the text  -----------------------
 	
-	public inline function setText(text:String, fontStyle:Null<$styleType> = null, forceAutoWidth:Null<Bool> = null, forceAutoHeight:Null<Bool> = null)
+	public inline function setText(text:String, fontStyle:Null<$styleType> = null, forceAutoWidth:Null<Bool> = null, forceAutoHeight:Null<Bool> = null, autoUpdate = false)
 	{
 		if (fontStyle != null) this.fontStyle = fontStyle;
 		
@@ -419,8 +384,8 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 			fontProgram.setLine(line, text, x, y, (autoWidth) ? null : width, xOffset, this.fontStyle, null, isVisible);
 			if (cursor > line.length) cursor = line.length;
 			if (selectTo > line.length) selectTo = line.length;
-			//updateTextAlign();
 			sizeToTextSize();
+			if (autoUpdate) updateVisibleLayout();
 		} 
 		else this.text = text;		
 	}
