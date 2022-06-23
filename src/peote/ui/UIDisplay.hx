@@ -80,7 +80,7 @@ class UIDisplay extends Display
 		movePickProgram = new Program(movePickBuffer);
 				
 		// elements for mouseDown/Up ----------------------
-		clickPickBuffer = new Buffer<Pickable>(16,8); // TODO: fill with constants
+		clickPickBuffer = new Buffer<Pickable>(16, 8); // TODO: fill with constants
 		clickPickProgram = new Program(clickPickBuffer);
 	
 		uiElements = new Array<Interactive>();
@@ -937,8 +937,8 @@ class UIDisplay extends Display
 	// -------------------------- text inputfocus  --------------------------
 	
 	static var inputFocusUIDisplay:UIDisplay = null;
-	static var inputFocusElement:TextLine = null;
-	static var textLineEdit:TextLineEdit = null;
+	var inputFocusElement:TextLine = null;
+	var textLineEdit:TextLineEdit = null;
 	
 	public inline function textInput (chars:String):Void {
 		trace("textInput:", chars);
@@ -949,7 +949,10 @@ class UIDisplay extends Display
 	public inline function setInputFocus(t:TextLine, e:PointerEvent=null) {
 		if (inputFocusElement != t) {
 			trace("setInputFocus");
+
 			inputFocusUIDisplay = this;
+			
+			if (inputFocusElement != null) removeInputFocus(inputFocusElement);
 			inputFocusElement = t;
 			if (textLineEdit == null) textLineEdit = new TextLineEdit();
 			textLineEdit.textLine = t;

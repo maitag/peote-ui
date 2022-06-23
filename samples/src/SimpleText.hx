@@ -131,6 +131,7 @@ class SimpleText extends Application
 			
 		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {height:20}, "hello", font, fontStyle, Color.BLACK);
 		addOverOut(textLine);
+		//textLine.hide();
 		textLine.cursorShow();
 		var timer = new Timer(500);
 		timer.run = function() {
@@ -146,9 +147,11 @@ class SimpleText extends Application
 			//textLine.width = 200;
 			textLine.setText("new Text", true, true);
 			
+			textLine.select(4,6);
+			
 			// textLine.setStyle(fontStyle, 1, 4);
 			textLine.cursor = 3;
-			textLine.update();
+			textLine.updateLayout();
 			
 			//uiDisplay.remove(textLine);
 			haxe.Timer.delay(function() {
@@ -157,8 +160,12 @@ class SimpleText extends Application
 				
 				textLine.hAlign = HAlign.RIGHT;
 				textLine.cursor += 4;
-				textLine.update();
-					
+				
+				textLine.updateLayout(); // updates style and layout
+				
+				textLine.selectionHide();
+				
+				//textLine.hide();
 				//trace(textLine.text);
 				//uiDisplay.add(textLine);
 				
@@ -166,20 +173,35 @@ class SimpleText extends Application
 					textLine.backgroundColor = Color.GREY2;
 					textLine.hAlign = HAlign.LEFT;
 					textLine.cursor -= 4;
-					textLine.update();
+					textLine.fontStyle.color = Color.BLUE;
+					textLine.update(); // updates style and layout
 					
 					haxe.Timer.delay(function() {
-						textLine.width = 100;
 						textLine.autoWidth = false;
+						textLine.width = 100;
 						textLine.hAlign = HAlign.CENTER;
 						textLine.cursor += 1;
-						textLine.updateLayout();
+						textLine.updateLayout(); // updates layout (including size-changes)
+						
 						haxe.Timer.delay(function() {
-							textLine.xOffset = -10;
-							textLine.cursor += 1;
+							textLine.selectionShow();
+
+							textLine.cursor -= 1;
 							textLine.vAlign = VAlign.BOTTOM;
-							textLine.updateAlign();
-							//timer.stop(); textLine.cursorHide();
+							textLine.hAlign = HAlign.LEFT;
+							textLine.xOffset = -10;
+							textLine.updateLayout();
+							
+							haxe.Timer.delay(function() {
+								textLine.select(4,1);
+								textLine.width = 200;
+								textLine.vAlign = VAlign.TOP;
+								textLine.updateLayout(); // updates layout (including size-changes)
+								
+								//textLine.show();
+								//addOverOut(textLine);
+								//timer.stop(); textLine.cursorHide();
+							}, 1000);								
 						}, 1000);
 					}, 1000);
 				}, 1000);
@@ -204,7 +226,7 @@ class SimpleText extends Application
 		inputLine.cursor = 3;
 		addInput(inputLine);
 		
-		var inputLine = new InteractiveTextLine<FontStyle>(x, y += yOffset, {width:50, xOffset:10, yOffset:10}, "input", font, fontStyleInput, Color.BLACK);
+		var inputLine = new InteractiveTextLine<FontStyle>(x, y += yOffset, {width:50, xOffset:10, yOffset:10}, "input", font, fontStyleInput, 0x00000055);
 		//inputLine.cursor = 3;
 		inputLine.cursorShow();
 		//inputLine.select(0,3);
@@ -225,7 +247,9 @@ class SimpleText extends Application
 		var inputLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.RIGHT}, "input", font, fontStyleInput, Color.BLACK);
 		addInput(inputLine);
 		
-		var inputLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:150, hAlign:HAlign.RIGHT}, "input", font, fontStyleInput, Color.BLACK);
+		var inputLine = new InteractiveTextLine<FontStyle>(x, y += yOffset, {width:150, hAlign:HAlign.RIGHT}, "input", font, fontStyleInput, 0x00000055);
+		inputLine.select(1, 2);
+		//inputLine.cursorShow();
 		addInput(inputLine);
 			
 		var inputLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.CENTER}, "input", font, fontStyleInput, Color.BLACK);
@@ -260,21 +284,21 @@ class SimpleText extends Application
 	public function addOverOut(textLine:InteractiveTextLine<FontStyle>)
 	{
 		textLine.onPointerOver = function(t:InteractiveTextLine<FontStyle>, e:PointerEvent) {
-			trace("onPointerOver");
+			//trace("onPointerOver");
 			t.fontStyle.color = Color.YELLOW;
 			t.updateStyle();
 		}
 		textLine.onPointerOut = function(t:InteractiveTextLine<FontStyle>, e:PointerEvent) {
-			trace("onPointerOut");
+			//trace("onPointerOut");
 			t.fontStyle.color = Color.GREEN;
 			t.updateStyle();
 		}
 		textLine.onPointerDown = function(t:InteractiveTextLine<FontStyle>, e:PointerEvent) {
-			trace("onPointerDown");
+			//trace("onPointerDown");
 			t.startSelection(e);
 		}
 		textLine.onPointerUp = function(t:InteractiveTextLine<FontStyle>, e:PointerEvent) {
-			trace("onPointerUp");
+			//trace("onPointerUp");
 			t.stopSelection(e);
 		}
 		uiDisplay.add(textLine);
@@ -283,12 +307,12 @@ class SimpleText extends Application
 	public function addInput(textLine:InteractiveTextLine<FontStyle>) 
 	{
 		textLine.onPointerDown = function(t:InteractiveTextLine<FontStyle>, e:PointerEvent) {
-			trace("onPointerDown");
+			//trace("onPointerDown");
 			t.setInputFocus(e); // alternatively: uiDisplay.setInputFocus(t);
 			t.startSelection(e);
 		}
 		textLine.onPointerUp = function(t:InteractiveTextLine<FontStyle>, e:PointerEvent) {
-			trace("onPointerUp");
+			//trace("onPointerUp");
 			t.stopSelection(e);
 		}
 		uiDisplay.add(textLine);
