@@ -305,8 +305,14 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 				if (isVisible) fontProgram.updateLine(line);
 			}
 			
-			// auto aligning width and height to textsize
-			sizeToTextSize();
+			if (autoSize > 0) {
+				// auto aligning width and height to textsize
+				if (autoHeight) height = Std.int(line.height);
+				if (autoWidth) width = Std.int(line.textSize);
+				// fit interactive pickables to new width and height
+				if ( hasMoveEvent  != 0 ) pickableMove.update(this);
+				if ( hasClickEvent != 0 ) pickableClick.update(this);
+			}
 			
 			#if (!peoteui_no_textmasking && !peoteui_no_masking)
 			maskElement = fontProgram.createMask(x, y, width, height);
@@ -359,18 +365,6 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		}
 	}
 
-	inline function sizeToTextSize()
-	{
-		if (autoSize > 0) {
-			if (autoHeight) height = Std.int(line.height);
-			if (autoWidth) width = Std.int(line.textSize);
-			
-			// fit interactive pickables to new width and height
-			if ( hasMoveEvent  != 0 ) pickableMove.update(this);
-			if ( hasClickEvent != 0 ) pickableClick.update(this);
-		}
-	}
-	
 	// ----------------------- change the text  -----------------------
 	
 	public inline function setText(text:String, fontStyle:Null<$styleType> = null, forceAutoWidth:Null<Bool> = null, forceAutoHeight:Null<Bool> = null, autoUpdate = false)
@@ -384,7 +378,12 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 			fontProgram.setLine(line, text, x, y, (autoWidth) ? null : width, xOffset, this.fontStyle, null, isVisible);
 			if (cursor > line.length) cursor = line.length;
 			if (selectTo > line.length) selectTo = line.length;
-			sizeToTextSize();
+			if (autoSize > 0) {
+				// auto aligning width and height to new textsize
+				if (autoHeight) height = Std.int(line.height);
+				if (autoWidth) width = Std.int(line.textSize);
+				if (autoUpdate) updatePickable();
+			}
 			if (autoUpdate) updateVisibleLayout();
 		} 
 		else this.text = text;		

@@ -130,8 +130,9 @@ class SimpleText extends Application
 		addOverOut(textLine);
 			
 		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {height:20}, "hello", font, fontStyle, Color.BLACK);
+		// all changings also should work if is hidden or not added!
 		addOverOut(textLine);
-		textLine.hide();
+		//textLine.hide();
 		
 		textLine.cursorShow();
 		var timer = new Timer(500);
@@ -202,7 +203,7 @@ class SimpleText extends Application
 								haxe.Timer.delay(function() {
 									textLine.setText("smaller", true, true, true); // last param for autoupdate
 									
-									textLine.show();
+									//textLine.show();
 									//addOverOut(textLine);
 									//timer.stop(); textLine.cursorHide();
 								}, 1000);								
