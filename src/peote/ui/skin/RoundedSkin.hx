@@ -15,30 +15,30 @@ import peote.ui.skin.interfaces.SkinElement;
 class RoundedSkinElement implements SkinElement implements Element
 {
 	// from style
-	@color public var color:Color;
-	@color public var borderColor:Color;
+	@color var color:Color;
+	@color var borderColor:Color;
 	
-	@custom @varying public var borderSize:Float;
-	@custom @varying public var borderRadius:Float;
+	@custom @varying var borderSize:Float;
+	@custom @varying var borderRadius:Float;
 	
-	@posX public var x:Int=0;
-	@posY public var y:Int=0;
-	@sizeX @varying public var w:Int=100;
-	@sizeY @varying public var h:Int=100;
-	@zIndex public var z:Int = 0;
+	@posX var x:Int=0;
+	@posY var y:Int=0;
+	@sizeX @varying var w:Int=100;
+	@sizeY @varying var h:Int=100;
+	@zIndex var z:Int = 0;
 	
 	#if (!peoteui_no_masking)
-	@custom("mx") @varying public var mx:Int = 0;
-	@custom("my") @varying public var my:Int = 0;
-	@custom("mw") @varying public var mw:Int = 0;
-	@custom("mh") @varying public var mh:Int = 0;
+	@custom("mx") @varying var mx:Int = 0;
+	@custom("my") @varying var my:Int = 0;
+	@custom("mw") @varying var mw:Int = 0;
+	@custom("mh") @varying var mh:Int = 0;
 	#end
 	
 	//var OPTIONS = {  };
 	
 	var buffer:Buffer<RoundedSkinElement>;
 	
-	public inline function new(uiElement:InteractiveElement, defaultStyle:RoundedStyle, buffer:Buffer<RoundedSkinElement>)
+	inline function new(uiElement:InteractiveElement, defaultStyle:RoundedStyle, buffer:Buffer<RoundedSkinElement>)
 	{
 		this.buffer = buffer;
 		_updateStyle(uiElement, defaultStyle);
@@ -46,26 +46,26 @@ class RoundedSkinElement implements SkinElement implements Element
 		buffer.addElement(this);
 	}
 	
-	public inline function update(uiElement:InteractiveElement, defaultStyle:Dynamic)
+	inline function update(uiElement:InteractiveElement, defaultStyle:Dynamic)
 	{
 		_updateStyle(uiElement, defaultStyle);
 		_updateLayout(uiElement, defaultStyle);
 		if (uiElement.isVisible) buffer.updateElement(this);
 	}
 	
-	public inline function updateLayout(uiElement:InteractiveElement, defaultStyle:Dynamic)
+	inline function updateLayout(uiElement:InteractiveElement, defaultStyle:Dynamic)
 	{
 		_updateLayout(uiElement, defaultStyle);
 		if (uiElement.isVisible) buffer.updateElement(this);
 	}
 	
-	public inline function updateStyle(uiElement:InteractiveElement, defaultStyle:Dynamic)
+	inline function updateStyle(uiElement:InteractiveElement, defaultStyle:Dynamic)
 	{
 		_updateStyle(uiElement, defaultStyle);
 		if (uiElement.isVisible) buffer.updateElement(this);
 	}
 	
-	public inline function remove():Bool
+	inline function remove():Bool
 	{
 		buffer.removeElement(this);
 		return (buffer.length() == 0);
@@ -103,12 +103,12 @@ class RoundedSkinElement implements SkinElement implements Element
 	}
 }
 
-@:allow(peote.ui)
+@:access(peote.ui.skin)
 class RoundedSkin implements Skin
 {
 	public var type(default, never) = SkinType.Rounded;
-	public var defaultStyle:RoundedStyle;
 	
+	var defaultStyle:RoundedStyle;	
 	var displays:Int = 0;
 
 	#if (peoteui_maxDisplays == "1")
@@ -124,14 +124,10 @@ class RoundedSkin implements Skin
 		if (defaultStyle != null) this.defaultStyle = defaultStyle;
 		else this.defaultStyle = new RoundedStyle();
 	}
-
-	public inline function notIntoDisplay(uiDisplay:UIDisplay):Bool {
-		return ((displays & (1 << uiDisplay.number))==0);
-	}
 	
-	public inline function addElement(uiDisplay:UIDisplay, uiElement:InteractiveElement)
+	inline function addElement(uiDisplay:UIDisplay, uiElement:InteractiveElement)
 	{
-		if (notIntoDisplay(uiDisplay))
+		if (uiDisplay.skinNotAdded(displays))
 		{
 			displays |= 1 << uiDisplay.number;
 			var buffer = new Buffer<RoundedSkinElement>(16, 8);
@@ -143,7 +139,7 @@ class RoundedSkin implements Skin
 				displayProgram.set(uiDisplay.number, program);
 				displayBuffer.set(uiDisplay.number, buffer);
 			#end
-			uiDisplay.addProgram(program); // TODO: better also uiDisplay.addSkin() to let clear all skins at once from inside UIDisplay
+			uiDisplay.addSkinProgram(program);
 			uiElement.skinElement = new RoundedSkinElement(uiElement, defaultStyle, buffer);
 		}
 		else
@@ -154,7 +150,7 @@ class RoundedSkin implements Skin
 			#end
 	}
 	
-	public inline function removeElement(uiDisplay:UIDisplay, uiElement:InteractiveElement)
+	inline function removeElement(uiDisplay:UIDisplay, uiElement:InteractiveElement)
 	{
 		if (uiElement.isVisible && uiElement.skinElement.remove())
 		{
@@ -162,9 +158,9 @@ class RoundedSkin implements Skin
 			displays &= ~(1 << uiDisplay.number);
 			
 			#if (peoteui_maxDisplays == "1")
-				uiDisplay.removeProgram(displayProgram);
+				uiDisplay.removeSkinProgram(displayProgram);
 			#else
-				uiDisplay.removeProgram(displayProgram.get(uiDisplay.number));
+				uiDisplay.removeSkinProgram(displayProgram.get(uiDisplay.number));
 			#end
 			
 			// TODO:
@@ -173,26 +169,26 @@ class RoundedSkin implements Skin
 		}
 	}
 	
-	public inline function updateElement(uiDisplay:UIDisplay, uiElement:InteractiveElement)
+	inline function updateElement(uiDisplay:UIDisplay, uiElement:InteractiveElement)
 	{
 		uiElement.skinElement.update(uiElement, defaultStyle);
 	}
 	
-	public inline function updateElementStyle(uiDisplay:UIDisplay, uiElement:InteractiveElement)
+	inline function updateElementStyle(uiDisplay:UIDisplay, uiElement:InteractiveElement)
 	{
 		uiElement.skinElement.updateStyle(uiElement, defaultStyle);
 	}
 	
-	public inline function updateElementLayout(uiDisplay:UIDisplay, uiElement:InteractiveElement)
+	inline function updateElementLayout(uiDisplay:UIDisplay, uiElement:InteractiveElement)
 	{
 		uiElement.skinElement.updateLayout(uiElement, defaultStyle);
 	}
 	
-	public inline function createDefaultStyle():Dynamic {
+	inline function createDefaultStyle():Dynamic {
 		return new RoundedStyle();
 	}
 	
-	public inline function setCompatibleStyle(style:Dynamic):Dynamic {
+	inline function setCompatibleStyle(style:Dynamic):Dynamic {
 		
 		if (style == null) return defaultStyle;
 		else if (style.compatibleSkins & type > 0) return style;

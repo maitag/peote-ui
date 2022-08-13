@@ -6,10 +6,10 @@ import peote.ui.interactive.InteractiveElement;
 
 interface Skin
 {
-	public function addElement(uiDisplay:UIDisplay, uiElement:InteractiveElement):Void;
-	public function removeElement(uiDisplay:UIDisplay, uiElement:InteractiveElement):Void;
-	public function updateElement(uiDisplay:UIDisplay, uiElement:InteractiveElement):Void;
-	public function updateElementStyle(uiDisplay:UIDisplay, uiElement:InteractiveElement):Void;
-	public function updateElementLayout(uiDisplay:UIDisplay, uiElement:InteractiveElement):Void;
-	public function setCompatibleStyle(style:Dynamic):Dynamic;
+	private function addElement(uiDisplay:UIDisplay, uiElement:InteractiveElement):Void;
+	private function removeElement(uiDisplay:UIDisplay, uiElement:InteractiveElement):Void;
+	private function updateElement(uiDisplay:UIDisplay, uiElement:InteractiveElement):Void;
+	private function updateElementStyle(uiDisplay:UIDisplay, uiElement:InteractiveElement):Void;
+	private function updateElementLayout(uiDisplay:UIDisplay, uiElement:InteractiveElement):Void;
+	private function setCompatibleStyle(style:Dynamic):Dynamic;
 }

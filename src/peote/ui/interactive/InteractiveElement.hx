@@ -12,6 +12,7 @@ private typedef IAElementEventParams = InteractiveElement->PointerEvent->Void;
 private typedef IAElementWheelEventParams = InteractiveElement->WheelEvent->Void;
 
 @:allow(peote.ui)
+@:access(peote.ui.skin)
 class InteractiveElement extends Interactive
 {	
 	public var skin:Skin = null; // TODO: use a setter to change the skin at runtime
@@ -56,7 +57,6 @@ class InteractiveElement extends Interactive
 	}
 	
 	// -----------------
-	
 	override inline function onAddVisibleToDisplay()
 	{
 		if (skin != null) skin.addElement(uiDisplay, this);

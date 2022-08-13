@@ -172,7 +172,7 @@ class SimpleText extends Application
 				//uiDisplay.add(textLine);
 				
 				haxe.Timer.delay(function() {
-					textLine.backgroundColor = Color.GREY2;
+//					textLine.backgroundColor = Color.GREY2;
 					textLine.hAlign = HAlign.LEFT;
 					textLine.cursor -= 4;
 					textLine.fontStyle.color = Color.BLUE;
@@ -269,10 +269,10 @@ class SimpleText extends Application
 			
 		var inputLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:150, height:60, vAlign:VAlign.BOTTOM}, "input", font, new FontStyle()); // new FontStyle here to not affect the other inputLines
 		addInput(inputLine);
-		inputLine.backgroundColor = Color.BLUE;
+//		inputLine.backgroundColor = Color.BLUE;
 		haxe.Timer.delay(function() {
 			inputLine.hide();
-			inputLine.backgroundColor = Color.YELLOW;
+//			inputLine.backgroundColor = Color.YELLOW;
 			haxe.Timer.delay(function() {
 				inputLine.show();
 				inputLine.fontStyle.color = Color.BLACK;

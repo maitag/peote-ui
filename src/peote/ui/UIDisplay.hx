@@ -22,13 +22,13 @@ import peote.view.Color;
 import peote.view.utils.RenderListItem;
 
 import peote.ui.interactive.Interactive;
-import peote.ui.interactive.InteractiveTextLine;
+//import peote.ui.interactive.InteractiveTextLine;
 import peote.ui.interactive.edit.TextLineEdit;
 import peote.ui.interactive.interfaces.TextLine;
 
 
 @:access(peote.view, peote.ui.interactive)
-@:allow(peote.ui.interactive)
+@:allow(peote.ui.interactive, peote.ui.skin)
 class UIDisplay extends Display
 {
 	#if peoteui_maxDisplays
@@ -150,6 +150,19 @@ class UIDisplay extends Display
 		return (px >= x && px < x + width && py >= y && py < y + height);
 	}
 
+	// -------------------------------------------------------
+	inline function skinNotAdded(displays:Int):Bool return ((displays & (1 << number))==0);
+	
+	inline function addSkinProgram(skinProgram:Program) {
+		this.addProgram(skinProgram);
+	}
+	
+	inline function removeSkinProgram(skinProgram:Program) {
+		this.removeProgram(skinProgram);
+	}
+	
+	
+	
 	// -------------------------------------------------------
 	
 	public function add(uiElement:Interactive):Void {
