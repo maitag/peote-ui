@@ -26,6 +26,7 @@ import peote.ui.interactive.Interactive;
 import peote.ui.interactive.edit.TextLineEdit;
 import peote.ui.interactive.interfaces.TextLine;
 
+import peote.ui.style.interfaces.Style;
 
 @:access(peote.view, peote.ui.interactive)
 @:allow(peote.ui.interactive, peote.ui.skin)
@@ -69,11 +70,15 @@ class UIDisplay extends Display
 	
 	var maxTouchpoints:Int;
 	
-	public function new(x:Int, y:Int, width:Int, height:Int, color:Color=0x00000000, maxTouchpoints:Int = 3) 
+	public function new(x:Int, y:Int, width:Int, height:Int, color:Color=0x00000000, maxTouchpoints:Int = 3, styles:Array<Style>) 
 	{
 		number = getFreeNumber();  trace('MAX_DISPLAYs: $MAX_DISPLAYS', 'UIDisplay NUMBER is $number');
 		
 		super(x, y, width, height, color);
+		
+		// -----------------
+		usedStyleId = [for (style in styles) style.id];
+		usedPrograms = new Vector<Program>(usedStyleId.length);
 		
 		// elements for mouseOver/Out ----------------------
 		movePickBuffer = new Buffer<Pickable>(16, 8); // TODO: fill with constants
@@ -151,14 +156,44 @@ class UIDisplay extends Display
 	}
 
 	// -------------------------------------------------------
+	var usedStyleId:Array<Int>; // [3, 4, 1, 8]
+	var usedPrograms:Vector<Program>; // [styleProgram3, styleProgram4, fontProgram1, styleProgram8]
+	
 	inline function skinNotAdded(displays:Int):Bool return ((displays & (1 << number))==0);
 	
 	inline function addSkinProgram(skinProgram:Program) {
-		this.addProgram(skinProgram);
+		this.addProgram(skinProgram);		
 	}
 	
 	inline function removeSkinProgram(skinProgram:Program) {
 		this.removeProgram(skinProgram);
+	}
+	
+	inline function addFontProgram(fontProgram:Program, styleId:Int) {
+		addStyleProgram(fontProgram, styleId);
+	}
+	
+	inline function removeFontProgram(fontProgram:Program, styleId:Int) {
+		removeStyleProgram(fontProgram, styleId);
+	}
+	
+	inline function addStyleProgram(program:Program, styleId:Int) {
+		var pos = usedStyleId.indexOf(styleId);
+		// TODO: into this case maybe put it at the end instead!
+		if (pos < 0) throw('Error, style (id=$styleId) was not set by creating new UIDisplay(...<[styles]>)');
+		
+		usedPrograms.set(pos, program);
+		var afterProgram:Program = null;
+		while (pos-- > 0) {
+			afterProgram = usedPrograms.get(pos);
+			if (afterProgram != null) break;		
+		}
+		this.addProgram(program, afterProgram, (afterProgram==null) ? true : false);
+	}
+	
+	inline function removeStyleProgram(program:Program, styleId:Int) {
+		usedPrograms.set(usedStyleId.indexOf(styleId), null);
+		this.removeProgram(program);
 	}
 	
 	

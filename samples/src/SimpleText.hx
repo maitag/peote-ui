@@ -2,9 +2,7 @@ package;
 
 import haxe.CallStack;
 import haxe.Timer;
-
-import peote.ui.util.HAlign;
-import peote.ui.util.VAlign;
+import peote.ui.style.SimpleStyle;
 
 import lime.app.Application;
 import lime.ui.Window;
@@ -25,6 +23,13 @@ import peote.ui.fontstyle.FontStylePacked;
 
 import peote.ui.UIDisplay;
 import peote.ui.interactive.InteractiveTextLine;
+import peote.ui.skin.SimpleSkin;
+import peote.ui.util.TextLineSkin;
+import peote.ui.util.TextLineStyle;
+
+import peote.ui.util.HAlign;
+import peote.ui.util.VAlign;
+
 
 import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
@@ -93,12 +98,31 @@ class SimpleText extends Application
 		//fontStyleInput.height = 30;
 		//fontStyleInput.width = 20;
 		
+		var simpleSkin = new SimpleSkin();
+		// TODO: give every skin a depth-index !
+		// var simpleSkinSelection = new SimpleSkin(-1);
+		
+		var textLineSkin:TextLineSkin = {
+			backgroundSkin: simpleSkin,
+			selectionSkin: simpleSkin,
+			cursorSkin: simpleSkin,
+		};
+		
+		var textLineStyle:TextLineStyle = {
+			backgroundStyle: new SimpleStyle(Color.RED),
+			selectionStyle: new SimpleStyle(Color.BLUE),
+			cursorStyle: new SimpleStyle(Color.GREEN),
+		};
+		
+		
+		
 		var xOffset:Int = 300;
 		var yOffset:Int = 70;
 		var x:Int = 10; 
 		var y:Int = -yOffset + 10;
 				
 		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, "hello", font, fontStyle, Color.BLACK); //, selectionFontStyle
+		// alternatively it can also be:
 		//var textLine = font.createInteractiveTextLine(x, y+=yOffset, "hello", fontStyle, Color.BLACK);
 		addOverOut(textLine);
 		//textLine.height = 50;

@@ -2,8 +2,9 @@ package peote.ui.interactive;
 
 import peote.ui.interactive.Interactive;
 
-import peote.ui.skin.interfaces.Skin;
-import peote.ui.skin.interfaces.SkinElement;
+import peote.ui.style.interfaces.Style;
+import peote.ui.style.interfaces.StyleProgram;
+import peote.ui.style.interfaces.StyleElement;
 
 import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
@@ -12,59 +13,46 @@ private typedef IAElementEventParams = InteractiveElement->PointerEvent->Void;
 private typedef IAElementWheelEventParams = InteractiveElement->WheelEvent->Void;
 
 @:allow(peote.ui)
-@:access(peote.ui.skin)
+@:access(peote.ui.style)
 class InteractiveElement extends Interactive
 {	
-	public var skin:Skin = null; // TODO: use a setter to change the skin at runtime
-		
-	public var style(default, set):Dynamic = null;
-	inline function set_style(s:Dynamic):Dynamic 
-	{
-		//trace("set style");
-		if (skin == null) {
-			if (s != null) throw ("Error, for styling the widget needs a skin");
-			style = s;
-		} 
-		else style = skin.setCompatibleStyle(s); // TODO: in debug mode trace a warning here if a compatible skin is recreated!
-		
-		return style;
-	}		
+	public var style:Dynamic = null;
+
+	public var styleProgram:StyleProgram = null;
+	var styleElement:StyleElement;
 	
-	var skinElement:SkinElement;
 	
-	public function new(xPosition:Int=0, yPosition:Int=0, width:Int=100, height:Int=100, zIndex:Int=0, skin:Skin=null, style:Dynamic=null)
+	public function new(xPosition:Int=0, yPosition:Int=0, width:Int=100, height:Int=100, zIndex:Int=0, style:Style=null)
 	{
-		super(xPosition, yPosition, width, height, zIndex);
-		
-		this.skin = skin;
-		set_style(style);
+		super(xPosition, yPosition, width, height, zIndex);		
+		this.style = style;		
 	}
 	
 	
 	override inline function updateVisibleStyle():Void
 	{
-		if (skin != null) skin.updateElementStyle(uiDisplay, this);
+		if (style != null) styleProgram.updateElementStyle(uiDisplay, this);
 	}
 	
 	override inline function updateVisibleLayout():Void
 	{
-		if (skin != null) skin.updateElementLayout(uiDisplay, this);
+		if (style != null) styleProgram.updateElementLayout(uiDisplay, this);
 	}
 	
 	override inline function updateVisible():Void
 	{
-		if (skin != null) skin.updateElement(uiDisplay, this);
+		if (style != null) styleProgram.updateElement(uiDisplay, this);
 	}
 	
 	// -----------------
 	override inline function onAddVisibleToDisplay()
 	{
-		if (skin != null) skin.addElement(uiDisplay, this);
+		if (style != null) styleProgram.addElement(uiDisplay, this);
 	}
 	
 	override inline function onRemoveVisibleFromDisplay()
 	{		
-		if (skin != null) skin.removeElement(uiDisplay, this);
+		if (style != null) styleProgram.removeElement(uiDisplay, this);
 	}
 
 	

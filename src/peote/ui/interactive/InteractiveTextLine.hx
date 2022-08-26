@@ -43,7 +43,7 @@ class InteractiveTextLineMacro
 // -------------------------------------------------------------------------------------------
 class $className extends peote.ui.interactive.Interactive implements peote.ui.interactive.interfaces.TextLine
 {	
-	var fontProgram:peote.text.FontProgram<$styleType>; //$fontProgramType	
+	var fontProgram:peote.text.FontProgram<$styleType>; // $fontProgramType	
 	var font:peote.text.Font<$styleType>; //$fontType
 	
 	public var fontStyle:$styleType;
@@ -105,8 +105,8 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	#end
 	
 	public function new(xPosition:Int, yPosition:Int, ?textSize:peote.ui.util.TextSize, zIndex:Int = 0, text:String,
-	                    //font:$fontType, fontStyle:$styleType, backgroundColor:peote.view.Color = 0) 
-	                    font:peote.text.Font<$styleType>, fontStyle:$styleType, backgroundColor:peote.view.Color = 0)
+	                    //font:$fontType, fontStyle:$styleType) 
+	                    font:peote.text.Font<$styleType>, fontStyle:$styleType)
 	{
 		//trace("NEW InteractiveTextLine");		
 		var width:Int = 0;
@@ -272,13 +272,13 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 			if (font.notIntoUiDisplay(uiDisplay.number)) {
 				//fontProgram = font.createFontProgramForUiDisplay(uiDisplay.number, fontStyle, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end, true);
 				fontProgram = font.createFontProgramForUiDisplay(uiDisplay.number, fontStyle, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end);
-				uiDisplay.addProgram(fontProgram); // TODO: better also uiDisplay.addFontProgram() to let clear all skins at once from inside UIDisplay
+				uiDisplay.addFontProgram(fontProgram, fontStyle.id);
 				trace("create new fontProgram for uiDisplay");
 			}
 			else {
 				fontProgram = font.getFontProgramByUiDisplay(uiDisplay.number);
 				if (fontProgram.numberOfGlyphes() == 0) {
-					uiDisplay.addProgram(fontProgram);
+					uiDisplay.addFontProgram(fontProgram, fontStyle.id);
 					trace("add fontProgram to uiDisplay (was already used inside of uiDisplay)");
 				}
 			}
@@ -338,7 +338,7 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		else {
 			if (fontProgram.numberOfGlyphes() == 0) {
 				trace("add fontProgram to uiDisplay");
-				uiDisplay.addProgram(fontProgram);
+				uiDisplay.addFontProgram(fontProgram, fontStyle.id);
 			}
 			#if (!peoteui_no_textmasking && !peoteui_no_masking)
 			fontProgram.addMask(maskElement);
@@ -371,7 +371,7 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		
 		if (fontProgram.numberOfGlyphes()==0)
 		{
-			uiDisplay.removeProgram(font.removeFontProgramFromUiDisplay(uiDisplay.number));
+			uiDisplay.removeFontProgram(font.removeFontProgramFromUiDisplay(uiDisplay.number), fontStyle.id);
 			trace("remove fontProgram from uiDisplay");
 
 			// TODO:
