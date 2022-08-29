@@ -283,7 +283,7 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		else
 		{
 			var fontStylePos = uiDisplay.usedStyleID.indexOf( fontStyle.getID() | (fontStyle.id << 16) );
-			if (fontStylePos < 0) throw('Error by creating new InteractiveTextLine. The style "${Type.getClassName(Type.getClass(fontStyle))}(${fontStyle.id})" is not inside the availableStyle list of UIDisplay.');
+			if (fontStylePos < 0) throw('Error by creating new InteractiveTextLine. The style "'+Type.getClassName(Type.getClass(fontStyle))+"("+fontStyle.id+')" is not inside the availableStyle list of UIDisplay.');
 			fontProgram = cast uiDisplay.usedStyleProgram.get(fontStylePos);
 			if (fontProgram == null) {
 				trace("create new fontProgram for uiDisplay");
