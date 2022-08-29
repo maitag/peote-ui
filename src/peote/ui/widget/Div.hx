@@ -3,7 +3,6 @@ package peote.ui.widget;
 import peote.layout.ContainerType;
 import peote.layout.LayoutOptions;
 
-import peote.ui.skin.interfaces.Skin;
 import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
 import peote.ui.layouted.LayoutedElement;
@@ -22,7 +21,6 @@ typedef DivOptions = {
 
 	
 	
-	?skin:Skin,
 	?style:Dynamic,
 
 }
@@ -34,7 +32,7 @@ abstract Div(Widget) from Widget to Widget
 	public inline function new(divOptions:DivOptions = null, widgets:Array<Widget> = null) 
 	{
 		this = new Widget(ContainerType.BOX, 
-			new LayoutedElement(0, 0, 0, 0, 0, divOptions.skin, divOptions.style),
+			new LayoutedElement(0, 0, 0, 0, 0, divOptions.style),
 			divOptions,
 			widgets
 		);

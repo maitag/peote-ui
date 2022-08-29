@@ -29,17 +29,15 @@ import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
 import peote.ui.interactive.InteractiveElement;
 
-import peote.ui.fontstyle.FontStyleTiled;
-import peote.ui.fontstyle.FontStylePacked;
+import peote.ui.style.FontStyleTiled;
+import peote.ui.style.FontStylePacked;
 
 import peote.ui.layouted.LayoutedUIDisplay;
 import peote.ui.layouted.LayoutedElement;
 import peote.ui.layouted.LayoutedTextLine;
 
-import peote.ui.skin.SimpleSkin;
 import peote.ui.style.SimpleStyle;
-import peote.ui.skin.RoundedSkin;
-import peote.ui.style.RoundedStyle;
+import peote.ui.style.RoundBorderStyle;
 
 
 class SimpleMasked extends Application
@@ -47,11 +45,11 @@ class SimpleMasked extends Application
 	var peoteView:PeoteView;
 	var layoutedUIDisplay:LayoutedUIDisplay;
 	
-	var simpleSkin = new SimpleSkin();
-	var roundedSkin = new RoundedSkin();
-	
 	var tiledFont:Font<FontStyleTiled>;
 	var packedFont:Font<FontStylePacked>;
+	
+	var fontStyleTiled:FontStyleTiled;
+	var fontStylePacked:FontStylePacked;
 		
 	var uiLayoutContainer:LayoutContainer;
 	
@@ -68,15 +66,24 @@ class SimpleMasked extends Application
 
 	public function startSample(window:Window)
 	{
+		fontStyleTiled = new FontStyleTiled();
+		fontStyleTiled.height = 16.0;
+		fontStyleTiled.width = 16.0;
+		fontStyleTiled.color = Color.BLACK;
+		
+		fontStylePacked = new FontStylePacked();
+		fontStylePacked.height = 30.0;
+		fontStylePacked.width = 30.0;
+		fontStylePacked.color = Color.WHITE;
+		
 		peoteView = new PeoteView(window);
-		layoutedUIDisplay = new LayoutedUIDisplay(0, 0, window.width, window.height, Color.GREY3);
+		layoutedUIDisplay = new LayoutedUIDisplay(0, 0, window.width, window.height, Color.GREY3, [new RoundBorderStyle(), new SimpleStyle(), fontStyleTiled, fontStylePacked]);
+		peoteView.addDisplay(layoutedUIDisplay);
 		
 		// TODO: this is only need on neko to avoid bug if mouse is over application at start
 		layoutedUIDisplay.mouseEnabled = false; // will be enabled after font is loaded and display is arranged into layout
 		
-		peoteView.addDisplay(layoutedUIDisplay);
-		
-		// load the FONT:
+		// load the FONTs:
 		new Font<FontStyleTiled>("assets/fonts/tiled/hack_ascii.json").load( function(_tiledFont:Font<FontStyleTiled>) {
 			tiledFont = _tiledFont;
 			new Font<FontStylePacked>("assets/fonts/packed/hack/config.json").load( function(_packedFont:Font<FontStylePacked>) {
@@ -87,25 +94,14 @@ class SimpleMasked extends Application
 	}
 	
 	public function onAllFontLoaded() 
-	{
-		var fontStyleTiled = new FontStyleTiled();
-		fontStyleTiled.height = 16.0;
-		fontStyleTiled.width = 16.0;
-		fontStyleTiled.color = Color.BLACK;
-		
-		var fontStylePacked = new FontStylePacked();
-		fontStylePacked.height = 30.0;
-		fontStylePacked.width = 30.0;
-		fontStylePacked.color = Color.WHITE;
-		
-		
-		var red   = new LayoutedElement(roundedSkin, new RoundedStyle(Color.RED, Color.BLACK, 0, 10));
+	{		
+		var red   = new LayoutedElement(new RoundBorderStyle(0, Color.RED, Color.BLACK, 0, 10));
 		layoutedUIDisplay.add(red);
 
 				
 		var redBoxes = new Array<Box>();
 		for (i in 0...10) {
-			var button = new LayoutedElement(roundedSkin, new RoundedStyle(Color.YELLOW));
+			var button = new LayoutedElement(new RoundBorderStyle(0, Color.YELLOW));
 			button.onPointerOver = function(elem:InteractiveElement, e:PointerEvent) {
 				elem.style.color = Color.YELLOW - 0x00550000;
 				elem.updateStyle();
@@ -118,7 +114,7 @@ class SimpleMasked extends Application
 			
 			button.wheelEventsBubbleTo = red;
 			
-			var textLineTiled = new LayoutedTextLine<FontStyleTiled>(0, 0, {hAlign:HAlign.CENTER, vAlign:VAlign.CENTER}, 'button${i+1}', tiledFont, fontStyleTiled, Color.random());
+			var textLineTiled = new LayoutedTextLine<FontStyleTiled>(0, 0, {hAlign:HAlign.CENTER, vAlign:VAlign.CENTER}, 'button${i+1}', tiledFont, fontStyleTiled);
 			//var textLinePacked = new LayoutedTextLine<FontStylePacked>(0, 0, 130, 25, 0, true, "packed font", packedFont, fontStylePacked);	// masked -> true		
 			//trace("KK", textLineTiled.line.textSize); // TODO: line is null
 			
@@ -135,13 +131,13 @@ class SimpleMasked extends Application
 
 		
 		
-		var green = new LayoutedElement(simpleSkin, new SimpleStyle(Color.GREEN));
-		var blue  = new LayoutedElement(roundedSkin, new RoundedStyle(Color.BLUE, Color.BLACK, 0, 10));
+		var green = new LayoutedElement(new SimpleStyle(0, Color.GREEN));
+		var blue  = new LayoutedElement(new RoundBorderStyle(0, Color.BLUE, Color.BLACK, 0, 10));
 		
 		layoutedUIDisplay.add(green);
 		layoutedUIDisplay.add(blue);
 		
-		var inputLine = packedFont.createLayoutedTextLine(0, 0, {hAlign:HAlign.CENTER, vAlign:VAlign.CENTER}, 'input line', fontStylePacked, Color.BLUE);
+		var inputLine = packedFont.createLayoutedTextLine(0, 0, {hAlign:HAlign.CENTER, vAlign:VAlign.CENTER}, 'input line', fontStylePacked);
 		inputLine.onPointerOver = function(t:TextLine, e:PointerEvent) {
 			trace("onPointerOver");
 			t.setInputFocus(e); // alternatively: uiDisplay.setInputFocus(t);

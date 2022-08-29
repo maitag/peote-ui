@@ -39,13 +39,12 @@ class FontStyleTiled implements Style
 	
 	static var ID:Int = Unique.id;
 	public inline function getID():Int return ID;
+	public var id(default, null):Int;
 	
 	public function new(id:Int = 0) {
 		this.id = id;
 	}
 	
-	public var id(default, null):Int;
-
 	public var backgroundStyle:Style;
 	public var selectionStyle:Style;
 	public var cursorStyle:Style;

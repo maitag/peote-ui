@@ -4,7 +4,6 @@ import haxe.CallStack;
 
 import lime.app.Application;
 import lime.ui.Window;
-import peote.ui.skin.SkinType;
 
 import peote.view.PeoteView;
 import peote.view.Color;
@@ -12,10 +11,8 @@ import peote.view.Color;
 import peote.ui.UIDisplay;
 import peote.ui.interactive.InteractiveElement;
 
-import peote.ui.skin.SimpleSkin;
 import peote.ui.style.SimpleStyle;
-import peote.ui.skin.RoundedSkin;
-import peote.ui.style.RoundedStyle;
+import peote.ui.style.RoundBorderStyle;
 
 import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
@@ -40,7 +37,11 @@ class SimpleElements extends Application
 	public function startSample(window:Window)
 	{
 		peoteView = new PeoteView(window);
-		uiDisplay = new UIDisplay(20, 20, window.width-40, window.height-40, Color.GREY1);
+		
+		var roundBorderStyle = new RoundBorderStyle();
+		var simpleStyle  = new SimpleStyle();
+		
+		uiDisplay = new UIDisplay(20, 20, window.width-40, window.height-40, Color.GREY1, [roundBorderStyle, simpleStyle]);
 		peoteView.addDisplay(uiDisplay);
 		
 		uiDisplay.onPointerOver  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplay onPointerOver",e); };
@@ -51,22 +52,18 @@ class SimpleElements extends Application
 		//uiDisplay.onPointerMove =  function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerMove",e); };
 		
 		
-		var simpleSkin = new SimpleSkin();
-		var roundedSkin = new RoundedSkin();
-		
-		
 		// Take care that every Button have its own Style if changing style-params into eventhandler
-		// or alternatively create different styles for over/out/click and so on
+		// or alternatively create different styles by .copy() for over/out/click and so on
 		
-		var myStyle = new RoundedStyle();
+		var myStyle = roundBorderStyle.copy();
 		myStyle.color = Color.GREY1;
 		myStyle.borderColor = Color.GREY5;
 		myStyle.borderSize = 4.0;
 		myStyle.borderRadius = 40.0;
 		
 		trace("NEW BUTTON -----");
-		var button1:InteractiveElement = new InteractiveElement(20, 0, 200, 100, roundedSkin, myStyle);
-		//var button1:InteractiveElement = new InteractiveElement(20, 0, 200, 100, roundedSkin, new SimpleStyle(Color.GREY1));
+		var button1:InteractiveElement = new InteractiveElement(20, 0, 200, 100, myStyle);
+		//var button1:InteractiveElement = new InteractiveElement(20, 0, 200, 100, new SimpleStyle(Color.GREY1));
 		
 		button1.overOutEventsBubbleToDisplay = false;
 		button1.upDownEventsBubbleToDisplay = true;
@@ -78,11 +75,11 @@ class SimpleElements extends Application
 		button1.onPointerUp = onUp.bind(Color.GREY5);   // only fires if there was some down before!
 		button1.onPointerClick = onClick;
 		
-		var myStyle2 = new RoundedStyle(Color.GREY1, Color.GREY5);
+		var myStyle2 = new RoundBorderStyle(0, Color.GREY1, Color.GREY5);
 		myStyle2.borderSize = 2.0;
 
 		trace("NEW BUTTON -----");
-		var button2:InteractiveElement = new InteractiveElement(120, 60, 200, 100, roundedSkin, myStyle2);
+		var button2:InteractiveElement = new InteractiveElement(120, 60, 200, 100, myStyle2);
 		uiDisplay.add(button2);
 		
 		// to bubble up/down and click-events up to button1
@@ -106,23 +103,23 @@ class SimpleElements extends Application
 		// -------------- Dragging -------------------
 		
 		trace("NEW SLIDER -----");
-		var myStyle3:RoundedStyle = {
+		var myStyle3:RoundBorderStyle = {
 			color: Color.GREY2,
 			borderColor: Color.GREY5,
 			borderSize: 3.0,
 			borderRadius: 20.0
 		}
 		
-		//var background = new InteractiveElement(10, 140, 350, 60, simpleSkin, new SimpleStyle(Color.GREEN));
-		var dragBackground = new InteractiveElement(10, 140, 350, 60, simpleSkin, myStyle3);
+		//var background = new InteractiveElement(10, 140, 350, 60, new SimpleStyle(Color.GREEN));
+		var dragBackground = new InteractiveElement(10, 140, 350, 60, myStyle3);
 		dragBackground.onPointerOver = onOver.bind(Color.GREY3);
 		dragBackground.onPointerOut = onOut.bind(Color.GREY2);
 		uiDisplay.add(dragBackground);
 		
-		//var dragger = new InteractiveElement(10, 140, 100, 60, 1, simpleSkin, myStyle3);
-		//var dragger = new InteractiveElement(dragBackground.x, dragBackground.y, 100, 60, 1, roundedSkin, myStyle2);
-		var dragger = new InteractiveElement(dragBackground.x, dragBackground.y, 100, 60, 1, roundedSkin,  new RoundedStyle(Color.BLUE,Color.GREY5));
-		//var dragger = new InteractiveElement(dragBackground.x, dragBackground.y, 100, 60, 1, simpleSkin, new SimpleStyle(Color.GREEN));
+		//var dragger = new InteractiveElement(10, 140, 100, 60, 1, myStyle3);
+		//var dragger = new InteractiveElement(dragBackground.x, dragBackground.y, 100, 60, 1, myStyle2);
+		var dragger = new InteractiveElement(dragBackground.x, dragBackground.y, 100, 60, 1, new RoundBorderStyle(0, Color.BLUE,Color.GREY5));
+		//var dragger = new InteractiveElement(dragBackground.x, dragBackground.y, 100, 60, 1, new SimpleStyle(Color.GREEN));
 		
 		dragBackground.onMouseWheel = function(b:InteractiveElement, e:WheelEvent) {
 			trace("MouseWheel:", e);
@@ -162,16 +159,16 @@ class SimpleElements extends Application
 		// ------ DragArea ------
 		
 		trace("NEW DragArea -----");
-		var myStyle4 = new RoundedStyle();
+		var myStyle4 = new RoundBorderStyle();
 		myStyle4.color = Color.GREY1;
 		myStyle4.borderColor = Color.GREY5;
 		myStyle4.borderSize = 3.0;
 		myStyle4.borderRadius = 40.0;
 		
-		var draggAreaBG = new InteractiveElement(10, 200, 350, 350, roundedSkin, myStyle4);
+		var draggAreaBG = new InteractiveElement(10, 200, 350, 350, myStyle4);
 		uiDisplay.add(draggAreaBG);
 
-		var draggArea = new InteractiveElement(250, 250, 80, 80, roundedSkin, myStyle4);
+		var draggArea = new InteractiveElement(250, 250, 80, 80, myStyle4);
 		draggArea.setDragArea(10, 200, 350, 350); // x, y, width, height
 		draggArea.onPointerDown = function(b:InteractiveElement, e:PointerEvent) {
 			trace(" -----> onPointerDown", e);
@@ -211,7 +208,7 @@ class SimpleElements extends Application
 	public inline function onOver(color:Color, uiElement:InteractiveElement, e:PointerEvent) {
 		trace(" -----> onPointerOver", e);
 		uiElement.style.color = color;
-		if (uiElement.style.compatibleSkins & SkinType.Rounded > 0) {
+		if (uiElement.style is RoundBorderStyle) {
 			uiElement.style.borderColor = Color.GREY7;
 		}
 		uiElement.updateStyle();
@@ -220,7 +217,8 @@ class SimpleElements extends Application
 	public inline function onOut(color:Color, uiElement:InteractiveElement, e:PointerEvent) {
 		trace(" -----> onPointerOut", e);
 		uiElement.style.color = color;
-		if (uiElement.style.compatibleSkins & SkinType.Rounded > 0) {
+		// alternatively you can check:
+		if (uiElement.style.borderColor != null) {
 			uiElement.style.borderColor = Color.GREY5;
 		}
 		uiElement.updateStyle();
@@ -232,7 +230,7 @@ class SimpleElements extends Application
 	
 	public inline function onDown(borderColor:Color, uiElement:InteractiveElement, e:PointerEvent) {
 		trace(" -----> onPointerDown", e);
-		if (uiElement.style.compatibleSkins & SkinType.Rounded > 0) {
+		if (uiElement.style is RoundBorderStyle) {
 			uiElement.style.borderColor = borderColor;
 			//uiElement.x += 30;  uiElement.update();
 			uiElement.updateStyle();
@@ -241,7 +239,7 @@ class SimpleElements extends Application
 	
 	public inline function onUp(borderColor:Color, uiElement:InteractiveElement, e:PointerEvent) {
 		trace(" -----> onPointerUp", e);
-		if (uiElement.style.compatibleSkins & SkinType.Rounded > 0) {
+		if (uiElement.style is RoundBorderStyle) {
 			uiElement.style.borderColor = borderColor;
 			uiElement.updateStyle();
 		}

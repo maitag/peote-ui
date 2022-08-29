@@ -14,31 +14,34 @@ import peote.ui.util.Unique;
 @:structInit
 class SimpleStyle implements Style
 {
+	// style
 	public var color:Null<Color> = Color.GREY2;
 		
 	// -----------------------------------------	
 	
 	static var ID:Int = Unique.id;
 	public inline function getID():Int return ID;
-	
-	public function new(id:Int = 0, ?color:Color) {
+	public var id(default, null):Int;
+		
+	public function new(
+		id:Int = 0,
+		?color:Color
+	) {
 		this.id = id;
 		if (color != null) this.color = color;
 	}
-	
-	public var id(default, null):Int;
 	
 	public inline function copy():SimpleStyle {
 		return new SimpleStyle(id, color);
 	}
 		
-	@:keep inline function createStyleProgram():StyleProgram return new SimpleStyleProgram();
+	@:keep inline function createStyleProgram():SimpleStyleProgram return new SimpleStyleProgram();
 }
 
 
-// ------------------------------------------------------------------------
-// ------------- SimpleStyle peote-view Element and Program ---------------
-// ------------------------------------------------------------------------
+// -------------------------------------------------------------------
+// ---------------- peote-view Element and Program -------------------
+// -------------------------------------------------------------------
 
 class SimpleStyleElement implements StyleElement implements Element
 {

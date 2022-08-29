@@ -7,7 +7,6 @@ import peote.ui.util.HAlign;
 
 import lime.app.Application;
 import lime.ui.Window;
-import peote.ui.skin.SkinType;
 
 import peote.view.PeoteView;
 import peote.view.Color;
@@ -15,16 +14,14 @@ import peote.view.Color;
 import peote.ui.UIDisplay;
 import peote.ui.interactive.InteractiveElement;
 
-import peote.ui.skin.SimpleSkin;
 import peote.ui.style.SimpleStyle;
-import peote.ui.skin.RoundedSkin;
-import peote.ui.style.RoundedStyle;
+import peote.ui.style.RoundBorderStyle;
 
 import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
 
 import peote.text.Font;
-import peote.ui.fontstyle.FontStyleTiled;
+import peote.ui.style.FontStyleTiled;
 import peote.ui.interactive.InteractiveTextLine;
 
 
@@ -45,8 +42,7 @@ class MultiUIDisplays extends Application
 		}
 	}
 
-	var skin:RoundedSkin = new RoundedSkin();
-	var style:RoundedStyle = new RoundedStyle(Color.GREY1, Color.GREY5, 2.0, 20.0);
+	var style = new RoundBorderStyle(0, Color.GREY1, Color.GREY5, 2.0, 20.0);
 	
 	var font:Font<FontStyleTiled>;
 	var fontStyle:FontStyleTiled;
@@ -71,7 +67,7 @@ class MultiUIDisplays extends Application
 		
 		// ----------------------------- left UIDisplay -----------------------------------
 		
-		uiDisplayLeft = new UIDisplay(25, 0, 350, 400, Color.GREY2);
+		uiDisplayLeft = new UIDisplay(25, 0, 350, 400, Color.GREY2, [style, fontStyle]);
 		
 		uiDisplayLeft.setDragArea(0, 0, window.width, window.height);
 		
@@ -95,7 +91,7 @@ class MultiUIDisplays extends Application
 		};
 		
 		// bubbling to other Display on/off
-		var bubbleToDisplay = new InteractiveElement(290, 10, 50, 50, skin, new RoundedStyle(Color.RED, Color.GREY5, 2.0, 20.0));
+		var bubbleToDisplay = new InteractiveElement(290, 10, 50, 50, new RoundBorderStyle(0, Color.RED, Color.GREY5, 2.0, 20.0));
 		bubbleToDisplay.onPointerClick = function onClick(uiElement:InteractiveElement, e:PointerEvent) {
 			// turn bubbling to display on/off
 			uiDisplayLeft.moveEventsBubble = !uiDisplayLeft.moveEventsBubble;
@@ -118,7 +114,7 @@ class MultiUIDisplays extends Application
 
 		// ----------------------------- right UIDisplay -----------------------------------
 
-		uiDisplayRight = new UIDisplay(30, 50, 350, 400, Color.GREY3);
+		uiDisplayRight = new UIDisplay(30, 50, 350, 400, Color.GREY3, [style, fontStyle]);
 
 		uiDisplayRight.setDragArea(0, 0, window.width, window.height);
 		
@@ -140,7 +136,7 @@ class MultiUIDisplays extends Application
 		};
 		
 		// bubbling to other Display on/off
-		var bubbleToDisplay = new InteractiveElement(290, 10, 50, 50, skin, new RoundedStyle(Color.RED, Color.GREY5, 2.0, 20.0));
+		var bubbleToDisplay = new InteractiveElement(290, 10, 50, 50, new RoundBorderStyle(0, Color.RED, Color.GREY5, 2.0, 20.0));
 		bubbleToDisplay.onPointerClick = function onClick(uiElement:InteractiveElement, e:PointerEvent) {
 			// turn bubbling to display on/off
 			uiDisplayRight.moveEventsBubble = !uiDisplayRight.moveEventsBubble;
@@ -183,7 +179,7 @@ class MultiUIDisplays extends Application
 	}
 	
 	public function createButton(uiDisplay:UIDisplay, text = "", x:Int, y:Int, w:Int = 200, h:Int = 50, z:Int = 0, helpers = false, child:InteractiveElement = null ):InteractiveElement {
-		var button = new InteractiveElement(x, y, w, h, z, skin, style.copy());
+		var button = new InteractiveElement(x, y, w, h, z, style.copy());
 		button.onPointerOver = onOver.bind(Color.GREY2);
 		button.onPointerOut = onOut.bind(Color.GREY1);
 		button.onPointerDown = onDown.bind(Color.YELLOW);
@@ -205,7 +201,7 @@ class MultiUIDisplays extends Application
 			var lh = Std.int(Math.max(10, Math.min(50, h / 2.75)));
 			var gap =Std.int(Math.min(10, (h - 2 * lh) / 3));
 			
-			var bubbleToDisplay = new InteractiveElement(x + w - lw - gap, y + gap, lw, lh, z, skin, bubbleStyle);
+			var bubbleToDisplay = new InteractiveElement(x + w - lw - gap, y + gap, lw, lh, z, bubbleStyle);
 			button.overOutEventsBubbleToDisplay = false;
 			bubbleToDisplay.onPointerClick = function onClick(uiElement:InteractiveElement, e:PointerEvent) {
 				// turn bubbling to display on/off
@@ -232,7 +228,7 @@ class MultiUIDisplays extends Application
 			var lh = Std.int(Math.max(10, Math.min(50, child.height / 2.75)));
 			var gap =Std.int(Math.min(10, (child.height - 2 * lh) / 3));
 		
-			var bubbleToParent = new InteractiveElement(child.x + child.width - lw - gap, child.y + gap + lh, lw, lh, child.z, skin, bubbleStyle);
+			var bubbleToParent = new InteractiveElement(child.x + child.width - lw - gap, child.y + gap + lh, lw, lh, child.z, bubbleStyle);
 			bubbleToParent.onPointerClick = function onClick(uiElement:InteractiveElement, e:PointerEvent) {
 				// turn bubbling to parent on/off				
 				if (child.moveEventsBubbleTo == null) {
@@ -262,7 +258,7 @@ class MultiUIDisplays extends Application
 	public inline function onOver(color:Color, uiElement:InteractiveElement, e:PointerEvent) {
 		//trace(" -----> onPointerOver", e);
 		uiElement.style.color = color;
-		if (uiElement.style.compatibleSkins & SkinType.Rounded > 0) {
+		if (uiElement.style is RoundBorderStyle) {
 			uiElement.style.borderColor = Color.GREY7;
 		}
 		uiElement.updateStyle();
@@ -271,7 +267,7 @@ class MultiUIDisplays extends Application
 	public inline function onOut(color:Color, uiElement:InteractiveElement, e:PointerEvent) {
 		//trace(" -----> onPointerOut", e);
 		uiElement.style.color = color;
-		if (uiElement.style.compatibleSkins & SkinType.Rounded > 0) {
+		if (uiElement.style is RoundBorderStyle) {
 			uiElement.style.borderColor = Color.GREY5;
 		}
 		uiElement.updateStyle();
@@ -283,7 +279,7 @@ class MultiUIDisplays extends Application
 	
 	public inline function onDown(borderColor:Color, uiElement:InteractiveElement, e:PointerEvent) {
 		trace(" -----> onPointerDown", e);
-		if (uiElement.style.compatibleSkins & SkinType.Rounded > 0) {
+		if (uiElement.style is RoundBorderStyle) {
 			uiElement.style.borderColor = borderColor;
 			//uiElement.x += 30;  uiElement.update();
 			uiElement.updateStyle();
@@ -292,7 +288,7 @@ class MultiUIDisplays extends Application
 	
 	public inline function onUp(borderColor:Color, uiElement:InteractiveElement, e:PointerEvent) {
 		trace(" -----> onPointerUp", e);
-		if (uiElement.style.compatibleSkins & SkinType.Rounded > 0) {
+		if (uiElement.style is RoundBorderStyle) {
 			uiElement.style.borderColor = borderColor;
 			uiElement.updateStyle();
 		}

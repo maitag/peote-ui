@@ -50,31 +50,35 @@ class SimpleStyles extends Application
 	}
 		
 	public function onFontLoaded(fontPacked:Font<FontStylePacked>, fontTiled:Font<FontStyleTiled>) // font needs type here !
-	{					
-		
-		//var roundedStyle = new RoundedStyle();
-		var simpleStyle  = new SimpleStyle();
+	{							
+		var roundBorderStyle = new RoundBorderStyle();
+		var simpleStyle  = new SimpleStyle();  // id is 0 by default
 		var cursorStyle  = new SimpleStyle(1); // if using multiple times into new UIDisplays availableStyles they need different id 
 
 		var fontStylePacked = new FontStylePacked();
-		//var fontStylePacked = fontPacked.createFontStyle();
-		
-		var fontStyleTiled = fontTiled.createFontStyle();
+		var fontStyleTiled = fontTiled.createFontStyle(); // alternative way of creation
 
 		peoteView = new PeoteView(window);
 		uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY1 ,
-			[ simpleStyle, fontStylePacked, fontStyleTiled, cursorStyle]
+			[ roundBorderStyle, simpleStyle, fontStylePacked, fontStyleTiled, cursorStyle]
 		);
 		peoteView.addDisplay(uiDisplay);
 		
 				
 		// set different style properties
-		//roundedStyle.color = Color.BLUE;
+		roundBorderStyle.color = Color.BLUE;
 		simpleStyle.color = Color.GREEN;
 		//cursorStyle.color = Color.RED;
 
-		//var button0 = new InteractiveElement(100, 0, 100, 50, roundedStyle);
-		//uiDisplay.add(button0);
+		var button0 = new InteractiveElement(100, 0, 100, 50, roundBorderStyle);
+		uiDisplay.add(button0);
+		haxe.Timer.delay(()->{
+			if (button0.style is RoundBorderStyle) {
+				button0.style.borderColor = Color.RED;
+				button0.updateStyle();
+			}
+		}, 1000);
+		
 		var button1 = new InteractiveElement(100, 100, 100, 50, simpleStyle);
 		uiDisplay.add(button1);
 		haxe.Timer.delay(()->{ uiDisplay.remove(button1); } , 500);
@@ -84,6 +88,13 @@ class SimpleStyles extends Application
 		haxe.Timer.delay(()->{ button1.hide(); }, 2500);
 		haxe.Timer.delay(()->{ button1.x += 100; button1.updateLayout(); }, 3000);
 		haxe.Timer.delay(()->{ button1.show(); }, 3500);
+		haxe.Timer.delay(()->{
+			// without these check or (button1.style.borderColor != null) it will crash on Hashlink because SimpleStyle havn't borderColor
+			if (button1.style is RoundBorderStyle) {
+				button1.style.borderColor = Color.YELLOW;
+				button1.updateStyle();
+			}
+		}, 4000);
 
 		// to make style unique (e.g. for changing by event)
 		var simpleStyle1 = new SimpleStyle(1); //cursorStyle.copy();

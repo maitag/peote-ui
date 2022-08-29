@@ -1,43 +1,31 @@
 package;
 
 import haxe.CallStack;
-import haxe.Timer;
-import peote.ui.style.SimpleStyle;
+import haxe.Timer; 
 
 import lime.app.Application;
 import lime.ui.Window;
-import lime.graphics.RenderContext;
-import lime.ui.KeyCode;
-import lime.ui.KeyModifier;
-import lime.ui.MouseButton;
-import lime.ui.MouseWheelMode;
-import lime.ui.Touch;
 
 import peote.view.PeoteView;
 import peote.view.Color;
 
 import peote.text.Font;
 
-import peote.ui.fontstyle.FontStyleTiled;
-import peote.ui.fontstyle.FontStylePacked;
-
 import peote.ui.UIDisplay;
 import peote.ui.interactive.InteractiveTextLine;
-import peote.ui.skin.SimpleSkin;
-import peote.ui.util.TextLineSkin;
-import peote.ui.util.TextLineStyle;
-
+import peote.ui.event.PointerEvent;
+//import peote.ui.event.WheelEvent;
 import peote.ui.util.HAlign;
 import peote.ui.util.VAlign;
+import peote.ui.util.Unique;
+import peote.ui.style.interfaces.Style;
 
-
-import peote.ui.event.PointerEvent;
-import peote.ui.event.WheelEvent;
 
 #if packed 
 @packed // for ttfcompile types (gl3font)
 #end
-class FontStyle
+@:structInit
+class FontStyle implements Style
 {
 	public var color:Color = Color.GREEN;
 	public var width:Float = 20; // <- if this is MISSING -> TODO !!!!!!!!!!!!!!
@@ -48,7 +36,23 @@ class FontStyle
 	@global public var weight = 0.48;
 	#end	
 	
-	public function new() {}
+	// -----------------------------------------
+	
+	static var ID:Int = Unique.id;
+	public inline function getID():Int return ID;
+	public var id(default, null):Int;
+		
+	public function new(id:Int = 0) {
+		this.id = id;
+	}
+	
+	public var backgroundStyle:Style;
+	public var selectionStyle:Style;
+	public var cursorStyle:Style;
+
+	public inline function copy():FontStyle {
+		return new FontStyle(id);
+	}
 }
 
 class SimpleText extends Application
@@ -69,27 +73,12 @@ class SimpleText extends Application
 
 	public function startSample(window:Window)
 	{
-		peoteView = new PeoteView(window);
-		uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY1);
-		peoteView.addDisplay(uiDisplay);
-			
 		// load the FONT:
 		#if packed 
 		new Font<FontStyle>("assets/fonts/packed/hack/config.json").load( onFontLoaded );
 		#else
 		new Font<FontStyle>("assets/fonts/tiled/hack_ascii.json").load( onFontLoaded );
-		#end
-		
-		//peoteView.zoom = 2;
-
-		#if android
-		uiDisplay.mouseEnabled = false;
-		peoteView.zoom = 3;
-		#end
-		
-		// TODO: set what events to register (mouse, touch, keyboard ...)
-		UIDisplay.registerEvents(window);
-
+		#end		
 	}
 		
 	public function onFontLoaded(font:Font<FontStyle>) // don'T forget argument-type here !
@@ -97,38 +86,24 @@ class SimpleText extends Application
 		var fontStyle = new FontStyle();
 		//fontStyleInput.height = 30;
 		//fontStyleInput.width = 20;
-		
-		var simpleSkin = new SimpleSkin();
-		// TODO: give every skin a depth-index !
-		// var simpleSkinSelection = new SimpleSkin(-1);
-		
-		var textLineSkin:TextLineSkin = {
-			backgroundSkin: simpleSkin,
-			selectionSkin: simpleSkin,
-			cursorSkin: simpleSkin,
-		};
-		
-		var textLineStyle:TextLineStyle = {
-			backgroundStyle: new SimpleStyle(Color.RED),
-			selectionStyle: new SimpleStyle(Color.BLUE),
-			cursorStyle: new SimpleStyle(Color.GREEN),
-		};
-		
-		
+				
+		peoteView = new PeoteView(window);
+		uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY1, [fontStyle]);
+		peoteView.addDisplay(uiDisplay);		
 		
 		var xOffset:Int = 300;
 		var yOffset:Int = 70;
 		var x:Int = 10; 
 		var y:Int = -yOffset + 10;
 				
-		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, "hello", font, fontStyle, Color.BLACK); //, selectionFontStyle
+		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, "hello", font, fontStyle); //, selectionFontStyle
 		// alternatively it can also be:
 		//var textLine = font.createInteractiveTextLine(x, y+=yOffset, "hello", fontStyle, Color.BLACK);
 		addOverOut(textLine);
 		//textLine.height = 50;
 		//textLine.update();
 		
-		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50, xOffset:10, yOffset:10}, "hello", font, fontStyle, Color.BLACK);
+		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50, xOffset:10, yOffset:10}, "hello", font, fontStyle);
 		var timer = new Timer(200);
 		timer.run = function() {
 			textLine.xOffset--;
@@ -138,22 +113,22 @@ class SimpleText extends Application
 		}
 		addOverOut(textLine);
 			
-		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.RIGHT}, "hello", font, fontStyle, Color.BLACK);
+		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.RIGHT}, "hello", font, fontStyle);
 		addOverOut(textLine);
 			
-		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:150, hAlign:HAlign.RIGHT}, "hello", font, fontStyle, Color.BLACK);
+		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:150, hAlign:HAlign.RIGHT}, "hello", font, fontStyle);
 		addOverOut(textLine);
 			
-		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.CENTER}, "hello", font, fontStyle, Color.BLACK);
+		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.CENTER}, "hello", font, fontStyle);
 		addOverOut(textLine);
 			
-		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:150, hAlign:HAlign.CENTER}, "hello", font, fontStyle, Color.BLACK);
+		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:150, hAlign:HAlign.CENTER}, "hello", font, fontStyle);
 		addOverOut(textLine);
 			
-		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {height:50, vAlign:VAlign.BOTTOM}, "hello", font, fontStyle, Color.BLACK);
+		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {height:50, vAlign:VAlign.BOTTOM}, "hello", font, fontStyle);
 		addOverOut(textLine);
 			
-		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {height:20}, "hello", font, fontStyle, Color.BLACK);
+		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {height:20}, "hello", font, fontStyle);
 		// all changings also should work if is hidden or not added!
 		addOverOut(textLine);
 		//textLine.hide();
@@ -251,12 +226,12 @@ class SimpleText extends Application
 		fontStyleInput.width = 20;
 		fontStyleInput.color = Color.GREY5;
 		
-		var inputLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, "input", font, fontStyleInput, Color.BLACK);
+		var inputLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, "input", font, fontStyleInput);
 		//var inputLine = font.createInteractiveTextLine(x, y+=yOffset, "input", fontStyleInput, Color.BLACK);
 		inputLine.cursor = 3;
 		addInput(inputLine);
 		
-		var inputLine = new InteractiveTextLine<FontStyle>(x, y += yOffset, {width:50, xOffset:10, yOffset:10}, "input", font, fontStyleInput, 0x00000055);
+		var inputLine = new InteractiveTextLine<FontStyle>(x, y += yOffset, {width:50, xOffset:10, yOffset:10}, "input", font, fontStyleInput);
 		//inputLine.cursor = 3;
 		inputLine.cursorShow();
 		//inputLine.select(0,3);
@@ -274,21 +249,21 @@ class SimpleText extends Application
 			if (inputLine.xOffset == -25) timer.stop();
 		}
 		
-		var inputLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.RIGHT}, "input", font, fontStyleInput, Color.BLACK);
+		var inputLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.RIGHT}, "input", font, fontStyleInput);
 		addInput(inputLine);
 		
-		var inputLine = new InteractiveTextLine<FontStyle>(x, y += yOffset, {width:150, hAlign:HAlign.RIGHT}, "input", font, fontStyleInput, 0x00000055);
+		var inputLine = new InteractiveTextLine<FontStyle>(x, y += yOffset, {width:150, hAlign:HAlign.RIGHT}, "input", font, fontStyleInput);
 		inputLine.select(1, 2);
 		//inputLine.cursorShow();
 		addInput(inputLine);
 			
-		var inputLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.CENTER}, "input", font, fontStyleInput, Color.BLACK);
+		var inputLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.CENTER}, "input", font, fontStyleInput);
 		addInput(inputLine);
 			
-		var inputLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:150, height:60, hAlign:HAlign.CENTER, vAlign:VAlign.TOP}, "input", font, fontStyleInput, Color.BLACK);
+		var inputLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:150, height:60, hAlign:HAlign.CENTER, vAlign:VAlign.TOP}, "input", font, fontStyleInput);
 		addInput(inputLine);
 			
-		var inputLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {height:60}, "input", font, fontStyleInput, Color.BLACK);
+		var inputLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {height:60}, "input", font, fontStyleInput);
 		addInput(inputLine);
 			
 		var inputLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:150, height:60, vAlign:VAlign.BOTTOM}, "input", font, new FontStyle()); // new FontStyle here to not affect the other inputLines
@@ -309,6 +284,15 @@ class SimpleText extends Application
 		//uiDisplay.xOffset = 100;
 		//peoteView.zoom = 1.3;
 		//peoteView.xOffset = -170;
+
+		#if android
+		uiDisplay.mouseEnabled = false;
+		peoteView.zoom = 3;
+		#end
+		
+		// TODO: set what events to register (mouse, touch, keyboard ...)
+		UIDisplay.registerEvents(window);
+
 	}
 	
 	public function addOverOut(textLine:InteractiveTextLine<FontStyle>)

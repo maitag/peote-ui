@@ -19,16 +19,14 @@ import peote.text.Font;
 
 import peote.ui.event.PointerEvent;
 import peote.ui.interactive.InteractiveElement;
-import peote.ui.fontstyle.FontStyleTiled;
+import peote.ui.style.FontStyleTiled;
 
 import peote.ui.layouted.LayoutedUIDisplay;
 import peote.ui.layouted.LayoutedElement;
 import peote.ui.layouted.LayoutedTextLine;
 
-import peote.ui.skin.SimpleSkin;
 import peote.ui.style.SimpleStyle;
-import peote.ui.skin.RoundedSkin;
-import peote.ui.style.RoundedStyle;
+import peote.ui.style.RoundBorderStyle;
 
 
 class SimpleLayouted extends Application
@@ -36,9 +34,7 @@ class SimpleLayouted extends Application
 	var peoteView:PeoteView;
 	var layoutedUIDisplay:LayoutedUIDisplay;
 	
-	var simpleSkin = new SimpleSkin();
-	var roundedSkin = new RoundedSkin();
-		
+	var fontStyleTiled:FontStyleTiled;
 	var uiLayoutContainer:LayoutContainer;
 	
 	override function onWindowCreate():Void
@@ -55,20 +51,26 @@ class SimpleLayouted extends Application
 	public function startSample(window:Window)
 	{
 		peoteView = new PeoteView(window);
-		layoutedUIDisplay = new LayoutedUIDisplay(0, 0, window.width, window.height, Color.GREY3);
+		
+		fontStyleTiled = new FontStyleTiled(); // (at least here it needs the FontStyleTiled Type!)
+		fontStyleTiled.height = 30.0;
+		fontStyleTiled.width = 30.0;
+		fontStyleTiled.color = Color.BLACK;
+
+		layoutedUIDisplay = new LayoutedUIDisplay(0, 0, window.width, window.height, Color.GREY3, [new SimpleStyle(0), fontStyleTiled]);
 		peoteView.addDisplay(layoutedUIDisplay);
 		
 		// load the FONT:
 		new Font<FontStyleTiled>("assets/fonts/tiled/hack_ascii.json").load( onFontLoaded );
 	}
 	
-	public function onFontLoaded(font:Font<FontStyleTiled>) // don'T forget argument-type or force at least the style to FontStyleTiled-Type (see below!)
-	{ 
+	public function onFontLoaded(font:Font<FontStyleTiled>) { // don'T forget argument-type or force at least the style to FontStyleTiled-Type (see below!)
 	//public function onFontLoaded(font) {
-		var red   = new LayoutedElement(simpleSkin, new SimpleStyle(Color.RED));
-		var green = new LayoutedElement(simpleSkin, new SimpleStyle(Color.GREEN));
-		var blue  = new LayoutedElement(roundedSkin, new SimpleStyle(Color.BLUE));
-		var yellow= new LayoutedElement(roundedSkin, new SimpleStyle(Color.YELLOW));
+
+		var red   = new LayoutedElement(new SimpleStyle(0, Color.RED));
+		var green = new LayoutedElement(new SimpleStyle(0, Color.GREEN));
+		var blue  = new LayoutedElement(new SimpleStyle(0, Color.BLUE));
+		var yellow= new LayoutedElement(new SimpleStyle(0, Color.YELLOW));
 		yellow.onPointerOver = function(elem:InteractiveElement, e:PointerEvent) {
 			elem.style.color = Color.YELLOW - 0x00550000;
 			elem.updateStyle();
@@ -84,19 +86,13 @@ class SimpleLayouted extends Application
 		layoutedUIDisplay.add(blue);
 		layoutedUIDisplay.add(yellow);
 
-		var fontStyleTiled:FontStyleTiled = font.createFontStyle(); // (at least here it needs the FontStyleTiled Type!)
-		//var fontStyleTiled = font.createFontStyle();
-		//var fontStyleTiled = new FontStyleTiled();
-		fontStyleTiled.height = 30.0;
-		fontStyleTiled.width = 30.0;
-		fontStyleTiled.color = Color.BLACK;
 		
 		//var textLine1 = new LayoutedTextLine<FontStyleTiled>(0, 0, 112, 25, 0, "hello", font, fontStyleTiled, Color.BLUE);
-		var textLine1:LayoutedTextLine<FontStyleTiled> = font.createLayoutedTextLine(0, 0, {width:300, height:25}, 0, "hello world", fontStyleTiled, Color.RED);
+		var textLine1:LayoutedTextLine<FontStyleTiled> = font.createLayoutedTextLine(0, 0, {width:300, height:25}, 0, "hello world", fontStyleTiled);
 		layoutedUIDisplay.add(textLine1);
 		
 		// masked -> true
-		var textLine2 = font.createLayoutedTextLine(0, 0, 0, "hello world", font.createFontStyle(), Color.BLACK);			
+		var textLine2 = font.createLayoutedTextLine(0, 0, 0, "hello world", font.createFontStyle());			
 		layoutedUIDisplay.add(textLine2);
 		
 		uiLayoutContainer = new Box( layoutedUIDisplay , { width:Size.limit(100,700), relativeChildPositions:true },

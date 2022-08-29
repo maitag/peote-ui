@@ -2,7 +2,7 @@ package peote.ui.layouted;
 
 import peote.layout.LayoutContainer;
 import peote.ui.interactive.InteractiveElement;
-import peote.ui.skin.interfaces.Skin;
+import peote.ui.style.interfaces.Style;
 
 //@:generic class LayoutElement<O,P> extends UIElement implements peote.layout.LayoutElement
 class LayoutedElement extends InteractiveElement implements peote.layout.ILayoutElement
@@ -10,9 +10,9 @@ class LayoutedElement extends InteractiveElement implements peote.layout.ILayout
 	//var options:O;
 	//var params:P;
 	
-	public function new(xPosition:Int=0, yPosition:Int=0, width:Int=100, height:Int=100, zIndex:Int=0, skin:Skin=null, style:Dynamic=null) 
+	public function new(xPosition:Int=0, yPosition:Int=0, width:Int=100, height:Int=100, zIndex:Int=0, style:Style=null) 
 	{
-		super(xPosition, yPosition, width, height, zIndex, skin, style);
+		super(xPosition, yPosition, width, height, zIndex, style);
 	}
 	
 	// ----------- Interface: LayoutElement --------------------

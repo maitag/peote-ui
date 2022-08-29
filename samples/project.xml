@@ -7,9 +7,11 @@
 	<!-- <meta build-number="714" /> --> <!-- let set the buildnumber manual (android) -->
 	<!-- check this for GG-Playstore: <setenv name="ANDROID_GRADLE_TASK" value=":app:bundleRelease" /> -->
 	
-	<app main="SimpleElements" path="bin" file="Main" />
+	<app main="SimpleMasked" path="bin" file="Main" />
 	<!--
+		SimpleStyles,
 		SimpleElements,
+		MultiInputEvents,
 		MultiUIDisplays,
 		SimpleText,
 		SimpleLayouted,

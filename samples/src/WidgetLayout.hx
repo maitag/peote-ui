@@ -16,10 +16,8 @@ import peote.layout.ContainerType;
 
 import peote.text.Font;
 
-import peote.ui.fontstyle.FontStyleTiled;
-
-import peote.ui.skin.RoundedSkin;
-import peote.ui.style.RoundedStyle;
+import peote.ui.style.FontStyleTiled;
+import peote.ui.style.RoundBorderStyle;
 
 import peote.ui.PeoteUI;
 import peote.ui.layouted.LayoutedTextLine;
@@ -59,9 +57,7 @@ class WidgetLayout extends Application
 	
 	public function onFontLoaded(font:Font<FontStyleTiled>)
 	{
-		var mySkin = new RoundedSkin();
-		
-		var myStyle = new RoundedStyle();
+		var myStyle = new RoundBorderStyle();
 		myStyle.color = Color.GREY1;
 		myStyle.borderColor = Color.GREY5;
 		myStyle.borderSize = 4.0;
@@ -93,7 +89,6 @@ class WidgetLayout extends Application
 				width:Size.limit(200, 300),
 				height:50,
 
-				skin:mySkin,
 				style:myStyle,
 				
 				onPointerOver:onOverOut.bind(Color.BLUE),
@@ -178,7 +173,7 @@ class WidgetLayout extends Application
 		
 			// button for quick resize testing
 			new Div({
-				width:50, height:50, right:0, bottom:0, skin:mySkin, style:new RoundedStyle(),
+				width:50, height:50, right:0, bottom:0, style:new RoundedStyle(),
 				onPointerDown: function(widget:Div, e:PointerEvent) {uiResizeMode = true; ui.mouseEnabled = false;} ,
 				onPointerOver: onOverOut.bind(Color.BLUE),
 				onPointerOut: onOverOut.bind(Color.GREY1),
