@@ -208,7 +208,7 @@ class SimpleElements extends Application
 	public inline function onOver(color:Color, uiElement:InteractiveElement, e:PointerEvent) {
 		trace(" -----> onPointerOver", e);
 		uiElement.style.color = color;
-		if (uiElement.style is RoundBorderStyle) {
+		if ((uiElement.style is RoundBorderStyle)) {
 			uiElement.style.borderColor = Color.GREY7;
 		}
 		uiElement.updateStyle();
@@ -230,7 +230,7 @@ class SimpleElements extends Application
 	
 	public inline function onDown(borderColor:Color, uiElement:InteractiveElement, e:PointerEvent) {
 		trace(" -----> onPointerDown", e);
-		if (uiElement.style is RoundBorderStyle) {
+		if ((uiElement.style is RoundBorderStyle)) {
 			uiElement.style.borderColor = borderColor;
 			//uiElement.x += 30;  uiElement.update();
 			uiElement.updateStyle();
@@ -239,7 +239,7 @@ class SimpleElements extends Application
 	
 	public inline function onUp(borderColor:Color, uiElement:InteractiveElement, e:PointerEvent) {
 		trace(" -----> onPointerUp", e);
-		if (uiElement.style is RoundBorderStyle) {
+		if ((uiElement.style is RoundBorderStyle)) {
 			uiElement.style.borderColor = borderColor;
 			uiElement.updateStyle();
 		}

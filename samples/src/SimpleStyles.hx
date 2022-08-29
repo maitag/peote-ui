@@ -73,7 +73,7 @@ class SimpleStyles extends Application
 		var button0 = new InteractiveElement(100, 0, 100, 50, roundBorderStyle);
 		uiDisplay.add(button0);
 		haxe.Timer.delay(()->{
-			if (button0.style is RoundBorderStyle) {
+			if ((button0.style is RoundBorderStyle)) {
 				button0.style.borderColor = Color.RED;
 				button0.updateStyle();
 			}
@@ -90,7 +90,7 @@ class SimpleStyles extends Application
 		haxe.Timer.delay(()->{ button1.show(); }, 3500);
 		haxe.Timer.delay(()->{
 			// without these check or (button1.style.borderColor != null) it will crash on Hashlink because SimpleStyle havn't borderColor
-			if (button1.style is RoundBorderStyle) {
+			if ((button1.style is RoundBorderStyle)) {
 				button1.style.borderColor = Color.YELLOW;
 				button1.updateStyle();
 			}

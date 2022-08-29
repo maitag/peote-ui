@@ -258,7 +258,7 @@ class MultiUIDisplays extends Application
 	public inline function onOver(color:Color, uiElement:InteractiveElement, e:PointerEvent) {
 		//trace(" -----> onPointerOver", e);
 		uiElement.style.color = color;
-		if (uiElement.style is RoundBorderStyle) {
+		if ((uiElement.style is RoundBorderStyle)) {
 			uiElement.style.borderColor = Color.GREY7;
 		}
 		uiElement.updateStyle();
@@ -267,7 +267,7 @@ class MultiUIDisplays extends Application
 	public inline function onOut(color:Color, uiElement:InteractiveElement, e:PointerEvent) {
 		//trace(" -----> onPointerOut", e);
 		uiElement.style.color = color;
-		if (uiElement.style is RoundBorderStyle) {
+		if ((uiElement.style is RoundBorderStyle)) {
 			uiElement.style.borderColor = Color.GREY5;
 		}
 		uiElement.updateStyle();
@@ -279,7 +279,7 @@ class MultiUIDisplays extends Application
 	
 	public inline function onDown(borderColor:Color, uiElement:InteractiveElement, e:PointerEvent) {
 		trace(" -----> onPointerDown", e);
-		if (uiElement.style is RoundBorderStyle) {
+		if ((uiElement.style is RoundBorderStyle)) {
 			uiElement.style.borderColor = borderColor;
 			//uiElement.x += 30;  uiElement.update();
 			uiElement.updateStyle();
@@ -288,7 +288,7 @@ class MultiUIDisplays extends Application
 	
 	public inline function onUp(borderColor:Color, uiElement:InteractiveElement, e:PointerEvent) {
 		trace(" -----> onPointerUp", e);
-		if (uiElement.style is RoundBorderStyle) {
+		if ((uiElement.style is RoundBorderStyle)) {
 			uiElement.style.borderColor = borderColor;
 			uiElement.updateStyle();
 		}
