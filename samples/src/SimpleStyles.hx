@@ -92,18 +92,34 @@ class SimpleStyles extends Application
 		uiDisplay.add(button2);
 		//trace(Type.getClassName(Type.getClass(button2.style)));
 		
-/*		// set different fontStyle properties
-		fontStylePacked.backgroundStyle = roundedStyle;
-		fontStylePacked.selectionStyle = simpleStyle;
-		fontStylePacked.cursorStyle = cursorStyle;
+		// set different fontStyle properties
+		//fontStylePacked.backgroundStyle = roundedStyle;
+		//fontStylePacked.selectionStyle = simpleStyle;
+		//fontStylePacked.cursorStyle = cursorStyle;
 		fontStylePacked.color = Color.RED;
 				
 		var textLine0 = new InteractiveTextLine<FontStylePacked>(10, 100, "hello", fontPacked, fontStylePacked);
 		uiDisplay.add(textLine0);
+		haxe.Timer.delay(()->{ uiDisplay.remove(textLine0); } , 500);
+		haxe.Timer.delay(()->{ fontStylePacked.color = Color.YELLOW; textLine0.updateStyle(); }, 1000);
+		haxe.Timer.delay(()->{ uiDisplay.add(textLine0); }, 1500);
+		haxe.Timer.delay(()->{ textLine0.fontStyle.color = Color.BLUE; textLine0.updateStyle(); }, 2000);
+		haxe.Timer.delay(()->{ textLine0.hide(); }, 2500);
+		haxe.Timer.delay(()->{ textLine0.x += 100; textLine0.updateLayout(); }, 3000);
+		haxe.Timer.delay(()->{ textLine0.show(); }, 3500);
+		
+		
+		
 		// or alternative way to create:
-		var textLine1 = fontTiled.createInteractiveTextLine(20, 110, "hello", fontStyleTiled);		
+		fontStyleTiled.color = Color.RED;
+		var textLine1 = fontTiled.createInteractiveTextLine(20, 110, "hello", fontStyleTiled);
 		uiDisplay.add(textLine1);
-*/
+
+		
+		// or with default fontstyle way to create:
+		var textLine2 = fontTiled.createInteractiveTextLine(20, 220, "hello again");
+		uiDisplay.add(textLine2);
+
 		
 		//uiDisplay.x = 50;
 		//uiDisplay.zoom = 1.2;

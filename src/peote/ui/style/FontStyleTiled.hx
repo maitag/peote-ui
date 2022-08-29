@@ -38,7 +38,7 @@ class FontStyleTiled implements Style
 	// -----------------------------------------
 	
 	static var ID:Int = Unique.id;
-	inline function getID():Int return ID;
+	public inline function getID():Int return ID;
 	
 	public function new(id:Int = 0) {
 		this.id = id;
@@ -50,8 +50,7 @@ class FontStyleTiled implements Style
 	public var selectionStyle:Style;
 	public var cursorStyle:Style;
 
-	public inline function copy():FontStyleTiled
-	{
+	public inline function copy():FontStyleTiled {
 		return new FontStyleTiled(id);
 	}
 }

@@ -5,7 +5,6 @@ import peote.view.Element;
 import peote.view.Program;
 import peote.view.Buffer;
 
-import peote.ui.UIDisplay;
 import peote.ui.interactive.InteractiveElement;
 import peote.ui.style.interfaces.Style;
 import peote.ui.style.interfaces.StyleProgram;
@@ -13,7 +12,6 @@ import peote.ui.style.interfaces.StyleElement;
 import peote.ui.util.Unique;
 
 @:structInit
-@:access(peote.ui)
 class SimpleStyle implements Style
 {
 	public var color:Null<Color> = Color.GREY2;
@@ -21,18 +19,16 @@ class SimpleStyle implements Style
 	// -----------------------------------------	
 	
 	static var ID:Int = Unique.id;
-	inline function getID():Int return ID;
+	public inline function getID():Int return ID;
 	
-	public function new(id:Int = 0, ?color:Color) 
-	{
+	public function new(id:Int = 0, ?color:Color) {
 		this.id = id;
 		if (color != null) this.color = color;
 	}
 	
 	public var id(default, null):Int;
 	
-	public inline function copy():SimpleStyle
-	{
+	public inline function copy():SimpleStyle {
 		return new SimpleStyle(id, color);
 	}
 		

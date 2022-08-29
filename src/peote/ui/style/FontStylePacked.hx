@@ -38,7 +38,7 @@ class FontStylePacked implements Style
 	// -----------------------------------------
 	
 	static var ID:Int = Unique.id;
-	inline function getID():Int return ID;
+	public inline function getID():Int return ID;
 	
 	public function new(id:Int = 0) {
 		this.id = id;
@@ -50,8 +50,7 @@ class FontStylePacked implements Style
 	public var selectionStyle:Style;
 	public var cursorStyle:Style;
 
-	public inline function copy():FontStylePacked
-	{
+	public inline function copy():FontStylePacked {
 		return new FontStylePacked(id);
 	}
 }

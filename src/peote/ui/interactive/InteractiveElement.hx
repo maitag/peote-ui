@@ -67,7 +67,8 @@ class InteractiveElement extends Interactive
 	
 	override inline function onRemoveVisibleFromDisplay()
 	{		
-		if (isVisible && styleElement != null) styleProgram.removeElement(styleElement);
+		//if (isVisible && styleElement != null) styleProgram.removeElement(styleElement);
+		if (styleElement != null) styleProgram.removeElement(styleElement);
 	}
 
 	
