@@ -1,12 +1,13 @@
 package peote.ui.style;
 
 import peote.view.Color;
-import peote.ui.util.Unique;
 import peote.ui.style.interfaces.Style;
+import peote.ui.util.Unique;
+
 
 //@multiSlot    // multiple slots per texture to store multiple unicode-ranges
 //@multiTexture // multiple textures to store multiple unicode-ranges
-//@useInt // TODO
+@:structInit
 class FontStyleTiled implements Style
 {
 
@@ -30,15 +31,27 @@ class FontStyleTiled implements Style
 	// additional spacing after each letter
 	//@global public var letterSpace:Float = 2.0;
 	//public var letterSpace:Float = 2.0;
-		
+
+	
 	//public var bgColor:Color = Color.BLACK;
+			
+	// -----------------------------------------
 	
-	// -------------------------------
+	static var ID:Int = Unique.id;
+	inline function getID():Int return ID;
 	
+	public function new(id:Int = 0) {
+		this.id = id;
+	}
+	
+	public var id(default, null):Int;
+
 	public var backgroundStyle:Style;
 	public var selectionStyle:Style;
 	public var cursorStyle:Style;
 
-	public var id(default, never) = Unique.id;
-	public function new() {}
+	public inline function copy():FontStyleTiled
+	{
+		return new FontStyleTiled(id);
+	}
 }

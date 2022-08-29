@@ -2,10 +2,9 @@ package peote.ui.style.interfaces;
 
 import peote.ui.interactive.InteractiveElement;
 
+@:allow(peote.ui)
 interface StyleElement 
 {
-	private function update(uiElement:InteractiveElement):Void;
-	private function updateStyle(uiElement:InteractiveElement):Void;
-	private function updateLayout(uiElement:InteractiveElement):Void;
-	private function remove():Bool;
+	private function setStyle(style:Dynamic):Void;
+	private function setLayout(uiElement:InteractiveElement):Void;
 }

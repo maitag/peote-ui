@@ -11,6 +11,7 @@ import peote.text.Font;
 
 import peote.ui.UIDisplay;
 import peote.ui.interactive.InteractiveTextLine;
+import peote.ui.interactive.InteractiveElement;
 
 import peote.ui.util.HAlign;
 import peote.ui.util.VAlign;
@@ -53,46 +54,57 @@ class SimpleStyles extends Application
 		
 		//var roundedStyle = new RoundedStyle();
 		var simpleStyle  = new SimpleStyle();
-		//var cursorStyle  = new SimpleStyle();
+		var cursorStyle  = new SimpleStyle(1); // if using multiple times into new UIDisplays availableStyles they need different id 
 
-		//var fontStylePacked = new FontStylePacked(fontPacked);
-		var fontStylePacked = new FontStylePacked(); trace(fontStylePacked.id);
-		//var fontStyleTiled = new FontStyleTiled(fontTiled);
-
+		var fontStylePacked = new FontStylePacked();
 		//var fontStylePacked = fontPacked.createFontStyle();
-		var fontStyleTiled = fontTiled.createFontStyle(); trace(fontStyleTiled.id);
+		
+		var fontStyleTiled = fontTiled.createFontStyle();
 
 		peoteView = new PeoteView(window);
 		uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY1 ,
-			[simpleStyle, fontStylePacked, fontStyleTiled]
+			[ simpleStyle, fontStylePacked, fontStyleTiled, cursorStyle]
 		);
 		peoteView.addDisplay(uiDisplay);
 		
-/*		// set different style properties
-		roundedStyle.color = Color.BLUE;
+				
+		// set different style properties
+		//roundedStyle.color = Color.BLUE;
 		simpleStyle.color = Color.GREEN;
-		cursorStyle.color = Color.RED;
+		//cursorStyle.color = Color.RED;
 
-		var button0 = new InteractiveElement(x, y, w, h, roundedStyle);
-		var button1 = new InteractiveElement(x, y, w, h, simpleStyle);
+		//var button0 = new InteractiveElement(100, 0, 100, 50, roundedStyle);
+		//uiDisplay.add(button0);
+		var button1 = new InteractiveElement(100, 100, 100, 50, simpleStyle);
+		uiDisplay.add(button1);
+		haxe.Timer.delay(()->{ uiDisplay.remove(button1); } , 500);
+		haxe.Timer.delay(()->{ simpleStyle.color = Color.RED; button1.updateStyle(); }, 1000);
+		haxe.Timer.delay(()->{ uiDisplay.add(button1); }, 1500);
+		haxe.Timer.delay(()->{ button1.style.color = Color.BLUE; button1.updateStyle(); }, 2000);
+		haxe.Timer.delay(()->{ button1.hide(); }, 2500);
+		haxe.Timer.delay(()->{ button1.x += 100; button1.updateLayout(); }, 3000);
+		haxe.Timer.delay(()->{ button1.show(); }, 3500);
 
 		// to make style unique (e.g. for changing by event)
-		var simpleStyle1 = simpleStyle.clone();
+		var simpleStyle1 = new SimpleStyle(1); //cursorStyle.copy();
 		simpleStyle1.color = Color.YELLOW;
-		var button2 = new InteractiveElement(x, y, w, h, simpleStyle1);
-
-		// set different style properties
+		var button2 = new InteractiveElement(100, 200, 100, 50, simpleStyle1);
+		uiDisplay.add(button2);
+		//trace(Type.getClassName(Type.getClass(button2.style)));
+		
+/*		// set different fontStyle properties
 		fontStylePacked.backgroundStyle = roundedStyle;
 		fontStylePacked.selectionStyle = simpleStyle;
 		fontStylePacked.cursorStyle = cursorStyle;
-*/		fontStylePacked.color = Color.RED;
+		fontStylePacked.color = Color.RED;
 				
 		var textLine0 = new InteractiveTextLine<FontStylePacked>(10, 100, "hello", fontPacked, fontStylePacked);
 		uiDisplay.add(textLine0);
 		// or alternative way to create:
 		var textLine1 = fontTiled.createInteractiveTextLine(20, 110, "hello", fontStyleTiled);		
 		uiDisplay.add(textLine1);
-
+*/
+		
 		//uiDisplay.x = 50;
 		//uiDisplay.zoom = 1.2;
 		//uiDisplay.xOffset = 100;

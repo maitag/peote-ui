@@ -12,16 +12,13 @@ import peote.ui.event.WheelEvent;
 private typedef IAElementEventParams = InteractiveElement->PointerEvent->Void;
 private typedef IAElementWheelEventParams = InteractiveElement->WheelEvent->Void;
 
-@:allow(peote.ui)
-@:access(peote.ui.style)
 class InteractiveElement extends Interactive
 {	
-	public var style:Dynamic = null;
+	public var style:Dynamic = null; // TODO: if changed dynamically make all more SAVE by checking styleId!
 
-	public var styleProgram:StyleProgram = null;
-	var styleElement:StyleElement;
-	
-	
+	var styleProgram:StyleProgram = null;
+	var styleElement:StyleElement = null;
+		
 	public function new(xPosition:Int=0, yPosition:Int=0, width:Int=100, height:Int=100, zIndex:Int=0, style:Style=null)
 	{
 		super(xPosition, yPosition, width, height, zIndex);		
@@ -31,28 +28,46 @@ class InteractiveElement extends Interactive
 	
 	override inline function updateVisibleStyle():Void
 	{
-		if (style != null) styleProgram.updateElementStyle(uiDisplay, this);
+		if (style != null) {
+			styleElement.setStyle(style);
+			if (isVisible) styleProgram.update(styleElement);
+		}
 	}
 	
 	override inline function updateVisibleLayout():Void
 	{
-		if (style != null) styleProgram.updateElementLayout(uiDisplay, this);
+		if (style != null) {
+			styleElement.setLayout(this);
+			if (isVisible) styleProgram.update(styleElement);
+		}
 	}
 	
 	override inline function updateVisible():Void
 	{
-		if (style != null) styleProgram.updateElement(uiDisplay, this);
+		if (style != null) {
+			styleElement.setStyle(style);
+			styleElement.setLayout(this);
+			if (isVisible) styleProgram.update(styleElement);
+		}
 	}
 	
 	// -----------------
 	override inline function onAddVisibleToDisplay()
 	{
-		if (style != null) styleProgram.addElement(uiDisplay, this);
+		if (styleElement != null) styleProgram.addElement(styleElement);
+		else if (style != null)
+		{
+			var stylePos = uiDisplay.usedStyleID.indexOf( style.getID() | (style.id << 16) );
+			if (stylePos < 0) throw('Error by creating new InteractiveElement. The style "${Type.getClassName(Type.getClass(style))}(${style.id})" is not inside the availableStyle list of UIDisplay.');
+			styleProgram = cast uiDisplay.usedStyleProgram.get(stylePos);
+			if (styleProgram == null) uiDisplay.addStyleProgram(cast styleProgram = style.createStyleProgram(), stylePos);
+			styleProgram.addElement(styleElement = styleProgram.createElement(this));
+		}
 	}
 	
 	override inline function onRemoveVisibleFromDisplay()
 	{		
-		if (style != null) styleProgram.removeElement(uiDisplay, this);
+		if (isVisible && styleElement != null) styleProgram.removeElement(styleElement);
 	}
 
 	

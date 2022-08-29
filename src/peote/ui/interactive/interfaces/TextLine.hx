@@ -1,7 +1,7 @@
 package peote.ui.interactive.interfaces;
 
-
-interface TextLine 
+@:allow(peote.ui.UIDisplay)
+interface TextLine
 {
 	public function setInputFocus(e:peote.ui.event.PointerEvent = null):Void;
 	public function removeInputFocus():Void;

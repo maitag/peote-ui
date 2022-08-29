@@ -1,7 +1,6 @@
 package peote.ui.style;
 
 import peote.view.Color;
-import peote.ui.skin.SkinType;
 import peote.view.Element;
 import peote.view.Program;
 import peote.view.Buffer;
@@ -18,24 +17,26 @@ import peote.ui.util.Unique;
 class SimpleStyle implements Style
 {
 	public var color:Null<Color> = Color.GREY2;
+		
+	// -----------------------------------------	
 	
+	static var ID:Int = Unique.id;
+	inline function getID():Int return ID;
 	
-	public function new(?color:Color) 
+	public function new(id:Int = 0, ?color:Color) 
 	{
+		this.id = id;
 		if (color != null) this.color = color;
 	}
 	
-	public var id(default, never) = Unique.id;
-	
-	function createStyleProgram():StyleProgram {
-		return new SimpleStyleProgram();
-	}
+	public var id(default, null):Int;
 	
 	public inline function copy():SimpleStyle
 	{
-		return new SimpleStyle(color);
+		return new SimpleStyle(id, color);
 	}
-	
+		
+	@:keep inline function createStyleProgram():StyleProgram return new SimpleStyleProgram();
 }
 
 
@@ -45,9 +46,10 @@ class SimpleStyle implements Style
 
 class SimpleStyleElement implements StyleElement implements Element
 {
-	// from style
+	// style
 	@color var color:Color;
 		
+	// layout
 	@posX var x:Int=0;
 	@posY var y:Int=0;	
 	@sizeX @varying var w:Int=100;
@@ -55,49 +57,19 @@ class SimpleStyleElement implements StyleElement implements Element
 	@zIndex var z:Int = 0;
 	
 	//var OPTIONS = {  };
-	
-	// TODO: try to remove this and use from StyleProgram instead!
-	var buffer:Buffer<SimpleStyleElement>;
-	
-	inline function new(uiElement:InteractiveElement, buffer:Buffer<SimpleStyleElement>)
+		
+	public inline function new(uiElement:InteractiveElement)
 	{
-		this.buffer = buffer;
-		_updateStyle(uiElement);
-		_updateLayout(uiElement);
-		buffer.addElement(this);
+		setStyle(uiElement.style);
+		setLayout(uiElement);
 	}
 	
-	inline function update(uiElement:InteractiveElement)
+	inline function setStyle(style:Dynamic)
 	{
-		_updateStyle(uiElement);
-		_updateLayout(uiElement);
-		if (uiElement.isVisible) buffer.updateElement(this);
+		color = style.color;
 	}
 	
-	inline function updateLayout(uiElement:InteractiveElement)
-	{
-		_updateLayout(uiElement);
-		if (uiElement.isVisible) buffer.updateElement(this);
-	}
-	
-	inline function updateStyle(uiElement:InteractiveElement)
-	{
-		_updateStyle(uiElement);
-		if (uiElement.isVisible) buffer.updateElement(this);
-	}
-	
-	inline function remove():Bool
-	{
-		buffer.removeElement(this);
-		return (buffer.length() == 0);
-	}
-	
-	inline function _updateStyle(uiElement:InteractiveElement)
-	{
-		color = uiElement.style.color;
-	}
-	
-	inline function _updateLayout(uiElement:InteractiveElement)
+	inline function setLayout(uiElement:InteractiveElement)
 	{
 		z = uiElement.z;
 		
@@ -122,70 +94,33 @@ class SimpleStyleElement implements StyleElement implements Element
 	}
 }
 
-@:access(peote.ui)
-class SimpleStyleProgram implements StyleProgram
+class SimpleStyleProgram extends Program implements StyleProgram
 {
-	var displays:Int = 0;
-	
-	var program:Program;
-	var buffer:Buffer<SimpleStyleElement>;
+	inline function getBuffer():Buffer<SimpleStyleElement> return cast buffer;
 	
 	public function new()
 	{
-		var buffer = new Buffer<SimpleStyleElement>(16, 8);
-		var program = createProgram(buffer);
+		super(new Buffer<SimpleStyleElement>(16, 8));
 	}
 
-	inline function addElement(uiDisplay:UIDisplay, uiElement:InteractiveElement)
+	inline function createElement(uiElement:InteractiveElement):StyleElement
 	{
-/*		if (uiDisplay.skinNotAdded(displays))
-		{
-			displays |= 1 << uiDisplay.number;
-			var buffer = new Buffer<SimpleStyleElement>(16, 8);
-			var program = createProgram(buffer);
-			displayProgram = program;
-			displayBuffer = buffer;
-			uiDisplay.addSkinProgram(program);
-		}
-*/		
-		uiElement.styleElement = new SimpleStyleElement(uiElement, buffer);
+		return new SimpleStyleElement(uiElement);
 	}
 	
-	// TODO: try out all here by using the buffer
-	
-	inline function removeElement(uiDisplay:UIDisplay, uiElement:InteractiveElement):Bool
+	inline function addElement(styleElement:StyleElement)
 	{
-/*		if (uiElement.isVisible && uiElement.styleElement.remove()) 
-		{
-			// for the last element into buffer remove from displays bitmask
-			displays &= ~(1 << uiDisplay.number);
-			
-			uiDisplay.removeSkinProgram(displayProgram);
-						
-			// TODO:
-			//d.buffer.clear();
-			//d.program.clear();
-		}
-*/	
-		return uiElement.styleElement.remove(); // return true id it was the last element
+		getBuffer().addElement(cast styleElement);
 	}
 	
-	inline function updateElement(uiDisplay:UIDisplay, uiElement:InteractiveElement)
+	inline function update(styleElement:StyleElement)
 	{
-		uiElement.styleElement.update(uiElement);
+		getBuffer().updateElement(cast styleElement);
 	}
 	
-	inline function updateElementStyle(uiDisplay:UIDisplay, uiElement:InteractiveElement)
+	inline function removeElement(styleElement:StyleElement)
 	{
-		uiElement.styleElement.updateStyle(uiElement);
+		getBuffer().removeElement(cast styleElement);
 	}
 	
-	inline function updateElementLayout(uiDisplay:UIDisplay, uiElement:InteractiveElement)
-	{
-		uiElement.styleElement.updateLayout(uiElement);
-	}
-		
-	inline function createProgram(buffer:Buffer<SimpleStyleElement>):Program {
-		return new Program(buffer);
-	}
 }

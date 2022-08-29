@@ -28,8 +28,8 @@ import peote.ui.interactive.interfaces.TextLine;
 
 import peote.ui.style.interfaces.Style;
 
-@:access(peote.view, peote.ui.interactive)
-@:allow(peote.ui.interactive, peote.ui.skin)
+@:access(peote.view)
+@:allow(peote.ui.interactive)
 class UIDisplay extends Display
 {
 	#if peoteui_maxDisplays
@@ -70,15 +70,22 @@ class UIDisplay extends Display
 	
 	var maxTouchpoints:Int;
 	
-	public function new(x:Int, y:Int, width:Int, height:Int, color:Color=0x00000000, maxTouchpoints:Int = 3, styles:Array<Style>) 
+	var usedStyleProgram:Vector<Program>;
+	var usedStyleID = new Array<Int>();
+		
+	public function new(x:Int, y:Int, width:Int, height:Int, color:Color=0x00000000, maxTouchpoints:Int = 3, availableStyles:Array<Style>) 
 	{
 		number = getFreeNumber();  trace('MAX_DISPLAYs: $MAX_DISPLAYS', 'UIDisplay NUMBER is $number');
 		
 		super(x, y, width, height, color);
 		
 		// -----------------
-		usedStyleId = [for (style in styles) style.id];
-		usedPrograms = new Vector<Program>(usedStyleId.length);
+		for (style in availableStyles) {
+			var id = style.getID() | (style.id << 16);
+			if (usedStyleID.contains(id)) throw('Error by creating new UIDisplay. Give each of the styles "${Type.getClassName(Type.getClass(style))}" an unique ID to have multiple of them into the availableStyles list!');
+			usedStyleID.push(id);
+		}
+		usedStyleProgram = new Vector<Program>(availableStyles.length);
 		
 		// elements for mouseOver/Out ----------------------
 		movePickBuffer = new Buffer<Pickable>(16, 8); // TODO: fill with constants
@@ -156,55 +163,33 @@ class UIDisplay extends Display
 	}
 
 	// -------------------------------------------------------
-	var usedStyleId:Array<Int>; // [3, 4, 1, 8]
-	var usedPrograms:Vector<Program>; // [styleProgram3, styleProgram4, fontProgram1, styleProgram8]
 	
-	inline function skinNotAdded(displays:Int):Bool return ((displays & (1 << number))==0);
-	
-	inline function addSkinProgram(skinProgram:Program) {
-		this.addProgram(skinProgram);		
-	}
-	
-	inline function removeSkinProgram(skinProgram:Program) {
-		this.removeProgram(skinProgram);
-	}
-	
-	inline function addFontProgram(fontProgram:Program, styleId:Int) {
-		addStyleProgram(fontProgram, styleId);
-	}
-	
-	inline function removeFontProgram(fontProgram:Program, styleId:Int) {
-		removeStyleProgram(fontProgram, styleId);
-	}
-	
-	inline function addStyleProgram(program:Program, styleId:Int) {
-		var pos = usedStyleId.indexOf(styleId);
-		// TODO: into this case maybe put it at the end instead!
-		if (pos < 0) throw('Error, style (id=$styleId) was not set by creating new UIDisplay(...<[styles]>)');
-		
-		usedPrograms.set(pos, program);
+	inline function addStyleProgram(program:Program, stylePos:Int) {
+		usedStyleProgram.set(stylePos, program);
 		var afterProgram:Program = null;
-		while (pos-- > 0) {
-			afterProgram = usedPrograms.get(pos);
+		while (stylePos-- > 0) {
+			afterProgram = usedStyleProgram.get(stylePos);
 			if (afterProgram != null) break;		
 		}
 		this.addProgram(program, afterProgram, (afterProgram==null) ? true : false);
 	}
 	
-	inline function removeStyleProgram(program:Program, styleId:Int) {
-		usedPrograms.set(usedStyleId.indexOf(styleId), null);
-		this.removeProgram(program);
-	}
-	
-	
+	// TODO: to clean up all programs
+	//inline function removeStyleProgram(program:Program, stylePos:Int) {
+		//trace('REMOVE STYLEPROGRAM $stylePos');
+		//usedStyleProgram.set(stylePos, null);
+		//this.removeProgram(program);
+	//}
+		
 	
 	// -------------------------------------------------------
 	
 	public function add(uiElement:Interactive):Void {
 		//TODO
 		if (uiElement.isVisible && uiElement.uiDisplay != null) {
-			if (uiElement.uiDisplay == this) return; // is already added
-			uiElement.uiDisplay.remove(uiElement); // remove from old one
+			//if (uiElement.uiDisplay == this) return; // is already added
+			//else 
+			throw('Error, uiElement is already added to UIDisplay ${uiElement.uiDisplay.number}');
 		}
 
 		uiElements.push(uiElement);
