@@ -39,9 +39,9 @@ class SimpleElements extends Application
 		peoteView = new PeoteView(window);
 		
 		var roundBorderStyle = new RoundBorderStyle();
-		var simpleStyle  = new SimpleStyle();
+		var simpleStyle = new SimpleStyle();
 		
-		uiDisplay = new UIDisplay(20, 20, window.width-40, window.height-40, Color.GREY1, [roundBorderStyle, simpleStyle]);
+		uiDisplay = new UIDisplay(20, 20, window.width-40, window.height-40, Color.GREY1);
 		peoteView.addDisplay(uiDisplay);
 		
 		uiDisplay.onPointerOver  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplay onPointerOver",e); };
@@ -75,7 +75,7 @@ class SimpleElements extends Application
 		button1.onPointerUp = onUp.bind(Color.GREY5);   // only fires if there was some down before!
 		button1.onPointerClick = onClick;
 		
-		var myStyle2 = new RoundBorderStyle(0, Color.GREY1, Color.GREY5);
+		var myStyle2 = new RoundBorderStyle(Color.GREY1, Color.GREY5);
 		myStyle2.borderSize = 2.0;
 
 		trace("NEW BUTTON -----");
@@ -118,7 +118,7 @@ class SimpleElements extends Application
 		
 		//var dragger = new InteractiveElement(10, 140, 100, 60, 1, myStyle3);
 		//var dragger = new InteractiveElement(dragBackground.x, dragBackground.y, 100, 60, 1, myStyle2);
-		var dragger = new InteractiveElement(dragBackground.x, dragBackground.y, 100, 60, 1, new RoundBorderStyle(0, Color.BLUE,Color.GREY5));
+		var dragger = new InteractiveElement(dragBackground.x, dragBackground.y, 100, 60, 1, new RoundBorderStyle(Color.BLUE,Color.GREY5));
 		//var dragger = new InteractiveElement(dragBackground.x, dragBackground.y, 100, 60, 1, new SimpleStyle(Color.GREEN));
 		
 		dragBackground.onMouseWheel = function(b:InteractiveElement, e:WheelEvent) {

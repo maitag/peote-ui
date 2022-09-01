@@ -283,14 +283,15 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		else
 		{
 			var fontStylePos = uiDisplay.usedStyleID.indexOf( fontStyle.getID() | (fontStyle.id << 16) );
-			if (fontStylePos < 0) throw('Error by creating new InteractiveTextLine. The style "'+Type.getClassName(Type.getClass(fontStyle))+"("+fontStyle.id+')" is not inside the availableStyle list of UIDisplay.');
-			fontProgram = cast uiDisplay.usedStyleProgram.get(fontStylePos);
-			if (fontProgram == null) {
-				trace("create new fontProgram for uiDisplay");
-				fontProgram = font.createFontProgram(fontStyle, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end);
-				uiDisplay.addStyleProgram(cast fontProgram, fontStylePos);
+			if (fontStylePos < 0) {
+				if (uiDisplay.autoAddStyles) uiDisplay.autoAddStyleProgram( cast fontProgram = font.createFontProgram(fontStyle, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end), fontStyle.getID() | (fontStyle.id << 16) , true );
+				else throw('Error by creating new InteractiveTextLine. The style "'+Type.getClassName(Type.getClass(fontStyle))+'" id='+fontStyle.id+' is not inside the availableStyle list of UIDisplay.');
+			} else {
+				fontProgram = cast uiDisplay.usedStyleProgram[fontStylePos];
+				if (fontProgram == null) uiDisplay.addProgramAtStylePos(cast fontProgram = font.createFontProgram(fontStyle, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end), fontStylePos);
 			}
 			line = fontProgram.createLine(text, x, y, (autoWidth) ? null : width, xOffset, fontStyle);
+			
 			text = null; // let GC clear the string (after this.line is created this.text is allways get by fontProgram)
 			
 			// vertically text alignment

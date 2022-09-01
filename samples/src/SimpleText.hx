@@ -38,7 +38,7 @@ class FontStyle implements Style
 	
 	// -----------------------------------------
 	
-	static var ID:Int = Unique.id;
+	static var ID:Int = Unique.fontStyleID;
 	public inline function getID():Int return ID;
 	public var id(default, null):Int;
 		
@@ -88,7 +88,7 @@ class SimpleText extends Application
 		//fontStyleInput.width = 20;
 				
 		peoteView = new PeoteView(window);
-		uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY1, [fontStyle]);
+		uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY1);
 		peoteView.addDisplay(uiDisplay);		
 		
 		var xOffset:Int = 300;
@@ -103,7 +103,7 @@ class SimpleText extends Application
 		//textLine.height = 50;
 		//textLine.update();
 		
-		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50, xOffset:10, yOffset:10}, "hello", font, fontStyle);
+		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50, xOffset:10, yOffset:10}, "hello", font);
 		var timer = new Timer(200);
 		timer.run = function() {
 			textLine.xOffset--;
@@ -113,22 +113,22 @@ class SimpleText extends Application
 		}
 		addOverOut(textLine);
 			
-		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.RIGHT}, "hello", font, fontStyle);
+		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.RIGHT}, "hello", font);
 		addOverOut(textLine);
 			
-		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:150, hAlign:HAlign.RIGHT}, "hello", font, fontStyle);
+		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:150, hAlign:HAlign.RIGHT}, "hello", font);
 		addOverOut(textLine);
 			
-		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.CENTER}, "hello", font, fontStyle);
+		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.CENTER}, "hello", font);
 		addOverOut(textLine);
 			
-		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:150, hAlign:HAlign.CENTER}, "hello", font, fontStyle);
+		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {width:150, hAlign:HAlign.CENTER}, "hello", font);
 		addOverOut(textLine);
 			
-		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {height:50, vAlign:VAlign.BOTTOM}, "hello", font, fontStyle);
+		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {height:50, vAlign:VAlign.BOTTOM}, "hello", font);
 		addOverOut(textLine);
 			
-		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {height:20}, "hello", font, fontStyle);
+		var textLine = new InteractiveTextLine<FontStyle>(x, y+=yOffset, {height:20}, "hello", font);
 		// all changings also should work if is hidden or not added!
 		addOverOut(textLine);
 		//textLine.hide();

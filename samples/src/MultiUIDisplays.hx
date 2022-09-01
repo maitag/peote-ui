@@ -14,7 +14,6 @@ import peote.view.Color;
 import peote.ui.UIDisplay;
 import peote.ui.interactive.InteractiveElement;
 
-import peote.ui.style.SimpleStyle;
 import peote.ui.style.RoundBorderStyle;
 
 import peote.ui.event.PointerEvent;
@@ -42,32 +41,31 @@ class MultiUIDisplays extends Application
 		}
 	}
 
-	var style = new RoundBorderStyle(0, Color.GREY1, Color.GREY5, 2.0, 20.0);
+	var style = new RoundBorderStyle(Color.GREY1, Color.GREY5, 2.0, 20.0);
 	
 	var font:Font<FontStyleTiled>;
 	var fontStyle:FontStyleTiled;
 	
 	public function startSample(window:Window)
 	{
-		fontStyle = new FontStyleTiled();
-		fontStyle.height = 12;
-		fontStyle.width = 8;
-		
 		// load the FONT:
 		new Font<FontStyleTiled>("assets/fonts/tiled/hack_ascii.json").load( onFontLoaded );
 	}
 	
 	public function onFontLoaded(font:Font<FontStyleTiled>)
 	{
-		this.font = font;
 		peoteView = new PeoteView(window);
 
-		var bgDisplay = new peote.view.Display(10, 10, window.width-20, window.height-20, Color.GREY1);
-		//peoteView.addDisplay(bgDisplay);		
+		this.font = font;
+
+		fontStyle = new FontStyleTiled();
+		fontStyle.color = Color.GREY6;
+		fontStyle.height = 12;
+		fontStyle.width = 8;
 		
 		// ----------------------------- left UIDisplay -----------------------------------
 		
-		uiDisplayLeft = new UIDisplay(25, 0, 350, 400, Color.GREY2, [style, fontStyle]);
+		uiDisplayLeft = new UIDisplay(25, 0, 350, 400, Color.GREY2);
 		
 		uiDisplayLeft.setDragArea(0, 0, window.width, window.height);
 		
@@ -91,7 +89,7 @@ class MultiUIDisplays extends Application
 		};
 		
 		// bubbling to other Display on/off
-		var bubbleToDisplay = new InteractiveElement(290, 10, 50, 50, new RoundBorderStyle(0, Color.RED, Color.GREY5, 2.0, 20.0));
+		var bubbleToDisplay = new InteractiveElement(290, 10, 50, 50, new RoundBorderStyle(Color.RED, Color.GREY5, 2.0, 20.0));
 		bubbleToDisplay.onPointerClick = function onClick(uiElement:InteractiveElement, e:PointerEvent) {
 			// turn bubbling to display on/off
 			uiDisplayLeft.moveEventsBubble = !uiDisplayLeft.moveEventsBubble;
@@ -114,7 +112,7 @@ class MultiUIDisplays extends Application
 
 		// ----------------------------- right UIDisplay -----------------------------------
 
-		uiDisplayRight = new UIDisplay(30, 50, 350, 400, Color.GREY3, [style, fontStyle]);
+		uiDisplayRight = new UIDisplay(30, 50, 350, 400, Color.GREY3);
 
 		uiDisplayRight.setDragArea(0, 0, window.width, window.height);
 		
@@ -136,7 +134,7 @@ class MultiUIDisplays extends Application
 		};
 		
 		// bubbling to other Display on/off
-		var bubbleToDisplay = new InteractiveElement(290, 10, 50, 50, new RoundBorderStyle(0, Color.RED, Color.GREY5, 2.0, 20.0));
+		var bubbleToDisplay = new InteractiveElement(290, 10, 50, 50, new RoundBorderStyle(Color.RED, Color.GREY5, 2.0, 20.0));
 		bubbleToDisplay.onPointerClick = function onClick(uiElement:InteractiveElement, e:PointerEvent) {
 			// turn bubbling to display on/off
 			uiDisplayRight.moveEventsBubble = !uiDisplayRight.moveEventsBubble;

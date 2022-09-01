@@ -15,40 +15,58 @@ import peote.ui.util.Unique;
 class RoundBorderStyle implements Style
 {	
 	// style
-	public var color       :Null<Color> = Color.GREY2;
+	public var color       :Color = Color.GREY2;
+	public var borderColor :Color = Color.GREY6;
+	public var borderSize  :Float =  4.0;
+	public var borderRadius:Float = 20.0;
+/*	public var color       :Null<Color> = Color.GREY2;
 	public var borderColor :Null<Color> = Color.GREY6;
 	public var borderSize  :Null<Float> =  4.0;
 	public var borderRadius:Null<Float> = 20.0;
-	
+*/	
 	// -----------------------------------------	
 	
-	static var ID:Int = Unique.id;
+	static var ID:Int = Unique.styleID;
 	public inline function getID():Int return ID;
-	public var id(default, null):Int;
+	public var id(default, null):Int = 0;
 		
 	public function new(
-		id:Int = 0,
 		?color       :Null<Color>,
 		?borderColor :Null<Color>,
 		?borderSize  :Null<Float>,
 		?borderRadius:Null<Float> 
 	) {
-		this.id = id;
 		if (color        != null) this.color        = color;		
 		if (borderColor  != null) this.borderColor  = borderColor;
 		if (borderSize   != null) this.borderSize   = borderSize;
 		if (borderRadius != null) this.borderRadius = borderRadius;
 	}
 	
-	public inline function copy(id:Int = 0):RoundBorderStyle
-	{
-		return new RoundBorderStyle(
-			id,
-			color,
-			borderColor,
-			borderSize,
-			borderRadius
+	static public function createById(id:Int, ?style:RoundBorderStyle,
+		?color:Null<Color>,
+		?borderColor :Null<Color>,
+		?borderSize  :Null<Float>,
+		?borderRadius:Null<Float> 
+	):RoundBorderStyle {
+		var newStyle = (style != null) ? style.copy(color, borderColor, borderSize, borderRadius) : new RoundBorderStyle(color, borderColor, borderSize, borderRadius);
+		newStyle.id = id;
+		return newStyle;
+	}
+	
+	public inline function copy(
+		?color       :Null<Color>,
+		?borderColor :Null<Color>,
+		?borderSize  :Null<Float>,
+		?borderRadius:Null<Float> 
+	):RoundBorderStyle {
+		var newStyle = new RoundBorderStyle(
+			(color        != null) ? color        : this.color,		
+			(borderColor  != null) ? borderColor  : this.borderColor,
+			(borderSize   != null) ? borderSize   : this.borderSize,
+			(borderRadius != null) ? borderRadius : this.borderRadius
 		);
+		newStyle.id = id;
+		return newStyle;
 	}
 
 	@:keep inline function createStyleProgram():RoundBorderStyleProgram return new RoundBorderStyleProgram();
@@ -201,7 +219,7 @@ class RoundBorderStyleProgram extends Program implements StyleProgram
 		#else
 		setColorFormula('compose(color, borderColor, borderSize, borderRadius, vec4(mx, my, mw, mh))');
 		#end
-		discardAtAlpha(0.9);
+		//discardAtAlpha(0.9);
 		alphaEnabled = true;
 	}
 

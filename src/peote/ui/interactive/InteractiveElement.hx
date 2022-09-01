@@ -58,9 +58,13 @@ class InteractiveElement extends Interactive
 		else if (style != null)
 		{
 			var stylePos = uiDisplay.usedStyleID.indexOf( style.getID() | (style.id << 16) );
-			if (stylePos < 0) throw('Error by creating new InteractiveElement. The style "${Type.getClassName(Type.getClass(style))}(${style.id})" is not inside the availableStyle list of UIDisplay.');
-			styleProgram = cast uiDisplay.usedStyleProgram.get(stylePos);
-			if (styleProgram == null) uiDisplay.addStyleProgram(cast styleProgram = style.createStyleProgram(), stylePos);
+			if (stylePos < 0) {
+				if (uiDisplay.autoAddStyles) uiDisplay.autoAddStyleProgram(cast styleProgram = style.createStyleProgram(), style.getID() | (style.id << 16) );
+				else throw('Error by creating new InteractiveElement. The style "${Type.getClassName(Type.getClass(style))}" id=${style.id} is not inside the availableStyle list of UIDisplay.');
+			} else {
+				styleProgram = cast uiDisplay.usedStyleProgram[stylePos];
+				if (styleProgram == null) uiDisplay.addProgramAtStylePos(cast styleProgram = style.createStyleProgram(), stylePos);				
+			}
 			styleProgram.addElement(styleElement = styleProgram.createElement(this));
 		}
 	}

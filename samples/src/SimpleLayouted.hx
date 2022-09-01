@@ -57,7 +57,7 @@ class SimpleLayouted extends Application
 		fontStyleTiled.width = 30.0;
 		fontStyleTiled.color = Color.BLACK;
 
-		layoutedUIDisplay = new LayoutedUIDisplay(0, 0, window.width, window.height, Color.GREY3, [new SimpleStyle(0), fontStyleTiled]);
+		layoutedUIDisplay = new LayoutedUIDisplay(0, 0, window.width, window.height, Color.GREY3);
 		peoteView.addDisplay(layoutedUIDisplay);
 		
 		// load the FONT:
@@ -67,10 +67,10 @@ class SimpleLayouted extends Application
 	public function onFontLoaded(font:Font<FontStyleTiled>) { // don'T forget argument-type or force at least the style to FontStyleTiled-Type (see below!)
 	//public function onFontLoaded(font) {
 
-		var red   = new LayoutedElement(new SimpleStyle(0, Color.RED));
-		var green = new LayoutedElement(new SimpleStyle(0, Color.GREEN));
-		var blue  = new LayoutedElement(new SimpleStyle(0, Color.BLUE));
-		var yellow= new LayoutedElement(new SimpleStyle(0, Color.YELLOW));
+		var red   = new LayoutedElement(new SimpleStyle(Color.RED));
+		var green = new LayoutedElement(new SimpleStyle(Color.GREEN));
+		var blue  = new LayoutedElement(new SimpleStyle(Color.BLUE));
+		var yellow= new LayoutedElement(new SimpleStyle(Color.YELLOW));
 		yellow.onPointerOver = function(elem:InteractiveElement, e:PointerEvent) {
 			elem.style.color = Color.YELLOW - 0x00550000;
 			elem.updateStyle();

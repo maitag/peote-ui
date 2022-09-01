@@ -15,26 +15,39 @@ import peote.ui.util.Unique;
 class SimpleStyle implements Style
 {
 	// style
-	public var color:Null<Color> = Color.GREY2;
+	public var color:Color = Color.GREY2;
+	//public var color:Null<Color> = Color.GREY2;
 		
 	// -----------------------------------------	
 	
-	static var ID:Int = Unique.id;
+	static var ID:Int = Unique.styleID;
 	public inline function getID():Int return ID;
-	public var id(default, null):Int;
-		
+	public var id(default, null):Int = 0;
+	
 	public function new(
-		id:Int = 0,
-		?color:Color
+		?color:Null<Color>
 	) {
-		this.id = id;
 		if (color != null) this.color = color;
 	}
 	
-	public inline function copy():SimpleStyle {
-		return new SimpleStyle(id, color);
+	static public function createById(id:Int, ?style:SimpleStyle,
+		?color:Null<Color>
+	):SimpleStyle {
+		var newStyle = (style != null) ? style.copy(color) : new SimpleStyle(color);
+		newStyle.id = id;
+		return newStyle;
 	}
-		
+	
+	public inline function copy(
+		?color:Null<Color>
+	):SimpleStyle {
+		var newStyle = new SimpleStyle(
+			(color != null) ? color : this.color		
+		);
+		newStyle.id = id;
+		return newStyle;
+	}
+	
 	@:keep inline function createStyleProgram():SimpleStyleProgram return new SimpleStyleProgram();
 }
 

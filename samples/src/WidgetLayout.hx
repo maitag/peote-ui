@@ -173,7 +173,7 @@ class WidgetLayout extends Application
 		
 			// button for quick resize testing
 			new Div({
-				width:50, height:50, right:0, bottom:0, style:new RoundedStyle(),
+				width:50, height:50, right:0, bottom:0, style:new RoundBorderStyle(),
 				onPointerDown: function(widget:Div, e:PointerEvent) {uiResizeMode = true; ui.mouseEnabled = false;} ,
 				onPointerOver: onOverOut.bind(Color.BLUE),
 				onPointerOut: onOverOut.bind(Color.GREY1),

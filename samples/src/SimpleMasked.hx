@@ -74,10 +74,10 @@ class SimpleMasked extends Application
 		fontStylePacked = new FontStylePacked();
 		fontStylePacked.height = 30.0;
 		fontStylePacked.width = 30.0;
-		fontStylePacked.color = Color.WHITE;
+		fontStylePacked.color = Color.BLACK;
 		
 		peoteView = new PeoteView(window);
-		layoutedUIDisplay = new LayoutedUIDisplay(0, 0, window.width, window.height, Color.GREY3, [new RoundBorderStyle(), new SimpleStyle(), fontStyleTiled, fontStylePacked]);
+		layoutedUIDisplay = new LayoutedUIDisplay(0, 0, window.width, window.height, Color.GREY3);
 		peoteView.addDisplay(layoutedUIDisplay);
 		
 		// TODO: this is only need on neko to avoid bug if mouse is over application at start
@@ -95,13 +95,13 @@ class SimpleMasked extends Application
 	
 	public function onAllFontLoaded() 
 	{		
-		var red   = new LayoutedElement(new RoundBorderStyle(0, Color.RED, Color.BLACK, 0, 10));
+		var red   = new LayoutedElement(new RoundBorderStyle(Color.RED, Color.BLACK, 0, 10));
 		layoutedUIDisplay.add(red);
 
 				
 		var redBoxes = new Array<Box>();
 		for (i in 0...10) {
-			var button = new LayoutedElement(new RoundBorderStyle(0, Color.YELLOW));
+			var button = new LayoutedElement(new RoundBorderStyle(Color.YELLOW));
 			button.onPointerOver = function(elem:InteractiveElement, e:PointerEvent) {
 				elem.style.color = Color.YELLOW - 0x00550000;
 				elem.updateStyle();
@@ -131,8 +131,8 @@ class SimpleMasked extends Application
 
 		
 		
-		var green = new LayoutedElement(new SimpleStyle(0, Color.GREEN));
-		var blue  = new LayoutedElement(new RoundBorderStyle(0, Color.BLUE, Color.BLACK, 0, 10));
+		var green = new LayoutedElement(new SimpleStyle(Color.GREEN));
+		var blue  = new LayoutedElement(new RoundBorderStyle(Color.BLUE, Color.BLACK, 0, 10));
 		
 		layoutedUIDisplay.add(green);
 		layoutedUIDisplay.add(blue);

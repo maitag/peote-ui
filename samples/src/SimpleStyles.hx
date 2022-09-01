@@ -3,6 +3,8 @@ package;
 import haxe.CallStack;
 import lime.app.Application;
 import lime.ui.Window;
+import peote.text.FontProgram;
+import peote.view.Program;
 
 import peote.view.PeoteView;
 import peote.view.Color;
@@ -51,87 +53,100 @@ class SimpleStyles extends Application
 		
 	public function onFontLoaded(fontPacked:Font<FontStylePacked>, fontTiled:Font<FontStyleTiled>) // font needs type here !
 	{							
-		var roundBorderStyle = new RoundBorderStyle();
-		var simpleStyle  = new SimpleStyle();  // id is 0 by default
-		var cursorStyle  = new SimpleStyle(1); // if using multiple times into new UIDisplays availableStyles they need different id 
-
-		var fontStylePacked = new FontStylePacked();
+		var simpleStyle  = new SimpleStyle(Color.RED);
+		var roundBorderStyle = new RoundBorderStyle(Color.GREEN.setAlpha(0.6));
+		// alternatively:
+		// var roundBorderStyle:RoundBorderStyle = { color:Color.RED, borderColor:Color.YELLOW }; // borderSize, borderRadius
+		
+		var cursorStyle = SimpleStyle.createById(1); // different id is need if using more then one into available styles
+		// alternatively:
+/*		var cursorStyle = SimpleStyle.createById(1, new SimpleStyle(Color.BLUE)); 
+		var cursorStyle = SimpleStyle.createById(1 , { color: Color.BLUE });
+		var cursorStyle = SimpleStyle.createById(1, simpleStyle); cursorStyle.color = Color.BLUE;
+*/
+		//var fontStylePacked = new FontStylePacked();
+		var fontStylePacked:FontStylePacked = {
+			width:20, height:20,
+			tilt: 0.6,
+			letterSpace: 1.0
+		};
+		//var fontStyleTiled = new FontStyleTiled();
 		var fontStyleTiled = fontTiled.createFontStyle(); // alternative way of creation
+		fontStyleTiled.letterSpace = -2.0;
 
 		peoteView = new PeoteView(window);
-		uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY1 ,
-			[ roundBorderStyle, simpleStyle, fontStylePacked, fontStyleTiled, cursorStyle]
+		uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY1
+		// available styles into render-order (without it will auto add at runtime and fontstyles allways on top)
+			//,[ simpleStyle, roundBorderStyle, fontStylePacked, fontStyleTiled, cursorStyle]
+			,[ simpleStyle, roundBorderStyle, fontStylePacked ], true // allow to auto add Styles
 		);
 		peoteView.addDisplay(uiDisplay);
 		
+		//uiDisplay.getStyleProgram(roundBorderStyle).alphaEnabled = false;
 				
-		// set different style properties
-		roundBorderStyle.color = Color.BLUE;
-		simpleStyle.color = Color.GREEN;
-		//cursorStyle.color = Color.RED;
+		uiDisplay.addFontStyleProgram(fontStyleTiled, fontTiled);		
+		uiDisplay.addStyleProgram(cursorStyle, true).alphaEnabled = true;
+		
+		//var fontProgram:FontProgram<FontStylePacked> = cast uiDisplay.getFontStyleProgram(fontStylePacked, fontPacked);
+		//fontProgram.createGlyph(65, 30, 25, fontStylePacked.copy(Color.RED));
+		//trace(fontProgram.numberOfGlyphes());
+		
+		//uiDisplay.getFontStyleProgram(fontStyleTiled, fontTiled).alphaEnabled = false;				
 
-		var button0 = new InteractiveElement(100, 0, 100, 50, roundBorderStyle);
+		
+		
+		// ----------- create Buttons -----------
+				
+		var button0 = new InteractiveElement(10, 10, 100, 50, roundBorderStyle);
 		uiDisplay.add(button0);
-		haxe.Timer.delay(()->{
+/*		haxe.Timer.delay(()->{
 			if ((button0.style is RoundBorderStyle)) {
 				button0.style.borderColor = Color.RED;
 				button0.updateStyle();
 			}
 		}, 1000);
-		
-		var button1 = new InteractiveElement(100, 100, 100, 50, simpleStyle);
+*/		
+		var button1 = new InteractiveElement(40, 40, 200, 50, simpleStyle);
 		uiDisplay.add(button1);
-		haxe.Timer.delay(()->{ uiDisplay.remove(button1); } , 500);
-		haxe.Timer.delay(()->{ simpleStyle.color = Color.RED; button1.updateStyle(); }, 1000);
-		haxe.Timer.delay(()->{ uiDisplay.add(button1); }, 1500);
-		haxe.Timer.delay(()->{ button1.style.color = Color.BLUE; button1.updateStyle(); }, 2000);
-		haxe.Timer.delay(()->{ button1.hide(); }, 2500);
-		haxe.Timer.delay(()->{ button1.x += 100; button1.updateLayout(); }, 3000);
-		haxe.Timer.delay(()->{ button1.show(); }, 3500);
-		haxe.Timer.delay(()->{
-			// without these check or (button1.style.borderColor != null) it will crash on Hashlink because SimpleStyle havn't borderColor
+/*		haxe.Timer.delay(()->{
+			// without these checks it will crash on Hashlink because SimpleStyle havn't borderColor
 			if ((button1.style is RoundBorderStyle)) {
+			//if (button1.style.borderColor != null) {
 				button1.style.borderColor = Color.YELLOW;
 				button1.updateStyle();
 			}
 		}, 4000);
-
-		// to make style unique (e.g. for changing by event)
-		var simpleStyle1 = new SimpleStyle(1); //cursorStyle.copy();
-		simpleStyle1.color = Color.YELLOW;
-		var button2 = new InteractiveElement(100, 200, 100, 50, simpleStyle1);
-		uiDisplay.add(button2);
-		//trace(Type.getClassName(Type.getClass(button2.style)));
+*/
 		
-		// set different fontStyle properties
-		//fontStylePacked.backgroundStyle = roundedStyle;
-		//fontStylePacked.selectionStyle = simpleStyle;
-		//fontStylePacked.cursorStyle = cursorStyle;
-		fontStylePacked.color = Color.RED;
+		// ----------- create TextLines -----------
 				
-		var textLine0 = new InteractiveTextLine<FontStylePacked>(10, 100, "hello", fontPacked, fontStylePacked);
+		var textLine0 = new InteractiveTextLine<FontStylePacked>(30, 25, "hello ", fontPacked, fontStylePacked);
 		uiDisplay.add(textLine0);
-		haxe.Timer.delay(()->{ uiDisplay.remove(textLine0); } , 500);
+/*		haxe.Timer.delay(()->{ uiDisplay.remove(textLine0); } , 500);
 		haxe.Timer.delay(()->{ fontStylePacked.color = Color.YELLOW; textLine0.updateStyle(); }, 1000);
 		haxe.Timer.delay(()->{ uiDisplay.add(textLine0); }, 1500);
 		haxe.Timer.delay(()->{ textLine0.fontStyle.color = Color.BLUE; textLine0.updateStyle(); }, 2000);
 		haxe.Timer.delay(()->{ textLine0.hide(); }, 2500);
 		haxe.Timer.delay(()->{ textLine0.x += 100; textLine0.updateLayout(); }, 3000);
 		haxe.Timer.delay(()->{ textLine0.show(); }, 3500);
-		
+*/		
 		
 		
 		// or alternative way to create:
-		fontStyleTiled.color = Color.RED;
-		var textLine1 = fontTiled.createInteractiveTextLine(20, 110, "hello", fontStyleTiled);
+		var textLine1 = fontTiled.createInteractiveTextLine(50, 60, "Hi", fontStyleTiled);
 		uiDisplay.add(textLine1);
-
 		
 		// or with default fontstyle way to create:
-		var textLine2 = fontTiled.createInteractiveTextLine(20, 220, "hello again");
+		var textLine2 = fontTiled.createInteractiveTextLine(100, 60, "there");
 		uiDisplay.add(textLine2);
 
+		// ----------- create Cursor -----------
 		
+		var cursor = new InteractiveElement(60, 55, 25, 25, SimpleStyle.createById(1, Color.YELLOW.setAlpha(0.7) ));
+		uiDisplay.add(cursor);
+		//trace(Type.getClassName(Type.getClass(button2.style)));
+		
+
 		//uiDisplay.x = 50;
 		//uiDisplay.zoom = 1.2;
 		//uiDisplay.xOffset = 100;
