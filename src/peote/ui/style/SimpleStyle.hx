@@ -7,16 +7,16 @@ import peote.view.Buffer;
 
 import peote.ui.interactive.InteractiveElement;
 import peote.ui.style.interfaces.Style;
+import peote.ui.style.interfaces.StyleID;
 import peote.ui.style.interfaces.StyleProgram;
 import peote.ui.style.interfaces.StyleElement;
 import peote.ui.util.Unique;
 
 @:structInit
-class SimpleStyle implements Style
+class SimpleStyle implements Style implements StyleID
 {
 	// style
 	public var color:Color = Color.GREY2;
-	//public var color:Null<Color> = Color.GREY2;
 		
 	// -----------------------------------------	
 	
@@ -48,7 +48,8 @@ class SimpleStyle implements Style
 		return newStyle;
 	}
 	
-	@:keep inline function createStyleProgram():SimpleStyleProgram return new SimpleStyleProgram();
+	//@:keep inline function createStyleProgram():SimpleStyleProgram return new SimpleStyleProgram();
+	@:keep public inline function createStyleProgram():StyleProgram return new SimpleStyleProgram();
 }
 
 

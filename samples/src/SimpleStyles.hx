@@ -3,8 +3,6 @@ package;
 import haxe.CallStack;
 import lime.app.Application;
 import lime.ui.Window;
-import peote.text.FontProgram;
-import peote.view.Program;
 
 import peote.view.PeoteView;
 import peote.view.Color;
@@ -14,9 +12,6 @@ import peote.text.Font;
 import peote.ui.UIDisplay;
 import peote.ui.interactive.InteractiveTextLine;
 import peote.ui.interactive.InteractiveElement;
-
-import peote.ui.util.HAlign;
-import peote.ui.util.VAlign;
 
 import peote.ui.style.*;
 
@@ -70,6 +65,7 @@ class SimpleStyles extends Application
 			tilt: 0.6,
 			letterSpace: 1.0
 		};
+		
 		//var fontStyleTiled = new FontStyleTiled();
 		var fontStyleTiled = fontTiled.createFontStyle(); // alternative way of creation
 		fontStyleTiled.letterSpace = -2.0;

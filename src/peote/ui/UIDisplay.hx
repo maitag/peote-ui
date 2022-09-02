@@ -28,8 +28,8 @@ import peote.ui.interactive.edit.TextLineEdit;
 import peote.ui.interactive.interfaces.TextLine;
 
 import peote.ui.style.interfaces.Style;
-import peote.text.Font;
-import peote.text.FontProgram;
+import peote.ui.style.interfaces.FontStyle;
+import peote.ui.style.interfaces.StyleID;
 
 @:access(peote.view)
 @:allow(peote.ui.interactive)
@@ -78,37 +78,13 @@ class UIDisplay extends Display
 	var stylePosBeforeFont:Int = 0;
 	var autoAddStyles = true;
 		
-	public function new(x:Int, y:Int, width:Int, height:Int, color:Color=0x00000000, maxTouchpoints:Int = 3, availableStyles:Array<Style> = null, autoAddStyles:Null<Bool> = null)
+	public function new(x:Int, y:Int, width:Int, height:Int, color:Color=0x00000000, maxTouchpoints:Int = 3, availableStyles:Array<StyleID> = null, autoAddStyles:Null<Bool> = null)
 	{
 		number = getFreeNumber();  trace('MAX_DISPLAYs: $MAX_DISPLAYS', 'UIDisplay NUMBER is $number');
 		
 		super(x, y, width, height, color);
 		
-		// --------------------------------
-		if (availableStyles == null) {
-			this.autoAddStyles = (autoAddStyles == null) ? true : autoAddStyles;
-			usedStyleProgram = new Array<Program>();
-		}
-		else {
-			this.autoAddStyles = (autoAddStyles == null) ? false : autoAddStyles;
-			var noFontYet = true;
-			for (style in availableStyles) {
-				var id = style.getID() | (style.id << 16);
-				if (usedStyleID.contains(id)) throw('Error by creating new UIDisplay. Give each of the styles "${Type.getClassName(Type.getClass(style))}" an unique ID to have multiple of them into the availableStyles list!');
-				usedStyleID.push(id);
-				if (isFontStyle(style)) {
-					usedStyleProgram.push(null); // <- will be created by first InteractiveTextLine
-					noFontYet = false;
-				} 
-				else {
-					var program:Program = (style:Dynamic).createStyleProgram();
-					usedStyleProgram.push(program);
-					this.addProgram(program);
-					if (noFontYet) stylePosBeforeFont++;
-				}
-					
-			}
-		}
+		addAvailableStyles(availableStyles, autoAddStyles);
 		
 		// elements for mouseOver/Out ----------------------
 		movePickBuffer = new Buffer<Pickable>(16, 8); // TODO: fill with constants
@@ -186,7 +162,34 @@ class UIDisplay extends Display
 	}
 
 	// -------------------------------------------------------
-	// TODO: maybe also param to add after a font (for widgets)
+	inline function addAvailableStyles(availableStyles:Array<StyleID>, autoAddStyles:Null<Bool>) {
+		// --------------------------------
+		if (availableStyles == null) {
+			this.autoAddStyles = (autoAddStyles == null) ? true : autoAddStyles;
+			usedStyleProgram = new Array<Program>();
+		}
+		else {
+			this.autoAddStyles = (autoAddStyles == null) ? false : autoAddStyles;
+			var noFontYet = true;
+			for (style in availableStyles) {
+				var id = style.getID() | (style.id << 16);
+				if (usedStyleID.contains(id)) throw('Error by creating new UIDisplay. Give each of the styles "${Type.getClassName(Type.getClass(style))}" an unique ID to have multiple of them into the availableStyles list!');
+				usedStyleID.push(id);
+				if (isFontStyle(style)) {
+					usedStyleProgram.push(null); // <- will be created by first InteractiveTextLine
+					noFontYet = false;
+				} 
+				else {
+					var program:Program = (style:Dynamic).createStyleProgram();
+					usedStyleProgram.push(program);
+					this.addProgram(program);
+					if (noFontYet) stylePosBeforeFont++;
+				}
+					
+			}
+		}
+	}
+	
 	inline function autoAddStyleProgram(program:Program, styleId:Int, addOnTop:Bool = false) {
 		if (addOnTop) {
 			usedStyleID.push(styleId);
@@ -210,8 +213,10 @@ class UIDisplay extends Display
 		this.addProgram(program, afterProgram, (afterProgram==null) ? true : false);
 	}
 	
+	// -------------------------------
+	
 	inline public function addStyleProgram(style:Style, addOnTop:Bool = false):Program {
-		if ( isFontStyle(style) ) throw('Error by addStyleProgram(). The style "${Type.getClassName(Type.getClass(style))}(${style.id})" is a FontStyle, so use addFontStyleProgram() instead!');
+		//if ( isFontStyle(style) ) throw('Error by addStyleProgram(). The style "${Type.getClassName(Type.getClass(style))}(${style.id})" is a FontStyle, so use addFontStyleProgram() instead!');
 		var program:Program;
 		var stylePos = usedStyleID.indexOf( style.getID() | (style.id << 16) );
 		if (stylePos < 0) {
@@ -228,8 +233,8 @@ class UIDisplay extends Display
 		return program;
 	}
 		
-	inline public function addFontStyleProgram(style:Style, font:Dynamic, addOnTop:Bool = true):Program {
-		if ( !isFontStyle(style) ) throw('Error by addFontStyleProgram(). The style "${Type.getClassName(Type.getClass(style))}(${style.id})" is not a FontStyle, so use addStyleProgram() instead!');
+	inline public function addFontStyleProgram(style:FontStyle, font:Dynamic, addOnTop:Bool = true):Program {
+		//if ( !isFontStyle(style) ) throw('Error by addFontStyleProgram(). The style "${Type.getClassName(Type.getClass(style))}(${style.id})" is not a FontStyle, so use addStyleProgram() instead!');
 		var program:Program;
 		var stylePos = usedStyleID.indexOf( style.getID() | (style.id << 16) );
 		if (stylePos < 0) {
@@ -249,7 +254,7 @@ class UIDisplay extends Display
 	}
 		
 	inline public function getStyleProgram(style:Style):Program {
-		if ( isFontStyle(style) ) throw('Error by getStyleProgram(). The style "${Type.getClassName(Type.getClass(style))}(${style.id})" is a FontStyle, so use getFontStyleProgram() instead!');
+		//if ( isFontStyle(style) ) throw('Error by getStyleProgram(). The style "${Type.getClassName(Type.getClass(style))}(${style.id})" is a FontStyle, so use getFontStyleProgram() instead!');
 		var stylePos = usedStyleID.indexOf( style.getID() | (style.id << 16) );
 		if (stylePos < 0) throw('Error by getProgram(). The style "${Type.getClassName(Type.getClass(style))}" id=${style.id} is not inside the availableStyles of UIDisplay.');
 		var program:Program = cast usedStyleProgram[stylePos];
@@ -260,8 +265,8 @@ class UIDisplay extends Display
 		return program;
 	}
 	
-	inline public function getFontStyleProgram(style:Style, font:Dynamic):Program {
-		if ( !isFontStyle(style) ) throw('Error by getFontStyleProgram(). The style "${Type.getClassName(Type.getClass(style))}(${style.id})" is not a FontStyle, so use getStyleProgram() instead!');
+	inline public function getFontStyleProgram(style:FontStyle, font:Dynamic):Program {
+		//if ( !isFontStyle(style) ) throw('Error by getFontStyleProgram(). The style "${Type.getClassName(Type.getClass(style))}(${style.id})" is not a FontStyle, so use getStyleProgram() instead!');
 		var stylePos = usedStyleID.indexOf( style.getID() | (style.id << 16) );
 		if (stylePos < 0) throw('Error by getProgram(). The style "${Type.getClassName(Type.getClass(style))}" id=${style.id} is not inside the availableStyles of UIDisplay.');
 		var program:Program = cast usedStyleProgram[stylePos];
@@ -272,8 +277,8 @@ class UIDisplay extends Display
 		} 
 		return program;
 	}
-		
-	inline function isFontStyle(style:Style) return (style.getID() > 255);
+	
+	inline function isFontStyle(style:StyleID) return (style.getID() > 255);
 	// TODO: to clean up all programs
 	//inline function removeStyleProgram(program:Program, stylePos:Int) {
 		//trace('REMOVE STYLEPROGRAM $stylePos');

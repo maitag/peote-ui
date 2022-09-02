@@ -106,9 +106,10 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	
 	public function new(xPosition:Int, yPosition:Int, ?textSize:peote.ui.util.TextSize, zIndex:Int = 0, text:String,
 	                    //font:$fontType, fontStyle:$styleType) 
-	                    font:peote.text.Font<$styleType>, fontStyle:$styleType=null)
+	                    font:peote.text.Font<$styleType>, fontStyle:$styleType=null) //textStyle=null
 	{
 		//trace("NEW InteractiveTextLine");		
+		
 		var width:Int = 0;
 		var height:Int = 0;
 		if (textSize != null) {

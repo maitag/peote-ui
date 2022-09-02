@@ -5,7 +5,7 @@ import peote.layout.LayoutContainer;
 import peote.view.Color;
 
 import peote.ui.UIDisplay;
-import peote.ui.style.interfaces.Style;
+import peote.ui.style.interfaces.StyleID;
 
 class LayoutedUIDisplay extends UIDisplay implements peote.layout.ILayoutElement
 {	
@@ -15,9 +15,9 @@ class LayoutedUIDisplay extends UIDisplay implements peote.layout.ILayoutElement
 	// TODO:
 	//var innerDisplays:Array<Display>;
 	
-	public function new(x:Int, y:Int, width:Int, height:Int, color:Color=0x00000000, maxTouchpoints:Int = 3, availableStyles:Array<Style> = null) 
+	public function new(x:Int, y:Int, width:Int, height:Int, color:Color=0x00000000, maxTouchpoints:Int = 3, availableStyles:Array<StyleID> = null, autoAddStyles:Null<Bool> = null) 
 	{
-		super(x, y, width, height, color, maxTouchpoints, availableStyles);
+		super(x, y, width, height, color, maxTouchpoints, availableStyles, autoAddStyles);
 	}	
 	
 	
