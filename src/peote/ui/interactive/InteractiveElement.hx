@@ -1,5 +1,6 @@
 package peote.ui.interactive;
 
+import peote.ui.UIDisplay;
 import peote.ui.interactive.Interactive;
 
 import peote.ui.style.interfaces.Style;
@@ -52,7 +53,7 @@ class InteractiveElement extends Interactive
 	}
 	
 	// -----------------
-	override inline function onAddVisibleToDisplay()
+	override inline function onAddVisibleToDisplay():Void
 	{
 		if (styleElement != null) styleProgram.addElement(styleElement);
 		else if (style != null)
@@ -65,7 +66,7 @@ class InteractiveElement extends Interactive
 				styleProgram = cast uiDisplay.usedStyleProgram[stylePos];
 				if (styleProgram == null) uiDisplay.addProgramAtStylePos(cast styleProgram = style.createStyleProgram(), stylePos);				
 			}
-			styleProgram.addElement(styleElement = styleProgram.createElement(this));
+			styleProgram.addElement(styleElement = styleProgram.createElement(this, style));
 		}
 	}
 	

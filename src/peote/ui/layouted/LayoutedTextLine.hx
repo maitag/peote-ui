@@ -33,10 +33,10 @@ class $className extends $interactiveTextLineType implements peote.ui.interactiv
 	
 	public function new(xPosition:Int, yPosition:Int, ?textSize:peote.ui.util.TextSize, zIndex:Int = 0, text:String, 
 	                    //font:$fontType, fontStyle:$styleType)
-	                    font:peote.text.Font<$styleType>, fontStyle:$styleType=null) 
+	                    font:peote.text.Font<$styleType>, ?fontStyle:$styleType, ?textLineStyle:peote.ui.style.TextLineStyle) 
 	{
 		//trace("NEW LayoutedTextLine");
-		super(xPosition, yPosition, textSize, zIndex, text, font, fontStyle);
+		super(xPosition, yPosition, textSize, zIndex, text, font, fontStyle, textLineStyle);
 	}
 		
 	

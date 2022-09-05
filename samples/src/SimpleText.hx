@@ -2,6 +2,9 @@ package;
 
 import haxe.CallStack;
 import haxe.Timer; 
+import peote.ui.style.RoundBorderStyle;
+import peote.ui.style.SimpleStyle;
+import peote.ui.style.TextLineStyle;
 
 import lime.app.Application;
 import lime.ui.Window;
@@ -51,10 +54,6 @@ class MyFontStyle implements FontStyle implements StyleID
 		this.id = id;
 	}
 	
-	public var backgroundStyle:Style;
-	public var selectionStyle:Style;
-	public var cursorStyle:Style;
-
 	public inline function copy():MyFontStyle {
 		return new MyFontStyle(id);
 	}
@@ -91,9 +90,16 @@ class SimpleText extends Application
 		var fontStyle = new MyFontStyle();
 		//fontStyle.height = 30;
 		//fontStyle.width = 20;
-				
+		
+		var backgroundStyle = new SimpleStyle(Color.BLACK);
+		
+		var textStyle:TextLineStyle = {
+			backgroundStyle:backgroundStyle
+		}
+		
 		peoteView = new PeoteView(window);
 		uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY1);
+		//uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY1, [backgroundStyle, fontStyle]);
 		peoteView.addDisplay(uiDisplay);		
 		
 		var xOffset:Int = 300;
@@ -101,14 +107,14 @@ class SimpleText extends Application
 		var x:Int = 10; 
 		var y:Int = -yOffset + 10;
 				
-		var textLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, "hello", font, fontStyle); //, selectionFontStyle
+		var textLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, "hello", font, fontStyle, textStyle);
 		// alternatively it can also be:
 		//var textLine = font.createInteractiveTextLine(x, y+=yOffset, "hello", fontStyle, Color.BLACK);
 		addOverOut(textLine);
 		//textLine.height = 50;
 		//textLine.update();
 		
-		var textLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {width:50, xOffset:10, yOffset:10}, "hello", font);
+		var textLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {width:50, xOffset:10, yOffset:10}, "hello", font, textStyle);
 		var timer = new Timer(200);
 		timer.run = function() {
 			textLine.xOffset--;
@@ -118,22 +124,22 @@ class SimpleText extends Application
 		}
 		addOverOut(textLine);
 			
-		var textLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.RIGHT}, "hello", font);
+		var textLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.RIGHT}, "hello", font, textStyle);
 		addOverOut(textLine);
 			
-		var textLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {width:150, hAlign:HAlign.RIGHT}, "hello", font);
+		var textLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {width:150, hAlign:HAlign.RIGHT}, "hello", font, textStyle);
 		addOverOut(textLine);
 			
-		var textLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.CENTER}, "hello", font);
+		var textLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.CENTER}, "hello", font, textStyle);
 		addOverOut(textLine);
 			
-		var textLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {width:150, hAlign:HAlign.CENTER}, "hello", font);
+		var textLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {width:150, hAlign:HAlign.CENTER}, "hello", font, textStyle);
 		addOverOut(textLine);
 			
-		var textLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {height:50, vAlign:VAlign.BOTTOM}, "hello", font);
+		var textLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {height:50, vAlign:VAlign.BOTTOM}, "hello", font, textStyle);
 		addOverOut(textLine);
 			
-		var textLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {height:20}, "hello", font);
+		var textLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {height:20}, "hello", font, {backgroundStyle:backgroundStyle.copy()});
 		// all changings also should work if is hidden or not added!
 		addOverOut(textLine);
 		//textLine.hide();
@@ -176,7 +182,7 @@ class SimpleText extends Application
 				//uiDisplay.add(textLine);
 				
 				haxe.Timer.delay(function() {
-//					textLine.backgroundColor = Color.GREY2;
+					textLine.backgroundStyle.color = Color.GREY2;
 					textLine.hAlign = HAlign.LEFT;
 					textLine.cursor -= 4;
 					textLine.fontStyle.color = Color.BLUE;
@@ -231,12 +237,12 @@ class SimpleText extends Application
 		//fontStyleInput.height = 30;
 		//fontStyleInput.width = 20;
 		
-		var inputLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, "input", font, fontStyleInput);
+		var inputLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, "input", font, fontStyleInput, textStyle);
 		//var inputLine = font.createInteractiveTextLine(x, y+=yOffset, "input", fontStyleInput, Color.BLACK);
 		inputLine.cursor = 3;
 		addInput(inputLine);
 		
-		var inputLine = new InteractiveTextLine<MyFontStyle>(x, y += yOffset, {width:50, xOffset:10, yOffset:10}, "input", font, fontStyleInput);
+		var inputLine = new InteractiveTextLine<MyFontStyle>(x, y += yOffset, {width:50, xOffset:10, yOffset:10}, "input", font, fontStyleInput, textStyle);
 		//inputLine.cursor = 3;
 		inputLine.cursorShow();
 		//inputLine.select(0,3);
@@ -254,29 +260,30 @@ class SimpleText extends Application
 			if (inputLine.xOffset == -25) timer.stop();
 		}
 		
-		var inputLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.RIGHT}, "input", font, fontStyleInput);
+		var inputLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.RIGHT}, "input", font, fontStyleInput, textStyle);
 		addInput(inputLine);
 		
-		var inputLine = new InteractiveTextLine<MyFontStyle>(x, y += yOffset, {width:150, hAlign:HAlign.RIGHT}, "input", font, fontStyleInput);
+		var inputLine = new InteractiveTextLine<MyFontStyle>(x, y += yOffset, {width:150, hAlign:HAlign.RIGHT}, "input", font, fontStyleInput, textStyle);
 		inputLine.select(1, 2);
 		//inputLine.cursorShow();
 		addInput(inputLine);
 			
-		var inputLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.CENTER}, "input", font, fontStyleInput);
+		var inputLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.CENTER}, "input", font, fontStyleInput, textStyle);
 		addInput(inputLine);
 			
-		var inputLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {width:150, height:60, hAlign:HAlign.CENTER, vAlign:VAlign.TOP}, "input", font, fontStyleInput);
+		var inputLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {width:150, height:60, hAlign:HAlign.CENTER, vAlign:VAlign.TOP}, "input", font, fontStyleInput, textStyle);
 		addInput(inputLine);
 			
-		var inputLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {height:60}, "input", font, fontStyleInput);
+		var inputLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {height:60}, "input", font, fontStyleInput, textStyle);
 		addInput(inputLine);
 			
-		var inputLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {width:150, height:60, vAlign:VAlign.BOTTOM}, "input", font, new MyFontStyle()); // new MyFontStyle here to not affect the other inputLines
+		var inputLine = new InteractiveTextLine<MyFontStyle>(x, y += yOffset, {width:150, height:60, vAlign:VAlign.BOTTOM}, "input", font,
+			new MyFontStyle(), {backgroundStyle:new RoundBorderStyle()}); // new MyFontStyle here and new TextLineStyle to not affect the other inputLines
+		inputLine.backgroundStyle.color = Color.BLUE;
 		addInput(inputLine);
-//		inputLine.backgroundColor = Color.BLUE;
 		haxe.Timer.delay(function() {
 			inputLine.hide();
-//			inputLine.backgroundColor = Color.YELLOW;
+			inputLine.backgroundStyle.color = Color.YELLOW;
 			haxe.Timer.delay(function() {
 				inputLine.show();
 				inputLine.fontStyle.color = Color.BLACK;

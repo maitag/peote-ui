@@ -5,7 +5,7 @@ import peote.view.Element;
 import peote.view.Program;
 import peote.view.Buffer;
 
-import peote.ui.interactive.InteractiveElement;
+import peote.ui.interactive.Interactive;
 import peote.ui.style.interfaces.Style;
 import peote.ui.style.interfaces.StyleID;
 import peote.ui.style.interfaces.StyleProgram;
@@ -99,9 +99,9 @@ class RoundBorderStyleElement implements StyleElement implements Element
 	
 	//var OPTIONS = {  };
 		
-	public inline function new(uiElement:InteractiveElement)
+	public inline function new(uiElement:Interactive, style:Dynamic)
 	{
-		setStyle(uiElement.style);
+		setStyle(style);
 		setLayout(uiElement);
 	}
 	
@@ -113,7 +113,7 @@ class RoundBorderStyleElement implements StyleElement implements Element
 		borderRadius = style.borderRadius;
 	}
 	
-	inline function setLayout(uiElement:InteractiveElement)
+	inline function setLayout(uiElement:Interactive)
 	{
 		x = uiElement.x;
 		y = uiElement.y;
@@ -221,9 +221,9 @@ class RoundBorderStyleProgram extends Program implements StyleProgram
 		alphaEnabled = true;
 	}
 
-	inline function createElement(uiElement:InteractiveElement):StyleElement
+	inline function createElement(uiElement:Interactive, style:Dynamic):StyleElement
 	{
-		return new RoundBorderStyleElement(uiElement);
+		return new RoundBorderStyleElement(uiElement, style);
 	}
 	
 	inline function addElement(styleElement:StyleElement)

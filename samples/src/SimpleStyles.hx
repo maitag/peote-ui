@@ -116,7 +116,7 @@ class SimpleStyles extends Application
 		
 		// ----------- create TextLines -----------
 				
-		var textLine0 = new InteractiveTextLine<FontStylePacked>(30, 25, "hello ", fontPacked, fontStylePacked);
+		var textLine0 = new InteractiveTextLine<FontStylePacked>(30, 25, "hello ", fontPacked, fontStylePacked, {backgroundStyle:roundBorderStyle});
 		uiDisplay.add(textLine0);
 /*		haxe.Timer.delay(()->{ uiDisplay.remove(textLine0); } , 500);
 		haxe.Timer.delay(()->{ fontStylePacked.color = Color.YELLOW; textLine0.updateStyle(); }, 1000);

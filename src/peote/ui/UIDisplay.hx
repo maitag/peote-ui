@@ -190,14 +190,15 @@ class UIDisplay extends Display
 		}
 	}
 	
-	inline function autoAddStyleProgram(program:Program, styleId:Int, addOnTop:Bool = false) {
+	inline function autoAddStyleProgram(program:Program, styleId:Int, addOnTop:Bool = false) { trace("autoadd", styleId, addOnTop);
 		if (addOnTop) {
 			usedStyleID.push(styleId);
 			usedStyleProgram.push(program);
 			this.addProgram(program);
 		} else {
 			usedStyleID.insert(stylePosBeforeFont, styleId);
-			this.addProgram(program, (stylePosBeforeFont == 0) ? null : usedStyleProgram[stylePosBeforeFont-1]);
+			if (stylePosBeforeFont == 0) this.addProgram(program, true);
+			else this.addProgram(program, usedStyleProgram[stylePosBeforeFont-1]);
 			usedStyleProgram.insert(stylePosBeforeFont, program);
 			stylePosBeforeFont++;
 		}
@@ -234,6 +235,7 @@ class UIDisplay extends Display
 	}
 		
 	inline public function addFontStyleProgram(style:FontStyle, font:Dynamic, addOnTop:Bool = true):Program {
+		// TODO: check font type
 		//if ( !isFontStyle(style) ) throw('Error by addFontStyleProgram(). The style "${Type.getClassName(Type.getClass(style))}(${style.id})" is not a FontStyle, so use addStyleProgram() instead!');
 		var program:Program;
 		var stylePos = usedStyleID.indexOf( style.getID() | (style.id << 16) );
@@ -266,6 +268,7 @@ class UIDisplay extends Display
 	}
 	
 	inline public function getFontStyleProgram(style:FontStyle, font:Dynamic):Program {
+		// TODO: check font type
 		//if ( !isFontStyle(style) ) throw('Error by getFontStyleProgram(). The style "${Type.getClassName(Type.getClass(style))}(${style.id})" is not a FontStyle, so use getStyleProgram() instead!');
 		var stylePos = usedStyleID.indexOf( style.getID() | (style.id << 16) );
 		if (stylePos < 0) throw('Error by getProgram(). The style "${Type.getClassName(Type.getClass(style))}" id=${style.id} is not inside the availableStyles of UIDisplay.');
@@ -279,6 +282,7 @@ class UIDisplay extends Display
 	}
 	
 	inline function isFontStyle(style:StyleID) return (style.getID() > 255);
+	
 	// TODO: to clean up all programs
 	//inline function removeStyleProgram(program:Program, stylePos:Int) {
 		//trace('REMOVE STYLEPROGRAM $stylePos');

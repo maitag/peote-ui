@@ -83,4 +83,5 @@ class FontStyleTiled implements FontStyle implements StyleID
 		newStyle.id = id;
 		return newStyle;
 	}
+	
 }

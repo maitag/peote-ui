@@ -1,4 +1,4 @@
-package peote.ui.util;
+package peote.ui.style;
 
 import peote.ui.style.interfaces.Style;
 import peote.view.Color;

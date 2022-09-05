@@ -4,9 +4,12 @@ import peote.layout.ContainerType;
 import peote.layout.LayoutOptions;
 import peote.view.Color;
 
+import peote.ui.style.interfaces.FontStyle;
 import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
 import peote.ui.widget.Widget;
+
+import peote.text.Font;
 
 typedef TextLineOptions = {
 	> LayoutOptions,
@@ -22,10 +25,13 @@ typedef TextLineOptions = {
 @:forward
 abstract TextLine(Widget) from Widget to Widget
 {
-	public inline function new(font, fontStyle, text:String, textLineOptions:TextLineOptions)
+	public inline function new(font, fontStyle:FontStyle=null, text:String, textLineOptions:TextLineOptions)
 	{
+		// TODO: check for correct Font-Type
+		// trace(Type.getClassName(Type.getClass(font)), Type.getClassName(Type.getClass(fontStyle)));
 		this = new Widget(ContainerType.BOX,
-			font.createLayoutedTextLine(0, 0, null, 0, text, fontStyle),
+			//font.createLayoutedTextLine(0, 0, null, 0, text, fontStyle),
+			font.createLayoutedTextLine(0, 0, null, 0, text, cast fontStyle, null), // todo: replace last null by textlinestyle
 			textLineOptions
 		);
 		
