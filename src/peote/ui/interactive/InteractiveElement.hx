@@ -1,8 +1,6 @@
 package peote.ui.interactive;
 
-import peote.ui.UIDisplay;
 import peote.ui.interactive.Interactive;
-
 import peote.ui.style.interfaces.Style;
 import peote.ui.style.interfaces.StyleProgram;
 import peote.ui.style.interfaces.StyleElement;
@@ -20,33 +18,28 @@ class InteractiveElement extends Interactive
 	
 	public var style(default, set):Dynamic = null;
 	inline function set_style(_style:Dynamic):Dynamic {
-		if (styleElement == null) // not added to Display yet
-		{
-			if (_style != null) {
+		if (styleElement == null) { // not added to Display yet
+			if (_style != null) { // add new style
 				style = _style;
 				if (isVisible) addStyle();
 			}
 		}
-		else // already have styleprogram and element
-		{ 
-			if (_style != null) 
-			{
-				// if is need of another styleprogram
+		else { // already have styleprogram and element
+			if (_style != null) {
 				if (_style.getID() | (_style.id << 16) != style.getID() | (style.id << 16))
-				{
+				{	// if is need of another styleprogram
 					if (isVisible) styleProgram.removeElement(styleElement);
 					styleProgram = null;
 					style = _style;
 					if (isVisible) addStyle();
 				} 
-				else {
+				else { // styleprogram is of same type
 					style = _style;
 					styleElement.setStyle(_style);
 					if (isVisible) styleProgram.update(styleElement);
 				}
 			}
-			else
-			{
+			else { // remove style
 				if (isVisible) styleProgram.removeElement(styleElement);
 				styleElement = null;
 				styleProgram = null;
@@ -89,7 +82,6 @@ class InteractiveElement extends Interactive
 		}
 	}
 	
-	// -----------------
 	override inline function onAddVisibleToDisplay():Void
 	{
 		if (styleElement != null) styleProgram.addElement(styleElement);
@@ -138,6 +130,5 @@ class InteractiveElement extends Interactive
 		
 	public var onMouseWheel(default, set):IAElementWheelEventParams;
 	inline function set_onMouseWheel(f:IAElementWheelEventParams):IAElementWheelEventParams  return setOnMouseWheel(this, f);
-	
 	
 }

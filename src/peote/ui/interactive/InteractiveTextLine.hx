@@ -49,35 +49,34 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	var font:peote.text.Font<$styleType>; //$fontType	
 	public var fontStyle:$styleType;
 	
+	// -------- background style ---------
+	var backgroundStyleProgram:peote.ui.style.interfaces.StyleProgram = null;
+	var backgroundStyleElement:peote.ui.style.interfaces.StyleElement = null;
+	
 	public var backgroundStyle(default, set):Dynamic = null;
 	inline function set_backgroundStyle(style:Dynamic):Dynamic {
-		if (backgroundStyleElement == null) // not added to Display yet
-		{
-			if (style != null) {
+		if (backgroundStyleElement == null) { // not added to Display yet
+			if (style != null) { // add new style
 				backgroundStyle = style;
 				if (isVisible) addBackgroundStyle();
 			}
 		}
-		else // already have styleprogram and element
-		{ 
-			if (style != null) 
-			{
-				// if is need of another styleprogram
+		else { // already have styleprogram and element 
+			if (style != null) {
 				if (style.getID() | (style.id << 16) != backgroundStyle.getID() | (backgroundStyle.id << 16))
-				{
+				{	// if is need another styleprogram
 					if (isVisible) backgroundStyleProgram.removeElement(backgroundStyleElement);
 					backgroundStyleProgram = null;
 					backgroundStyle = style;
-					if (isVisible) addBackgroundStyle();
+					if (isVisible) addBackgroundStyle() else backgroundStyleElement = null;
 				} 
-				else {
+				else { // styleprogram is of same type
 					backgroundStyle = style;
 					backgroundStyleElement.setStyle(style);
 					if (isVisible) backgroundStyleProgram.update(backgroundStyleElement);
 				}
-			}
-			else
-			{
+			} 
+			else { // remove style
 				if (isVisible) backgroundStyleProgram.removeElement(backgroundStyleElement);
 				backgroundStyleElement = null;
 				backgroundStyleProgram = null;
@@ -86,16 +85,16 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		}		
 		return backgroundStyle;
 	}
-	var backgroundStyleProgram:peote.ui.style.interfaces.StyleProgram = null;
-	var backgroundStyleElement:peote.ui.style.interfaces.StyleElement = null;
 	
-	public var selectionStyle:Dynamic = null;
+	// -------- selection style ---------
 	var selectionStyleProgram:peote.ui.style.interfaces.StyleProgram = null;
 	var selectionStyleElement:peote.ui.style.interfaces.StyleElement = null;
+	public var selectionStyle:Dynamic = null;
 	
-	public var cursorStyle:Dynamic = null;
+	// -------- cursor style ---------
 	var cursorStyleProgram:peote.ui.style.interfaces.StyleProgram = null;
 	var cursorStyleElement:peote.ui.style.interfaces.StyleElement = null;
+	public var cursorStyle:Dynamic = null;
 	
 	
 	@:isVar public var text(get, set):String = null;
@@ -131,21 +130,6 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	public var xOffset:Float = 0;
 	public var yOffset:Float = 0;
 
-// TODO
-/*
-	public var backgroundColor(default,set):peote.view.Color;
-	inline function set_backgroundColor(c:peote.view.Color):peote.view.Color {
-		if (c != 0 && line != null) {
-			if (backgroundElement == null) backgroundElement = fontProgram.createBackground(x, y, width, height, z, c, isVisible);
-			else fontProgram.setBackground(backgroundElement, x, y, width, height, z, c, isVisible);
-		}
-		return backgroundColor = c;
-	}
-	
-	var backgroundElement:peote.text.BackgroundElement = null;
-	var cursorElement:peote.text.BackgroundElement = null;
-	var selectElement:peote.text.BackgroundElement = null;
-*/	
 	#if (!peoteui_no_textmasking && !peoteui_no_masking)
 	var maskElement:peote.text.MaskElement;
 	#end
@@ -155,7 +139,6 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	                    font:peote.text.Font<$styleType>, ?fontStyle:$styleType, ?textLineStyle:peote.ui.style.TextLineStyle) //textStyle=null
 	{
 		//trace("NEW InteractiveTextLine");		
-		
 		var width:Int = 0;
 		var height:Int = 0;
 		if (textSize != null) {
@@ -182,11 +165,11 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		
 		if (textLineStyle != null) {
 			backgroundStyle = textLineStyle.backgroundStyle;
-		}
-		
+		}		
 	}
 	
-	inline function getAlignedYOffset():Float {
+	inline function getAlignedYOffset():Float
+	{
 		return switch (vAlign) {
 			case peote.ui.util.VAlign.CENTER: (height - line.height) / 2 + yOffset;
 			case peote.ui.util.VAlign.BOTTOM: height - line.height + yOffset;
@@ -342,8 +325,6 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		}
 	}	
 	
-	
-	// -----------------
 	override inline function onAddVisibleToDisplay()
 	{
 		//trace("onAddVisibleToDisplay()", autoWidth, autoHeight);
@@ -418,8 +399,7 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		if (backgroundStyleElement != null) backgroundStyleProgram.addElement(backgroundStyleElement);
 		else if (backgroundStyle != null) addBackgroundStyle();
 		
-		// TODO: selection and cursor
-		
+		// TODO: selection and cursor		
 	}
 	
 	inline function addBackgroundStyle()
@@ -440,16 +420,15 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		//trace("onRemoveVisibleFromDisplay()");
 		
 		//if (isVisible && line != null) {
-			//trace("remove line from fontProgram");
-			fontProgram.removeLine(line);
-			
-			#if (!peoteui_no_textmasking && !peoteui_no_masking)
-			fontProgram.removeMask(maskElement);
-			#end
-			
-			// TODO: remove bg, selection and cursor styles
-			if (backgroundStyleElement != null) backgroundStyleProgram.removeElement(backgroundStyleElement);
-		//}		
+		//trace("remove line from fontProgram");
+		fontProgram.removeLine(line);
+		#if (!peoteui_no_textmasking && !peoteui_no_masking)
+		fontProgram.removeMask(maskElement);
+		#end
+		
+		// remove background, selection and cursor styles
+		if (backgroundStyleElement != null) backgroundStyleProgram.removeElement(backgroundStyleElement);
+		// TODO: selection and cursor
 	}
 
 	
@@ -696,7 +675,6 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	public inline function getCharAtPosition(xPosition:Float):Int {
 		return fontProgram.lineGetCharAtPosition(line, xPosition);
 	}
-	
 	
 
 	
