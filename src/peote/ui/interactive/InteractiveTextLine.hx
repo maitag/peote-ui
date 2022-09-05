@@ -49,7 +49,43 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	var font:peote.text.Font<$styleType>; //$fontType	
 	public var fontStyle:$styleType;
 	
-	public var backgroundStyle:Dynamic = null;
+	public var backgroundStyle(default, set):Dynamic = null;
+	inline function set_backgroundStyle(style:Dynamic):Dynamic {
+		if (backgroundStyleElement == null) // not added to Display yet
+		{
+			if (style != null) {
+				backgroundStyle = style;
+				if (isVisible) addBackgroundStyle();
+			}
+		}
+		else // already have styleprogram and element
+		{ 
+			if (style != null) 
+			{
+				// if is need of another styleprogram
+				if (style.getID() | (style.id << 16) != backgroundStyle.getID() | (backgroundStyle.id << 16))
+				{
+					if (isVisible) backgroundStyleProgram.removeElement(backgroundStyleElement);
+					backgroundStyleProgram = null;
+					backgroundStyle = style;
+					if (isVisible) addBackgroundStyle();
+				} 
+				else {
+					backgroundStyle = style;
+					backgroundStyleElement.setStyle(style);
+					if (isVisible) backgroundStyleProgram.update(backgroundStyleElement);
+				}
+			}
+			else
+			{
+				if (isVisible) backgroundStyleProgram.removeElement(backgroundStyleElement);
+				backgroundStyleElement = null;
+				backgroundStyleProgram = null;
+				backgroundStyle = null;
+			}
+		}		
+		return backgroundStyle;
+	}
 	var backgroundStyleProgram:peote.ui.style.interfaces.StyleProgram = null;
 	var backgroundStyleElement:peote.ui.style.interfaces.StyleElement = null;
 	
@@ -213,11 +249,23 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		styleUpdateVisibleStyle(backgroundStyle, backgroundStyleElement, backgroundStyleProgram);
 	}
 	
+	inline function styleUpdateVisibleStyle(style:Dynamic, styleElement:peote.ui.style.interfaces.StyleElement, styleProgram:peote.ui.style.interfaces.StyleProgram):Void
+	{
+		if (style != null) {
+			styleElement.setStyle(style);
+			if (isVisible) styleProgram.update(styleElement);
+		}
+	}	
+	
 	override inline function updateVisibleLayout():Void
 	{
 		//trace("updateVisibleLayout()");
-		if (line == null) return;
+		if (line != null) updateLineLayout();
+		styleUpdateVisibleLayout(backgroundStyle, backgroundStyleElement, backgroundStyleProgram);		
+	}
 		
+	inline function updateLineLayout():Void
+	{
 		// vertically alignment for text, cursor and selection
 		var y_offset:Float = getAlignedYOffset();
 				
@@ -257,29 +305,43 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		}
 		fontProgram.setMask(maskElement, _x, _y, _width, _height, isVisible);
 		
-// TODO: _x, _y, _width, _height
-		styleUpdateVisibleLayout(backgroundStyle, backgroundStyleElement, backgroundStyleProgram);
-
-/*		if (backgroundColor != 0 && backgroundElement != null) fontProgram.setBackground(backgroundElement, _x, _y, _width, _height, z, backgroundColor, isVisible);
-		if (selectElement != null) setCreateSelection(_x, _y, _width, _height, y_offset);
+// TODO:
+/*		if (selectElement != null) setCreateSelection(_x, _y, _width, _height, y_offset);
 		if (cursorElement != null) setCreateCursor(_x, _y, _width, _height, y_offset);
 		#else
-		if (backgroundColor != 0 && backgroundElement != null) fontProgram.setBackground(backgroundElement, x, y, width, height, z, backgroundColor, isVisible);
 		if (selectElement != null) setCreateSelection(x, y, width, height, y_offset);
 		if (cursorElement != null) setCreateCursor(x, y, width, height, y_offset);
 */
 		#end		
 	}
 	
+	inline function styleUpdateVisibleLayout(style:Dynamic, styleElement:peote.ui.style.interfaces.StyleElement, styleProgram:peote.ui.style.interfaces.StyleProgram):Void
+	{
+		if (style != null) {
+			styleElement.setLayout(this);
+			if (isVisible) styleProgram.update(styleElement);
+		}
+	}
+	
+	
 	override inline function updateVisible():Void
 	{
-		if (line == null) return;
-		fontProgram.lineSetStyle(line, fontStyle, isVisible);
-		
-		styleUpdateVisibleStyle(backgroundStyle, backgroundStyleElement, backgroundStyleProgram);
-		
-		updateVisibleLayout();
+		if (line == null) {
+			fontProgram.lineSetStyle(line, fontStyle, isVisible);
+			updateLineLayout();
+		}	
+		styleUpdateVisible(backgroundStyle, backgroundStyleElement, backgroundStyleProgram);
 	}
+	
+	inline function styleUpdateVisible(style:Dynamic, styleElement:peote.ui.style.interfaces.StyleElement, styleProgram:peote.ui.style.interfaces.StyleProgram):Void
+	{
+		if (style != null) {
+			styleElement.setStyle(style);
+			styleElement.setLayout(this);
+			if (isVisible) styleProgram.update(styleElement);
+		}
+	}	
+	
 	
 	// -----------------
 	override inline function onAddVisibleToDisplay()
@@ -292,8 +354,7 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 			#end
 			
 // TODO
-/*			if (backgroundColor != 0 && backgroundElement != null) fontProgram.addBackground(backgroundElement);
-			if (selectionIsVisible && selectElement != null) fontProgram.addBackground(selectElement);
+/*			if (selectionIsVisible && selectElement != null) fontProgram.addBackground(selectElement);
 			if (cursorIsVisible && cursorElement != null) fontProgram.addBackground(cursorElement);
 */
 			fontProgram.addLine(line);			
@@ -354,22 +415,24 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 			setCreateCursor(x, y, width, height, y_offset, true); // true -> create new cursor			
 		}
 		
-// TODO
 		if (backgroundStyleElement != null) backgroundStyleProgram.addElement(backgroundStyleElement);
-		else if (backgroundStyle != null)
-		{
-			var stylePos = uiDisplay.usedStyleID.indexOf( backgroundStyle.getID() | (backgroundStyle.id << 16) );
-			if (stylePos < 0) {
-				if (uiDisplay.autoAddStyles) uiDisplay.autoAddStyleProgram(cast backgroundStyleProgram = backgroundStyle.createStyleProgram(), backgroundStyle.getID() | (backgroundStyle.id << 16) );
-				else throw('Error by creating new InteractiveTextLine. The style "'+Type.getClassName(Type.getClass(backgroundStyle))+'" id='+backgroundStyle.id+' is not inside the availableStyle list of UIDisplay.');
-			} else {
-				backgroundStyleProgram = cast uiDisplay.usedStyleProgram[stylePos];
-				if (backgroundStyleProgram == null) uiDisplay.addProgramAtStylePos(cast backgroundStyleProgram = backgroundStyle.createStyleProgram(), stylePos);				
-			}
-			backgroundStyleProgram.addElement(backgroundStyleElement = backgroundStyleProgram.createElement(this, backgroundStyle));
+		else if (backgroundStyle != null) addBackgroundStyle();
+		
+		// TODO: selection and cursor
+		
+	}
+	
+	inline function addBackgroundStyle()
+	{
+		var stylePos = uiDisplay.usedStyleID.indexOf( backgroundStyle.getID() | (backgroundStyle.id << 16) );
+		if (stylePos < 0) {
+			if (uiDisplay.autoAddStyles) uiDisplay.autoAddStyleProgram(cast backgroundStyleProgram = backgroundStyle.createStyleProgram(), backgroundStyle.getID() | (backgroundStyle.id << 16) );
+			else throw('Error by creating new InteractiveTextLine. The style "'+Type.getClassName(Type.getClass(backgroundStyle))+'" id='+backgroundStyle.id+' is not inside the availableStyle list of UIDisplay.');
+		} else {
+			backgroundStyleProgram = cast uiDisplay.usedStyleProgram[stylePos];
+			if (backgroundStyleProgram == null) uiDisplay.addProgramAtStylePos(cast backgroundStyleProgram = backgroundStyle.createStyleProgram(), stylePos);				
 		}
-		
-		
+		backgroundStyleProgram.addElement(backgroundStyleElement = backgroundStyleProgram.createElement(this, backgroundStyle));
 	}
 	
 	override inline function onRemoveVisibleFromDisplay()
@@ -389,6 +452,8 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		//}		
 	}
 
+	
+	
 	// ----------------------- change the text  -----------------------
 	
 	public inline function setText(text:String, fontStyle:Null<$styleType> = null, forceAutoWidth:Null<Bool> = null, forceAutoHeight:Null<Bool> = null, autoUpdate = false)
@@ -584,33 +649,6 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	}
 	
 	
-	
-	// ----------------------- background, selection and cursorStyles -----------------------
-	
-	inline function styleUpdateVisibleStyle(style:Dynamic, styleElement:peote.ui.style.interfaces.StyleElement, styleProgram:peote.ui.style.interfaces.StyleProgram):Void
-	{
-		if (style != null) {
-			styleElement.setStyle(style);
-			if (isVisible) styleProgram.update(styleElement);
-		}
-	}
-	
-	inline function styleUpdateVisibleLayout(style:Dynamic, styleElement:peote.ui.style.interfaces.StyleElement, styleProgram:peote.ui.style.interfaces.StyleProgram):Void
-	{
-		if (style != null) {
-			styleElement.setLayout(this);
-			if (isVisible) styleProgram.update(styleElement);
-		}
-	}
-	
-	inline function styleUpdateVisible(style:Dynamic, styleElement:peote.ui.style.interfaces.StyleElement, styleProgram:peote.ui.style.interfaces.StyleProgram):Void
-	{
-		if (style != null) {
-			styleElement.setStyle(style);
-			styleElement.setLayout(this);
-			if (isVisible) styleProgram.update(styleElement);
-		}
-	}	
 	
 	
 	// ----------------------- delegated methods from FontProgram -----------------------

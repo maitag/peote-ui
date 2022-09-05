@@ -190,7 +190,7 @@ class UIDisplay extends Display
 		}
 	}
 	
-	inline function autoAddStyleProgram(program:Program, styleId:Int, addOnTop:Bool = false) { trace("autoadd", styleId, addOnTop);
+	inline function autoAddStyleProgram(program:Program, styleId:Int, addOnTop:Bool = false) { //trace("autoadd", styleId, addOnTop);
 		if (addOnTop) {
 			usedStyleID.push(styleId);
 			usedStyleProgram.push(program);
@@ -204,7 +204,7 @@ class UIDisplay extends Display
 		}
 	}
 	
-	inline function addProgramAtStylePos(program:Program, stylePos:Int) { trace("Add StyleProgram at",stylePos);
+	inline function addProgramAtStylePos(program:Program, stylePos:Int) { //trace("Add StyleProgram at",stylePos);
 		usedStyleProgram[stylePos] = program;
 		var afterProgram:Program = null;
 		while (stylePos-- > 0) {

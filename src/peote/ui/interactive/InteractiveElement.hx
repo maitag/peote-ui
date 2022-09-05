@@ -15,10 +15,47 @@ private typedef IAElementWheelEventParams = InteractiveElement->WheelEvent->Void
 
 class InteractiveElement extends Interactive
 {	
-	public var style:Dynamic = null; // TODO: if changed dynamically make all more SAVE by checking styleId!
-
 	var styleProgram:StyleProgram = null;
 	var styleElement:StyleElement = null;
+	
+	public var style(default, set):Dynamic = null;
+	inline function set_style(_style:Dynamic):Dynamic {
+		if (styleElement == null) // not added to Display yet
+		{
+			if (_style != null) {
+				style = _style;
+				if (isVisible) addStyle();
+			}
+		}
+		else // already have styleprogram and element
+		{ 
+			if (_style != null) 
+			{
+				// if is need of another styleprogram
+				if (_style.getID() | (_style.id << 16) != style.getID() | (style.id << 16))
+				{
+					if (isVisible) styleProgram.removeElement(styleElement);
+					styleProgram = null;
+					style = _style;
+					if (isVisible) addStyle();
+				} 
+				else {
+					style = _style;
+					styleElement.setStyle(_style);
+					if (isVisible) styleProgram.update(styleElement);
+				}
+			}
+			else
+			{
+				if (isVisible) styleProgram.removeElement(styleElement);
+				styleElement = null;
+				styleProgram = null;
+				style = null;
+			}
+		}		
+		return style;
+	}
+	
 		
 	public function new(xPosition:Int=0, yPosition:Int=0, width:Int=100, height:Int=100, zIndex:Int=0, style:Style=null)
 	{
@@ -56,18 +93,20 @@ class InteractiveElement extends Interactive
 	override inline function onAddVisibleToDisplay():Void
 	{
 		if (styleElement != null) styleProgram.addElement(styleElement);
-		else if (style != null)
-		{
-			var stylePos = uiDisplay.usedStyleID.indexOf( style.getID() | (style.id << 16) );
-			if (stylePos < 0) {
-				if (uiDisplay.autoAddStyles) uiDisplay.autoAddStyleProgram(cast styleProgram = style.createStyleProgram(), style.getID() | (style.id << 16) );
-				else throw('Error by creating new InteractiveElement. The style "${Type.getClassName(Type.getClass(style))}" id=${style.id} is not inside the availableStyle list of UIDisplay.');
-			} else {
-				styleProgram = cast uiDisplay.usedStyleProgram[stylePos];
-				if (styleProgram == null) uiDisplay.addProgramAtStylePos(cast styleProgram = style.createStyleProgram(), stylePos);				
-			}
-			styleProgram.addElement(styleElement = styleProgram.createElement(this, style));
+		else if (style != null) addStyle();
+	}
+	
+	inline function addStyle()
+	{
+		var stylePos = uiDisplay.usedStyleID.indexOf( style.getID() | (style.id << 16) );
+		if (stylePos < 0) {
+			if (uiDisplay.autoAddStyles) uiDisplay.autoAddStyleProgram(cast styleProgram = style.createStyleProgram(), style.getID() | (style.id << 16) );
+			else throw('Error by creating new InteractiveElement. The style "${Type.getClassName(Type.getClass(style))}" id=${style.id} is not inside the availableStyle list of UIDisplay.');
+		} else {
+			styleProgram = cast uiDisplay.usedStyleProgram[stylePos];
+			if (styleProgram == null) uiDisplay.addProgramAtStylePos(cast styleProgram = style.createStyleProgram(), stylePos);				
 		}
+		styleProgram.addElement(styleElement = styleProgram.createElement(this, style));		
 	}
 	
 	override inline function onRemoveVisibleFromDisplay()
