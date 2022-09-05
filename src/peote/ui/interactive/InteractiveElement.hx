@@ -31,7 +31,7 @@ class InteractiveElement extends Interactive
 					if (isVisible) styleProgram.removeElement(styleElement);
 					styleProgram = null;
 					style = _style;
-					if (isVisible) addStyle();
+					if (isVisible) addStyle() else styleElement = null;
 				} 
 				else { // styleprogram is of same type
 					style = _style;
