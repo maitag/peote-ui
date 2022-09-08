@@ -9,8 +9,6 @@ import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
 import peote.ui.widget.Widget;
 
-import peote.text.Font;
-
 typedef TextLineOptions = {
 	> LayoutOptions,
 	?onPointerOver:TextLine->PointerEvent->Void,

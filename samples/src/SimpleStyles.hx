@@ -70,6 +70,11 @@ class SimpleStyles extends Application
 		var fontStyleTiled = fontTiled.createFontStyle(); // alternative way of creation
 		fontStyleTiled.letterSpace = -2.0;
 
+		var textStyle:TextLineStyle = {
+			backgroundStyle:simpleStyle,
+			selectionStyle:roundBorderStyle
+		}
+
 		peoteView = new PeoteView(window);
 		uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY1
 		// available styles into render-order (without it will auto add at runtime and fontstyles allways on top)
@@ -116,8 +121,9 @@ class SimpleStyles extends Application
 		
 		// ----------- create TextLines -----------
 				
-		var textLine0 = new InteractiveTextLine<FontStylePacked>(30, 25, "hello ", fontPacked, fontStylePacked, {backgroundStyle:roundBorderStyle});
+		var textLine0 = new InteractiveTextLine<FontStylePacked>(30, 25, "hello ", fontPacked, fontStylePacked, textStyle);
 		uiDisplay.add(textLine0);
+		textLine0.select(1,5);
 		//textLine0.hide();
 		//textLine0.backgroundStyle.color = Color.YELLOW; textLine0.updateStyle();
 		//textLine0.backgroundStyle = null;

@@ -2,6 +2,7 @@ package;
 
 import haxe.CallStack;
 import peote.ui.interactive.interfaces.TextLine;
+import peote.ui.style.TextLineStyle;
 import peote.ui.util.HAlign;
 import peote.ui.util.VAlign;
 
@@ -11,7 +12,6 @@ import lime.ui.MouseButton;
 import lime.ui.MouseWheelMode;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
-import lime.graphics.RenderContext;
 
 import peote.view.PeoteView;
 import peote.view.Color;
@@ -50,6 +50,8 @@ class SimpleMasked extends Application
 	
 	var fontStyleTiled:FontStyleTiled;
 	var fontStylePacked:FontStylePacked;
+	
+	var textStyle:TextLineStyle;
 		
 	var uiLayoutContainer:LayoutContainer;
 	
@@ -76,8 +78,17 @@ class SimpleMasked extends Application
 		fontStylePacked.width = 30.0;
 		fontStylePacked.color = Color.BLACK;
 		
+		var backgroundStyle = new SimpleStyle(Color.GREEN);
+		textStyle = {
+			backgroundStyle:backgroundStyle
+			,selectionStyle:RoundBorderStyle.createById(0, Color.GREY5)
+			//,selectionStyle:SimpleStyle.createById(1, Color.GREY5)
+		}
+
+		
 		peoteView = new PeoteView(window);
-		layoutedUIDisplay = new LayoutedUIDisplay(0, 0, window.width, window.height, Color.GREY3);
+		//layoutedUIDisplay = new LayoutedUIDisplay(0, 0, window.width, window.height, Color.GREY3);
+		layoutedUIDisplay = new LayoutedUIDisplay(0, 0, window.width, window.height, Color.GREY3, [backgroundStyle], true);
 		peoteView.addDisplay(layoutedUIDisplay);
 		
 		// TODO: this is only need on neko to avoid bug if mouse is over application at start
@@ -114,9 +125,11 @@ class SimpleMasked extends Application
 			
 			button.wheelEventsBubbleTo = red;
 			
-			var textLineTiled = new LayoutedTextLine<FontStyleTiled>(0, 0, {hAlign:HAlign.CENTER, vAlign:VAlign.CENTER}, 'button${i+1}', tiledFont, fontStyleTiled);
+			var textLineTiled = new LayoutedTextLine<FontStyleTiled>(0, 0, {hAlign:HAlign.CENTER, vAlign:VAlign.CENTER}, 'button${i+1}', tiledFont, fontStyleTiled, textStyle);
 			//var textLinePacked = new LayoutedTextLine<FontStylePacked>(0, 0, 130, 25, 0, true, "packed font", packedFont, fontStylePacked);	// masked -> true		
 			//trace("KK", textLineTiled.line.textSize); // TODO: line is null
+			
+			textLineTiled.select(1, 4);
 			
 			layoutedUIDisplay.add(textLineTiled);
 			

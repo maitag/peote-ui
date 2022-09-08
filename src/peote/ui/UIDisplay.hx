@@ -234,7 +234,7 @@ class UIDisplay extends Display
 		return program;
 	}
 		
-	inline public function addFontStyleProgram(style:FontStyle, font:Dynamic, addOnTop:Bool = true):Program {
+	 public function addFontStyleProgram(style:FontStyle, font:Dynamic, addOnTop:Bool = true):Program {
 		// TODO: check font type
 		//if ( !isFontStyle(style) ) throw('Error by addFontStyleProgram(). The style "${Type.getClassName(Type.getClass(style))}(${style.id})" is not a FontStyle, so use addStyleProgram() instead!');
 		var program:Program;

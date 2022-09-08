@@ -2,11 +2,11 @@ package peote.ui.style.interfaces;
 
 import peote.ui.interactive.Interactive;
 
-@:allow(peote.ui)
 interface StyleProgram
 {
-	private function createElement(uiElement:Interactive, style:Dynamic):StyleElement;
-	private function addElement(styleElement:StyleElement):Void;
-	private function removeElement(styleElement:StyleElement):Void;
-	private function update(styleElement:StyleElement):Void;
+	public function createElement(uiElement:Interactive, style:Dynamic):StyleElement;
+	public function createElementAt(uiElement:Interactive, x:Int, y:Int, w:Int, h:Int, mx:Int, my:Int, mw:Int, mh:Int, z:Int, style:Dynamic):StyleElement;
+	public function addElement(styleElement:StyleElement):Void;
+	public function removeElement(styleElement:StyleElement):Void;
+	public function update(styleElement:StyleElement):Void;
 }

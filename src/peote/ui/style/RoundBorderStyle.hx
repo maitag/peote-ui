@@ -99,13 +99,13 @@ class RoundBorderStyleElement implements StyleElement implements Element
 	
 	//var OPTIONS = {  };
 		
-	public inline function new(uiElement:Interactive, style:Dynamic)
+	public inline function new(style:Dynamic, uiElement:Interactive = null)
 	{
 		setStyle(style);
-		setLayout(uiElement);
+		if (uiElement != null) setLayout(uiElement);
 	}
 	
-	inline function setStyle(style:Dynamic)
+	public inline function setStyle(style:Dynamic)
 	{
 		color        = style.color;
 		borderColor  = style.borderColor;
@@ -113,7 +113,7 @@ class RoundBorderStyleElement implements StyleElement implements Element
 		borderRadius = style.borderRadius;
 	}
 	
-	inline function setLayout(uiElement:Interactive)
+	public inline function setLayout(uiElement:Interactive)
 	{
 		x = uiElement.x;
 		y = uiElement.y;
@@ -135,6 +135,22 @@ class RoundBorderStyleElement implements StyleElement implements Element
 		}
 		#end
 	}
+	
+	public inline function setMasked(uiElement:Interactive, _x:Int, _y:Int, _w:Int, _h:Int, _mx:Int, _my:Int, _mw:Int, _mh:Int, _z:Int)
+	{
+		z = _z;
+		x = _x;
+		y = _y;
+		w = _w;
+		h = _h;
+		#if (!peoteui_no_masking)
+		mx = _mx;
+		my = _my;
+		mw = mx + _mw;
+		mh = my + _mh;
+		#end
+	}
+	
 }
 
 class RoundBorderStyleProgram extends Program implements StyleProgram
@@ -221,22 +237,29 @@ class RoundBorderStyleProgram extends Program implements StyleProgram
 		alphaEnabled = true;
 	}
 
-	inline function createElement(uiElement:Interactive, style:Dynamic):StyleElement
+	public inline function createElement(uiElement:Interactive, style:Dynamic):StyleElement
 	{
-		return new RoundBorderStyleElement(uiElement, style);
+		return new RoundBorderStyleElement(style, uiElement);
 	}
 	
-	inline function addElement(styleElement:StyleElement)
+	public inline function createElementAt(uiElement:Interactive, x:Int, y:Int, w:Int, h:Int, mx:Int, my:Int, mw:Int, mh:Int, z:Int, style:Dynamic):StyleElement
+	{
+		var e = new RoundBorderStyleElement(style);
+		e.setMasked(uiElement, x, y, w, h, mx, my, mw, mh, z);
+		return e;
+	}
+	
+	public inline function addElement(styleElement:StyleElement)
 	{
 		getBuffer().addElement(cast styleElement);
 	}
 	
-	inline function update(styleElement:StyleElement)
+	public inline function update(styleElement:StyleElement)
 	{
 		getBuffer().updateElement(cast styleElement);
 	}
 	
-	inline function removeElement(styleElement:StyleElement)
+	public inline function removeElement(styleElement:StyleElement)
 	{
 		getBuffer().removeElement(cast styleElement);
 	}

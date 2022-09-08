@@ -91,15 +91,18 @@ class SimpleText extends Application
 		//fontStyle.height = 30;
 		//fontStyle.width = 20;
 		
-		var backgroundStyle = new SimpleStyle(Color.BLACK);
+		var simpleStyle = new SimpleStyle(Color.BLACK);
+		var roundBorderStyle = new RoundBorderStyle(Color.GREY3);
 		
 		var textStyle:TextLineStyle = {
-			backgroundStyle:backgroundStyle
+			backgroundStyle:simpleStyle,
+			//selectionStyle:roundBorderStyle
+			selectionStyle:SimpleStyle.createById(1, Color.GREY3)
 		}
 		
 		peoteView = new PeoteView(window);
 		uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY1);
-		//uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY1, [backgroundStyle, fontStyle]);
+		//uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY1, [simpleStyle, fontStyle]);
 		peoteView.addDisplay(uiDisplay);		
 		
 		var xOffset:Int = 300;
@@ -139,7 +142,7 @@ class SimpleText extends Application
 		var textLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {height:50, vAlign:VAlign.BOTTOM}, "hello", font, textStyle);
 		addOverOut(textLine);
 			
-		var textLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {height:20}, "hello", font, {backgroundStyle:backgroundStyle.copy()});
+		var textLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {height:20}, "hello", font, textStyle);
 		// all changings also should work if is hidden or not added!
 		addOverOut(textLine);
 		//textLine.hide();
@@ -242,7 +245,7 @@ class SimpleText extends Application
 		inputLine.cursor = 3;
 		addInput(inputLine);
 		
-		var inputLine = new InteractiveTextLine<MyFontStyle>(x, y += yOffset, {width:50, xOffset:10, yOffset:10}, "input", font, fontStyleInput, textStyle);
+		var inputLine = new InteractiveTextLine<MyFontStyle>(x, y += yOffset, {width:50,height:20, xOffset:10, yOffset:15}, "input", font, fontStyleInput, textStyle);
 		//inputLine.cursor = 3;
 		inputLine.cursorShow();
 		//inputLine.select(0,3);
@@ -257,7 +260,7 @@ class SimpleText extends Application
 			if (inputLine.xOffset == 3) inputLine.hide();
 			if (inputLine.xOffset == 1) inputLine.show();
 			if (inputLine.xOffset == -3) inputLine.cursor = 1;
-			if (inputLine.xOffset == -25) timer.stop();
+			if (inputLine.xOffset == -35) timer.stop();
 		}
 		
 		var inputLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.RIGHT}, "input", font, fontStyleInput, textStyle);
