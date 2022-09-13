@@ -52,13 +52,13 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	// -------- background style ---------
 	var backgroundStyleProgram:peote.ui.style.interfaces.StyleProgram = null;
 	var backgroundStyleElement:peote.ui.style.interfaces.StyleElement = null;
-	
+
 	public var backgroundStyle(default, set):Dynamic = null;
 	inline function set_backgroundStyle(style:Dynamic):Dynamic {
 		if (backgroundStyleElement == null) { // not added to Display yet
 			if (style != null) { // add new style
 				backgroundStyle = style;
-				if (isVisible) createBackgroundStyle();
+				if (isVisible) createBackgroundStyle();	// access of uiDisplay only after onAddVidibleToDisplay
 			}
 		}
 		else { // already have styleprogram and element 
@@ -78,9 +78,9 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 			} 
 			else { // remove style
 				if (isVisible) backgroundStyleProgram.removeElement(backgroundStyleElement);
-				backgroundStyleElement = null;
-				backgroundStyleProgram = null;
 				backgroundStyle = null;
+				backgroundStyleProgram = null;
+				backgroundStyleElement = null;
 			}
 		}		
 		return backgroundStyle;
@@ -89,13 +89,107 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	// -------- selection style ---------
 	var selectionStyleProgram:peote.ui.style.interfaces.StyleProgram = null;
 	var selectionStyleElement:peote.ui.style.interfaces.StyleElement = null;
-	public var selectionStyle:Dynamic = null;
+	public var selectionStyle(default, set):Dynamic = null;
+	inline function set_selectionStyle(style:Dynamic):Dynamic {
+		if (selectionStyleElement == null) { // not added to Display yet
+			if (style != null) { // add new style
+				selectionStyle = style;
+				if (isVisible && selectionIsVisible) {
+					#if (!peoteui_no_textmasking && !peoteui_no_masking)
+					if (masked) createSelection(x+maskX, y+maskY, maskWidth, maskHeight, getAlignedYOffset(), true);
+					else createSelection(x, y, width, height, getAlignedYOffset(), true);
+					#else
+					createSelection(x, y, width, height, getAlignedYOffset(), true);
+					#end
+				}
+			}
+		}
+		else { // already have styleprogram and element 
+			if (style != null) {
+				if (style.getID() | (style.id << 16) != selectionStyle.getID() | (selectionStyle.id << 16))
+				{	// if is need another styleprogram
+					if (isVisible && selectionIsVisible) selectionStyleProgram.removeElement(selectionStyleElement);
+					selectionStyleProgram = null;
+					selectionStyle = style;
+					if (isVisible && selectionIsVisible) {
+						#if (!peoteui_no_textmasking && !peoteui_no_masking)
+						if (masked) createSelection(x+maskX, y+maskY, maskWidth, maskHeight, getAlignedYOffset(), true);
+						else createSelection(x, y, width, height, getAlignedYOffset(), true);
+						#else
+						createSelection(x, y, width, height, getAlignedYOffset(), true);
+						#end
+					}
+					else selectionStyleElement = null;
+				} 
+				else { // styleprogram is of same type
+					selectionStyle = style;
+					selectionStyleElement.setStyle(style);
+					if (isVisible && selectionIsVisible) selectionStyleProgram.update(selectionStyleElement);
+				}
+			} 
+			else { // remove style
+				if (isVisible && selectionIsVisible) selectionStyleProgram.removeElement(selectionStyleElement);
+				selectionStyle = null;
+				selectionStyleProgram = null;
+				selectionStyleElement = null;
+			}
+		}		
+		return selectionStyle;
+	}
+	
+	public var selectionIsVisible(default, set):Bool = false;
+	inline function set_selectionIsVisible(b:Bool):Bool {
+		if (line != null && selectionStyle != null) {
+			if (b && !selectionIsVisible) {
+				if (selectionStyleElement == null) { // create new selectElement
+					#if (!peoteui_no_textmasking && !peoteui_no_masking)
+					if (masked) createSelection(x+maskX, y+maskY, maskWidth, maskHeight, getAlignedYOffset(), isVisible);
+					else createSelection(x, y, width, height, getAlignedYOffset(), isVisible);
+					#else
+					createSelection(x, y, width, height, getAlignedYOffset(), isVisible);
+					#end
+				}
+				else if (isVisible) selectionStyleProgram.addElement(selectionStyleElement);
+			}
+			else if (!b && selectionIsVisible && selectionStyleElement != null && isVisible) selectionStyleProgram.removeElement(selectionStyleElement);
+		}
+		return selectionIsVisible = b;
+	}	
+	public inline function selectionShow():Void selectionIsVisible = true;
+	public inline function selectionHide():Void selectionIsVisible = false;
 	
 	// -------- cursor style ---------
 	var cursorStyleProgram:peote.ui.style.interfaces.StyleProgram = null;
 	var cursorStyleElement:peote.ui.style.interfaces.StyleElement = null;
 	public var cursorStyle:Dynamic = null;
 	
+	public var cursorIsVisible(default, set):Bool = false;
+	inline function set_cursorIsVisible(b:Bool):Bool {
+// TODO
+/*		if (line != null) {
+			if (b && !cursorIsVisible) {
+				if (cursorElement == null) {
+					// create new cursorElement
+					#if (!peoteui_no_textmasking && !peoteui_no_masking)
+					if (masked) setCreateCursor(x+maskX, y+maskY, maskWidth, maskHeight, getAlignedYOffset(), true);
+					else setCreateCursor(x, y, width, height, getAlignedYOffset(), true);
+					#else
+					setCreateCursor(x, y, width, height, getAlignedYOffset(), true);
+					#end
+				}
+				if (isVisible) fontProgram.addBackground(cursorElement);
+			}
+			else if (!b && cursorIsVisible && cursorElement != null && isVisible) fontProgram.removeBackground(cursorElement);
+		}
+*/
+		return cursorIsVisible = b;
+	}	
+	public inline function cursorShow():Void cursorIsVisible = true;
+	public inline function cursorHide():Void cursorIsVisible = false;
+	
+	
+	
+	// ---------- text ---------------
 	
 	@:isVar public var text(get, set):String = null;
 	inline function get_text():String {
@@ -109,7 +203,8 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 			return t;
 		}
 	}
-		
+	
+	// ----------------- aligning -----------
 	var autoSize:Int = 3; // first bit is autoheight, second bit is autowidth
 	public var autoWidth(get, set):Bool;
 	inline function get_autoWidth():Bool return (autoSize & 2 > 0);
@@ -158,6 +253,7 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		if (fontStyle == null) fontStyle = font.createFontStyle();
 		this.fontStyle = fontStyle;
 		
+		// TODO !!!
 		${switch (glyphStyleHasField.local_zIndex) {
 			case true: macro fontStyle.zIndex = zIndex;
 			default: macro {}
@@ -542,30 +638,6 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		return cursor;
 	}
 		
-	public var cursorIsVisible(default, set):Bool = false;
-	inline function set_cursorIsVisible(b:Bool):Bool {
-// TODO
-/*		if (line != null) {
-			if (b && !cursorIsVisible) {
-				if (cursorElement == null) {
-					// create new cursorElement
-					#if (!peoteui_no_textmasking && !peoteui_no_masking)
-					if (masked) setCreateCursor(x+maskX, y+maskY, maskWidth, maskHeight, getAlignedYOffset(), true);
-					else setCreateCursor(x, y, width, height, getAlignedYOffset(), true);
-					#else
-					setCreateCursor(x, y, width, height, getAlignedYOffset(), true);
-					#end
-				}
-				if (isVisible) fontProgram.addBackground(cursorElement);
-			}
-			else if (!b && cursorIsVisible && cursorElement != null && isVisible) fontProgram.removeBackground(cursorElement);
-		}
-*/
-		return cursorIsVisible = b;
-	}
-	
-	public inline function cursorShow():Void cursorIsVisible = true;
-	public inline function cursorHide():Void cursorIsVisible = false;
 		
 	inline function cursorLeft(isShift:Bool, isCtrl:Bool)
 	{
@@ -576,29 +648,6 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	
 	var selectFrom:Int = 0;
 	var selectTo:Int = 0;
-		
-	public var selectionIsVisible(default, set):Bool = false;
-	inline function set_selectionIsVisible(b:Bool):Bool {
-		if (line != null && selectionStyle != null) {
-			if (b && !selectionIsVisible) {
-				if (selectionStyleElement == null) {
-					// create new selectElement
-					#if (!peoteui_no_textmasking && !peoteui_no_masking)
-					if (masked) createSelection(x+maskX, y+maskY, maskWidth, maskHeight, getAlignedYOffset(), isVisible);
-					else createSelection(x, y, width, height, getAlignedYOffset(), isVisible);
-					#else
-					createSelection(x, y, width, height, getAlignedYOffset(), isVisible);
-					#end
-				}
-				else if (isVisible) selectionStyleProgram.addElement(selectionStyleElement);
-			}
-			else if (!b && selectionIsVisible && selectionStyleElement != null && isVisible) selectionStyleProgram.removeElement(selectionStyleElement);
-		}
-		return selectionIsVisible = b;
-	}
-	
-	public inline function selectionShow():Void selectionIsVisible = true;
-	public inline function selectionHide():Void selectionIsVisible = false;
 	
 	public function select(from:Int, to:Int):Void {
 		if (from < 0) from = 0;

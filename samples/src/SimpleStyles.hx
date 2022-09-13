@@ -123,7 +123,11 @@ class SimpleStyles extends Application
 				
 		var textLine0 = new InteractiveTextLine<FontStylePacked>(30, 25, "hello ", fontPacked, fontStylePacked, textStyle);
 		uiDisplay.add(textLine0);
-		textLine0.select(1,5);
+		textLine0.select(1, 5);
+		haxe.Timer.delay(()->{
+			//textLine0.selectionStyle = roundBorderStyle.copy(Color.BLUE);
+			textLine0.selectionStyle = SimpleStyle.createById(2, Color.BLUE);
+		} , 500);
 		//textLine0.hide();
 		//textLine0.backgroundStyle.color = Color.YELLOW; textLine0.updateStyle();
 		//textLine0.backgroundStyle = null;
