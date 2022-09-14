@@ -3,6 +3,7 @@ package;
 import haxe.CallStack;
 import lime.app.Application;
 import lime.ui.Window;
+import peote.ui.util.TextSize;
 
 import peote.view.PeoteView;
 import peote.view.Color;
@@ -85,7 +86,7 @@ class TestStyles extends Application
 		
 		//uiDisplay.getStyleProgram(roundBorderStyle).alphaEnabled = false;
 				
-		uiDisplay.addFontStyleProgram(fontStyleTiled, fontTiled);		
+		uiDisplay.addFontStyleProgram(fontStyleTiled, fontTiled);
 		uiDisplay.addStyleProgram(cursorStyle, true).alphaEnabled = true;
 		
 		//var fontProgram:FontProgram<FontStylePacked> = cast uiDisplay.getFontStyleProgram(fontStylePacked, fontPacked);
@@ -95,35 +96,69 @@ class TestStyles extends Application
 		//uiDisplay.getFontStyleProgram(fontStyleTiled, fontTiled).alphaEnabled = false;				
 
 		
+		// ------------------------------------------
+		// ----------- InteractiveElement -----------
+		// ------------------------------------------
 		
-		// ----------- create Buttons -----------
-				
-		var button0 = new InteractiveElement(10, 10, 100, 50, roundBorderStyle);
-		uiDisplay.add(button0);
-/*		haxe.Timer.delay(()->{
-			if ((button0.style is RoundBorderStyle)) {
-				button0.style.borderColor = Color.RED;
-				button0.updateStyle();
-			}
-		}, 1000);
-*/		
-		var button1 = new InteractiveElement(40, 40, 200, 50, simpleStyle);
-		uiDisplay.add(button1);
-/*		haxe.Timer.delay(()->{
-			// without these checks it will crash on Hashlink because SimpleStyle havn't borderColor
-			if ((button1.style is RoundBorderStyle)) {
-			//if (button1.style.borderColor != null) {
-				button1.style.borderColor = Color.YELLOW;
-				button1.updateStyle();
-			}
-		}, 4000);
-*/
+		var element = new InteractiveElement(10, 10, 200, 50, roundBorderStyle);
+		element.onPointerOver = (_, _)-> trace("on element over");
+		element.onPointerOut  = (_, _)-> trace("on element out");
 		
-		// ----------- create TextLines -----------
+		var x = 10;
+		var y = 50;
+		var h = 30;
+		var size:TextSize = {height:25}
+		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "add/remove", fontStyleTiled, roundBorderStyle);
+		uiDisplay.add(b);
+		b.onPointerClick = (_, _)-> {
+			if (!element.isVisible) uiDisplay.add(element) else uiDisplay.remove(element);
+		}
+		
+		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "show", fontStyleTiled, roundBorderStyle);
+		uiDisplay.add(b);
+		b.onPointerClick = (_, _)-> element.show();		
+		var b = fontTiled.createInteractiveTextLine(x+5+b.width, y, size, "hide", fontStyleTiled, roundBorderStyle);
+		uiDisplay.add(b);
+		b.onPointerClick = (_, _)-> element.hide();
+
+		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "remove style", fontStyleTiled, roundBorderStyle);
+		uiDisplay.add(b);
+		b.onPointerClick = (_, _)-> {
+			element.style = null;
+		}
+		
+		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "set simplestyle", fontStyleTiled, roundBorderStyle);
+		uiDisplay.add(b);
+		b.onPointerClick = (_, _)-> {
+			element.style = simpleStyle;
+		}
+		
+		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "set roundBorderStyle", fontStyleTiled, roundBorderStyle);
+		uiDisplay.add(b);
+		b.onPointerClick = (_, _)-> {
+			element.style = roundBorderStyle;
+		}
+		
+		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "style on/off", fontStyleTiled, roundBorderStyle);
+		uiDisplay.add(b);
+		b.onPointerClick = (_, _)-> {
+			// TODO
+		}
+		
+		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "change style color", fontStyleTiled, roundBorderStyle);
+		uiDisplay.add(b);
+		b.onPointerClick = (_, _)-> {
+			element.style.color = Color.random();
+			element.updateStyle();
+		}
+		
+		// -------------------------------------------
+		// ----------- InteractiveTextLine -----------
+		// -------------------------------------------
 				
-		var textLine0 = new InteractiveTextLine<FontStylePacked>(30, 25, "hello ", fontPacked, fontStylePacked, textStyle);
+		var textLine0 = new InteractiveTextLine<FontStylePacked>(230, 25, "hello ", fontPacked, fontStylePacked, textStyle);
 		uiDisplay.add(textLine0);
-		textLine0.select(1, 5);
+/*		textLine0.select(1, 5);
 		haxe.Timer.delay(()->{
 			//textLine0.selectionStyle = roundBorderStyle.copy(Color.BLUE);
 			textLine0.selectionStyle = SimpleStyle.createById(2, Color.BLUE);
@@ -134,14 +169,14 @@ class TestStyles extends Application
 		//textLine0.backgroundStyle = roundBorderStyle.copy(Color.YELLOW);
 		//textLine0.backgroundStyle = simpleStyle.copy(Color.YELLOW);
 		//textLine0.show();
-/*		haxe.Timer.delay(()->{ uiDisplay.remove(textLine0); } , 500);
+		haxe.Timer.delay(()->{ uiDisplay.remove(textLine0); } , 500);
 		haxe.Timer.delay(()->{ fontStylePacked.color = Color.YELLOW; textLine0.updateStyle(); }, 1000);
 		haxe.Timer.delay(()->{ uiDisplay.add(textLine0); }, 1500);
 		haxe.Timer.delay(()->{ textLine0.fontStyle.color = Color.BLUE; textLine0.updateStyle(); }, 2000);
 		haxe.Timer.delay(()->{ textLine0.hide(); }, 2500);
 		haxe.Timer.delay(()->{ textLine0.x += 100; textLine0.updateLayout(); }, 3000);
 		haxe.Timer.delay(()->{ textLine0.show(); }, 3500);
-*/		
+	
 		
 		
 		// or alternative way to create:
@@ -157,7 +192,7 @@ class TestStyles extends Application
 		var cursor = new InteractiveElement(60, 55, 25, 25, SimpleStyle.createById(1, Color.YELLOW.setAlpha(0.7) ));
 		uiDisplay.add(cursor);
 		//trace(Type.getClassName(Type.getClass(button2.style)));
-		
+*/			
 
 		//uiDisplay.x = 50;
 		//uiDisplay.zoom = 1.2;
