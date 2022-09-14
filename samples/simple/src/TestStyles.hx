@@ -16,7 +16,7 @@ import peote.ui.interactive.InteractiveElement;
 import peote.ui.style.*;
 
 
-class SimpleStyles extends Application
+class TestStyles extends Application
 {
 	var peoteView:PeoteView;
 	var uiDisplay:UIDisplay;

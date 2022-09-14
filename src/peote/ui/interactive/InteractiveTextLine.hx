@@ -52,7 +52,6 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	// -------- background style ---------
 	var backgroundStyleProgram:peote.ui.style.interfaces.StyleProgram = null;
 	var backgroundStyleElement:peote.ui.style.interfaces.StyleElement = null;
-
 	public var backgroundStyle(default, set):Dynamic = null;
 	inline function set_backgroundStyle(style:Dynamic):Dynamic {
 		if (backgroundStyleElement == null) { // not added to Display yet
@@ -135,8 +134,7 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 			}
 		}		
 		return selectionStyle;
-	}
-	
+	}	
 	public var selectionIsVisible(default, set):Bool = false;
 	inline function set_selectionIsVisible(b:Bool):Bool {
 		if (line != null && selectionStyle != null) {
@@ -157,6 +155,24 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	}	
 	public inline function selectionShow():Void selectionIsVisible = true;
 	public inline function selectionHide():Void selectionIsVisible = false;
+	var selectFrom:Int = 0;
+	var selectTo:Int = 0;	
+	public function select(from:Int, to:Int):Void {
+		if (from < 0) from = 0;
+		if (to < 0) to = 0;
+		if (from <= to) { selectFrom = from; selectTo = to;	} else { selectFrom = to; selectTo = from; }
+		if (line != null && selectionStyle != null) {
+			if (selectTo > line.length) selectTo = line.length;
+			#if (!peoteui_no_textmasking && !peoteui_no_masking)
+			if (masked) _setCreateSelection(x+maskX, y+maskY, maskWidth, maskHeight, getAlignedYOffset(), (isVisible && selectionIsVisible), (selectionStyleElement == null));
+			else _setCreateSelection(x, y, width, height, getAlignedYOffset(), (isVisible && selectionIsVisible), (selectionStyleElement == null));
+			#else
+			_setCreateSelection(x, y, width, height, getAlignedYOffset(), (isVisible && selectionIsVisible), (selectionStyleElement == null));
+			#end
+		}
+		selectionShow();
+	}
+	
 	
 	// -------- cursor style ---------
 	var cursorStyleProgram:peote.ui.style.interfaces.StyleProgram = null;
@@ -645,32 +661,6 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	}
 
 	// ----------- Seletion  -----------
-	
-	var selectFrom:Int = 0;
-	var selectTo:Int = 0;
-	
-	public function select(from:Int, to:Int):Void {
-		if (from < 0) from = 0;
-		if (to < 0) to = 0;
-		if (from <= to) {
-			selectFrom = from;
-			selectTo = to;
-		} else {
-			selectFrom = to;
-			selectTo = from;
-		}
-		if (line != null && selectionStyle != null)
-		{
-			if (selectTo > line.length) selectTo = line.length;
-			#if (!peoteui_no_textmasking && !peoteui_no_masking)
-			if (masked) _setCreateSelection(x+maskX, y+maskY, maskWidth, maskHeight, getAlignedYOffset(), (isVisible && selectionIsVisible), (selectionStyleElement == null));
-			else _setCreateSelection(x, y, width, height, getAlignedYOffset(), (isVisible && selectionIsVisible), (selectionStyleElement == null));
-			#else
-			_setCreateSelection(x, y, width, height, getAlignedYOffset(), (isVisible && selectionIsVisible), (selectionStyleElement == null));
-			#end
-		}
-		selectionShow();
-	}
 	
 	// start/stop pointer-selection
 	public function startSelection(e:peote.ui.event.PointerEvent):Void {

@@ -1,5 +1,7 @@
 package peote.ui.layouted;
 
+import lime.ui.Window;
+
 import peote.layout.LayoutContainer;
 
 import peote.view.Color;
@@ -18,8 +20,10 @@ class LayoutedUIDisplay extends UIDisplay implements peote.layout.ILayoutElement
 	public function new(x:Int, y:Int, width:Int, height:Int, color:Color=0x00000000, maxTouchpoints:Int = 3, availableStyles:Array<StyleID> = null, autoAddStyles:Null<Bool> = null) 
 	{
 		super(x, y, width, height, color, maxTouchpoints, availableStyles, autoAddStyles);
-	}	
+	}
 	
+	public static inline function registerEvents(window:Window) UIDisplay.registerEvents(window);
+	public static inline function unRegisterEvents(window:Window) UIDisplay.unRegisterEvents(window);
 	
 	// ---------------- interface to peote-layout ---------------------
 	

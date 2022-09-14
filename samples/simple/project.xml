@@ -7,15 +7,13 @@
 	<!-- <meta build-number="714" /> --> <!-- let set the buildnumber manual (android) -->
 	<!-- check this for GG-Playstore: <setenv name="ANDROID_GRADLE_TASK" value=":app:bundleRelease" /> -->
 	
-	<app main="SimpleStyles" path="bin" file="Main" />
+	<app main="SimpleElements" path="bin" file="Main" />
 	<!--
-		SimpleStyles,
+		TestStyles,
 		SimpleElements,
-		MultiUIDisplays,
 		SimpleText,
-		SimpleLayouted,
-		SimpleMasked,
-		WidgetLayout,
+		MultiInputEvents,
+		MultiUIDisplays,
 		...
 	-->
 	
@@ -36,7 +34,6 @@
 	
 	<haxelib name="peote-view" />
 	<haxelib name="peote-text" />
-	<haxelib name="peote-layout" />
 	<haxelib name="input2action" />
 	<haxelib name="peote-ui" />
 	
@@ -87,7 +84,7 @@
 	<!-- <setenv name="SHOW_CONSOLE" /> --> <!-- on windows it shows console if start by clicking on .exe -->
 	
 	<!-- for html5 and loading inside onPreloadComplete-event the assets need to be embed=true --> 
-	<assets path="assets" exclude="lime.svg" embed="false" />
+	<assets path="../assets" rename="assets" exclude="lime.svg" embed="false" />
 	
 	<icon path="assets/lime.svg" />
 	
