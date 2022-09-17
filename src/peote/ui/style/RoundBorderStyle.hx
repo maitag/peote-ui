@@ -18,7 +18,7 @@ class RoundBorderStyle implements Style implements StyleID
 	// style
 	public var color       :Color = Color.GREY2;
 	public var borderColor :Color = Color.GREY6;
-	public var borderSize  :Float =  4.0;
+	public var borderSize  :Float =  2.0;
 	public var borderRadius:Float = 20.0;
 	
 	// -----------------------------------------	
@@ -50,7 +50,8 @@ class RoundBorderStyle implements Style implements StyleID
 		return newStyle;
 	}
 	
-	public inline function copy(
+	// no inline here cos of neko
+	public function copy(
 		?color       :Null<Color>,
 		?borderColor :Null<Color>,
 		?borderSize  :Null<Float>,

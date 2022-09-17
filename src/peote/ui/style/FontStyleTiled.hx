@@ -15,9 +15,9 @@ class FontStyleTiled implements FontStyle implements StyleID
 	public var color:Color = Color.BLACK;
 	
 	//@global public var width:Float = 16.0;
-	public var width:Float = 16.0;
+	public var width:Float = 10.0;
 	//@global public var height:Float = 16.0;
-	public var height:Float = 16.0;
+	public var height:Float = 18.0;
 	
 	//@global public var zIndex:Int = 0;
 	//public var zIndex:Int = 0;

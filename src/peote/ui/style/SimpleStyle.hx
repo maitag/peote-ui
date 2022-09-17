@@ -38,7 +38,8 @@ class SimpleStyle implements Style implements StyleID
 		return newStyle;
 	}
 	
-	public inline function copy(
+	// no inline here cos of neko
+	public function copy(
 		?color:Null<Color>
 	):SimpleStyle {
 		var newStyle = new SimpleStyle(

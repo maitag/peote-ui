@@ -4,7 +4,7 @@ import peote.ui.style.interfaces.Style;
 import peote.view.Color;
 
 @:structInit
-class TextLineStyle 
+class TextLineStyleImpl
 {
 	public var backgroundStyle:Style = null;
 	
@@ -19,4 +19,23 @@ class TextLineStyle
 		
 	}
 */	
+}
+
+@:structInit
+@:forward
+abstract TextLineStyle(TextLineStyleImpl) from TextLineStyleImpl to TextLineStyleImpl
+{
+	//inline function new(t:_TextLineStyle) {
+		//this = t;
+	//}
+	
+	@:from
+	static public function fromStyle(s:Style):TextLineStyle {
+		return {backgroundStyle:s};
+	}
+
+	@:to
+	public function toStyle():Style {
+		return this.backgroundStyle;
+	}	
 }

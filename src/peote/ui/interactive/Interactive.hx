@@ -78,8 +78,8 @@ class Interactive
 {
 	// ---------------------------------------------------------
 	
-	var uiDisplay:UIDisplay = null;
-	var isVisible:Bool = false;
+	public var uiDisplay(default, null):UIDisplay = null;
+	public var isVisible(default, null):Bool = false;
 
 	var pickableMove:Pickable = null;
 	var pickableClick:Pickable = null;
