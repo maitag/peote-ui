@@ -3,6 +3,7 @@ package;
 import haxe.CallStack;
 import lime.app.Application;
 import lime.ui.Window;
+import peote.ui.event.PointerEvent;
 import peote.ui.util.TextSize;
 
 import peote.view.PeoteView;
@@ -174,8 +175,15 @@ class TestStyles extends Application
 		}
 
 		var textLine = new InteractiveTextLine<FontStylePacked>(250, 25, "Hello World", fontPacked, fontStylePacked, textStyle);
+		//var textLine = new InteractiveTextLine<FontStylePacked>(250, 25, {height:30, width:300}, "Hello World", fontPacked, fontStylePacked, textStyle);
+		textLine.onPointerOver = (_, _)-> trace("on textLine over");
+		textLine.onPointerOut  = (_, _)-> trace("on textLine out");
+		textLine.onPointerClick  = (_, e:PointerEvent)-> {
+			trace("on textLine click", e);
+			// TODO: set cursor
+		}
 		
-		x = 270;
+		x = 245;
 		y = 40;
 		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "add/remove", textBgStyle);
 		uiDisplay.add(b);
@@ -224,7 +232,7 @@ class TestStyles extends Application
 		
 		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "bg style change color", textBgStyle);
 		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
+		b.onPointerClick = (_, _)-> if (textLine.backgroundStyle != null) {
 			textLine.backgroundStyle.color = Color.random();
 			textLine.updateStyle();
 		}
@@ -267,6 +275,23 @@ class TestStyles extends Application
 			textLine.updateStyle();
 		}
 			
+		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "sel.0-8", textBgStyle);
+		uiDisplay.add(b);
+		b.onPointerClick = (_, _)-> {
+			textLine.select(0,8);
+		}
+		
+		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "sel.4-10", textBgStyle);
+		uiDisplay.add(b);
+		b.onPointerClick = (_, _)-> {
+			textLine.select(4,10);
+		}
+		
+		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "sel.4-4", textBgStyle);
+		uiDisplay.add(b);
+		b.onPointerClick = (_, _)-> {
+			textLine.select(4,4);
+		}
 		// ------------ cursor Style ------------
 		
 		y += 10;
@@ -307,12 +332,99 @@ class TestStyles extends Application
 		}
 		
 		// set text
-		x = 600;
+		x = 575;
 		y = 40;
+		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "w+=5", textBgStyle);
+		uiDisplay.add(b);
+		b.onPointerClick = (_, _)-> {
+			textLine.autoWidth = false; textLine.width += 5; textLine.updateLayout();
+		}
+		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "w-=5", textBgStyle);
+		uiDisplay.add(b);
+		b.onPointerClick = (_, _)-> {
+			textLine.autoWidth = false; textLine.width -= 5; textLine.updateLayout();
+		}
+		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "autoWidth", textBgStyle);
+		uiDisplay.add(b);
+		b.onPointerClick = (_, _)-> {
+			textLine.autoWidth = true;  textLine.updateLayout();
+		}
+
+		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "leftSpace", textBgStyle);
+		uiDisplay.add(b);
+		b.onPointerClick = (_, _)-> {
+			// TODO
+		}
+		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "rightSpace", textBgStyle);
+		uiDisplay.add(b);
+		b.onPointerClick = (_, _)-> {
+			// TODO
+		}
+
+		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "left", textBgStyle);
+		uiDisplay.add(b);
+		b.onPointerClick = (_, _)-> {
+			// TODO
+		}
+		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "center", textBgStyle);
+		uiDisplay.add(b);
+		b.onPointerClick = (_, _)-> {
+			// TODO
+		}
+		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "right", textBgStyle);
+		uiDisplay.add(b);
+		b.onPointerClick = (_, _)-> {
+			// TODO
+		}
+
+		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "h+=5", textBgStyle);
+		uiDisplay.add(b);
+		b.onPointerClick = (_, _)-> {
+			textLine.autoHeight = false; textLine.height += 5; textLine.updateLayout();
+		}
+		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "h-=5", textBgStyle);
+		uiDisplay.add(b);
+		b.onPointerClick = (_, _)-> {
+			textLine.autoHeight = false; textLine.height -= 5; textLine.updateLayout();
+		}
+		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "autoHeight", textBgStyle);
+		uiDisplay.add(b);
+		b.onPointerClick = (_, _)-> {
+			textLine.autoHeight = true;  textLine.updateLayout();
+		}
+
+		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "topSpace", textBgStyle);
+		uiDisplay.add(b);
+		b.onPointerClick = (_, _)-> {
+			// TODO
+		}
+		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "bottomSpace", textBgStyle);
+		uiDisplay.add(b);
+		b.onPointerClick = (_, _)-> {
+			// TODO
+		}
+
+		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "top", textBgStyle);
+		uiDisplay.add(b);
+		b.onPointerClick = (_, _)-> {
+			// TODO
+		}
+		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "center", textBgStyle);
+		uiDisplay.add(b);
+		b.onPointerClick = (_, _)-> {
+			// TODO
+		}
+		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "bottom", textBgStyle);
+		uiDisplay.add(b);
+		b.onPointerClick = (_, _)-> {
+			// TODO
+		}
+
 		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "changeText", textBgStyle);
 		uiDisplay.add(b);
 		b.onPointerClick = (_, _)-> {
-			if (textLine.text == "Hello World") textLine.setText("Hallo Welt", true, true, true) else textLine.setText("Hello World", true, true, true);
+			if (textLine.text == "Hello World") textLine.setText("Hallo Welt", textLine.autoWidth, textLine.autoHeight, true)
+			else textLine.setText("Hello World", textLine.autoWidth, textLine.autoHeight, true);
 		}
 		
 		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "change fontStyle color", textBgStyle);
@@ -336,63 +448,29 @@ class TestStyles extends Application
 			textLine.update();
 		}
 		
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "E", textBgStyle);
+		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "xOffset+=5", textBgStyle);
 		uiDisplay.add(b);
 		b.onPointerClick = (_, _)-> {
-			
+			textLine.xOffset += 5;   textLine.updateLayout();
+		}
+		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "xOffset-=5", textBgStyle);
+		uiDisplay.add(b);
+		b.onPointerClick = (_, _)-> {
+			textLine.xOffset -= 5;   textLine.updateLayout();
 		}
 		
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "F", textBgStyle);
+		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "yOffset+=5", textBgStyle);
 		uiDisplay.add(b);
 		b.onPointerClick = (_, _)-> {
-			
+			textLine.yOffset += 5;   textLine.updateLayout();
+		}
+		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "yOffset-=5", textBgStyle);
+		uiDisplay.add(b);
+		b.onPointerClick = (_, _)-> {
+			textLine.yOffset -= 5;   textLine.updateLayout();
 		}
 		
-		// set selection
-		y += 10;		
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "select from 0 to 8", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.select(0,8);
-		}
 		
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "select from 4 to 10", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.select(4,10);
-		}
-		
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "select from 4 to 4", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.select(4,4);
-		}
-		
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "A", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			
-		}
-		
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "B", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			
-		}
-		
-		y += 10;		
-		// set cursor
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "set cursor to 0", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			// TODO
-		}
-		
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "set cursor to 2", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			// TODO
-		}
 		
 		
 		
