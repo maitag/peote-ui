@@ -131,11 +131,11 @@ class Interactive
 	public var z:Int;
 	
 	#if (!peoteui_no_masking)
-	public var masked:Bool;
-	public var maskX:Int;
-	public var maskY:Int;
+	public var masked:Bool = false;
+	public var maskX:Int = 0;
+	public var maskY:Int = 0;
 	public var maskWidth:Int;
-	public var maskHeight:Int;	
+	public var maskHeight:Int;
 	#end
 	
 	//public var pointerOver(default, null) :PointerEvent->Void; // TODO: let fire the event manually!
@@ -170,8 +170,8 @@ class Interactive
 	{
 		x = xPosition;
 		y = yPosition;
-		this.width  = width;
-		this.height = height;
+		this.width  = maskWidth  = width;
+		this.height = maskHeight = height;
 		z = zIndex;
 				
 		pointerOver  = noOperation;
