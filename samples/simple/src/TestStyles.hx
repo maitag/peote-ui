@@ -55,8 +55,9 @@ class TestStyles extends Application
 	var buttonX:Int = 0;
 	var buttonY:Int = 0;
 	var fontButtons:Font<FontStyleTiled>;
-	var buttonBackgroundStyle = new RoundBorderStyle(Color.GREY4);
-	var buttonSize:TextSize = {leftSpace:3, topSpace:3};
+	var buttonBackgroundStyle = new RoundBorderStyle(Color.GREY5, Color.BLACK, 1.0, 9.0);
+	var buttonSize:TextSize = {leftSpace:6, rightSpace:6, topSpace:3, bottomSpace:3 }; //height:23
+	var buttonStyle:FontStyleTiled = {letterSpace:-0.5};
 
 	public function button(
 		s1:String = null, f1:Void->Void = null,
@@ -66,17 +67,25 @@ class TestStyles extends Application
 	{
 		var b:InteractiveTextLine<FontStyleTiled> = null;
 		var hgap:Int = 5; var vgap:Int = 30;
-		if (s1 != null) uiDisplay.add(b = fontButtons.createInteractiveTextLine(buttonX             , buttonY, buttonSize, s1, buttonBackgroundStyle));
-		if (f1 != null) b.onPointerClick = (_,_)-> f1();
-		if (s2 != null) uiDisplay.add(b = fontButtons.createInteractiveTextLine(b.x + hgap + b.width, buttonY, buttonSize, s2, buttonBackgroundStyle));
-		if (f2 != null) b.onPointerClick = (_,_)-> f2();
-		if (s3 != null) uiDisplay.add(b = fontButtons.createInteractiveTextLine(b.x + hgap + b.width, buttonY, buttonSize, s3, buttonBackgroundStyle));
-		if (f3 != null) b.onPointerClick = (_,_)-> f3();
-		if (s4 != null) uiDisplay.add(b = fontButtons.createInteractiveTextLine(b.x + hgap + b.width, buttonY, buttonSize, s4, buttonBackgroundStyle));
-		if (f4 != null) b.onPointerClick = (_, _)-> f4();
+		if (s1 != null) uiDisplay.add(b = fontButtons.createInteractiveTextLine(buttonX             , buttonY, buttonSize, s1, buttonStyle, buttonBackgroundStyle));
+		if (f1 != null) { b.onPointerClick = (_, _)-> f1(); b.onPointerOver = buttonOver; b.onPointerOut = buttonOut; }
+		if (s2 != null) uiDisplay.add(b = fontButtons.createInteractiveTextLine(b.x + hgap + b.width, buttonY, buttonSize, s2, buttonStyle, buttonBackgroundStyle));
+		if (f2 != null) { b.onPointerClick = (_,_)-> f2(); b.onPointerOver = buttonOver; b.onPointerOut = buttonOut; }
+		if (s3 != null) uiDisplay.add(b = fontButtons.createInteractiveTextLine(b.x + hgap + b.width, buttonY, buttonSize, s3, buttonStyle, buttonBackgroundStyle));
+		if (f3 != null) { b.onPointerClick = (_,_)-> f3(); b.onPointerOver = buttonOver; b.onPointerOut = buttonOut; }
+		if (s4 != null) uiDisplay.add(b = fontButtons.createInteractiveTextLine(b.x + hgap + b.width, buttonY, buttonSize, s4, buttonStyle, buttonBackgroundStyle));
+		if (f4 != null) { b.onPointerClick = (_, _)-> f4(); b.onPointerOver = buttonOver; b.onPointerOut = buttonOut; }
 		buttonY += vgap;
 	}
 	
+	function buttonOver(b:InteractiveTextLine<FontStyleTiled>, _) {
+		b.backgroundStyle.color = Color.GREY7;
+		b.updateStyle();
+	}
+	function buttonOut(b:InteractiveTextLine<FontStyleTiled>, _) {
+		b.backgroundStyle.color = Color.GREY5;
+		b.updateStyle();
+	}
 	// ---------------- all Fonts are loaded  ----------------------
 	
 	public function onFontLoaded(fontPacked:Font<FontStylePacked>, fontTiled:Font<FontStyleTiled>) // font needs type here !
@@ -89,8 +98,6 @@ class TestStyles extends Application
 
 		var fontStylePacked:FontStylePacked = { width:20, height:20 };		
 		var fontStyleTiled = fontTiled.createFontStyle(); // alternative way of creation
-		fontStyleTiled.letterSpace = -2.0;
-
 		
 		peoteView = new PeoteView(window);
 		uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY1
@@ -100,8 +107,8 @@ class TestStyles extends Application
 		);
 		peoteView.addDisplay(uiDisplay);
 		
-		//uiDisplay.getStyleProgram(roundBorderStyle).alphaEnabled = false;
-				
+		
+		//uiDisplay.getStyleProgram(roundBorderStyle).alphaEnabled = false;				
 		uiDisplay.addFontStyleProgram(fontStyleTiled, fontTiled);
 		uiDisplay.addStyleProgram(cursorStyle, true).alphaEnabled = true;
 		
@@ -140,14 +147,14 @@ class TestStyles extends Application
 		// ----------------------------------------------------------
 		// -------------------- LEFT BUTTONS ROW --------------------
 		// ----------------------------------------------------------
-		buttonX = 10; buttonY = 70;		
+		buttonX = 8; buttonY = 72;		
 		button(
 			"add/remove", ()-> if (!element.isVisible) uiDisplay.add(element) else uiDisplay.remove(element),
 		    "show", ()-> element.show(), "hide", ()-> element.hide()
 		);
 		
 		// ------------ background Style ------------
-		buttonY += 10;
+		buttonY += 12;
 		button(
 			"styleShow/Hide",  // TODO				
 			"color", ()-> {	element.style.color = Color.random(); element.updateStyle(); }
@@ -160,14 +167,14 @@ class TestStyles extends Application
 		// ----------------------------------------------------------
 		// -------------------- MIDDLE BUTTONS ROW ------------------
 		// ----------------------------------------------------------
-		buttonX = 240; buttonY = 70;
+		buttonX = 240; buttonY = 72;
 		button(
 			"add/remove", ()-> if (!textLine.isVisible) uiDisplay.add(textLine) else uiDisplay.remove(textLine),
 		    "show",       ()-> textLine.show(), "hide",       ()-> textLine.hide()
 		);
 		
 		// ------------ background Style ------------
-		buttonY += 10;
+		buttonY += 12;
 		button(
 			"backgroundShow/Hide", // TODO	
 			"color", ()-> { textLine.backgroundStyle.color = Color.random(); textLine.updateStyle(); }
@@ -177,7 +184,7 @@ class TestStyles extends Application
 		button("remove style",    ()-> textLine.backgroundStyle = null);
 				
 		// ------------ selection Style ------------
-		buttonY += 10;
+		buttonY += 12;
 		button(
 			"select 0-8",  ()-> textLine.select(0,8),
 		    "select 4-10", ()-> textLine.select(4,10)
@@ -191,7 +198,7 @@ class TestStyles extends Application
 		button("remove style", ()-> textLine.selectionStyle = null);
 
 		// ------------- cursor Style -------------
-		buttonY += 10;
+		buttonY += 12;
 		button(
 			"cursorShow/Hide", ()->if (textLine.cursorIsVisible) textLine.cursorHide() else textLine.cursorShow(),
 			"color", ()-> { textLine.cursorStyle.color = Color.random(); textLine.updateStyle(); } 
@@ -204,10 +211,10 @@ class TestStyles extends Application
 		// ----------------------------------------------------------
 		// -------------------- RIGHT BUTTONS ROW -------------------
 		// ----------------------------------------------------------
-		buttonX = 520; 
+		buttonX = 516; 
 		
 		// ------- text and fontStyle -------
-		buttonY = 10;	
+		buttonY = 6;	
 		button(
 			"text1", ()-> textLine.setText("Hello World", textLine.autoWidth, textLine.autoHeight, true),
 			"text2", ()-> textLine.setText("testing more", textLine.autoWidth, textLine.autoHeight, true),
@@ -223,7 +230,7 @@ class TestStyles extends Application
 		);		
 		
 		// ------- position -------
-		buttonY = 70;
+		buttonY = 72;
 		button(
 			"x+=5", ()-> { textLine.x += 5; textLine.updateLayout(); },
 			"x-=5", ()-> { textLine.x -= 5; textLine.updateLayout(); },
@@ -232,7 +239,7 @@ class TestStyles extends Application
 		);
 		
 		// ------- horizontal size, space and align -------
-		buttonY += 10;
+		buttonY += 12;
 		button(
 			"w+=5",      ()-> { textLine.autoWidth = false; textLine.width += 5; textLine.maskWidth += 5; textLine.updateLayout(); },
 			"w-=5",      ()-> { textLine.autoWidth = false; textLine.width -= 5; textLine.maskWidth -= 5; textLine.updateLayout(); },
@@ -253,7 +260,7 @@ class TestStyles extends Application
 		);
 		
 		// ------- vertical size, space and align -------
-		buttonY += 10;
+		buttonY += 12;
 		button(
 			"h+=5",       ()-> { textLine.autoHeight = false; textLine.height += 5; textLine.maskHeight += 5; textLine.updateLayout(); },
 			"h-=5",       ()-> { textLine.autoHeight = false; textLine.height -= 5; textLine.maskHeight -= 5; textLine.updateLayout(); },
@@ -274,7 +281,7 @@ class TestStyles extends Application
 		);
 		
 		// -------- text offset ------------
-		buttonY += 10;
+		buttonY += 12;
 		button(
 			"xOffset+=5", ()-> { textLine.xOffset += 5; textLine.updateLayout(); },
 			"xOffset-=5", ()-> { textLine.xOffset -= 5; textLine.updateLayout(); }
@@ -285,7 +292,7 @@ class TestStyles extends Application
 		);
 		
 		// -------- layout masking ------------
-		buttonY += 10;
+		buttonY += 12;
 		button("mask on/off" , ()-> { textLine.masked = !textLine.masked; textLine.updateLayout(); });		
 		button(
 			"leftMask++", ()-> { textLine.maskX++; textLine.maskWidth--; textLine.updateLayout(); },

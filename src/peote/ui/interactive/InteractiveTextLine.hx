@@ -219,11 +219,14 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 			if (textSize.xOffset != null) xOffset = textSize.xOffset;
 			if (textSize.yOffset != null) yOffset = textSize.yOffset;
 			if (textSize.leftSpace != null) leftSpace = textSize.leftSpace;
+			if (textSize.rightSpace != null) rightSpace = textSize.rightSpace;
+			if (textSize.topSpace != null) topSpace = textSize.topSpace;
+			if (textSize.bottomSpace != null) bottomSpace = textSize.bottomSpace;
 		}
 		
 		super(xPosition, yPosition, width, height, zIndex);
 		
-		this.text = text; trace("aa", text);
+		this.text = text;
 		this.font = font;
 		
 		if (fontStyle == null) fontStyle = font.createFontStyle();
@@ -387,12 +390,10 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		
 	inline function updateLineLayout():Void
 	{
-		if (autoSize > 0) {
-			// auto aligning width and height to textsize
+		if (autoSize > 0) { // auto aligning width and height to textsize
 			if (autoHeight) height = Std.int(line.height) + topSpace + bottomSpace;
 			if (autoWidth) width = Std.int(line.textSize) + leftSpace + rightSpace;
-			// fit interactive pickables to new width and height
-			updatePickable();
+			updatePickable(); // fit interactive pickables to new width and height
 		}
 			
 		// alignment for text, cursor and selection
@@ -431,7 +432,7 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		#end
 		
 		if (selectionStyleElement != null) setSelection(_x, _y, _width, _height, y_offset + topSpace, (isVisible && selectionIsVisible));
-// TODO:if (cursorStyleElement != null) setCursor(_x, _y, _width, _height, y_offset + topSpace, (isVisible && selectionIsVisible));
+		// TODO:if (cursorStyleElement != null) setCursor(_x, _y, _width, _height, y_offset + topSpace, (isVisible && selectionIsVisible));
 
 	}
 		
@@ -450,10 +451,8 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 			if (selectionStyleElement != null) { if (selectionIsVisible) selectionStyleProgram.addElement(selectionStyleElement); }
 			else if (selectionStyle != null) createSelectionMasked(selectionIsVisible);			
 			
-// TODO
-/*			
-			if (cursorIsVisible && cursorStyleElement != null) fontProgram.addBackground(cursorElement);
-*/
+// TODO		if (cursorIsVisible && cursorStyleElement != null) fontProgram.addBackground(cursorElement);
+
 			fontProgram.addLine(line);			
 		} 
 		else
@@ -469,52 +468,45 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 			
 			// TODO fontStyle.zIndex;
 			
-			line = fontProgram.createLine(text, x, y, (autoWidth) ? null : width, xOffset, fontStyle);
+			// --------------------------------
 			
+			line = fontProgram.createLine(text, x, y, (autoWidth) ? null : width, xOffset, fontStyle);			
 			text = null; // let GC clear the string (after this.line is created this.text is allways get by fontProgram)
-			
-			// vertically text alignment
-			var y_offset:Float = (autoHeight) ? yOffset : getAlignedYOffset();
-
-			// horizontally text alignment
-			if (!autoWidth) {
-				if (hAlign == peote.ui.util.HAlign.CENTER) {
-					fontProgram.lineSetPosition(line, x, y + y_offset, (width - line.textSize) / 2 + xOffset, isVisible); // TODO: bug for negative and non-packed fonts!
-					if (isVisible) fontProgram.updateLine(line);
-				}
-				else if (hAlign == peote.ui.util.HAlign.RIGHT) {
-					fontProgram.lineSetPosition(line, x, y + y_offset, width - line.textSize + xOffset, isVisible);
-					if (isVisible) fontProgram.updateLine(line);
-				}
-				else if (y_offset != 0 || xOffset !=0) {
-					fontProgram.lineSetPosition(line, x, y + y_offset, xOffset, isVisible);
-					if (isVisible) fontProgram.updateLine(line);
-				}				
-			} 
-			else if (y_offset != 0 || xOffset != 0) { 
-				fontProgram.lineSetPosition(line, x, y + y_offset, xOffset, isVisible);
-				if (isVisible) fontProgram.updateLine(line);
-			}
-			
-			if (autoSize > 0) {
-				// auto aligning width and height to textsize
-				if (autoHeight) height = Std.int(line.height);
-				if (autoWidth) width = Std.int(line.textSize);
-				// fit interactive pickables to new width and height
+			if (autoSize > 0) { // auto aligning width and height to textsize
+				if (autoHeight) height = Std.int(line.height) + topSpace + bottomSpace;
+				if (autoWidth) width = Std.int(line.textSize) + leftSpace + rightSpace;
 				if ( hasMoveEvent  != 0 ) pickableMove.update(this);
 				if ( hasClickEvent != 0 ) pickableClick.update(this);
 			}
 			
+			// alignment for text, cursor and selection
+			var y_offset:Float = getAlignedYOffset(); // var y_offset:Float = (autoHeight) ? yOffset : getAlignedYOffset();
+			var x_offset:Float = getAlignedXOffset();
+
+			var _x = x + leftSpace;
+			var _y = y + topSpace;
+			var _width  = width  - leftSpace - rightSpace;
+			var _height = height - topSpace - bottomSpace;
+			
+			fontProgram.lineSetPositionSize(line, _x, _y + y_offset, _width, x_offset, isVisible);
+			fontProgram.updateLine(line);
+			
 			#if (!peoteui_no_textmasking && !peoteui_no_masking)
-			maskElement = fontProgram.createMask(x, y, width, height);
+			if (masked) {
+				if (maskX > leftSpace) _x = x + maskX;
+				if (maskY > topSpace ) _y = y + maskY;
+				if (x + maskX + maskWidth  < _x + _width ) _width  = _width  - (_x + _width  - maskX - maskWidth  - x); //TODO
+				if (y + maskY + maskHeight < _y + _height) _height = _height - (_y + _height - maskY - maskHeight - y); //TODO
+			}
+			maskElement = fontProgram.createMask(_x, _y, _width, _height);
 			#end	
 			
 			if (backgroundStyle != null) createBackgroundStyle();
-			//if (selectionStyle != null) createSelection(x, y, width, height, y_offset, selectionIsVisible);
-			if (selectionStyle != null) createSelectionMasked(selectionIsVisible);
+			if (selectionStyle != null) createSelection(_x, _y, _width, _height, y_offset + topSpace, selectionIsVisible);
+			//if (selectionStyle != null) createSelectionMasked(selectionIsVisible);
 			
-			// TODO
-			//setCreateCursor(x, y, width, height, y_offset, true); // true -> create new cursor			
+			// TODO  setCreateCursor(x, y, width, height, y_offset, true); // true -> create new cursor	
+			
 		}
 		
 	}

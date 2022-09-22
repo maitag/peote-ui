@@ -208,7 +208,7 @@ class Interactive
 	
 	inline function updatePickable():Void
 	{
-		if ( hasMoveEvent  != 0 ) {
+		if ( hasMoveEvent != 0 ) {
 			pickableMove.update(this);
 			if (isVisible) uiDisplay.movePickBuffer.updateElement( pickableMove );
 		}
