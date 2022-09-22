@@ -25,11 +25,11 @@ class InteractiveTextLineMacro
 			//var glyphType = peote.text.Glyph.GlyphMacro.buildClass("Glyph", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType);
 			//var fontType = peote.text.Font.FontMacro.buildClass("Font", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
 			//var fontProgramType = peote.text.FontProgram.FontProgramMacro.buildClass("FontProgram", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
-			var lineType  = peote.text.Line.LineMacro.buildClass("Line", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
+			//var lineType  = peote.text.Line.LineMacro.buildClass("Line", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
 			
 			//var fontPath = TPath({ pack:["peote","text"], name:"Font" + Macro.classNameExtension(styleName, styleModule), params:[] });
 			//var fontProgramPath = TPath({ pack:["peote","text"], name:"FontProgram" + Macro.classNameExtension(styleName, styleModule), params:[] });
-			var linePath = TPath({ pack:["peote","text"], name:"Line" + Macro.classNameExtension(styleName, styleModule), params:[] });
+			//var linePath = TPath({ pack:["peote","text"], name:"Line" + Macro.classNameExtension(styleName, styleModule), params:[] });
 
 			
 			//var glyphStyleHasMeta = peote.text.Glyph.GlyphMacro.parseGlyphStyleMetas(styleModule+"."+styleName); // trace("FontProgram: glyphStyleHasMeta", glyphStyleHasMeta);
@@ -157,8 +157,7 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	
 	
 	
-	// ---------- text ---------------
-	
+	// ---------- text ---------------	
 	@:isVar public var text(get, set):String = null;
 	inline function get_text():String {
 		if (line == null) return text;
@@ -186,15 +185,13 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		if (b) autoSize |= 1 else autoSize = autoSize & 2;
 		return b;
 	}
-		
+	
 	public var hAlign:peote.ui.util.HAlign = peote.ui.util.HAlign.LEFT;
 	public var vAlign:peote.ui.util.VAlign = peote.ui.util.VAlign.CENTER;
 	
-	// TODO: getter/setter
 	public var xOffset:Float = 0;
 	public var yOffset:Float = 0;
 
-	//TODO:
 	public var leftSpace:Int = 0;
 	public var rightSpace:Int = 0;
 	public var topSpace:Int = 0;
@@ -343,11 +340,11 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		fontProgram.lineSetStyle(line, fontStyle);		
 		if (isVisible) fontProgram.updateLine(line);
 		
-		if (backgroundStyle != null) {
+		if (backgroundStyleElement != null) {
 			backgroundStyleElement.setStyle(backgroundStyle);
 			if (isVisible           ) backgroundStyleProgram.update(backgroundStyleElement);
 		}
-		if (selectionStyle != null) {
+		if (selectionStyleElement != null) {
 			selectionStyleElement.setStyle(selectionStyle);		
 			if (isVisible && selectionIsVisible) selectionStyleProgram.update(selectionStyleElement);
 		}
@@ -372,16 +369,14 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	{
 		// CHECK
 		if (line == null) return;		
-		//if (line != null) {
-			fontProgram.lineSetStyle(line, fontStyle, isVisible);
-			if (selectionStyle != null) selectionStyleElement.setStyle(selectionStyle);		
-			// TODO: cursor
+		fontProgram.lineSetStyle(line, fontStyle, isVisible);
+		if (selectionStyleElement != null) selectionStyleElement.setStyle(selectionStyle);		
+		// TODO: cursor
 			
-// TODO: use _setLineMetric also if the fully style is changed!
-			updateLineLayout();
-			
-		//}	
-		if (backgroundStyle != null) {
+		// TODO: use _setLineMetric for new line.height also if the fully style is changed!
+		updateLineLayout();
+
+		if (backgroundStyleElement != null) {
 			backgroundStyleElement.setStyle(backgroundStyle);
 			backgroundStyleElement.setLayout(this);
 			if (isVisible           ) backgroundStyleProgram.update(backgroundStyleElement);
@@ -396,16 +391,14 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 			updatePickable(); // fit interactive pickables to new width and height
 		}
 			
-		// alignment for text, cursor and selection
 		var y_offset:Float = getAlignedYOffset(); // var y_offset:Float = (autoHeight) ? yOffset : getAlignedYOffset();
-		var x_offset:Float = getAlignedXOffset();
 		
 		var _x = x + leftSpace;
 		var _y = y + topSpace;
 		var _width  = width  - leftSpace - rightSpace;
 		var _height = height - topSpace - bottomSpace;
 		
-		fontProgram.lineSetPositionSize(line, _x, _y + y_offset, _width, x_offset, isVisible);
+		fontProgram.lineSetPositionSize(line, _x, _y + y_offset, _width, getAlignedXOffset(), isVisible);
 
 		if (isVisible) {
 			// TODO: optimize setting z-index in depend of styletyp and better allways adding fontprograms at end of uiDisplay (onAddVisibleToDisplay)
@@ -425,31 +418,29 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		if (masked) {
 			if (maskX > leftSpace) _x = x + maskX;
 			if (maskY > topSpace ) _y = y + maskY;
-			if (x + maskX + maskWidth  < _x + _width ) _width  = _width  - (_x + _width  - maskX - maskWidth  - x); //TODO
-			if (y + maskY + maskHeight < _y + _height) _height = _height - (_y + _height - maskY - maskHeight - y); //TODO
+			if (x + maskX + maskWidth  < _x + _width ) _width  = maskX + maskWidth  + x - _x;
+			if (y + maskY + maskHeight < _y + _height) _height = maskY + maskHeight + y - _y;
 		}
 		fontProgram.setMask(maskElement, _x, _y, _width, _height, isVisible);
 		#end
 		
 		if (selectionStyleElement != null) setSelection(_x, _y, _width, _height, y_offset + topSpace, (isVisible && selectionIsVisible));
 		// TODO:if (cursorStyleElement != null) setCursor(_x, _y, _width, _height, y_offset + topSpace, (isVisible && selectionIsVisible));
-
 	}
 		
 	override inline function onAddVisibleToDisplay()
 	{
-		//trace("onAddVisibleToDisplay()", autoWidth, autoHeight);
-		
+		//trace("onAddVisibleToDisplay()", autoWidth, autoHeight);		
 		if (line != null) {
 			#if (!peoteui_no_textmasking && !peoteui_no_masking)
 			fontProgram.addMask(maskElement);
 			#end
 			
-			if (backgroundStyleElement != null) backgroundStyleProgram.addElement(backgroundStyleElement)
+			if (backgroundStyleElement != null) backgroundStyleProgram.addElement(backgroundStyleElement);
 			else if (backgroundStyle != null) createBackgroundStyle();
 			
 			if (selectionStyleElement != null) { if (selectionIsVisible) selectionStyleProgram.addElement(selectionStyleElement); }
-			else if (selectionStyle != null) createSelectionMasked(selectionIsVisible);			
+			//else if (selectionStyle != null) createSelectionMasked(selectionIsVisible);			
 			
 // TODO		if (cursorIsVisible && cursorStyleElement != null) fontProgram.addBackground(cursorElement);
 
@@ -457,18 +448,9 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		} 
 		else
 		{
-			var fontStylePos = uiDisplay.usedStyleID.indexOf( fontStyle.getID() | (fontStyle.id << 16) );
-			if (fontStylePos < 0) {
-				if (uiDisplay.autoAddStyles) uiDisplay.autoAddStyleProgram( cast fontProgram = font.createFontProgram(fontStyle, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end), fontStyle.getID() | (fontStyle.id << 16) , true );
-				else throw('Error by creating new InteractiveTextLine. The style "'+Type.getClassName(Type.getClass(fontStyle))+'" id='+fontStyle.id+' is not inside the availableStyle list of UIDisplay.');
-			} else {
-				fontProgram = cast uiDisplay.usedStyleProgram[fontStylePos];
-				if (fontProgram == null) uiDisplay.addProgramAtStylePos(cast fontProgram = font.createFontProgram(fontStyle, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end), fontStylePos);
-			}
+			createFontStyle();
 			
 			// TODO fontStyle.zIndex;
-			
-			// --------------------------------
 			
 			line = fontProgram.createLine(text, x, y, (autoWidth) ? null : width, xOffset, fontStyle);			
 			text = null; // let GC clear the string (after this.line is created this.text is allways get by fontProgram)
@@ -479,36 +461,58 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 				if ( hasClickEvent != 0 ) pickableClick.update(this);
 			}
 			
-			// alignment for text, cursor and selection
 			var y_offset:Float = getAlignedYOffset(); // var y_offset:Float = (autoHeight) ? yOffset : getAlignedYOffset();
-			var x_offset:Float = getAlignedXOffset();
-
+			
 			var _x = x + leftSpace;
 			var _y = y + topSpace;
 			var _width  = width  - leftSpace - rightSpace;
 			var _height = height - topSpace - bottomSpace;
 			
-			fontProgram.lineSetPositionSize(line, _x, _y + y_offset, _width, x_offset, isVisible);
+			fontProgram.lineSetPositionSize(line, _x, _y + y_offset, _width, getAlignedXOffset(), isVisible);
 			fontProgram.updateLine(line);
 			
 			#if (!peoteui_no_textmasking && !peoteui_no_masking)
 			if (masked) {
 				if (maskX > leftSpace) _x = x + maskX;
 				if (maskY > topSpace ) _y = y + maskY;
-				if (x + maskX + maskWidth  < _x + _width ) _width  = _width  - (_x + _width  - maskX - maskWidth  - x); //TODO
-				if (y + maskY + maskHeight < _y + _height) _height = _height - (_y + _height - maskY - maskHeight - y); //TODO
+				if (x + maskX + maskWidth  < _x + _width ) _width  = maskX + maskWidth  + x - _x;
+				if (y + maskY + maskHeight < _y + _height) _height = maskY + maskHeight + y - _y;
 			}
 			maskElement = fontProgram.createMask(_x, _y, _width, _height);
 			#end	
 			
 			if (backgroundStyle != null) createBackgroundStyle();
 			if (selectionStyle != null) createSelection(_x, _y, _width, _height, y_offset + topSpace, selectionIsVisible);
-			//if (selectionStyle != null) createSelectionMasked(selectionIsVisible);
-			
-			// TODO  setCreateCursor(x, y, width, height, y_offset, true); // true -> create new cursor	
-			
-		}
+			// TODO  createCursor(x, y, width, height, y_offset, true); // true -> create new cursor				
+		}		
+	}
+	
+	override inline function onRemoveVisibleFromDisplay()
+	{
+		//trace("onRemoveVisibleFromDisplay()");
 		
+		//if (isVisible && line != null) {
+		fontProgram.removeLine(line);
+		#if (!peoteui_no_textmasking && !peoteui_no_masking)
+		fontProgram.removeMask(maskElement);
+		#end		
+		// remove background, selection and cursor styles
+		if (backgroundStyleElement != null) backgroundStyleProgram.removeElement(backgroundStyleElement);
+		if (selectionIsVisible && selectionStyleElement != null) selectionStyleProgram.removeElement(selectionStyleElement);
+		// TODO: cursor
+	}
+
+	
+	inline function createFontStyle()
+	{
+		var fontStylePos = uiDisplay.usedStyleID.indexOf( fontStyle.getID() | (fontStyle.id << 16) );
+		if (fontStylePos < 0) {
+			if (uiDisplay.autoAddStyles) uiDisplay.autoAddStyleProgram( cast fontProgram = font.createFontProgram(fontStyle, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end), fontStyle.getID() | (fontStyle.id << 16) , true );
+			else throw('Error by creating new InteractiveTextLine. The style "'+Type.getClassName(Type.getClass(fontStyle))+'" id='+fontStyle.id+' is not inside the availableStyle list of UIDisplay.');
+		} else {
+			fontProgram = cast uiDisplay.usedStyleProgram[fontStylePos];
+			if (fontProgram == null) uiDisplay.addProgramAtStylePos(cast fontProgram = font.createFontProgram(fontStyle, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end), fontStylePos);
+		}
 	}
 	
 	inline function createBackgroundStyle()
@@ -537,23 +541,6 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		selectionStyleElement = selectionStyleProgram.createElementAt(this, x, y, w, h, mx, my, mw, mh, z, selectionStyle);
 	}
 	
-	override inline function onRemoveVisibleFromDisplay()
-	{
-		//trace("onRemoveVisibleFromDisplay()");
-		
-		//if (isVisible && line != null) {
-		//trace("remove line from fontProgram");
-		fontProgram.removeLine(line);
-		#if (!peoteui_no_textmasking && !peoteui_no_masking)
-		fontProgram.removeMask(maskElement);
-		#end
-		
-		// remove background, selection and cursor styles
-		if (backgroundStyleElement != null) backgroundStyleProgram.removeElement(backgroundStyleElement);
-		if (selectionIsVisible && selectionStyleElement != null) selectionStyleProgram.removeElement(selectionStyleElement);
-		// TODO: cursor
-	}
-
 	
 	
 	// ----------------------- change the text  -----------------------
