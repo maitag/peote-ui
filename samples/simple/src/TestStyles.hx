@@ -50,32 +50,48 @@ class TestStyles extends Application
 		);
 	}
 		
+	// ------------------ Create a Button  ------------------------
+	
+	var buttonX:Int = 0;
+	var buttonY:Int = 0;
+	var fontButtons:Font<FontStyleTiled>;
+	var buttonBackgroundStyle = new RoundBorderStyle(Color.GREY4);
+	var buttonSize:TextSize = {leftSpace:3, topSpace:3};
+
+	public function button(
+		s1:String = null, f1:Void->Void = null,
+		s2:String = null, f2:Void->Void = null,
+		s3:String = null, f3:Void->Void = null,
+		s4:String = null, f4:Void->Void = null)
+	{
+		var b:InteractiveTextLine<FontStyleTiled> = null;
+		var hgap:Int = 5; var vgap:Int = 30;
+		if (s1 != null) uiDisplay.add(b = fontButtons.createInteractiveTextLine(buttonX             , buttonY, buttonSize, s1, buttonBackgroundStyle));
+		if (f1 != null) b.onPointerClick = (_,_)-> f1();
+		if (s2 != null) uiDisplay.add(b = fontButtons.createInteractiveTextLine(b.x + hgap + b.width, buttonY, buttonSize, s2, buttonBackgroundStyle));
+		if (f2 != null) b.onPointerClick = (_,_)-> f2();
+		if (s3 != null) uiDisplay.add(b = fontButtons.createInteractiveTextLine(b.x + hgap + b.width, buttonY, buttonSize, s3, buttonBackgroundStyle));
+		if (f3 != null) b.onPointerClick = (_,_)-> f3();
+		if (s4 != null) uiDisplay.add(b = fontButtons.createInteractiveTextLine(b.x + hgap + b.width, buttonY, buttonSize, s4, buttonBackgroundStyle));
+		if (f4 != null) b.onPointerClick = (_, _)-> f4();
+		buttonY += vgap;
+	}
+	
+	// ---------------- all Fonts are loaded  ----------------------
+	
 	public function onFontLoaded(fontPacked:Font<FontStylePacked>, fontTiled:Font<FontStyleTiled>) // font needs type here !
-	{							
+	{
+		fontButtons = fontTiled; // make global for the button() function
+		
 		var simpleStyle  = new SimpleStyle(Color.RED);
-		var roundBorderStyle = new RoundBorderStyle(Color.GREEN);
-		// alternatively:
-		// var roundBorderStyle:RoundBorderStyle = { color:Color.RED, borderColor:Color.YELLOW }; // borderSize, borderRadius
-		var textBgStyle = roundBorderStyle.copy(Color.GREY4);
-		
-		
+		var roundBorderStyle = new RoundBorderStyle(Color.GREEN);		
 		var cursorStyle = SimpleStyle.createById(1); // different id is need if using more then one into available styles
-		// alternatively:
-/*		var cursorStyle = SimpleStyle.createById(1, new SimpleStyle(Color.BLUE)); 
-		var cursorStyle = SimpleStyle.createById(1 , { color: Color.BLUE });
-		var cursorStyle = SimpleStyle.createById(1, simpleStyle); cursorStyle.color = Color.BLUE;
-*/
-		//var fontStylePacked = new FontStylePacked();
-		var fontStylePacked:FontStylePacked = {
-			width:20, height:20,
-			//tilt: 0.6,
-			//letterSpace: 1.0
-		};
-		
-		//var fontStyleTiled = new FontStyleTiled();
+
+		var fontStylePacked:FontStylePacked = { width:20, height:20 };		
 		var fontStyleTiled = fontTiled.createFontStyle(); // alternative way of creation
 		fontStyleTiled.letterSpace = -2.0;
 
+		
 		peoteView = new PeoteView(window);
 		uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY1
 		// available styles into render-order (without it will auto add at runtime and fontstyles allways on top)
@@ -89,30 +105,19 @@ class TestStyles extends Application
 		uiDisplay.addFontStyleProgram(fontStyleTiled, fontTiled);
 		uiDisplay.addStyleProgram(cursorStyle, true).alphaEnabled = true;
 		
-		//var fontProgram:FontProgram<FontStylePacked> = cast uiDisplay.getFontStyleProgram(fontStylePacked, fontPacked);
-		//fontProgram.createGlyph(65, 30, 25, fontStylePacked.copy(Color.RED));
-		//trace(fontProgram.numberOfGlyphes());
 		
-		//uiDisplay.getFontStyleProgram(fontStyleTiled, fontTiled).alphaEnabled = false;				
-
+		// ----------- create InteractiveElement -----------
 		
-		// ------------------------------------------
-		// ----------- InteractiveElement -----------
-		// ------------------------------------------
-		
-		var element = new InteractiveElement(10, 10, 300, 50, simpleStyle);
+		var element = new InteractiveElement(10, 10, 250, 50, simpleStyle);
 		element.onPointerOver = (_, _)-> trace("on element over");
 		element.onPointerOut  = (_, _)-> trace("on element out");
 		
-		// -------------------------------------------
-		// ----------- InteractiveTextLine -----------
-		// -------------------------------------------
+		// ----------- create InteractiveTextLine -----------
+		
 		var backgroundSimpleStyle = simpleStyle.copy(Color.YELLOW);
-		var backgroundRoundStyle = roundBorderStyle.copy(Color.YELLOW);
-		
+		var backgroundRoundStyle = roundBorderStyle.copy(Color.YELLOW);		
 		var selectionSimpleStyle = simpleStyle.copy(Color.GREY4);
-		var selectionRoundStyle = roundBorderStyle.copy(Color.GREY4);
-		
+		var selectionRoundStyle = roundBorderStyle.copy(Color.GREY4);		
 		var cursorSimpleStyle = simpleStyle.copy();
 		var cursorRoundStyle = roundBorderStyle.copy();
 		
@@ -122,8 +127,7 @@ class TestStyles extends Application
 			cursorStyle:cursorSimpleStyle
 		}
 
-		var textLine = new InteractiveTextLine<FontStylePacked>(250, 25, "Hello World", fontPacked, fontStylePacked, textStyle);
-		//var textLine = new InteractiveTextLine<FontStylePacked>(250, 25, {height:30, width:300}, "Hello World", fontPacked, fontStylePacked, textStyle);
+		var textLine = new InteractiveTextLine<FontStylePacked>(240, 25, "Hello World", fontPacked, fontStylePacked, textStyle);
 		textLine.onPointerOver = (_, _)-> trace("on textLine over");
 		textLine.onPointerOut  = (_, _)-> trace("on textLine out");
 		textLine.onPointerClick  = (_, e:PointerEvent)-> {
@@ -132,511 +136,177 @@ class TestStyles extends Application
 		}
 		textLine.maskWidth = 100;
 		textLine.maskHeight = 20;
-		
-		
-		// ----------- InteractiveElement -----------		
-		var x = 10;
-		var y = 40;
-		var h = 30;
-		var size:TextSize = {leftSpace:3, topSpace:3};
 				
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "add/remove", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			if (!element.isVisible) uiDisplay.add(element) else uiDisplay.remove(element);
-		}
+		// ----------------------------------------------------------
+		// -------------------- LEFT BUTTONS ROW --------------------
+		// ----------------------------------------------------------
+		buttonX = 10; buttonY = 70;		
+		button(
+			"add/remove", ()-> if (!element.isVisible) uiDisplay.add(element) else uiDisplay.remove(element),
+		    "show", ()-> element.show(), "hide", ()-> element.hide()
+		);
 		
-		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "show", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> element.show();
-		
-		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "hide", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> element.hide();
-
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "remove style", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			element.style = null;
-		}
-		
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "style on", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			// TODO
-		}
-		var b = fontTiled.createInteractiveTextLine(x+5+b.width, y, size, "style off", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			// TODO
-		}
-				
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "set simplestyle", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			element.style = simpleStyle;
-		}
-		
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "set roundBorderStyle", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			element.style = roundBorderStyle;
-		}
-		
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "change style color", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			element.style.color = Color.random();
-			element.updateStyle();
-		}
-		
-		// ------------------------ TEXTLINE ----------------------------------
-		y += 60;
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "changeText", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			if (textLine.text == "Hello World") textLine.setText("Hallo Welt", textLine.autoWidth, textLine.autoHeight, true)
-			else textLine.setText("Hello World", textLine.autoWidth, textLine.autoHeight, true);
-		}
-		
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "change fontStyle color", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.fontStyle = fontStylePacked.copy(Color.random().setAlpha(1.0));
-			textLine.updateStyle();
-		}
-		
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "change fontStyle big", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.fontStyle = fontStylePacked.copy(null, 30, 30);
-			textLine.update();
-		}
-		
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "change fontStyle small", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.fontStyle = fontStylePacked.copy(null, 20, 20);
-			textLine.update();
-		}
-		
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "xOffset+=5", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.xOffset += 5;   textLine.updateLayout();
-		}
-		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "xOffset-=5", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.xOffset -= 5;   textLine.updateLayout();
-		}
-		
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "yOffset+=5", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.yOffset += 5;   textLine.updateLayout();
-		}
-		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "yOffset-=5", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.yOffset -= 5;   textLine.updateLayout();
-		}
-		
-		x = 245;
-		y = 40;
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "add/remove", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			if (!textLine.isVisible) uiDisplay.add(textLine) else uiDisplay.remove(textLine);
-		}
-		
-		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "show", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> textLine.show();
-		
-		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "hide", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> textLine.hide();
-
 		// ------------ background Style ------------
+		buttonY += 10;
+		button(
+			"styleShow/Hide",  // TODO				
+			"color", ()-> {	element.style.color = Color.random(); element.updateStyle(); }
+		);
+		button("set simplestyle", ()-> element.style = simpleStyle);
+		button("set roundStyle", ()-> element.style = roundBorderStyle);
+		button("remove style", ()-> element.style = null);
 		
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "bg remove style", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.backgroundStyle = null;
-		}
+				
+		// ----------------------------------------------------------
+		// -------------------- MIDDLE BUTTONS ROW ------------------
+		// ----------------------------------------------------------
+		buttonX = 240; buttonY = 70;
+		button(
+			"add/remove", ()-> if (!textLine.isVisible) uiDisplay.add(textLine) else uiDisplay.remove(textLine),
+		    "show",       ()-> textLine.show(), "hide",       ()-> textLine.hide()
+		);
 		
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "bg style on", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			// TODO
-		}
-		var b = fontTiled.createInteractiveTextLine(x+5+b.width, y, size, "bg style off", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			// TODO
-		}
-		
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "bg set simplestyle", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.backgroundStyle = backgroundSimpleStyle;
-		}
-		
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "bg set roundBorderStyle", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.backgroundStyle = backgroundRoundStyle;
-		}
-		
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "bg style change color", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> if (textLine.backgroundStyle != null) {
-			textLine.backgroundStyle.color = Color.random();
-			textLine.updateStyle();
-		}
-		
+		// ------------ background Style ------------
+		buttonY += 10;
+		button(
+			"backgroundShow/Hide", // TODO	
+			"color", ()-> { textLine.backgroundStyle.color = Color.random(); textLine.updateStyle(); }
+		);			
+		button("set simpleStyle", ()-> textLine.backgroundStyle = backgroundSimpleStyle);
+		button("set roundStyle",  ()-> textLine.backgroundStyle = backgroundRoundStyle);
+		button("remove style",    ()-> textLine.backgroundStyle = null);
+				
 		// ------------ selection Style ------------
-		y += 10;
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "selection remove style", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.selectionStyle = null;
-		}
-		
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "selection on", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.selectionShow();
-		}
-		var b = fontTiled.createInteractiveTextLine(x+5+b.width, y, size, "selection off", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.selectionHide();
-		}
-		
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "selection set simplestyle", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.selectionStyle = selectionSimpleStyle;
-		}
-		
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "selection set roundBorderStyle", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.selectionStyle = selectionRoundStyle;
-		}
-		
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "selection style change color", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.selectionStyle.color = Color.random();
-			textLine.updateStyle();
-		}
-			
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "sel.0-8", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.select(0,8);
-		}
-		
-		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "sel.4-10", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.select(4,10);
-		}
-		
-		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "sel.4-4", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.select(4,4);
-		}
-		// ------------ cursor Style ------------
-		
-		y += 10;
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "cursor remove style", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			//textLine.selectionStyle = null;
-		}
-		
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "cursor on", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			//textLine.selectionShow();
-		}
-		var b = fontTiled.createInteractiveTextLine(x+5+b.width, y, size, "cursor off", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			//textLine.selectionHide();
-		}
-		
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "cursor set simplestyle", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.selectionStyle = cursorSimpleStyle;
-		}
-		
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "cursor set roundBorderStyle", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			//textLine.selectionStyle = cursorRoundStyle;
-		}
-		
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "cursor style change color", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			//textLine.selectionStyle.color = Color.random();
-			//textLine.updateStyle();
-		}
-		
-		x = 575;
-		y = 20;
-		var b = fontTiled.createInteractiveTextLine(x, y, size, "x+=5", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> { textLine.x += 5; textLine.updateLayout(); }
-		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "x-=5", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> { textLine.x -= 5; textLine.updateLayout(); }
-		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "y+=5", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> { textLine.y += 5; textLine.updateLayout(); }
-		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "y-=5", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> { textLine.y -= 5; textLine.updateLayout(); }
-		
-		y += 20;
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "w+=5", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.autoWidth = false;
-			textLine.width += 5;
-			textLine.maskWidth += 5;
-			textLine.updateLayout();
-		}
-		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "w-=5", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.autoWidth = false;
-			textLine.width -= 5;
-			textLine.maskWidth -= 5;
-			textLine.updateLayout();
-		}
-		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "autoWidth", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.autoWidth = true; textLine.updateLayout();
-		}
+		buttonY += 10;
+		button(
+			"select 0-8",  ()-> textLine.select(0,8),
+		    "select 4-10", ()-> textLine.select(4,10)
+		);
+		button(
+			"selectionShow/Hide", ()-> if (textLine.selectionIsVisible) textLine.selectionHide() else textLine.selectionShow(),
+			"color", ()-> { textLine.selectionStyle.color = Color.random(); textLine.updateStyle(); }
+		);		
+		button("set simplestyle", ()-> textLine.selectionStyle = selectionSimpleStyle);
+		button("set roundStyle", ()-> textLine.selectionStyle = selectionRoundStyle);
+		button("remove style", ()-> textLine.selectionStyle = null);
 
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "left", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.hAlign = HAlign.LEFT; textLine.updateLayout();
-		}
-		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "center", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.hAlign = HAlign.CENTER; textLine.updateLayout();
-		}
-		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "right", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.hAlign = HAlign.RIGHT; textLine.updateLayout();
-		}
-	
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "leftSpace++", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.leftSpace++; textLine.updateLayout();
-		}
-		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "leftSpace--", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.leftSpace--; textLine.updateLayout();
-		}
+		// ------------- cursor Style -------------
+		buttonY += 10;
+		button(
+			"cursorShow/Hide", ()->if (textLine.cursorIsVisible) textLine.cursorHide() else textLine.cursorShow(),
+			"color", ()-> { textLine.cursorStyle.color = Color.random(); textLine.updateStyle(); } 
+		);		
+		button("set simplestyle", ()-> textLine.cursorStyle = cursorSimpleStyle);
+		button("set roundStyle", ()-> textLine.cursorStyle = cursorRoundStyle);
+		button("remove style", ()-> textLine.cursorStyle = null);
 
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "rightSpace++", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.rightSpace++; textLine.updateLayout();
-		}
-		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "rightSpace--", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.rightSpace--; textLine.updateLayout();
-		}
-
-		y += 20;
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "h+=5", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.autoHeight = false;
-			textLine.height += 5;
-			textLine.maskHeight += 5;
-			textLine.updateLayout();
-		}
-		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "h-=5", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.autoHeight = false;
-			textLine.height -= 5;
-			textLine.maskHeight -= 5;
-			textLine.updateLayout();
-		}
-		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "autoHeight", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.autoHeight = true;  textLine.updateLayout();
-		}
-
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "top", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.vAlign = VAlign.TOP; textLine.updateLayout();
-		}
-		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "center", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.vAlign = VAlign.CENTER; textLine.updateLayout();
-		}
-		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "bottom", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.vAlign = VAlign.BOTTOM; textLine.updateLayout();
-		}
-
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "topSpace++", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.topSpace++; textLine.updateLayout();
-		}
-		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "topSpace--", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.topSpace--; textLine.updateLayout();
-		}
-
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "bottomSpace++", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.bottomSpace++; textLine.updateLayout();
-		}
-		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "bottomSpace--", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.bottomSpace--; textLine.updateLayout();
-		}
-
+		
+		// ----------------------------------------------------------
+		// -------------------- RIGHT BUTTONS ROW -------------------
+		// ----------------------------------------------------------
+		buttonX = 520; 
+		
+		// ------- text and fontStyle -------
+		buttonY = 10;	
+		button(
+			"text1", ()-> textLine.setText("Hello World", textLine.autoWidth, textLine.autoHeight, true),
+			"text2", ()-> textLine.setText("testing more", textLine.autoWidth, textLine.autoHeight, true),
+			"text3", ()-> textLine.setText("ui stuff", textLine.autoWidth, textLine.autoHeight, true)
+		);		
+		button(
+			"fontStyle color", ()-> { textLine.fontStyle = fontStylePacked.copy(Color.random().setAlpha(1.0)); textLine.updateStyle(); },
+			"size", ()-> {
+				if (textLine.fontStyle.width == 20) textLine.fontStyle.width = textLine.fontStyle.height = 30;
+				else textLine.fontStyle.width = textLine.fontStyle.height = 20; 
+				textLine.update();
+			}
+		);		
+		
+		// ------- position -------
+		buttonY = 70;
+		button(
+			"x+=5", ()-> { textLine.x += 5; textLine.updateLayout(); },
+			"x-=5", ()-> { textLine.x -= 5; textLine.updateLayout(); },
+			"y+=5", ()-> { textLine.y += 5; textLine.updateLayout(); },
+			"y-=5", ()-> { textLine.y -= 5; textLine.updateLayout(); }
+		);
+		
+		// ------- horizontal size, space and align -------
+		buttonY += 10;
+		button(
+			"w+=5",      ()-> { textLine.autoWidth = false; textLine.width += 5; textLine.maskWidth += 5; textLine.updateLayout(); },
+			"w-=5",      ()-> { textLine.autoWidth = false; textLine.width -= 5; textLine.maskWidth -= 5; textLine.updateLayout(); },
+			"autoWidth", ()-> { textLine.autoWidth = true; textLine.updateLayout(); }
+		);
+		button(
+			"left"  , ()-> { textLine.hAlign = HAlign.LEFT;   textLine.updateLayout(); },
+			"center", ()-> { textLine.hAlign = HAlign.CENTER; textLine.updateLayout(); },
+			"right" , ()-> { textLine.hAlign = HAlign.RIGHT;  textLine.updateLayout(); }
+		);		
+		button(
+			"leftSpace++", ()-> { textLine.leftSpace++; textLine.updateLayout(); },
+			"leftSpace--", ()-> { textLine.leftSpace--; textLine.updateLayout(); }
+		);
+		button(
+			"rightSpace++", ()-> { textLine.rightSpace++; textLine.updateLayout(); },
+			"rightSpace--", ()-> { textLine.rightSpace--; textLine.updateLayout(); }
+		);
+		
+		// ------- vertical size, space and align -------
+		buttonY += 10;
+		button(
+			"h+=5",       ()-> { textLine.autoHeight = false; textLine.height += 5; textLine.maskHeight += 5; textLine.updateLayout(); },
+			"h-=5",       ()-> { textLine.autoHeight = false; textLine.height -= 5; textLine.maskHeight -= 5; textLine.updateLayout(); },
+			"autoHeight", ()-> { textLine.autoHeight = true; textLine.updateLayout(); }
+		);
+		button(
+			"top"  ,   ()-> { textLine.vAlign = VAlign.TOP;   textLine.updateLayout(); },
+			"center",  ()-> { textLine.vAlign = VAlign.CENTER; textLine.updateLayout(); },
+			"bottom" , ()-> { textLine.vAlign = VAlign.BOTTOM;  textLine.updateLayout(); }
+		);		
+		button(
+			"topSpace++", ()-> { textLine.topSpace++; textLine.updateLayout(); },
+			"topSpace--", ()-> { textLine.topSpace--; textLine.updateLayout(); }
+		);
+		button(
+			"bottomSpace++", ()-> { textLine.bottomSpace++; textLine.updateLayout(); },
+			"bottomSpace--", ()-> { textLine.bottomSpace--; textLine.updateLayout(); }
+		);
+		
+		// -------- text offset ------------
+		buttonY += 10;
+		button(
+			"xOffset+=5", ()-> { textLine.xOffset += 5; textLine.updateLayout(); },
+			"xOffset-=5", ()-> { textLine.xOffset -= 5; textLine.updateLayout(); }
+		);		
+		button(
+			"yOffset+=5", ()-> { textLine.yOffset += 5; textLine.updateLayout(); },
+			"yOffset-=5", ()-> { textLine.yOffset -= 5; textLine.updateLayout(); }
+		);
+		
 		// -------- layout masking ------------
-		y += 20;
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "mask on", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.masked = true;	textLine.updateLayout();
-		}
-		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "mask off", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.masked = false; textLine.updateLayout();
-		}
-
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "leftMask++", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.maskX++; 
-			textLine.maskWidth--; 
-			textLine.updateLayout();
-		}
-		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "leftMask--", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.maskX--;
-			textLine.maskWidth++; 
-			textLine.updateLayout();
-		}
-		
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "rightMask++", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.maskWidth--; textLine.updateLayout();
-		}
-		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "rightMask--", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.maskWidth++; textLine.updateLayout();
-		}
-		
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "topMask++", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.maskY++; 
-			textLine.maskHeight--; 
-			textLine.updateLayout();
-		}
-		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "topMask--", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.maskY--;
-			textLine.maskHeight++; 
-			textLine.updateLayout();
-		}
-		
-		var b = fontTiled.createInteractiveTextLine(x, y+=h, size, "bottomMask++", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.maskHeight--; textLine.updateLayout();
-		}
-		var b = fontTiled.createInteractiveTextLine(b.x+5+b.width, y, size, "bottomMask--", textBgStyle);
-		uiDisplay.add(b);
-		b.onPointerClick = (_, _)-> {
-			textLine.maskHeight++; textLine.updateLayout();
-		}
+		buttonY += 10;
+		button("mask on/off" , ()-> { textLine.masked = !textLine.masked; textLine.updateLayout(); });		
+		button(
+			"leftMask++", ()-> { textLine.maskX++; textLine.maskWidth--; textLine.updateLayout(); },
+			"leftMask--", ()-> { textLine.maskX--; textLine.maskWidth++; textLine.updateLayout(); }
+		);
+		button(
+			"rightMask++", ()-> { textLine.maskWidth++; textLine.updateLayout(); },
+			"rightMask--", ()-> { textLine.maskWidth--; textLine.updateLayout(); }
+		);
+		button(
+			"topMask++", ()-> { textLine.maskY++; textLine.maskHeight--; textLine.updateLayout(); },
+			"topMask--", ()-> { textLine.maskY--; textLine.maskHeight++; textLine.updateLayout(); }
+		);
+		button(
+			"bottomMask++", ()-> { textLine.maskHeight++; textLine.updateLayout(); },
+			"bottomMask--", ()-> { textLine.maskHeight--; textLine.updateLayout(); }
+		);
 		
 		
-		
-		
-		
-/*
-		// ----------- create Cursor -----------
-		
-		var cursor = new InteractiveElement(60, 55, 25, 25, SimpleStyle.createById(1, Color.YELLOW.setAlpha(0.7) ));
-		uiDisplay.add(cursor);
-		//trace(Type.getClassName(Type.getClass(button2.style)));
-*/			
-
-		//uiDisplay.x = 50;
-		//uiDisplay.zoom = 1.2;
-		//uiDisplay.xOffset = 100;
-		//peoteView.zoom = 1.3;
-		//peoteView.xOffset = -170;
-		
-		//peoteView.zoom = 2;
-
-		#if android
-		uiDisplay.mouseEnabled = false;
-		peoteView.zoom = 3;
-		#end
-		
-		// TODO: set what events to register (mouse, touch, keyboard ...)
 		UIDisplay.registerEvents(window);
 	}
 	
 
-	// ------------------------------------------------------------
-	// ----------------- LIME EVENTS ------------------------------
-	// ------------------------------------------------------------	
-
-	// override function onWindowResize (width:Int, height:Int) { trace("onWindowResize"); }
-	// override function onWindowEnter():Void { trace("onWindowEnter"); }
-	// override function onWindowActivate():Void { trace("onWindowActivate"); }
-	// override function onWindowDeactivate():Void { trace("onWindowDeactivate"); }
-	// override function onWindowClose():Void { trace("onWindowClose"); }
-	// override function onWindowDropFile(file:String):Void { trace("onWindowDropFile"); }
-	// override function onWindowExpose():Void { trace("onWindowExpose"); }
-	// override function onWindowFocusIn():Void { trace("onWindowFocusIn"); }
-	// override function onWindowFocusOut():Void { trace("onWindowFocusOut"); }
-	// override function onWindowFullscreen():Void { trace("onWindowFullscreen"); }
-	// override function onWindowMove(x:Float, y:Float):Void { trace("onWindowMove"); }
-	// override function onWindowMinimize():Void { trace("onWindowMinimize"); }
-	// override function onWindowRestore():Void { trace("onWindowRestore"); }
 }
