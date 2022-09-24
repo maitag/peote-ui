@@ -42,6 +42,9 @@ class InteractiveTextLineMacro
 // -------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------
 class $className extends peote.ui.interactive.Interactive implements peote.ui.interactive.interfaces.TextLine
+#if peote_layout
+implements peote.layout.ILayoutElement
+#end
 {	
 	var line:peote.text.Line<$styleType> = null; //$lineType
 	
@@ -609,7 +612,7 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	}
 	
 	inline function createCursorStyle(x:Int, y:Int, w:Int, h:Int, mx:Int, my:Int, mw:Int, mh:Int, z:Int)
-	{	trace("createSelectionStyle");
+	{	trace("createCursorStyle");
 		var stylePos = uiDisplay.usedStyleID.indexOf( cursorStyle.getID() | (cursorStyle.id << 16) );
 		if (stylePos < 0) {
 			if (uiDisplay.autoAddStyles) uiDisplay.autoAddStyleProgram(cast cursorProgram = cursorStyle.createStyleProgram(), cursorStyle.getID() | (cursorStyle.id << 16) );

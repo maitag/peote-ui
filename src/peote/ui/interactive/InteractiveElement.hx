@@ -12,6 +12,9 @@ private typedef IAElementEventParams = InteractiveElement->PointerEvent->Void;
 private typedef IAElementWheelEventParams = InteractiveElement->WheelEvent->Void;
 
 class InteractiveElement extends Interactive
+#if peote_layout
+implements peote.layout.ILayoutElement
+#end
 {	
 	var styleProgram:StyleProgram = null;
 	var styleElement:StyleElement = null;	

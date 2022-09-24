@@ -16,11 +16,11 @@ import peote.layout.ContainerType;
 
 import peote.text.Font;
 
+import peote.ui.interactive.InteractiveTextLine;
 import peote.ui.style.FontStyleTiled;
 import peote.ui.style.RoundBorderStyle;
 
 import peote.ui.PeoteUI;
-import peote.ui.layouted.LayoutedTextLine;
 import peote.ui.event.PointerEvent;
 import peote.ui.widget.Div;
 import peote.ui.widget.TextLine;
@@ -98,10 +98,10 @@ class WidgetLayout extends Application
 					var t:TextLine = widget.childs[0];
 					
 					// 1)
-					//var layoutedTextLine:LayoutedTextLine<FontStyleTiled> = t.getLayoutedTextLine();
-					//layoutedTextLine.fontStyle.color = Color.BLACK;
-					//layoutedTextLine.updateStyle();
-					//layoutedTextLine.update();
+					//var interactiveTextLine:InteractiveTextLine<FontStyleTiled> = t.getLayoutedTextLine();
+					//interactiveTextLine.fontStyle.color = Color.BLACK;
+					//interactiveTextLine.updateStyle();
+					//interactiveTextLine.update();
 					
 					// 2)
 					t.fontStyle.color = Color.BLACK;
@@ -162,9 +162,9 @@ class WidgetLayout extends Application
 							trace("onPointerOut:Textfield");
 							
 							// 5
-							var layoutedTextLine:LayoutedTextLine<FontStyleTiled> = t.getLayoutedTextLine();
-							layoutedTextLine.fontStyle.color = Color.WHITE;
-							layoutedTextLine.updateStyle();
+							var interactiveTextLine:InteractiveTextLine<FontStyleTiled> = t.getLayoutedTextLine();
+							interactiveTextLine.fontStyle.color = Color.WHITE;
+							interactiveTextLine.updateStyle();
 						}
 						
 				}),

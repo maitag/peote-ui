@@ -5,7 +5,7 @@ import peote.layout.LayoutOptions;
 
 import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
-import peote.ui.layouted.LayoutedElement;
+import peote.ui.interactive.InteractiveElement;
 import peote.ui.widget.Widget;
 
 typedef DivOptions = {
@@ -32,7 +32,7 @@ abstract Div(Widget) from Widget to Widget
 	public inline function new(divOptions:DivOptions = null, widgets:Array<Widget> = null) 
 	{
 		this = new Widget(ContainerType.BOX, 
-			new LayoutedElement(0, 0, 0, 0, 0, divOptions.style),
+			new InteractiveElement(0, 0, 0, 0, 0, divOptions.style),
 			divOptions,
 			widgets
 		);
@@ -45,9 +45,9 @@ abstract Div(Widget) from Widget to Widget
 		this.onMouseWheel = divOptions.onMouseWheel;
 	}
 	
-	public var layoutElement(get, never):LayoutedElement;
-	public inline function get_layoutElement():LayoutedElement return cast this.layoutElement;	
-	@:to public inline function toLayoutElement():LayoutedElement return layoutElement;
+	public var layoutElement(get, never):InteractiveElement;
+	public inline function get_layoutElement():InteractiveElement return cast this.layoutElement;	
+	@:to public inline function toLayoutElement():InteractiveElement return layoutElement;
 	
 	public var style(get, set):Dynamic;
 	inline function get_style():Dynamic {

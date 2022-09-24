@@ -75,6 +75,9 @@ class Pickable implements Element
 
 @:allow(peote.ui)
 class Interactive
+#if peote-layout
+implements peote.layout.ILayoutElement
+#end
 {
 	// ---------------------------------------------------------
 	
@@ -483,6 +486,57 @@ class Interactive
 		if (isVisible) uiDisplay.clickPickBuffer.removeElement( pickableClick ); //pickableClick=null
 	}
 	
+	#if peote_layout
+	// ----------- Interface for peote-layout --------------------
+
+	public inline function showByLayout():Void show();
+	public inline function hideByLayout():Void hide();
+
+	public inline function updateByLayout(layoutContainer:peote.layout.LayoutContainer) {
+		// TODO: layoutContainer.updateMask() from here to make it only on-need
+		
+		if (isVisible)
+		{ 
+			if (layoutContainer.isHidden) // if it is full outside of the Mask (so invisible)
+			{
+				#if peotelayout_debug
+				//trace("removed", layoutContainer.layout.name);
+				#end
+				hide();
+			}
+			else {
+				_update(layoutContainer);
+			}
+		}
+		else if (!layoutContainer.isHidden) // not full outside of the Mask anymore
+		{
+			#if peotelayout_debug
+			//trace("showed", layoutContainer.layout.name);
+			#end
+			_update(layoutContainer);
+			show();
+		}		
+	}
 	
-				
+	public inline function _update(layoutContainer:peote.layout.LayoutContainer) {
+		x = Math.round(layoutContainer.x);
+		y = Math.round(layoutContainer.y);
+		z = Math.round(layoutContainer.depth);
+		width = Math.round(layoutContainer.width);
+		height = Math.round(layoutContainer.height);
+		
+		#if (!peoteui_no_textmasking && !peoteui_no_masking)
+		if (layoutContainer.isMasked) { // if some of the edges is cut by mask for scroll-area
+			maskX = Math.round(layoutContainer.maskX);
+			maskY = Math.round(layoutContainer.maskY);
+			maskWidth  = Math.round(layoutContainer.maskWidth);
+			maskHeight = Math.round(layoutContainer.maskHeight);
+		}
+		masked = layoutContainer.isMasked;
+		#end
+		
+		updateLayout();
+	}
+	
+	#end			
 }

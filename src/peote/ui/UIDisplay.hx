@@ -34,6 +34,9 @@ import peote.ui.style.interfaces.StyleID;
 @:access(peote.view)
 @:allow(peote.ui.interactive)
 class UIDisplay extends Display
+#if peote_layout
+implements peote.layout.ILayoutElement
+#end
 {
 	#if peoteui_maxDisplays
 		static public var MAX_DISPLAYS:Int = Std.parseInt(haxe.macro.Compiler.getDefine("peoteui_maxDisplays"));
@@ -1466,11 +1469,57 @@ class UIDisplay extends Display
 		// keyboard & text
 		window.onKeyDown.remove(keyDownActive);
 		window.onKeyUp.remove(keyUpActive);
-		window.onTextInput.remove(textInputActive);
-		
-		
+		window.onTextInput.remove(textInputActive);		
 	}
-			
+	
+	// ----------------------------------------------------------------------------
+	
+	#if peote_layout // ----------- Interface for peote-layout --------------------
+
+	public inline function showByLayout() show();
+	public inline function hideByLayout() hide();
+	
+	public function updateByLayout(layoutContainer:peote.layout.LayoutContainer) {
+		// TODO: layoutContainer.updateMask() from here to make it only on-need
+		
+		if (isVisible)
+		{
+			if (layoutContainer.isHidden) // if it is full outside of the Mask (so invisible)
+			{
+				#if peotelayout_debug
+				//trace("removed", layoutContainer.layout.name);
+				#end
+				hide();
+			}
+			else _update(layoutContainer);
+		}
+		else if (!layoutContainer.isHidden) // not full outside of the Mask anymore
+		{
+			#if peotelayout_debug
+			//trace("showed", layoutContainer.layout.name);
+			#end
+			_update(layoutContainer);
+			show();
+		}		
+	}	
+
+	inline function _update(layoutContainer:peote.layout.LayoutContainer) {
+		x = Math.round(layoutContainer.x);
+		y = Math.round(layoutContainer.y);
+		
+		if (layoutContainer.isMasked) { // if some of the edges is cut by mask for scroll-area
+			x += Math.round(layoutContainer.maskX);
+			y += Math.round(layoutContainer.maskY);
+			width = Math.round(layoutContainer.maskWidth);
+			height = Math.round(layoutContainer.maskHeight);
+		}
+		else {
+			width = Math.round(layoutContainer.width);
+			height = Math.round(layoutContainer.height);
+		}
+	}
+	#end			
+
 }
 
 
