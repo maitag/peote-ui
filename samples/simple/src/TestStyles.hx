@@ -156,7 +156,7 @@ class TestStyles extends Application
 		// ------------ background Style ------------
 		buttonY += 12;
 		button(
-			"styleShow/Hide",  // TODO				
+			"styleShow/Hide",  ()-> element.styleIsVisible = !element.styleIsVisible,		
 			"color", ()-> {	element.style.color = Color.random(); element.updateStyle(); }
 		);
 		button("set simplestyle", ()-> element.style = simpleStyle);
@@ -176,7 +176,7 @@ class TestStyles extends Application
 		// ------------ background Style ------------
 		buttonY += 12;
 		button(
-			"backgroundShow/Hide", // TODO	
+			"backgroundShow/Hide", ()-> if (textLine.backgroundIsVisible) textLine.backgroundHide() else textLine.backgroundShow(),	
 			"color", ()-> { textLine.backgroundStyle.color = Color.random(); textLine.updateStyle(); }
 		);			
 		button("set simpleStyle", ()-> textLine.backgroundStyle = backgroundSimpleStyle);
