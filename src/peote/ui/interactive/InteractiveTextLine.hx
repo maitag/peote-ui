@@ -50,11 +50,11 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	public var fontStyle:$styleType;
 	
 	// -------- background style ---------
-	var backgroundStyleProgram:peote.ui.style.interfaces.StyleProgram = null;
-	var backgroundStyleElement:peote.ui.style.interfaces.StyleElement = null;
+	var backgroundProgram:peote.ui.style.interfaces.StyleProgram = null;
+	var backgroundElement:peote.ui.style.interfaces.StyleElement = null;
 	public var backgroundStyle(default, set):Dynamic = null;
 	inline function set_backgroundStyle(style:Dynamic):Dynamic {
-		if (backgroundStyleElement == null) { // not added to Display yet
+		if (backgroundElement == null) { // not added to Display yet
 			backgroundStyle = style;
 			if (style != null && line != null) createBackgroundStyle(isVisible && backgroundIsVisible);
 		}
@@ -62,20 +62,20 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 			if (style != null) {
 				if (style.getID() | (style.id << 16) != backgroundStyle.getID() | (backgroundStyle.id << 16))
 				{	// if is need another styleprogram
-					if (isVisible && backgroundIsVisible) backgroundStyleProgram.removeElement(backgroundStyleElement);
-					backgroundStyleProgram = null;
+					if (isVisible && backgroundIsVisible) backgroundProgram.removeElement(backgroundElement);
+					backgroundProgram = null;
 					backgroundStyle = style;
 					createBackgroundStyle(isVisible && backgroundIsVisible);
 				} 
 				else { // styleprogram is of same type
 					backgroundStyle = style;
-					backgroundStyleElement.setStyle(style);
-					if (isVisible && backgroundIsVisible) backgroundStyleProgram.update(backgroundStyleElement);
+					backgroundElement.setStyle(style);
+					if (isVisible && backgroundIsVisible) backgroundProgram.update(backgroundElement);
 				}
 			} 
 			else { // remove style
-				if (isVisible && backgroundIsVisible) backgroundStyleProgram.removeElement(backgroundStyleElement);
-				backgroundStyle = null; backgroundStyleProgram = null; backgroundStyleElement = null;
+				if (isVisible && backgroundIsVisible) backgroundProgram.removeElement(backgroundElement);
+				backgroundStyle = null; backgroundProgram = null; backgroundElement = null;
 			}
 		}		
 		return backgroundStyle;
@@ -84,10 +84,10 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	inline function set_backgroundIsVisible(b:Bool):Bool {
 		if (line != null && backgroundStyle != null) {
 			if (b && !backgroundIsVisible) {
-				if (backgroundStyleElement == null) createBackgroundStyle(isVisible); // create new selectElement
-				else if (isVisible) backgroundStyleProgram.addElement(backgroundStyleElement);
+				if (backgroundElement == null) createBackgroundStyle(isVisible); // create new selectElement
+				else if (isVisible) backgroundProgram.addElement(backgroundElement);
 			}
-			else if (!b && backgroundIsVisible && backgroundStyleElement != null && isVisible) backgroundStyleProgram.removeElement(backgroundStyleElement);
+			else if (!b && backgroundIsVisible && backgroundElement != null && isVisible) backgroundProgram.removeElement(backgroundElement);
 		}
 		return backgroundIsVisible = b;
 	}	
@@ -95,31 +95,31 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	public inline function backgroundHide():Void backgroundIsVisible = false;
 	
 	// -------- selection style ---------
-	var selectionStyleProgram:peote.ui.style.interfaces.StyleProgram = null;
-	var selectionStyleElement:peote.ui.style.interfaces.StyleElement = null;
+	var selectionProgram:peote.ui.style.interfaces.StyleProgram = null;
+	var selectionElement:peote.ui.style.interfaces.StyleElement = null;
 	public var selectionStyle(default, set):Dynamic = null;
 	inline function set_selectionStyle(style:Dynamic):Dynamic {
-		if (selectionStyleElement == null) { // not added to Display yet
+		if (selectionElement == null) { // not added to Display yet
 			selectionStyle = style;
 			if (style != null && line != null) createSelectionMasked(isVisible && selectionIsVisible);
 		}
 		else { // already have styleprogram and element 
 			if (style != null) {
 				if (style.getID() | (style.id << 16) != selectionStyle.getID() | (selectionStyle.id << 16)) { // if is need another styleprogram
-					if (isVisible && selectionIsVisible) selectionStyleProgram.removeElement(selectionStyleElement);
-					selectionStyleProgram = null;
+					if (isVisible && selectionIsVisible) selectionProgram.removeElement(selectionElement);
+					selectionProgram = null;
 					selectionStyle = style;
 					createSelectionMasked(isVisible && selectionIsVisible);
 				} 
 				else { // styleprogram is of same type
 					selectionStyle = style;
-					selectionStyleElement.setStyle(style);
-					if (isVisible && selectionIsVisible) selectionStyleProgram.update(selectionStyleElement);
+					selectionElement.setStyle(style);
+					if (isVisible && selectionIsVisible) selectionProgram.update(selectionElement);
 				}
 			} 
 			else { // remove style
-				if (isVisible && selectionIsVisible) selectionStyleProgram.removeElement(selectionStyleElement);
-				selectionStyle = null; selectionStyleProgram = null; selectionStyleElement = null;
+				if (isVisible && selectionIsVisible) selectionProgram.removeElement(selectionElement);
+				selectionStyle = null; selectionProgram = null; selectionElement = null;
 			}
 		}		
 		return selectionStyle;
@@ -128,10 +128,10 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	inline function set_selectionIsVisible(b:Bool):Bool {
 		if (line != null && selectionStyle != null) {
 			if (b && !selectionIsVisible) {
-				if (selectionStyleElement == null) createSelectionMasked(isVisible); // create new selectElement
-				else if (isVisible) selectionStyleProgram.addElement(selectionStyleElement);
+				if (selectionElement == null) createSelectionMasked(isVisible); // create new selectElement
+				else if (isVisible) selectionProgram.addElement(selectionElement);
 			}
-			else if (!b && selectionIsVisible && selectionStyleElement != null && isVisible) selectionStyleProgram.removeElement(selectionStyleElement);
+			else if (!b && selectionIsVisible && selectionElement != null && isVisible) selectionProgram.removeElement(selectionElement);
 		}
 		return selectionIsVisible = b;
 	}	
@@ -145,25 +145,73 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		if (from <= to) { selectFrom = from; selectTo = to;	} else { selectFrom = to; selectTo = from; }
 		if (line != null && selectionStyle != null) {
 			if (selectTo > line.length) selectTo = line.length;
-			setCreateSelectionMasked( (isVisible && selectionIsVisible), (selectionStyleElement == null) );
+			setCreateSelectionMasked( (isVisible && selectionIsVisible), (selectionElement == null) );
 		}
 		selectionShow();
 	}
 	
 	
 	// -------- cursor style ---------
-	var cursorStyleProgram:peote.ui.style.interfaces.StyleProgram = null;
-	var cursorStyleElement:peote.ui.style.interfaces.StyleElement = null;
-	public var cursorStyle:Dynamic = null;
-	
+	var cursorProgram:peote.ui.style.interfaces.StyleProgram = null;
+	var cursorElement:peote.ui.style.interfaces.StyleElement = null;
+	public var cursorStyle(default, set):Dynamic = null;
+	inline function set_cursorStyle(style:Dynamic):Dynamic {
+		if (cursorElement == null) { // not added to Display yet
+			cursorStyle = style;
+			if (style != null && line != null) createCursorMasked(isVisible && cursorIsVisible);
+		}
+		else { // already have styleprogram and element 
+			if (style != null) {
+				if (style.getID() | (style.id << 16) != cursorStyle.getID() | (cursorStyle.id << 16)) { // if is need another styleprogram
+					if (isVisible && cursorIsVisible) cursorProgram.removeElement(cursorElement);
+					cursorProgram = null;
+					cursorStyle = style;
+					createCursorMasked(isVisible && cursorIsVisible);
+				} 
+				else { // styleprogram is of same type
+					cursorStyle = style;
+					cursorElement.setStyle(style);
+					if (isVisible && cursorIsVisible) cursorProgram.update(cursorElement);
+				}
+			} 
+			else { // remove style
+				if (isVisible && cursorIsVisible) cursorProgram.removeElement(cursorElement);
+				cursorStyle = null; cursorProgram = null; cursorElement = null;
+			}
+		}		
+		return cursorStyle;
+	}		
 	public var cursorIsVisible(default, set):Bool = false;
 	inline function set_cursorIsVisible(b:Bool):Bool {
-// TODO
+		if (line != null && cursorStyle != null) {
+			if (b && !cursorIsVisible) {
+				if (cursorElement == null) createCursorMasked(isVisible); // create new selectElement
+				else if (isVisible) cursorProgram.addElement(cursorElement);
+			}
+			else if (!b && cursorIsVisible && cursorElement != null && isVisible) cursorProgram.removeElement(cursorElement);
+		}
 		return cursorIsVisible = b;
 	}	
 	public inline function cursorShow():Void cursorIsVisible = true;
 	public inline function cursorHide():Void cursorIsVisible = false;
-	
+	public var cursor(default,set):Int = 0;
+	inline function set_cursor(pos:Int):Int {		
+		if (pos < 0) cursor = 0;
+		else {
+			if (line != null) {
+				if (pos > line.length) cursor = line.length;
+				else cursor = pos;
+			}
+			else {
+				if (pos > text.length) cursor = text.length;
+				else cursor = pos;
+			}
+		}		
+		if (line != null && cursorStyle != null) {	
+			setCreateCursorMasked( (isVisible && cursorIsVisible), (cursorElement == null) );
+		}
+		return cursor;
+	}	
 	
 	
 	// ---------- text ---------------	
@@ -247,6 +295,7 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		if (textLineStyle != null) {
 			backgroundStyle = textLineStyle.backgroundStyle;
 			selectionStyle = textLineStyle.selectionStyle;
+			cursorStyle = textLineStyle.cursorStyle;
 		}
 	}
 	
@@ -279,8 +328,8 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		if (masked) {
 			if (maskX > leftSpace) _x = x + maskX;
 			if (maskY > topSpace ) _y = y + maskY;
-			if (x + maskX + maskWidth  < _x + _width ) _width  = _width  - (_x + _width  - maskX - maskWidth  - x); //TODO
-			if (y + maskY + maskHeight < _y + _height) _height = _height - (_y + _height - maskY - maskHeight - y); //TODO
+			if (x + maskX + maskWidth  < _x + _width ) _width  = maskX + maskWidth  + x - _x;
+			if (y + maskY + maskHeight < _y + _height) _height = maskY + maskHeight + y - _y;
 		}
 		#end
 		_setCreateSelection(_x, _y, _width, _height, getAlignedYOffset() + topSpace, addUpdate, create);
@@ -292,103 +341,102 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		var selectX = Math.round(getPositionAtChar(selectFrom));
 		var selectWidth = Math.round(getPositionAtChar(selectTo) - selectX);
 		var selectY = Math.round(y + y_offset);
-		var selectHeight = Math.round(line.height);		
-
-		var mx = 0;
-		var my = 0;
-		var mw = selectWidth;
-		var mh = selectHeight;
+		var selectHeight = Math.round(line.height);
+		var mx = 0; var my = 0; var mw = selectWidth; var mh = selectHeight;
 		
 		#if (!peoteui_no_textmasking && !peoteui_no_masking)
-		if (selectX < _x) { mw -= (_x - selectX); mx = _x - selectX; if (mw > _width) mw = _width; } 
+		if (selectX < _x) { mw -= (_x - selectX); mx = _x - selectX; if (mw > _width) mw = _width; }
 		else if (selectX + selectWidth > _x + _width) mw = _x + _width - selectX;
 		if (mw < 0) mw = 0;
-		if (selectY < _y) { mh -= (_y - selectY); my = _y - selectY; if (mh > _height) mh = _height; } 
+		if (selectY < _y) { mh -= (_y - selectY); my = _y - selectY; if (mh > _height) mh = _height; }
 		else if (selectY + selectHeight > _y + _height) mh = _y + _height - selectY;
-		if (mh < 0) mh = 0;		
+		if (mh < 0) mh = 0;
 		#end
 		if (create)	{
 			createSelectionStyle(selectX, selectY, selectWidth, selectHeight, mx, my, mw, mh, z); // TODO zIndex
-			if (addUpdate) selectionStyleProgram.addElement(selectionStyleElement);
+			if (addUpdate) selectionProgram.addElement(selectionElement);
 		}
 		else {
-			selectionStyleElement.setMasked(this, selectX, selectY, selectWidth, selectHeight, mx, my, mw, mh, z); // TODO zIndex
-			if (addUpdate) selectionStyleProgram.update(selectionStyleElement);
+			selectionElement.setMasked(this, selectX, selectY, selectWidth, selectHeight, mx, my, mw, mh, z); // TODO zIndex
+			if (addUpdate) selectionProgram.update(selectionElement);
 		}
 	}
 	
-	inline function setCreateCursor(_x:Int, _y:Int, _width:Int, _height:Int, y_offset:Float, create = false)
+	inline function createCursorMasked(addUpdate:Bool) setCreateCursorMasked(addUpdate, true);
+	inline function setCreateCursorMasked(addUpdate:Bool, create:Bool) 
+	{
+		var _x = x + leftSpace;
+		var _y = y + topSpace;
+		var _width  = width  - leftSpace - rightSpace;
+		var _height = height - topSpace - bottomSpace;
+		#if (!peoteui_no_textmasking && !peoteui_no_masking)
+		if (masked) {
+			if (maskX > leftSpace) _x = x + maskX;
+			if (maskY > topSpace ) _y = y + maskY;
+			if (x + maskX + maskWidth  < _x + _width ) _width  = maskX + maskWidth  + x - _x;
+			if (y + maskY + maskHeight < _y + _height) _height = maskY + maskHeight + y - _y;
+		}
+		#end
+		_setCreateCursor(_x, _y, _width, _height, getAlignedYOffset() + topSpace, addUpdate, create);
+	}
+	inline function createCursor(x:Int, y:Int, w:Int, h:Int, y_offset:Float, addUpdate:Bool) _setCreateCursor(x, y, w, h, y_offset, addUpdate, true);
+	inline function setCursor(x:Int, y:Int, w:Int, h:Int, y_offset:Float, addUpdate:Bool) _setCreateCursor(x, y, w, h, y_offset, addUpdate, false);
+	inline function _setCreateCursor(_x:Int, _y:Int, _width:Int, _height:Int, y_offset:Float, addUpdate:Bool, create:Bool)
 	{
 		var cursorX = Math.round(getPositionAtChar(cursor));
-		var cursorWidth = 2;
+		var cursorWidth = 2; // TODO: make customizable
 		var cursorY = Math.round(y + y_offset);
-		var cursorHeight = Math.round(line.height);
+		var cursorHeight = Math.round(line.height);		
+		var mx = 0; var my = 0; var mw = cursorWidth; var mh = cursorHeight;
 		
 		#if (!peoteui_no_textmasking && !peoteui_no_masking)
-		// horizontally
-		if (cursorX < _x) { cursorWidth -= _x - cursorX; cursorX = _x; }
-		if (cursorX + cursorWidth > _x + _width) cursorWidth = _x + _width - cursorX;
-		if (cursorWidth < 0) cursorWidth = 0;		
-		// vertically
-		if (cursorY < _y) { cursorHeight -= _y - cursorY; cursorY = _y; }
-		if (cursorY + cursorHeight > _y + _height) cursorHeight = _y + _height - cursorY;
-		if (cursorHeight < 0) cursorHeight = 0;
+		if (cursorX < _x) { mw -= (_x - cursorX); mx = _x - cursorX; if (mw > _width) mw = _width; }
+		else if (cursorX + cursorWidth > _x + _width) mw = _x + _width - cursorX;
+		if (mw < 0) mw = 0;
+		if (cursorY < _y) { mh -= (_y - cursorY); my = _y - cursorY; if (mh > _height) mh = _height; }
+		else if (cursorY + cursorHeight > _y + _height) mh = _y + _height - cursorY;
+		if (mh < 0) mh = 0;
 		#end
-		
-// TODO
-/*		if (create) cursorElement = fontProgram.createBackground(cursorX, cursorY, cursorWidth, cursorHeight, z, 0xFF0000FF, isVisible && cursorIsVisible);
-		else fontProgram.setBackground(cursorElement, cursorX, cursorY, cursorWidth, cursorHeight, z, 0xFF0000FF, isVisible && cursorIsVisible);
-*/
+		if (create)	{
+			createCursorStyle(cursorX, cursorY, cursorWidth, cursorHeight, mx, my, mw, mh, z); // TODO zIndex
+			if (addUpdate) cursorProgram.addElement(cursorElement);
+		}
+		else {
+			cursorElement.setMasked(this, cursorX, cursorY, cursorWidth, cursorHeight, mx, my, mw, mh, z); // TODO zIndex
+			if (addUpdate) cursorProgram.update(cursorElement);
+		}
 	}
 	
-	override function updateVisibleStyle()
+	override inline function updateVisibleStyle()
 	{
-		if (line == null) return;
-		
-		fontProgram.lineSetStyle(line, fontStyle);		
-		if (isVisible) fontProgram.updateLine(line);
-		
-		if (backgroundStyleElement != null) {
-			backgroundStyleElement.setStyle(backgroundStyle);
-			if (isVisible && backgroundIsVisible) backgroundStyleProgram.update(backgroundStyleElement);
-		}
-		if (selectionStyleElement != null) {
-			selectionStyleElement.setStyle(selectionStyle);		
-			if (isVisible && selectionIsVisible) selectionStyleProgram.update(selectionStyleElement);
-		}
-		// TODO: cursor
-	}
-		
-	override function updateVisibleLayout():Void
-	{
-		// CHECK
-		if (line == null) return;		
-		//if (line != null) updateLineLayout();		
-		updateLineLayout(false);
-		
-		//if (backgroundStyle != null) {
-			//backgroundStyleElement.setLayout(this);
-			//if (isVisible && backgroundIsVisible) backgroundStyleProgram.update(backgroundStyleElement);
-		//}
-	}
-		
-	override function updateVisible():Void // updates style and layout
-	{
-		// CHECK
-		if (line == null) return;		
-		//fontProgram.lineSetStyle(line, fontStyle, isVisible);
-		
-		//if (selectionStyleElement != null) selectionStyleElement.setStyle(selectionStyle);		
-		// TODO: cursor
+		if (line != null)
+		{		
+			fontProgram.lineSetStyle(line, fontStyle);		
+			if (isVisible) fontProgram.updateLine(line);
 			
-		// TODO: use _setLineMetric for new line.height also if the fully style is changed!
-		updateLineLayout(true);
-
-		//if (backgroundStyleElement != null) {
-			//backgroundStyleElement.setStyle(backgroundStyle);
-			//backgroundStyleElement.setLayout(this);
-			//if (isVisible && backgroundIsVisible) backgroundStyleProgram.update(backgroundStyleElement);
-		//}
+			if (backgroundElement != null) {
+				backgroundElement.setStyle(backgroundStyle);
+				if (isVisible && backgroundIsVisible) backgroundProgram.update(backgroundElement);
+			}
+			if (selectionElement != null) {
+				selectionElement.setStyle(selectionStyle);		
+				if (isVisible && selectionIsVisible) selectionProgram.update(selectionElement);
+			}
+			if (cursorElement != null) {
+				cursorElement.setStyle(cursorStyle);		
+				if (isVisible && cursorIsVisible) cursorProgram.update(cursorElement);
+			}
+		}
+	}
+		
+	override inline function updateVisibleLayout():Void
+	{
+		if (line != null) updateLineLayout(false);
+	}
+		
+	override inline function updateVisible():Void // updates style and layout
+	{
+		if (line != null) updateLineLayout(true);
 	}
 		
 	inline function updateLineLayout(updateStyle:Bool):Void
@@ -433,17 +481,19 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		fontProgram.setMask(maskElement, _x, _y, _width, _height, isVisible);
 		#end
 		
-		if (selectionStyleElement != null) {
-			if (updateStyle) selectionStyleElement.setStyle(selectionStyle);
+		if (backgroundElement != null) {
+			if (updateStyle) backgroundElement.setStyle(backgroundStyle);
+			backgroundElement.setLayout(this);
+			if (isVisible && backgroundIsVisible) backgroundProgram.update(backgroundElement);
+		}
+		if (selectionElement != null) {
+			if (updateStyle) selectionElement.setStyle(selectionStyle);
 			setSelection(_x, _y, _width, _height, y_offset + topSpace, (isVisible && selectionIsVisible));
 		}
-		if (backgroundStyleElement != null) {
-			if (updateStyle) backgroundStyleElement.setStyle(backgroundStyle);
-			backgroundStyleElement.setLayout(this);
-			if (isVisible && backgroundIsVisible) backgroundStyleProgram.update(backgroundStyleElement);
+		if (cursorElement != null) {
+			if (updateStyle) cursorElement.setStyle(cursorStyle);
+			setCursor(_x, _y, _width, _height, y_offset + topSpace, (isVisible && cursorIsVisible));
 		}
-
-		// TODO:if (cursorStyleElement != null) setCursor(_x, _y, _width, _height, y_offset + topSpace, (isVisible && selectionIsVisible));
 	}
 		
 	override inline function onAddVisibleToDisplay()
@@ -452,24 +502,14 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 		if (line != null) {
 			#if (!peoteui_no_textmasking && !peoteui_no_masking)
 			fontProgram.addMask(maskElement);
-			#end
-			
-			if (backgroundIsVisible && backgroundStyleElement != null) backgroundStyleProgram.addElement(backgroundStyleElement);
-			//if (backgroundStyleElement != null) { if (backgroundIsVisible) backgroundStyleProgram.addElement(backgroundStyleElement); }
-			//else if (backgroundStyle != null) createBackgroundStyle(backgroundIsVisible);
-			
-			if (selectionIsVisible && selectionStyleElement != null) selectionStyleProgram.addElement(selectionStyleElement);
-			//if (selectionStyleElement != null) { if (selectionIsVisible) selectionStyleProgram.addElement(selectionStyleElement); }
-			//else if (selectionStyle != null) createSelectionMasked(selectionIsVisible);			
-			
-// TODO		if (cursorIsVisible && cursorStyleElement != null) fontProgram.addBackground(cursorElement);
-
-			fontProgram.addLine(line);			
+			#end			
+			if (backgroundIsVisible && backgroundElement != null) backgroundProgram.addElement(backgroundElement);			
+			if (selectionIsVisible && selectionElement != null) selectionProgram.addElement(selectionElement);			
+			if (cursorIsVisible && cursorElement != null) cursorProgram.addElement(cursorElement);
+			fontProgram.addLine(line);
 		} 
-		else
-		{
-			createFontStyle();
-			
+		else {
+			createFontStyle();			
 			// TODO fontStyle.zIndex;
 /*			${switch (glyphStyleHasField.local_zIndex) {
 				case true: macro {
@@ -512,23 +552,20 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 			
 			if (backgroundStyle != null) createBackgroundStyle(backgroundIsVisible);
 			if (selectionStyle != null) createSelection(_x, _y, _width, _height, y_offset + topSpace, selectionIsVisible);
-			// TODO  createCursor(x, y, width, height, y_offset, true); // true -> create new cursor				
+			if (cursorStyle != null) createCursor(_x, _y, _width, _height, y_offset + topSpace, cursorIsVisible);
 		}		
 	}
 	
 	override inline function onRemoveVisibleFromDisplay()
 	{
 		//trace("onRemoveVisibleFromDisplay()");
-		
-		//if (isVisible && line != null) {
 		fontProgram.removeLine(line);
 		#if (!peoteui_no_textmasking && !peoteui_no_masking)
 		fontProgram.removeMask(maskElement);
 		#end		
-		// remove background, selection and cursor styles
-		if (backgroundIsVisible && backgroundStyleElement != null) backgroundStyleProgram.removeElement(backgroundStyleElement);
-		if (selectionIsVisible && selectionStyleElement != null) selectionStyleProgram.removeElement(selectionStyleElement);
-		// TODO: cursor
+		if (backgroundIsVisible && backgroundElement != null) backgroundProgram.removeElement(backgroundElement);
+		if (selectionIsVisible && selectionElement != null) selectionProgram.removeElement(selectionElement);
+		if (cursorIsVisible && cursorElement != null) cursorProgram.removeElement(cursorElement);
 	}
 
 	
@@ -548,34 +585,47 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	{
 		var stylePos = uiDisplay.usedStyleID.indexOf( backgroundStyle.getID() | (backgroundStyle.id << 16) );
 		if (stylePos < 0) {
-			if (uiDisplay.autoAddStyles) uiDisplay.autoAddStyleProgram(cast backgroundStyleProgram = backgroundStyle.createStyleProgram(), backgroundStyle.getID() | (backgroundStyle.id << 16) );
+			if (uiDisplay.autoAddStyles) uiDisplay.autoAddStyleProgram(cast backgroundProgram = backgroundStyle.createStyleProgram(), backgroundStyle.getID() | (backgroundStyle.id << 16) );
 			else throw('Error by creating background for new InteractiveTextLine. The style "'+Type.getClassName(Type.getClass(backgroundStyle))+'" id='+backgroundStyle.id+' is not inside the availableStyle list of UIDisplay.');
 		} else {
-			backgroundStyleProgram = cast uiDisplay.usedStyleProgram[stylePos];
-			if (backgroundStyleProgram == null) uiDisplay.addProgramAtStylePos(cast backgroundStyleProgram = backgroundStyle.createStyleProgram(), stylePos);				
+			backgroundProgram = cast uiDisplay.usedStyleProgram[stylePos];
+			if (backgroundProgram == null) uiDisplay.addProgramAtStylePos(cast backgroundProgram = backgroundStyle.createStyleProgram(), stylePos);				
 		}
-		backgroundStyleElement = backgroundStyleProgram.createElement(this, backgroundStyle);
-		if (addUpdate) backgroundStyleProgram.addElement(backgroundStyleElement);
+		backgroundElement = backgroundProgram.createElement(this, backgroundStyle);
+		if (addUpdate) backgroundProgram.addElement(backgroundElement);
 	}
 	
 	inline function createSelectionStyle(x:Int, y:Int, w:Int, h:Int, mx:Int, my:Int, mw:Int, mh:Int, z:Int)
 	{	trace("createSelectionStyle");
 		var stylePos = uiDisplay.usedStyleID.indexOf( selectionStyle.getID() | (selectionStyle.id << 16) );
 		if (stylePos < 0) {
-			if (uiDisplay.autoAddStyles) uiDisplay.autoAddStyleProgram(cast selectionStyleProgram = selectionStyle.createStyleProgram(), selectionStyle.getID() | (selectionStyle.id << 16) );
+			if (uiDisplay.autoAddStyles) uiDisplay.autoAddStyleProgram(cast selectionProgram = selectionStyle.createStyleProgram(), selectionStyle.getID() | (selectionStyle.id << 16) );
 			else throw('Error by creating selection for new InteractiveTextLine. The style "'+Type.getClassName(Type.getClass(selectionStyle))+'" id='+selectionStyle.id+' is not inside the availableStyle list of UIDisplay.');
 		} else {
-			selectionStyleProgram = cast uiDisplay.usedStyleProgram[stylePos];
-			if (selectionStyleProgram == null) uiDisplay.addProgramAtStylePos(cast selectionStyleProgram = selectionStyle.createStyleProgram(), stylePos);				
+			selectionProgram = cast uiDisplay.usedStyleProgram[stylePos];
+			if (selectionProgram == null) uiDisplay.addProgramAtStylePos(cast selectionProgram = selectionStyle.createStyleProgram(), stylePos);				
 		}
-		selectionStyleElement = selectionStyleProgram.createElementAt(this, x, y, w, h, mx, my, mw, mh, z, selectionStyle);
+		selectionElement = selectionProgram.createElementAt(this, x, y, w, h, mx, my, mw, mh, z, selectionStyle);
+	}
+	
+	inline function createCursorStyle(x:Int, y:Int, w:Int, h:Int, mx:Int, my:Int, mw:Int, mh:Int, z:Int)
+	{	trace("createSelectionStyle");
+		var stylePos = uiDisplay.usedStyleID.indexOf( cursorStyle.getID() | (cursorStyle.id << 16) );
+		if (stylePos < 0) {
+			if (uiDisplay.autoAddStyles) uiDisplay.autoAddStyleProgram(cast cursorProgram = cursorStyle.createStyleProgram(), cursorStyle.getID() | (cursorStyle.id << 16) );
+			else throw('Error by creating cursor for new InteractiveTextLine. The style "'+Type.getClassName(Type.getClass(cursorStyle))+'" id='+cursorStyle.id+' is not inside the availableStyle list of UIDisplay.');
+		} else {
+			cursorProgram = cast uiDisplay.usedStyleProgram[stylePos];
+			if (cursorProgram == null) uiDisplay.addProgramAtStylePos(cast cursorProgram = cursorStyle.createStyleProgram(), stylePos);				
+		}
+		cursorElement = cursorProgram.createElementAt(this, x, y, w, h, mx, my, mw, mh, z, cursorStyle);
 	}
 	
 	
 	
 	// ----------------------- change the text  -----------------------
 	
-	public inline function setText(text:String, fontStyle:Null<$styleType> = null, forceAutoWidth:Null<Bool> = null, forceAutoHeight:Null<Bool> = null, autoUpdate = false)
+	public function setText(text:String, fontStyle:Null<$styleType> = null, forceAutoWidth:Null<Bool> = null, forceAutoHeight:Null<Bool> = null, autoUpdate = false)
 	{
 		if (fontStyle != null) this.fontStyle = fontStyle;
 		
@@ -628,34 +678,6 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 	
 	// ----------- Cursor  -----------
 	
-	public var cursor(default,set):Int = 0;
-	inline function set_cursor(pos:Int):Int {		
-		if (pos < 0) cursor = 0;
-		else {
-			if (line != null) {
-				if (pos > line.length) cursor = line.length;
-				else cursor = pos;
-			}
-			else {
-				if (pos > text.length) cursor = text.length;
-				else cursor = pos;
-			}
-		}		
-		if (line != null) 
-		{	
-			#if (!peoteui_no_textmasking && !peoteui_no_masking)
-// TODO
-/*
-			if (masked) setCreateCursor(x+maskX, y+maskY, maskWidth, maskHeight, getAlignedYOffset(), (cursorElement == null) ? true : false);
-			else setCreateCursor(x, y, width, height, getAlignedYOffset(), (cursorElement == null) ? true : false);
-*/
-			#else
-			//setCreateCursor(x, y, width, height, getAlignedYOffset(), (cursorElement == null) ? true : false);
-			#end
-		}
-		return cursor;
-	}
-		
 		
 	inline function cursorLeft(isShift:Bool, isCtrl:Bool)
 	{

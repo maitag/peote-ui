@@ -137,9 +137,9 @@ class TestStyles extends Application
 		var textLine = new InteractiveTextLine<FontStylePacked>(240, 25, "Hello World", fontPacked, fontStylePacked, textStyle);
 		textLine.onPointerOver = (_, _)-> trace("on textLine over");
 		textLine.onPointerOut  = (_, _)-> trace("on textLine out");
-		textLine.onPointerClick  = (_, e:PointerEvent)-> {
+		textLine.onPointerClick  = (t, e:PointerEvent)-> {
 			trace("on textLine click", e);
-			// TODO: set cursor
+			t.setInputFocus(e);
 		}
 		textLine.maskWidth = 100;
 		textLine.maskHeight = 20;
