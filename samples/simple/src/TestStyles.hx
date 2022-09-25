@@ -135,11 +135,20 @@ class TestStyles extends Application
 		}
 
 		var textLine = new InteractiveTextLine<FontStylePacked>(240, 25, "Hello World", fontPacked, fontStylePacked, textStyle);
-		textLine.onPointerOver = (_, _)-> trace("on textLine over");
-		textLine.onPointerOut  = (_, _)-> trace("on textLine out");
+		textLine.onPointerOver = (_, _)-> trace("textLine onPointerOver");
+		textLine.onPointerOut  = (_, _)-> trace("textLine onPointerOut");
 		textLine.onPointerClick  = (t, e:PointerEvent)-> {
-			trace("on textLine click", e);
+			trace("textLine onPointerClick", e);
 			t.setInputFocus(e);
+		}
+		textLine.onPointerDown = function(t, e:PointerEvent) {
+			trace("textLine onPointerDown");
+			t.setInputFocus(e); // alternatively: uiDisplay.setInputFocus(t);
+			t.startSelection(e);
+		}
+		textLine.onPointerUp = function(t, e:PointerEvent) {
+			trace("textLine onPointerUp");
+			t.stopSelection(e);
 		}
 		textLine.maskWidth = 100;
 		textLine.maskHeight = 20;
@@ -187,7 +196,8 @@ class TestStyles extends Application
 		buttonY += 12;
 		button(
 			"select 0-8",  ()-> textLine.select(0,8),
-		    "select 4-10", ()-> textLine.select(4,10)
+		    "4-10", ()-> textLine.select(4,10),
+		    "5-2", ()-> textLine.select(5,2)
 		);
 		button(
 			"selectionShow/Hide", ()-> if (textLine.selectionIsVisible) textLine.selectionHide() else textLine.selectionShow(),
@@ -246,9 +256,9 @@ class TestStyles extends Application
 			"autoWidth", ()-> { textLine.autoWidth = true; textLine.updateLayout(); }
 		);
 		button(
-			"left"  , ()-> { textLine.hAlign = HAlign.LEFT;   textLine.updateLayout(); },
-			"center", ()-> { textLine.hAlign = HAlign.CENTER; textLine.updateLayout(); },
-			"right" , ()-> { textLine.hAlign = HAlign.RIGHT;  textLine.updateLayout(); }
+			"left"  , ()-> { textLine.xOffset = 0; textLine.hAlign = HAlign.LEFT;   textLine.updateLayout(); },
+			"center", ()-> { textLine.xOffset = 0; textLine.hAlign = HAlign.CENTER; textLine.updateLayout(); },
+			"right" , ()-> { textLine.xOffset = 0; textLine.hAlign = HAlign.RIGHT;  textLine.updateLayout(); }
 		);		
 		button(
 			"leftSpace++", ()-> { textLine.leftSpace++; textLine.updateLayout(); },
@@ -267,9 +277,9 @@ class TestStyles extends Application
 			"autoHeight", ()-> { textLine.autoHeight = true; textLine.updateLayout(); }
 		);
 		button(
-			"top"  ,   ()-> { textLine.vAlign = VAlign.TOP;   textLine.updateLayout(); },
-			"center",  ()-> { textLine.vAlign = VAlign.CENTER; textLine.updateLayout(); },
-			"bottom" , ()-> { textLine.vAlign = VAlign.BOTTOM;  textLine.updateLayout(); }
+			"top"  ,   ()-> { textLine.yOffset = 0; textLine.vAlign = VAlign.TOP;   textLine.updateLayout(); },
+			"center",  ()-> { textLine.yOffset = 0; textLine.vAlign = VAlign.CENTER; textLine.updateLayout(); },
+			"bottom" , ()-> { textLine.yOffset = 0; textLine.vAlign = VAlign.BOTTOM;  textLine.updateLayout(); }
 		);		
 		button(
 			"topSpace++", ()-> { textLine.topSpace++; textLine.updateLayout(); },

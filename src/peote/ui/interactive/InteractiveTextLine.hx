@@ -302,12 +302,12 @@ implements peote.layout.ILayoutElement
 		}
 	}
 	
-	inline function getAlignedXOffset():Float
+	inline function getAlignedXOffset(_xOffset:Float):Float
 	{
 		return switch (hAlign) {
-			case peote.ui.util.HAlign.CENTER: (width - leftSpace - rightSpace - line.textSize)/2 + xOffset;
-			case peote.ui.util.HAlign.RIGHT: width - leftSpace - rightSpace - line.textSize + xOffset;
-			default: xOffset;
+			case peote.ui.util.HAlign.CENTER: (width - leftSpace - rightSpace - Math.floor(line.textSize))/2 + _xOffset;
+			case peote.ui.util.HAlign.RIGHT: width - leftSpace - rightSpace - Math.floor(line.textSize) + _xOffset;
+			default: _xOffset;
 		}
 	}
 	
@@ -458,7 +458,7 @@ implements peote.layout.ILayoutElement
 		var _height = height - topSpace - bottomSpace;
 		
 		if (updateStyle) fontProgram.lineSetStyle(line, fontStyle, isVisible);
-		fontProgram.lineSetPositionSize(line, _x, _y + y_offset, _width, getAlignedXOffset(), isVisible);
+		fontProgram.lineSetPositionSize(line, _x, _y + y_offset, _width, getAlignedXOffset(xOffset), isVisible);
 
 		if (isVisible) {
 			// TODO: optimize setting z-index in depend of styletyp and better allways adding fontprograms at end of uiDisplay (onAddVisibleToDisplay)
@@ -540,7 +540,7 @@ implements peote.layout.ILayoutElement
 			var _width  = width  - leftSpace - rightSpace;
 			var _height = height - topSpace - bottomSpace;
 			
-			fontProgram.lineSetPositionSize(line, _x, _y + y_offset, _width, getAlignedXOffset(), isVisible);
+			fontProgram.lineSetPositionSize(line, _x, _y + y_offset, _width, getAlignedXOffset(xOffset), isVisible);
 			fontProgram.updateLine(line);
 			
 			#if (!peoteui_no_textmasking && !peoteui_no_masking)
@@ -699,20 +699,43 @@ implements peote.layout.ILayoutElement
 	}
 	
 	// events
+	var selectStartFrom:Int = 0;
+	var xOffsetAtSelectStart:Float = 0;
 	function onSelectStart(e:peote.ui.event.PointerEvent):Void {
-		trace("selectStart", e.x);
-		cursor = getCharAtPosition(uiDisplay.localX(e.x));
-		selectionIsVisible = true;
+		trace("selectStart", xOffset);
+		cursor = getCharAtPosition(e.x);
+		selectStartFrom = selectTo = cursor;
+		xOffsetAtSelectStart = xOffset;
+		selectionHide();
 	}
 	
 	function onSelect(e:peote.ui.event.PointerEvent):Void {
-		trace("select", localX(e.x));
-		if (localX(e.x) < 0) trace("scroll left");
-		if (localX(e.x) > width) trace("scroll right");
+		if (localX(e.x) < leftSpace) {
+			if (localX(e.x) < getAlignedXOffset(leftSpace) + xOffsetAtSelectStart) {
+				xOffset = Math.max(- getAlignedXOffset(0), xOffsetAtSelectStart);
+			}
+			else xOffset = leftSpace - localX(e.x) + xOffsetAtSelectStart;
+			updateLineLayout(false); // OPTIMIZING: not for the background!
+		}
+		else if (localX(e.x) > width - rightSpace) {
+			if ( localX(e.x) > getAlignedXOffset(line.textSize + leftSpace  + xOffsetAtSelectStart ) ) {
+				xOffset = Math.min(-getAlignedXOffset(Math.floor(line.textSize) - width + leftSpace + rightSpace), xOffsetAtSelectStart);
+			} 
+			else xOffset = width - localX(e.x) - rightSpace  + xOffsetAtSelectStart;
+			updateLineLayout(false); // OPTIMIZING: not for the background!
+		}
+		else if (xOffset != xOffsetAtSelectStart) {
+			xOffset = xOffsetAtSelectStart;
+			updateLineLayout(false); // OPTIMIZING: not for the background!
+		}
+		cursor = getCharAtPosition(e.x);
+		select( selectStartFrom, cursor );
+		// TODO: detect the char left right while xOffset changes at the border
+		//       OR allways change xScroll to make cursor fully visible!
 	}
 
 	function onSelectStop(e:peote.ui.event.PointerEvent = null):Void {
-		trace("selectStop", (e != null) ? e.x : "");
+		trace("selectStop", (e != null) ? e.x : "", xOffset);
 	}
 	
 	
