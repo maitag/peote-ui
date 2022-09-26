@@ -14,8 +14,8 @@ import peote.view.Color;
 
 import peote.text.Font;
 
-import peote.ui.UIDisplay;
-import peote.ui.interactive.InteractiveTextLine;
+import peote.ui.PeoteUIDisplay;
+import peote.ui.interactive.UITextLine;
 import peote.ui.event.PointerEvent;
 //import peote.ui.event.WheelEvent;
 import peote.ui.util.HAlign;
@@ -62,7 +62,7 @@ class MyFontStyle implements FontStyle implements StyleID
 class SimpleText extends Application
 {
 	var peoteView:PeoteView;
-	var uiDisplay:UIDisplay;
+	var uiDisplay:PeoteUIDisplay;
 	
 	override function onWindowCreate():Void
 	{
@@ -101,7 +101,7 @@ class SimpleText extends Application
 		}
 		
 		peoteView = new PeoteView(window);
-		uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY1);
+		uiDisplay = new PeoteUIDisplay(0, 0, window.width, window.height, Color.GREY1);
 		//uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY1, [simpleStyle, fontStyle]);
 		peoteView.addDisplay(uiDisplay);		
 		
@@ -110,14 +110,14 @@ class SimpleText extends Application
 		var x:Int = 10; 
 		var y:Int = -yOffset + 10;
 				
-		var textLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, "hello", font, fontStyle, textStyle);
+		var textLine = new UITextLine<MyFontStyle>(x, y+=yOffset, "hello", font, fontStyle, textStyle);
 		// alternatively it can also be:
-		//var textLine = font.createInteractiveTextLine(x, y+=yOffset, "hello", fontStyle, Color.BLACK);
+		//var textLine = font.createUITextLine(x, y+=yOffset, "hello", fontStyle, Color.BLACK);
 		addOverOut(textLine);
 		//textLine.height = 50;
 		//textLine.update();
 		
-		var textLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {width:50, xOffset:10, yOffset:10}, "hello", font, textStyle);
+		var textLine = new UITextLine<MyFontStyle>(x, y+=yOffset, {width:50, xOffset:10, yOffset:10}, "hello", font, textStyle);
 		var timer = new Timer(200);
 		timer.run = function() {
 			textLine.xOffset--;
@@ -127,22 +127,22 @@ class SimpleText extends Application
 		}
 		addOverOut(textLine);
 			
-		var textLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.RIGHT}, "hello", font, textStyle);
+		var textLine = new UITextLine<MyFontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.RIGHT}, "hello", font, textStyle);
 		addOverOut(textLine);
 			
-		var textLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {width:150, hAlign:HAlign.RIGHT}, "hello", font, textStyle);
+		var textLine = new UITextLine<MyFontStyle>(x, y+=yOffset, {width:150, hAlign:HAlign.RIGHT}, "hello", font, textStyle);
 		addOverOut(textLine);
 			
-		var textLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.CENTER}, "hello", font, textStyle);
+		var textLine = new UITextLine<MyFontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.CENTER}, "hello", font, textStyle);
 		addOverOut(textLine);
 			
-		var textLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {width:150, hAlign:HAlign.CENTER}, "hello", font, textStyle);
+		var textLine = new UITextLine<MyFontStyle>(x, y+=yOffset, {width:150, hAlign:HAlign.CENTER}, "hello", font, textStyle);
 		addOverOut(textLine);
 			
-		var textLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {height:50, vAlign:VAlign.BOTTOM}, "hello", font, textStyle);
+		var textLine = new UITextLine<MyFontStyle>(x, y+=yOffset, {height:50, vAlign:VAlign.BOTTOM}, "hello", font, textStyle);
 		addOverOut(textLine);
 			
-		var textLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {height:20}, "hello", font, textStyle);
+		var textLine = new UITextLine<MyFontStyle>(x, y+=yOffset, {height:20}, "hello", font, textStyle);
 		// all changings also should work if is hidden or not added!
 		addOverOut(textLine);
 		//textLine.hide();
@@ -240,12 +240,12 @@ class SimpleText extends Application
 		//fontStyleInput.height = 30;
 		//fontStyleInput.width = 20;
 		
-		var inputLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, "input", font, fontStyleInput, textStyle);
-		//var inputLine = font.createInteractiveTextLine(x, y+=yOffset, "input", fontStyleInput, Color.BLACK);
+		var inputLine = new UITextLine<MyFontStyle>(x, y+=yOffset, "input", font, fontStyleInput, textStyle);
+		//var inputLine = font.createUITextLine(x, y+=yOffset, "input", fontStyleInput, Color.BLACK);
 		inputLine.cursor = 3;
 		addInput(inputLine);
 		
-		var inputLine = new InteractiveTextLine<MyFontStyle>(x, y += yOffset, {width:50,height:20, xOffset:10, yOffset:15}, "input", font, fontStyleInput, textStyle);
+		var inputLine = new UITextLine<MyFontStyle>(x, y += yOffset, {width:50,height:20, xOffset:10, yOffset:15}, "input", font, fontStyleInput, textStyle);
 		//inputLine.cursor = 3;
 		inputLine.cursorShow();
 		//inputLine.select(0,3);
@@ -263,24 +263,24 @@ class SimpleText extends Application
 			if (inputLine.xOffset == -35) timer.stop();
 		}
 		
-		var inputLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.RIGHT}, "input", font, fontStyleInput, textStyle);
+		var inputLine = new UITextLine<MyFontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.RIGHT}, "input", font, fontStyleInput, textStyle);
 		addInput(inputLine);
 		
-		var inputLine = new InteractiveTextLine<MyFontStyle>(x, y += yOffset, {width:150, hAlign:HAlign.RIGHT}, "input", font, fontStyleInput, textStyle);
+		var inputLine = new UITextLine<MyFontStyle>(x, y += yOffset, {width:150, hAlign:HAlign.RIGHT}, "input", font, fontStyleInput, textStyle);
 		inputLine.select(1, 2);
 		//inputLine.cursorShow();
 		addInput(inputLine);
 			
-		var inputLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.CENTER}, "input", font, fontStyleInput, textStyle);
+		var inputLine = new UITextLine<MyFontStyle>(x, y+=yOffset, {width:50, hAlign:HAlign.CENTER}, "input", font, fontStyleInput, textStyle);
 		addInput(inputLine);
 			
-		var inputLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {width:150, height:60, hAlign:HAlign.CENTER, vAlign:VAlign.TOP}, "input", font, fontStyleInput, textStyle);
+		var inputLine = new UITextLine<MyFontStyle>(x, y+=yOffset, {width:150, height:60, hAlign:HAlign.CENTER, vAlign:VAlign.TOP}, "input", font, fontStyleInput, textStyle);
 		addInput(inputLine);
 			
-		var inputLine = new InteractiveTextLine<MyFontStyle>(x, y+=yOffset, {height:60}, "input", font, fontStyleInput, textStyle);
+		var inputLine = new UITextLine<MyFontStyle>(x, y+=yOffset, {height:60}, "input", font, fontStyleInput, textStyle);
 		addInput(inputLine);
 			
-		var inputLine = new InteractiveTextLine<MyFontStyle>(x, y += yOffset, {width:150, height:60, vAlign:VAlign.BOTTOM}, "input", font,
+		var inputLine = new UITextLine<MyFontStyle>(x, y += yOffset, {width:150, height:60, vAlign:VAlign.BOTTOM}, "input", font,
 			new MyFontStyle(), {backgroundStyle:new RoundBorderStyle()}); // new MyFontStyle here and new TextLineStyle to not affect the other inputLines
 		inputLine.backgroundStyle.color = Color.BLUE;
 		addInput(inputLine);
@@ -306,41 +306,41 @@ class SimpleText extends Application
 		#end
 		
 		// TODO: set what events to register (mouse, touch, keyboard ...)
-		UIDisplay.registerEvents(window);
+		PeoteUIDisplay.registerEvents(window);
 
 	}
 	
-	public function addOverOut(textLine:InteractiveTextLine<MyFontStyle>)
+	public function addOverOut(textLine:UITextLine<MyFontStyle>)
 	{
-		textLine.onPointerOver = function(t:InteractiveTextLine<MyFontStyle>, e:PointerEvent) {
+		textLine.onPointerOver = function(t:UITextLine<MyFontStyle>, e:PointerEvent) {
 			//trace("onPointerOver");
 			t.fontStyle.color = Color.YELLOW;
 			t.updateStyle();
 		}
-		textLine.onPointerOut = function(t:InteractiveTextLine<MyFontStyle>, e:PointerEvent) {
+		textLine.onPointerOut = function(t:UITextLine<MyFontStyle>, e:PointerEvent) {
 			//trace("onPointerOut");
 			t.fontStyle.color = Color.GREEN;
 			t.updateStyle();
 		}
-		textLine.onPointerDown = function(t:InteractiveTextLine<MyFontStyle>, e:PointerEvent) {
+		textLine.onPointerDown = function(t:UITextLine<MyFontStyle>, e:PointerEvent) {
 			//trace("onPointerDown");
 			t.startSelection(e);
 		}
-		textLine.onPointerUp = function(t:InteractiveTextLine<MyFontStyle>, e:PointerEvent) {
+		textLine.onPointerUp = function(t:UITextLine<MyFontStyle>, e:PointerEvent) {
 			//trace("onPointerUp");
 			t.stopSelection(e);
 		}
 		uiDisplay.add(textLine);
 	}
 	
-	public function addInput(textLine:InteractiveTextLine<MyFontStyle>) 
+	public function addInput(textLine:UITextLine<MyFontStyle>) 
 	{
-		textLine.onPointerDown = function(t:InteractiveTextLine<MyFontStyle>, e:PointerEvent) {
+		textLine.onPointerDown = function(t:UITextLine<MyFontStyle>, e:PointerEvent) {
 			//trace("onPointerDown");
 			t.setInputFocus(e); // alternatively: uiDisplay.setInputFocus(t);
 			t.startSelection(e);
 		}
-		textLine.onPointerUp = function(t:InteractiveTextLine<MyFontStyle>, e:PointerEvent) {
+		textLine.onPointerUp = function(t:UITextLine<MyFontStyle>, e:PointerEvent) {
 			//trace("onPointerUp");
 			t.stopSelection(e);
 		}

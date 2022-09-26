@@ -8,10 +8,10 @@ import peote.ui.style.interfaces.StyleElement;
 import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
 
-private typedef IAElementEventParams = InteractiveElement->PointerEvent->Void;
-private typedef IAElementWheelEventParams = InteractiveElement->WheelEvent->Void;
+private typedef UIElementEventParams = UIElement->PointerEvent->Void;
+private typedef UIElementWheelEventParams = UIElement->WheelEvent->Void;
 
-class InteractiveElement extends Interactive
+class UIElement extends Interactive
 #if peote_layout
 implements peote.layout.ILayoutElement
 #end
@@ -123,25 +123,25 @@ implements peote.layout.ILayoutElement
 	
 	// ---------- Events --------------------
 	
-	public var onPointerOver(never, set):IAElementEventParams;
-	inline function set_onPointerOver(f:IAElementEventParams):IAElementEventParams return setOnPointerOver(this, f);
+	public var onPointerOver(never, set):UIElementEventParams;
+	inline function set_onPointerOver(f:UIElementEventParams):UIElementEventParams return setOnPointerOver(this, f);
 	
-	public var onPointerOut(never, set):IAElementEventParams;
-	inline function set_onPointerOut(f:IAElementEventParams):IAElementEventParams return setOnPointerOut(this, f);
+	public var onPointerOut(never, set):UIElementEventParams;
+	inline function set_onPointerOut(f:UIElementEventParams):UIElementEventParams return setOnPointerOut(this, f);
 	
-	public var onPointerMove(never, set):IAElementEventParams;
-	inline function set_onPointerMove(f:IAElementEventParams):IAElementEventParams return setOnPointerMove(this, f);
+	public var onPointerMove(never, set):UIElementEventParams;
+	inline function set_onPointerMove(f:UIElementEventParams):UIElementEventParams return setOnPointerMove(this, f);
 	
-	public var onPointerDown(never, set):IAElementEventParams;
-	inline function set_onPointerDown(f:IAElementEventParams):IAElementEventParams return setOnPointerDown(this, f);
+	public var onPointerDown(never, set):UIElementEventParams;
+	inline function set_onPointerDown(f:UIElementEventParams):UIElementEventParams return setOnPointerDown(this, f);
 	
-	public var onPointerUp(never, set):IAElementEventParams;
-	inline function set_onPointerUp(f:IAElementEventParams):IAElementEventParams return setOnPointerUp(this, f);
+	public var onPointerUp(never, set):UIElementEventParams;
+	inline function set_onPointerUp(f:UIElementEventParams):UIElementEventParams return setOnPointerUp(this, f);
 	
-	public var onPointerClick(never, set):IAElementEventParams;
-	inline function set_onPointerClick(f:IAElementEventParams):IAElementEventParams return setOnPointerClick(this, f);
+	public var onPointerClick(never, set):UIElementEventParams;
+	inline function set_onPointerClick(f:UIElementEventParams):UIElementEventParams return setOnPointerClick(this, f);
 		
-	public var onMouseWheel(default, set):IAElementWheelEventParams;
-	inline function set_onMouseWheel(f:IAElementWheelEventParams):IAElementWheelEventParams  return setOnMouseWheel(this, f);
+	public var onMouseWheel(default, set):UIElementWheelEventParams;
+	inline function set_onMouseWheel(f:UIElementWheelEventParams):UIElementWheelEventParams  return setOnMouseWheel(this, f);
 	
 }

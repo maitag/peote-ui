@@ -8,8 +8,8 @@ import lime.ui.Window;
 import peote.view.PeoteView;
 import peote.view.Color;
 
-import peote.ui.UIDisplay;
-import peote.ui.interactive.InteractiveElement;
+import peote.ui.PeoteUIDisplay;
+import peote.ui.interactive.UIElement;
 
 import peote.ui.style.SimpleStyle;
 import peote.ui.style.RoundBorderStyle;
@@ -21,7 +21,7 @@ import peote.ui.event.WheelEvent;
 class SimpleElements extends Application
 {
 	var peoteView:PeoteView;
-	var uiDisplay:UIDisplay;
+	var uiDisplay:PeoteUIDisplay;
 	
 	override function onWindowCreate():Void
 	{
@@ -41,14 +41,14 @@ class SimpleElements extends Application
 		var roundBorderStyle = new RoundBorderStyle();
 		var simpleStyle = new SimpleStyle();
 		
-		uiDisplay = new UIDisplay(20, 20, window.width-40, window.height-40, Color.GREY1);
+		uiDisplay = new PeoteUIDisplay(20, 20, window.width-40, window.height-40, Color.GREY1);
 		peoteView.addDisplay(uiDisplay);
 		
-		uiDisplay.onPointerOver  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplay onPointerOver",e); };
-		uiDisplay.onPointerOut   = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplay onPointerOut",e); };
-		uiDisplay.onPointerDown  = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplay onPointerDown",e); };
-		uiDisplay.onPointerUp    = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplay onPointerUp",e);  };
-		uiDisplay.onPointerClick = function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplay onPointerClick",e); };
+		uiDisplay.onPointerOver  = function(uiDisplay:PeoteUIDisplay, e:PointerEvent) { trace("uiDisplay onPointerOver",e); };
+		uiDisplay.onPointerOut   = function(uiDisplay:PeoteUIDisplay, e:PointerEvent) { trace("uiDisplay onPointerOut",e); };
+		uiDisplay.onPointerDown  = function(uiDisplay:PeoteUIDisplay, e:PointerEvent) { trace("uiDisplay onPointerDown",e); };
+		uiDisplay.onPointerUp    = function(uiDisplay:PeoteUIDisplay, e:PointerEvent) { trace("uiDisplay onPointerUp",e);  };
+		uiDisplay.onPointerClick = function(uiDisplay:PeoteUIDisplay, e:PointerEvent) { trace("uiDisplay onPointerClick",e); };
 		//uiDisplay.onPointerMove =  function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerMove",e); };
 		
 		
@@ -62,7 +62,7 @@ class SimpleElements extends Application
 		myStyle.borderRadius = 40.0;
 		
 		trace("NEW BUTTON -----");
-		var button1:InteractiveElement = new InteractiveElement(20, 0, 200, 100, myStyle);
+		var button1:UIElement = new UIElement(20, 0, 200, 100, myStyle);
 		//var button1:InteractiveElement = new InteractiveElement(20, 0, 200, 100, new SimpleStyle(Color.GREY1));
 		
 		button1.overOutEventsBubbleToDisplay = false;
@@ -79,7 +79,7 @@ class SimpleElements extends Application
 		myStyle2.borderSize = 2.0;
 
 		trace("NEW BUTTON -----");
-		var button2:InteractiveElement = new InteractiveElement(120, 60, 200, 100, myStyle2);
+		var button2:UIElement = new UIElement(120, 60, 200, 100, myStyle2);
 		uiDisplay.add(button2);
 		
 		// to bubble up/down and click-events up to button1
@@ -111,17 +111,17 @@ class SimpleElements extends Application
 		}
 		
 		//var background = new InteractiveElement(10, 140, 350, 60, new SimpleStyle(Color.GREEN));
-		var dragBackground = new InteractiveElement(10, 140, 350, 60, myStyle3);
+		var dragBackground = new UIElement(10, 140, 350, 60, myStyle3);
 		dragBackground.onPointerOver = onOver.bind(Color.GREY3);
 		dragBackground.onPointerOut = onOut.bind(Color.GREY2);
 		uiDisplay.add(dragBackground);
 		
 		//var dragger = new InteractiveElement(10, 140, 100, 60, 1, myStyle3);
 		//var dragger = new InteractiveElement(dragBackground.x, dragBackground.y, 100, 60, 1, myStyle2);
-		var dragger = new InteractiveElement(dragBackground.x, dragBackground.y, 100, 60, 1, new RoundBorderStyle(Color.BLUE,Color.GREY5));
+		var dragger = new UIElement(dragBackground.x, dragBackground.y, 100, 60, 1, new RoundBorderStyle(Color.BLUE,Color.GREY5));
 		//var dragger = new InteractiveElement(dragBackground.x, dragBackground.y, 100, 60, 1, new SimpleStyle(Color.GREEN));
 		
-		dragBackground.onMouseWheel = function(b:InteractiveElement, e:WheelEvent) {
+		dragBackground.onMouseWheel = function(b:UIElement, e:WheelEvent) {
 			trace("MouseWheel:", e);
 			dragger.x = Std.int(Math.max(dragBackground.x, Math.min(dragBackground.x+dragBackground.width-dragger.width, (dragger.x + e.deltaY * 20))));
 			dragger.updateLayout();
@@ -142,13 +142,13 @@ class SimpleElements extends Application
 		dragger.onPointerOut = onOut.bind(Color.BLUE);
 
 		dragger.setDragArea(10, 140, 350, 60); // x, y, width, height
-		dragger.onPointerDown = function(b:InteractiveElement, e:PointerEvent) {
+		dragger.onPointerDown = function(b:UIElement, e:PointerEvent) {
 			trace(" -----> onPointerDown", e);
 			b.startDragging(e);
 			b.style.borderColor = Color.YELLOW;
 			b.updateStyle();
 		}
-		dragger.onPointerUp = function(b:InteractiveElement, e:PointerEvent) {
+		dragger.onPointerUp = function(b:UIElement, e:PointerEvent) {
 			trace(" -----> onPointerUp", e);
 			b.style.borderColor = Color.GREY7;
 			b.updateStyle();
@@ -165,18 +165,18 @@ class SimpleElements extends Application
 		myStyle4.borderSize = 3.0;
 		myStyle4.borderRadius = 40.0;
 		
-		var draggAreaBG = new InteractiveElement(10, 200, 350, 350, myStyle4);
+		var draggAreaBG = new UIElement(10, 200, 350, 350, myStyle4);
 		uiDisplay.add(draggAreaBG);
 
-		var draggArea = new InteractiveElement(250, 250, 80, 80, myStyle4);
+		var draggArea = new UIElement(250, 250, 80, 80, myStyle4);
 		draggArea.setDragArea(10, 200, 350, 350); // x, y, width, height
-		draggArea.onPointerDown = function(b:InteractiveElement, e:PointerEvent) {
+		draggArea.onPointerDown = function(b:UIElement, e:PointerEvent) {
 			trace(" -----> onPointerDown", e);
 			b.startDragging(e);
 			b.style.color = Color.YELLOW;
 			b.updateStyle();
 		}
-		draggArea.onPointerUp = function(b:InteractiveElement, e:PointerEvent) {
+		draggArea.onPointerUp = function(b:UIElement, e:PointerEvent) {
 			trace(" -----> onPointerUp", e);
 			b.stopDragging(e);
 			b.style.color = Color.GREY1;
@@ -199,13 +199,13 @@ class SimpleElements extends Application
 		#end
 		
 		// TODO: set what events to register (mouse, touch, keyboard ...)
-		UIDisplay.registerEvents(window);
+		PeoteUIDisplay.registerEvents(window);
 			
 	}
 	
 	// ----------------- InteractiveElement Eventhandler ----------------------
 	
-	public inline function onOver(color:Color, uiElement:InteractiveElement, e:PointerEvent) {
+	public inline function onOver(color:Color, uiElement:UIElement, e:PointerEvent) {
 		trace(" -----> onPointerOver", e);
 		uiElement.style.color = color;
 		if ((uiElement.style is RoundBorderStyle)) {
@@ -214,7 +214,7 @@ class SimpleElements extends Application
 		uiElement.updateStyle();
 	}
 	
-	public inline function onOut(color:Color, uiElement:InteractiveElement, e:PointerEvent) {
+	public inline function onOut(color:Color, uiElement:UIElement, e:PointerEvent) {
 		trace(" -----> onPointerOut", e);
 		uiElement.style.color = color;
 		// alternatively you can check:
@@ -224,11 +224,11 @@ class SimpleElements extends Application
 		uiElement.updateStyle();
 	}
 	
-	public inline function onMove(uiElement:InteractiveElement, e:PointerEvent) {
+	public inline function onMove(uiElement:UIElement, e:PointerEvent) {
 		trace(" -----> onPointerMove", e, uiElement.localX(e.x), uiElement.localY(e.y));
 	}
 	
-	public inline function onDown(borderColor:Color, uiElement:InteractiveElement, e:PointerEvent) {
+	public inline function onDown(borderColor:Color, uiElement:UIElement, e:PointerEvent) {
 		trace(" -----> onPointerDown", e);
 		if ((uiElement.style is RoundBorderStyle)) {
 			uiElement.style.borderColor = borderColor;
@@ -237,7 +237,7 @@ class SimpleElements extends Application
 		}
 	}
 	
-	public inline function onUp(borderColor:Color, uiElement:InteractiveElement, e:PointerEvent) {
+	public inline function onUp(borderColor:Color, uiElement:UIElement, e:PointerEvent) {
 		trace(" -----> onPointerUp", e);
 		if ((uiElement.style is RoundBorderStyle)) {
 			uiElement.style.borderColor = borderColor;
@@ -245,7 +245,7 @@ class SimpleElements extends Application
 		}
 	}
 	
-	public inline function onClick(uiElement:InteractiveElement, e:PointerEvent) {
+	public inline function onClick(uiElement:UIElement, e:PointerEvent) {
 		trace(" -----> onPointerClick", e);
 		//uiElement.y += 30; uiElement.updateLayout();
 	}

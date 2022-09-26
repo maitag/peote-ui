@@ -5,7 +5,7 @@ import peote.view.Element;
 import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
 
-import peote.ui.UIDisplay;
+import peote.ui.PeoteUIDisplay;
 
 
 class Pickable implements Element
@@ -81,7 +81,7 @@ implements peote.layout.ILayoutElement
 {
 	// ---------------------------------------------------------
 	
-	public var uiDisplay(default, null):UIDisplay = null;
+	public var uiDisplay(default, null):PeoteUIDisplay = null;
 	public var isVisible(default, null):Bool = false;
 
 	var pickableMove:Pickable = null;
@@ -223,7 +223,7 @@ implements peote.layout.ILayoutElement
 	
 	// -----------------
 	
-	inline function onAddToDisplay(uiDisplay:UIDisplay)
+	inline function onAddToDisplay(uiDisplay:PeoteUIDisplay)
 	{
 		this.uiDisplay = uiDisplay;
 		isVisible = true;
@@ -236,7 +236,7 @@ implements peote.layout.ILayoutElement
 	
 	// -----------------
 	
-	inline function onRemoveFromDisplay(uiDisplay:UIDisplay)
+	inline function onRemoveFromDisplay(uiDisplay:PeoteUIDisplay)
 	{		
 		if (uiDisplay != this.uiDisplay) throw('Error, $this is not inside uiDisplay: $uiDisplay');
 		onRemoveVisibleFromDisplay();

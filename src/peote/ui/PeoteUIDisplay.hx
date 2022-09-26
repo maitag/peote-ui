@@ -23,7 +23,6 @@ import peote.view.Color;
 import peote.view.utils.RenderListItem;
 
 import peote.ui.interactive.Interactive;
-//import peote.ui.interactive.InteractiveTextLine;
 import peote.ui.interactive.edit.TextLineEdit;
 import peote.ui.interactive.interfaces.TextLine;
 
@@ -33,7 +32,7 @@ import peote.ui.style.interfaces.StyleID;
 
 @:access(peote.view)
 @:allow(peote.ui.interactive)
-class UIDisplay extends Display
+class PeoteUIDisplay extends Display
 #if peote_layout
 implements peote.layout.ILayoutElement
 #end
@@ -179,7 +178,7 @@ implements peote.layout.ILayoutElement
 				if (usedStyleID.contains(id)) throw('Error by creating new UIDisplay. Give each of the styles "${Type.getClassName(Type.getClass(style))}" an unique ID to have multiple of them into the availableStyles list!');
 				usedStyleID.push(id);
 				if (isFontStyle(style)) {
-					usedStyleProgram.push(null); // <- will be created by first InteractiveTextLine
+					usedStyleProgram.push(null); // <- will be created by first UITextLine
 					noFontYet = false;
 				} 
 				else {
@@ -385,12 +384,12 @@ implements peote.layout.ILayoutElement
 	
 	// ------------ PointerEvents ond the UIDisplay itselfs ----------
 	
-	public var onPointerOver:UIDisplay->PointerEvent->Void = null;
-	public var onPointerOut:UIDisplay->PointerEvent->Void = null;
-	public var onPointerDown:UIDisplay->PointerEvent->Void = null;
-	public var onPointerUp:UIDisplay->PointerEvent->Void = null;
-	public var onPointerClick:UIDisplay->PointerEvent->Void = null;
-	public var onPointerMove:UIDisplay->PointerEvent->Void = null;
+	public var onPointerOver:PeoteUIDisplay->PointerEvent->Void = null;
+	public var onPointerOut:PeoteUIDisplay->PointerEvent->Void = null;
+	public var onPointerDown:PeoteUIDisplay->PointerEvent->Void = null;
+	public var onPointerUp:PeoteUIDisplay->PointerEvent->Void = null;
+	public var onPointerClick:PeoteUIDisplay->PointerEvent->Void = null;
+	public var onPointerMove:PeoteUIDisplay->PointerEvent->Void = null;
 	
 	
 	static inline var HAS_OVEROUT:Int = 1;
@@ -1081,7 +1080,7 @@ implements peote.layout.ILayoutElement
 	
 	// -------------------------- text inputfocus  --------------------------
 	
-	static var inputFocusUIDisplay:UIDisplay = null;
+	static var inputFocusUIDisplay:PeoteUIDisplay = null;
 	var inputFocusElement:TextLine = null;
 	var textLineEdit:TextLineEdit = null;
 	
@@ -1193,7 +1192,7 @@ implements peote.layout.ILayoutElement
 	#if (peoteui_maxDisplays == "1")
 		//public inline function get_pointerEnabled():Bool return (activeUIDisplay == this);
 		
-		static var activeUIDisplay:UIDisplay;
+		static var activeUIDisplay:PeoteUIDisplay;
 		inline function addToActiveUIDisplay(?atDisplay:Display, addBefore:Bool = false) activeUIDisplay = this;
 		inline function removeFromActiveUIDisplay() activeUIDisplay = null;
 
@@ -1252,30 +1251,30 @@ implements peote.layout.ILayoutElement
 
 		var activeIndex:Int = 0;
 		static var maxActiveIndex:Int = 0;
-		static var activeUIDisplay = new Vector<UIDisplay>(MAX_DISPLAYS);
+		static var activeUIDisplay = new Vector<PeoteUIDisplay>(MAX_DISPLAYS);
 		
 		inline function swapActiveUIDisplays(display:Display) 
 		{
-			if ( Std.isOfType(display, UIDisplay) ) {
+			if ( Std.isOfType(display, PeoteUIDisplay) ) {
 				_swapActiveUIDisplays(cast display);
 			}
 			else {
 				var displayListItem:RenderListItem<Display> = peoteView.displayList.itemMap.get(display);
-				while (displayListItem.value != null && !Std.isOfType(displayListItem.value, UIDisplay)) {
+				while (displayListItem.value != null && !Std.isOfType(displayListItem.value, PeoteUIDisplay)) {
 					displayListItem = displayListItem.next;
 				}
 				if (displayListItem.value == null ) {
 					if ( activeIndex != 0) _swapActiveUIDisplays(activeUIDisplay.get(0)); // swap with the first
 				}
 				else {
-					var d:UIDisplay = cast displayListItem.value;
+					var d:PeoteUIDisplay = cast displayListItem.value;
 					if ( activeIndex > d.activeIndex+1) _swapActiveUIDisplays(activeUIDisplay.get(d.activeIndex+1)); // swap to right
 					if ( activeIndex < d.activeIndex) _swapActiveUIDisplays(d); // swap to left
 				}
 			}
 		}
 		
-		inline function _swapActiveUIDisplays(display:UIDisplay) 
+		inline function _swapActiveUIDisplays(display:PeoteUIDisplay) 
 		{
 			activeUIDisplay.set(activeIndex, display);
 			activeUIDisplay.set(display.activeIndex, this);				
@@ -1295,8 +1294,8 @@ implements peote.layout.ILayoutElement
 				var i = maxActiveIndex;
 				while (displayListItem != toItem)
 				{
-					if ( Std.isOfType(displayListItem.value, UIDisplay) ) { //TODO: check for older haxe-version and Std.is() instead
-						var d:UIDisplay = cast displayListItem.value;
+					if ( Std.isOfType(displayListItem.value, PeoteUIDisplay) ) { //TODO: check for older haxe-version and Std.is() instead
+						var d:PeoteUIDisplay = cast displayListItem.value;
 						i = d.activeIndex; 
 						d.activeIndex = d.activeIndex+1;
 						activeUIDisplay.set(d.activeIndex, d);
@@ -1312,15 +1311,15 @@ implements peote.layout.ILayoutElement
 		inline function removeFromActiveUIDisplay()
 		{
 			for (i in activeIndex + 1...maxActiveIndex) {
-				var d:UIDisplay = activeUIDisplay.get(i);
+				var d:PeoteUIDisplay = activeUIDisplay.get(i);
 				d.activeIndex = i - 1;
 				activeUIDisplay.set(d.activeIndex, d);
 			}
 			maxActiveIndex--;
 		}
 		
-		static var draggingMouseDisplays:Array<UIDisplay> = new Array<UIDisplay>();
-		static var draggingTouchDisplays:Array<UIDisplay> = new Array<UIDisplay>();
+		static var draggingMouseDisplays:Array<PeoteUIDisplay> = new Array<PeoteUIDisplay>();
+		static var draggingTouchDisplays:Array<PeoteUIDisplay> = new Array<PeoteUIDisplay>();
 		
 		public function startDragging(e:PointerEvent) {
 			dragOriginX = Std.int(e.x / peoteView.xz / xz) - x;

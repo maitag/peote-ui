@@ -1,8 +1,8 @@
 package peote.ui.interactive;
 
 #if !macro
-@:genericBuild(peote.ui.interactive.InteractiveTextLine.InteractiveTextLineMacro.build("InteractiveTextLine"))
-class InteractiveTextLine<T> extends peote.ui.interactive.Interactive {}
+@:genericBuild(peote.ui.interactive.UITextLine.UITextLineMacro.build("UITextLine"))
+class UITextLine<T> extends peote.ui.interactive.Interactive {}
 #else
 
 import haxe.macro.Expr;
@@ -11,7 +11,7 @@ import peote.text.util.Macro;
 //import peote.text.util.GlyphStyleHasField;
 //import peote.text.util.GlyphStyleHasMeta;
 
-class InteractiveTextLineMacro
+class UITextLineMacro
 {
 	static public function build(name:String):ComplexType return Macro.build(name, buildClass);
 	static public function buildClass(className:String, classPackage:Array<String>, stylePack:Array<String>, styleModule:String, styleName:String, styleSuperModule:String, styleSuperName:String, styleType:ComplexType, styleField:Array<String>):ComplexType
@@ -265,7 +265,7 @@ implements peote.layout.ILayoutElement
 	                    //font:$fontType, fontStyle:$styleType) 
 	                    font:peote.text.Font<$styleType>, ?fontStyle:$styleType, ?textLineStyle:peote.ui.style.TextLineStyle) //textStyle=null
 	{
-		//trace("NEW InteractiveTextLine");		
+		//trace("NEW UITextLine");		
 		var width:Int = 0;
 		var height:Int = 0;
 		if (textSize != null) {
@@ -577,7 +577,7 @@ implements peote.layout.ILayoutElement
 		var fontStylePos = uiDisplay.usedStyleID.indexOf( fontStyle.getID() | (fontStyle.id << 16) );
 		if (fontStylePos < 0) {
 			if (uiDisplay.autoAddStyles) uiDisplay.autoAddStyleProgram( cast fontProgram = font.createFontProgram(fontStyle, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end), fontStyle.getID() | (fontStyle.id << 16) , true );
-			else throw('Error by creating new InteractiveTextLine. The style "'+Type.getClassName(Type.getClass(fontStyle))+'" id='+fontStyle.id+' is not inside the availableStyle list of UIDisplay.');
+			else throw('Error by creating new UITextLine. The style "'+Type.getClassName(Type.getClass(fontStyle))+'" id='+fontStyle.id+' is not inside the availableStyle list of UIDisplay.');
 		} else {
 			fontProgram = cast uiDisplay.usedStyleProgram[fontStylePos];
 			if (fontProgram == null) uiDisplay.addProgramAtStylePos(cast fontProgram = font.createFontProgram(fontStyle, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end), fontStylePos);
@@ -589,7 +589,7 @@ implements peote.layout.ILayoutElement
 		var stylePos = uiDisplay.usedStyleID.indexOf( backgroundStyle.getID() | (backgroundStyle.id << 16) );
 		if (stylePos < 0) {
 			if (uiDisplay.autoAddStyles) uiDisplay.autoAddStyleProgram(cast backgroundProgram = backgroundStyle.createStyleProgram(), backgroundStyle.getID() | (backgroundStyle.id << 16) );
-			else throw('Error by creating background for new InteractiveTextLine. The style "'+Type.getClassName(Type.getClass(backgroundStyle))+'" id='+backgroundStyle.id+' is not inside the availableStyle list of UIDisplay.');
+			else throw('Error by creating background for new UITextLine. The style "'+Type.getClassName(Type.getClass(backgroundStyle))+'" id='+backgroundStyle.id+' is not inside the availableStyle list of UIDisplay.');
 		} else {
 			backgroundProgram = cast uiDisplay.usedStyleProgram[stylePos];
 			if (backgroundProgram == null) uiDisplay.addProgramAtStylePos(cast backgroundProgram = backgroundStyle.createStyleProgram(), stylePos);				
@@ -603,7 +603,7 @@ implements peote.layout.ILayoutElement
 		var stylePos = uiDisplay.usedStyleID.indexOf( selectionStyle.getID() | (selectionStyle.id << 16) );
 		if (stylePos < 0) {
 			if (uiDisplay.autoAddStyles) uiDisplay.autoAddStyleProgram(cast selectionProgram = selectionStyle.createStyleProgram(), selectionStyle.getID() | (selectionStyle.id << 16) );
-			else throw('Error by creating selection for new InteractiveTextLine. The style "'+Type.getClassName(Type.getClass(selectionStyle))+'" id='+selectionStyle.id+' is not inside the availableStyle list of UIDisplay.');
+			else throw('Error by creating selection for new UITextLine. The style "'+Type.getClassName(Type.getClass(selectionStyle))+'" id='+selectionStyle.id+' is not inside the availableStyle list of UIDisplay.');
 		} else {
 			selectionProgram = cast uiDisplay.usedStyleProgram[stylePos];
 			if (selectionProgram == null) uiDisplay.addProgramAtStylePos(cast selectionProgram = selectionStyle.createStyleProgram(), stylePos);				
@@ -616,7 +616,7 @@ implements peote.layout.ILayoutElement
 		var stylePos = uiDisplay.usedStyleID.indexOf( cursorStyle.getID() | (cursorStyle.id << 16) );
 		if (stylePos < 0) {
 			if (uiDisplay.autoAddStyles) uiDisplay.autoAddStyleProgram(cast cursorProgram = cursorStyle.createStyleProgram(), cursorStyle.getID() | (cursorStyle.id << 16) );
-			else throw('Error by creating cursor for new InteractiveTextLine. The style "'+Type.getClassName(Type.getClass(cursorStyle))+'" id='+cursorStyle.id+' is not inside the availableStyle list of UIDisplay.');
+			else throw('Error by creating cursor for new UITextLine. The style "'+Type.getClassName(Type.getClass(cursorStyle))+'" id='+cursorStyle.id+' is not inside the availableStyle list of UIDisplay.');
 		} else {
 			cursorProgram = cast uiDisplay.usedStyleProgram[stylePos];
 			if (cursorProgram == null) uiDisplay.addProgramAtStylePos(cast cursorProgram = cursorStyle.createStyleProgram(), stylePos);				
@@ -663,7 +663,7 @@ implements peote.layout.ILayoutElement
 	}
 	
 	public inline function textInput(chars:String):Void {
-		//trace("InteractiveTextLine - textInput:", s);
+		//trace("UITextLine - textInput:", s);
 		if (line != null) {
 			insertChars(chars, cursor, fontStyle);
 			fontProgram.updateLine(line);
@@ -791,32 +791,32 @@ implements peote.layout.ILayoutElement
 	
 	// ----------- events ------------------
 	
-	public var onPointerOver(never, set):InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerOver(f:InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void):InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void
+	public var onPointerOver(never, set):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void;
+	inline function set_onPointerOver(f:UITextLine<$styleType>->peote.ui.event.PointerEvent->Void):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void
 		return setOnPointerOver(this, f);
 	
-	public var onPointerOut(never, set):InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerOut(f:InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void):InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void 
+	public var onPointerOut(never, set):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void;
+	inline function set_onPointerOut(f:UITextLine<$styleType>->peote.ui.event.PointerEvent->Void):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void 
 		return setOnPointerOut(this, f);
 	
-	public var onPointerMove(never, set):InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerMove(f:InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void):InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void
+	public var onPointerMove(never, set):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void;
+	inline function set_onPointerMove(f:UITextLine<$styleType>->peote.ui.event.PointerEvent->Void):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void
 		return setOnPointerMove(this, f);
 	
-	public var onPointerDown(never, set):InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerDown(f:InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void):InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void
+	public var onPointerDown(never, set):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void;
+	inline function set_onPointerDown(f:UITextLine<$styleType>->peote.ui.event.PointerEvent->Void):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void
 		return setOnPointerDown(this, f);
 	
-	public var onPointerUp(never, set):InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerUp(f:InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void):InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void
+	public var onPointerUp(never, set):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void;
+	inline function set_onPointerUp(f:UITextLine<$styleType>->peote.ui.event.PointerEvent->Void):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void
 		return setOnPointerUp(this, f);
 	
-	public var onPointerClick(never, set):InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerClick(f:InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void):InteractiveTextLine<$styleType>->peote.ui.event.PointerEvent->Void
+	public var onPointerClick(never, set):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void;
+	inline function set_onPointerClick(f:UITextLine<$styleType>->peote.ui.event.PointerEvent->Void):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void
 		return setOnPointerClick(this, f);
 		
-	public var onMouseWheel(never, set):InteractiveTextLine<$styleType>->peote.ui.event.WheelEvent->Void;
-	inline function set_onMouseWheel(f:InteractiveTextLine<$styleType>->peote.ui.event.WheelEvent->Void):InteractiveTextLine<$styleType>->peote.ui.event.WheelEvent->Void 
+	public var onMouseWheel(never, set):UITextLine<$styleType>->peote.ui.event.WheelEvent->Void;
+	inline function set_onMouseWheel(f:UITextLine<$styleType>->peote.ui.event.WheelEvent->Void):UITextLine<$styleType>->peote.ui.event.WheelEvent->Void 
 		return setOnMouseWheel(this, f);
 				
 }

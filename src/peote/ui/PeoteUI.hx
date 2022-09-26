@@ -13,7 +13,7 @@ import peote.layout.ContainerType;
 import peote.ui.interactive.Interactive;
 import peote.view.Color;
 
-import peote.ui.UIDisplay;
+import peote.ui.PeoteUIDisplay;
 import peote.ui.widget.Widget;
 
 typedef PeoteUIOptions = {
@@ -33,7 +33,7 @@ abstract PeoteUI(LayoutContainer) from LayoutContainer to LayoutContainer {
 		if (peoteUiOptions == null) peoteUiOptions = {relativeChildPositions:true};
 		else peoteUiOptions.relativeChildPositions = true;
 		
-		var layoutElement:ILayoutElement = new UIDisplay(0, 0, 0, 0, (peoteUiOptions.bgColor != null) ? peoteUiOptions.bgColor : Color.BLACK);
+		var layoutElement:ILayoutElement = new PeoteUIDisplay(0, 0, 0, 0, (peoteUiOptions.bgColor != null) ? peoteUiOptions.bgColor : Color.BLACK);
 		this = new LayoutContainer(
 			containerType, 
 			layoutElement,
@@ -77,10 +77,10 @@ abstract PeoteUI(LayoutContainer) from LayoutContainer to LayoutContainer {
 			}
 	}
 	
-	public var display(get, never):UIDisplay;
-	public inline function get_display():UIDisplay return cast this.layoutElement;
+	public var display(get, never):PeoteUIDisplay;
+	public inline function get_display():PeoteUIDisplay return cast this.layoutElement;
 	
-	@:to public inline function toLayoutDisplay():UIDisplay return display;
+	@:to public inline function toLayoutDisplay():PeoteUIDisplay return display;
 	
 	// ------------------------------------------------------------
 	
@@ -93,11 +93,11 @@ abstract PeoteUI(LayoutContainer) from LayoutContainer to LayoutContainer {
 	public inline function set_touchEnabled(b:Bool):Bool return display.touchEnabled = b;
 	
 	public static function registerEvents(window:Window) {
-		UIDisplay.registerEvents(window);
+		PeoteUIDisplay.registerEvents(window);
 		window.onResize.add(windowResize);
 	}
 	public static function unRegisterEvents(window:Window) {
-		UIDisplay.unRegisterEvents(window);
+		PeoteUIDisplay.unRegisterEvents(window);
 		window.onResize.remove(windowResize);
 	}
 	

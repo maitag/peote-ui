@@ -13,9 +13,9 @@ import peote.view.Color;
 
 import peote.text.Font;
 
-import peote.ui.UIDisplay;
-import peote.ui.interactive.InteractiveTextLine;
-import peote.ui.interactive.InteractiveElement;
+import peote.ui.PeoteUIDisplay;
+import peote.ui.interactive.UITextLine;
+import peote.ui.interactive.UIElement;
 
 import peote.ui.style.*;
 
@@ -23,7 +23,7 @@ import peote.ui.style.*;
 class TestStyles extends Application
 {
 	var peoteView:PeoteView;
-	var uiDisplay:UIDisplay;
+	var uiDisplay:PeoteUIDisplay;
 	
 	override function onWindowCreate():Void
 	{
@@ -65,24 +65,24 @@ class TestStyles extends Application
 		s3:String = null, f3:Void->Void = null,
 		s4:String = null, f4:Void->Void = null)
 	{
-		var b:InteractiveTextLine<FontStyleTiled> = null;
+		var b:UITextLine<FontStyleTiled> = null;
 		var hgap:Int = 5; var vgap:Int = 30;
-		if (s1 != null) uiDisplay.add(b = fontButtons.createInteractiveTextLine(buttonX             , buttonY, buttonSize, s1, buttonStyle, buttonBackgroundStyle));
+		if (s1 != null) uiDisplay.add(b = fontButtons.createUITextLine(buttonX             , buttonY, buttonSize, s1, buttonStyle, buttonBackgroundStyle));
 		if (f1 != null) { b.onPointerClick = (_, _)-> f1(); b.onPointerOver = buttonOver; b.onPointerOut = buttonOut; }
-		if (s2 != null) uiDisplay.add(b = fontButtons.createInteractiveTextLine(b.x + hgap + b.width, buttonY, buttonSize, s2, buttonStyle, buttonBackgroundStyle));
+		if (s2 != null) uiDisplay.add(b = fontButtons.createUITextLine(b.x + hgap + b.width, buttonY, buttonSize, s2, buttonStyle, buttonBackgroundStyle));
 		if (f2 != null) { b.onPointerClick = (_,_)-> f2(); b.onPointerOver = buttonOver; b.onPointerOut = buttonOut; }
-		if (s3 != null) uiDisplay.add(b = fontButtons.createInteractiveTextLine(b.x + hgap + b.width, buttonY, buttonSize, s3, buttonStyle, buttonBackgroundStyle));
+		if (s3 != null) uiDisplay.add(b = fontButtons.createUITextLine(b.x + hgap + b.width, buttonY, buttonSize, s3, buttonStyle, buttonBackgroundStyle));
 		if (f3 != null) { b.onPointerClick = (_,_)-> f3(); b.onPointerOver = buttonOver; b.onPointerOut = buttonOut; }
-		if (s4 != null) uiDisplay.add(b = fontButtons.createInteractiveTextLine(b.x + hgap + b.width, buttonY, buttonSize, s4, buttonStyle, buttonBackgroundStyle));
+		if (s4 != null) uiDisplay.add(b = fontButtons.createUITextLine(b.x + hgap + b.width, buttonY, buttonSize, s4, buttonStyle, buttonBackgroundStyle));
 		if (f4 != null) { b.onPointerClick = (_, _)-> f4(); b.onPointerOver = buttonOver; b.onPointerOut = buttonOut; }
 		buttonY += vgap;
 	}
 	
-	function buttonOver(b:InteractiveTextLine<FontStyleTiled>, _) {
+	function buttonOver(b:UITextLine<FontStyleTiled>, _) {
 		b.backgroundStyle.color = Color.GREY7;
 		b.updateStyle();
 	}
-	function buttonOut(b:InteractiveTextLine<FontStyleTiled>, _) {
+	function buttonOut(b:UITextLine<FontStyleTiled>, _) {
 		b.backgroundStyle.color = Color.GREY5;
 		b.updateStyle();
 	}
@@ -100,7 +100,7 @@ class TestStyles extends Application
 		var fontStyleTiled = fontTiled.createFontStyle(); // alternative way of creation
 		
 		peoteView = new PeoteView(window);
-		uiDisplay = new UIDisplay(0, 0, window.width, window.height, Color.GREY1
+		uiDisplay = new PeoteUIDisplay(0, 0, window.width, window.height, Color.GREY1
 		// available styles into render-order (without it will auto add at runtime and fontstyles allways on top)
 			//,[ simpleStyle, roundBorderStyle, fontStylePacked, fontStyleTiled, cursorStyle]
 			,[ simpleStyle, roundBorderStyle, fontStylePacked ], true // allow to auto add Styles
@@ -115,11 +115,11 @@ class TestStyles extends Application
 		
 		// ----------- create InteractiveElement -----------
 		
-		var element = new InteractiveElement(10, 10, 250, 50, simpleStyle);
+		var element = new UIElement(10, 10, 250, 50, simpleStyle);
 		element.onPointerOver = (_, _)-> trace("on element over");
 		element.onPointerOut  = (_, _)-> trace("on element out");
 		
-		// ----------- create InteractiveTextLine -----------
+		// ----------- create UITextLine -----------
 		
 		var backgroundSimpleStyle = simpleStyle.copy(Color.YELLOW);
 		var backgroundRoundStyle = roundBorderStyle.copy(Color.YELLOW);		
@@ -134,7 +134,7 @@ class TestStyles extends Application
 			cursorStyle:cursorSimpleStyle
 		}
 
-		var textLine = new InteractiveTextLine<FontStylePacked>(240, 25, "Hello World", fontPacked, fontStylePacked, textStyle);
+		var textLine = new UITextLine<FontStylePacked>(240, 25, "Hello World", fontPacked, fontStylePacked, textStyle);
 		textLine.onPointerOver = (_, _)-> trace("textLine onPointerOver");
 		textLine.onPointerOut  = (_, _)-> trace("textLine onPointerOut");
 		textLine.onPointerClick  = (t, e:PointerEvent)-> {
@@ -322,7 +322,7 @@ class TestStyles extends Application
 		);
 		
 		
-		UIDisplay.registerEvents(window);
+		PeoteUIDisplay.registerEvents(window);
 	}
 	
 
