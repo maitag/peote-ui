@@ -9,7 +9,7 @@ import lime.ui.KeyCode;
 import peote.ui.interactive.interfaces.TextLine;
 
 @:access(peote.ui.interactive)
-class TextLineEdit 
+class TextLineEdit
 {
 	public var textLine:TextLine;
 	

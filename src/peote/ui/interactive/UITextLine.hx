@@ -625,9 +625,7 @@ implements peote.layout.ILayoutElement
 	}
 	
 	
-	
-	// ----------------------- change the text  -----------------------
-	
+	// ----------------------- change the text  -----------------------	
 	public function setText(text:String, fontStyle:Null<$styleType> = null, forceAutoWidth:Null<Bool> = null, forceAutoHeight:Null<Bool> = null, autoUpdate = false)
 	{
 		if (fontStyle != null) this.fontStyle = fontStyle;
@@ -651,9 +649,9 @@ implements peote.layout.ILayoutElement
 	}
 	
 	
-	
-	// ----------------------- TextInput -----------------------
-	
+	// ---------------------------------------------------------------
+	// ------------------- Focus and TextInput -----------------------
+	// ---------------------------------------------------------------	
 	public inline function setInputFocus(e:peote.ui.event.PointerEvent=null):Void {
 		if (uiDisplay != null) uiDisplay.setInputFocus(this, e);
 	}
@@ -687,9 +685,8 @@ implements peote.layout.ILayoutElement
 		trace("cursor left");
 	}
 
-	// ----------- Seletion  -----------
+	// ----------- Selection Events -----------
 	
-	// start/stop pointer-selection
 	public function startSelection(e:peote.ui.event.PointerEvent):Void {
 		if (uiDisplay != null) uiDisplay.startSelection(this, e);
 	}
@@ -698,15 +695,21 @@ implements peote.layout.ILayoutElement
 		if (uiDisplay != null) uiDisplay.stopSelection(this, e);
 	}
 	
-	// events
+	// select-handler what is called by PeoteUIDisplay
+	
 	var selectStartFrom:Int = 0;
 	var xOffsetAtSelectStart:Float = 0;
+		
 	function onSelectStart(e:peote.ui.event.PointerEvent):Void {
 		trace("selectStart", xOffset);
 		cursor = getCharAtPosition(e.x);
 		selectStartFrom = selectTo = cursor;
 		xOffsetAtSelectStart = xOffset;
 		selectionHide();
+	}
+	
+	function onSelectStop(e:peote.ui.event.PointerEvent = null):Void {
+		trace("selectStop", (e != null) ? e.x : "", xOffset);
 	}
 	
 	function onSelect(e:peote.ui.event.PointerEvent):Void {
@@ -734,9 +737,6 @@ implements peote.layout.ILayoutElement
 		//       OR allways change xScroll to make cursor fully visible!
 	}
 
-	function onSelectStop(e:peote.ui.event.PointerEvent = null):Void {
-		trace("selectStop", (e != null) ? e.x : "", xOffset);
-	}
 	
 	
 	
@@ -819,6 +819,10 @@ implements peote.layout.ILayoutElement
 	inline function set_onMouseWheel(f:UITextLine<$styleType>->peote.ui.event.WheelEvent->Void):UITextLine<$styleType>->peote.ui.event.WheelEvent->Void 
 		return setOnMouseWheel(this, f);
 				
+	public var onDrag(never, set):UITextLine<$styleType>->Float->Float->Void;
+	inline function set_onDrag(f:UITextLine<$styleType>->Float->Float->Void):UITextLine<$styleType>->Float->Float->Void
+		return setOnDrag(this, f);
+	
 }
 
 // -------------------------------------------------------------------------------------------

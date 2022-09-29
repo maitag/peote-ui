@@ -24,7 +24,7 @@ import peote.ui.style.FontStyleTiled;
 import peote.ui.interactive.UITextLine;
 
 
-class MultiUIDisplays extends Application
+class TestEventBubbling extends Application
 {
 	var peoteView:PeoteView;
 	var uiDisplayLeft:PeoteUIDisplay;

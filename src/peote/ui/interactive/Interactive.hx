@@ -141,18 +141,19 @@ implements peote.layout.ILayoutElement
 	public var maskHeight:Int;
 	#end
 	
-	//public var pointerOver(default, null) :PointerEvent->Void; // TODO: let fire the event manually!
+	
+	// Pointer and MouseWheel events
 	var pointerOver :PointerEvent->Void;
 	var pointerOut  :PointerEvent->Void;
 	var pointerMove :PointerEvent->Void;
 	var mouseWheel  :WheelEvent->Void;
-	var hasMoveEvent:Int = 0;
 	
+	var hasMoveEvent:Int = 0;
+
 	public var hasPointerOver(get, never):Bool;
 	public var hasPointerOut (get, never):Bool;
 	public var hasPointerMove(get, never):Bool;
 	public var hasMouseWheel (get, never):Bool;
-	
 	inline function get_hasPointerOver():Bool return (hasMoveEvent & UIEventMove.over > 0);
 	inline function get_hasPointerOut ():Bool return (hasMoveEvent & UIEventMove.out  > 0);
 	inline function get_hasPointerMove():Bool return (hasMoveEvent & UIEventMove.move > 0);
@@ -168,6 +169,10 @@ implements peote.layout.ILayoutElement
 	
 	static inline function noOperation(e:PointerEvent):Void {}
 	static inline function noWheelOperation(e:WheelEvent):Void {}
+	
+	// drag and focus events
+	var drag:Float->Float->Void = null;
+	// TODO: Focus
 	
 	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int) 
 	{
@@ -299,6 +304,9 @@ implements peote.layout.ILayoutElement
 			if (dragToY < dragMaxY - height + dragOriginY) y = dragToY - dragOriginY;
 			else y = dragMaxY - height;
 		} else y = dragMinY;
+		
+		// call the drag-event
+		if (drag != null) drag((x - dragMinX) / (dragMaxX - dragMinX - width), (y - dragMinY) / (dragMaxY - dragMinY - height));
 	}
 
 	@:access(peote.view.Display, peote.view.PeoteView)
@@ -459,6 +467,13 @@ implements peote.layout.ILayoutElement
 	}
 	
 	// -----------------
+	
+	private inline function setOnDrag<T>(object:T, f:T->Float->Float->Void):T->Float->Float->Void {
+		if (f == null) drag = null else drag = f.bind(object);
+		return f;
+	}
+		
+	// -----------------
 		
 	private function addPickableMove()
 	{
@@ -485,6 +500,8 @@ implements peote.layout.ILayoutElement
 		//trace("removePickableClick");
 		if (isVisible) uiDisplay.clickPickBuffer.removeElement( pickableClick ); //pickableClick=null
 	}
+	
+	
 	
 	#if peote_layout
 	// ----------- Interface for peote-layout --------------------

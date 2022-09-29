@@ -139,7 +139,6 @@ class TestStyles extends Application
 		textLine.onPointerOut  = (_, _)-> trace("textLine onPointerOut");
 		textLine.onPointerClick  = (t, e:PointerEvent)-> {
 			trace("textLine onPointerClick", e);
-			t.setInputFocus(e);
 		}
 		textLine.onPointerDown = function(t, e:PointerEvent) {
 			trace("textLine onPointerDown");

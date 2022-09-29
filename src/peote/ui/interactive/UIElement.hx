@@ -10,6 +10,7 @@ import peote.ui.event.WheelEvent;
 
 private typedef UIElementEventParams = UIElement->PointerEvent->Void;
 private typedef UIElementWheelEventParams = UIElement->WheelEvent->Void;
+private typedef UIElementDragEventParams = UIElement->Float->Float->Void;
 
 class UIElement extends Interactive
 #if peote_layout
@@ -141,7 +142,10 @@ implements peote.layout.ILayoutElement
 	public var onPointerClick(never, set):UIElementEventParams;
 	inline function set_onPointerClick(f:UIElementEventParams):UIElementEventParams return setOnPointerClick(this, f);
 		
-	public var onMouseWheel(default, set):UIElementWheelEventParams;
-	inline function set_onMouseWheel(f:UIElementWheelEventParams):UIElementWheelEventParams  return setOnMouseWheel(this, f);
+	public var onMouseWheel(never, set):UIElementWheelEventParams;
+	inline function set_onMouseWheel(f:UIElementWheelEventParams):UIElementWheelEventParams return setOnMouseWheel(this, f);
+	
+	public var onDrag(never, set):UIElementDragEventParams;
+	inline function set_onDrag(f:UIElementDragEventParams):UIElementDragEventParams return setOnDrag(this, f);
 	
 }

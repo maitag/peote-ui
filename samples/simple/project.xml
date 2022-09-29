@@ -7,12 +7,15 @@
 	<!-- <meta build-number="714" /> --> <!-- let set the buildnumber manual (android) -->
 	<!-- check this for GG-Playstore: <setenv name="ANDROID_GRADLE_TASK" value=":app:bundleRelease" /> -->
 	
-	<app main="SimpleElements" path="bin" file="Main" />
+	<app main="TestStyles" path="bin" file="Main" />
 	<!--
-		TestStyles,
 		SimpleElements,
 		SimpleText,
-		MultiUIDisplays,
+		SimpleSlider,
+		SimpleDragArea,
+		// TODO: FocusAndNavigation,
+		TestStyles,
+		TestEventBubbling,
 		...
 	-->
 	

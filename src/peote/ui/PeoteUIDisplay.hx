@@ -1,7 +1,6 @@
 package peote.ui;
 
 import haxe.ds.Vector;
-import peote.ui.style.interfaces.StyleProgram;
 
 import lime.graphics.RenderContext;
 import lime.ui.Window;
@@ -415,9 +414,9 @@ implements peote.layout.ILayoutElement
 				pickedIndex = peoteView.getElementAt(mouseX, mouseY, this, movePickProgram);					
 			}
 			
-			if (selectionTextLine != null) // text selection
+			if (intoSelectionTextLine != null) // text selection
 			{
-				selectionTextLine.onSelect({x:x, y:y, type:PointerType.MOUSE});
+				intoSelectionTextLine.onSelect({x:x, y:y, type:PointerType.MOUSE});
 			}
 			else if (draggingMouseElements.length > 0) // Dragging
 			{
@@ -1112,15 +1111,16 @@ implements peote.layout.ILayoutElement
 	
 	// -------------------------- text selection  --------------------------
 	
-	static var selectionTextLine:TextLine = null;
+	static var intoSelectionTextLine:TextLine = null;
 
 	public function startSelection(t:TextLine, e:PointerEvent) {
-		selectionTextLine = t;
+		if (intoSelectionTextLine != null) t.onSelectStop(e); // if there is another into selectionMode
+		intoSelectionTextLine = t;
 		t.onSelectStart(e);
 	}
 	
 	public function stopSelection(t:TextLine, e:PointerEvent) {
-		selectionTextLine = null;
+		intoSelectionTextLine = null;
 		t.onSelectStop(e);
 	}
 		
