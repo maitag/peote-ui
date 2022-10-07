@@ -172,7 +172,7 @@ implements peote.layout.ILayoutElement
 	
 	// drag and focus events
 	var drag:Float->Float->Void = null;
-	// TODO: Focus
+	var focus:Void->Void = null;
 	
 	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int) 
 	{
@@ -470,6 +470,11 @@ implements peote.layout.ILayoutElement
 	
 	private inline function setOnDrag<T>(object:T, f:T->Float->Float->Void):T->Float->Float->Void {
 		if (f == null) drag = null else drag = f.bind(object);
+		return f;
+	}
+	
+	private inline function setOnFocus<T>(object:T, f:T->Void):T->Void {
+		if (f == null) focus = null else focus = f.bind(object);
 		return f;
 	}
 		

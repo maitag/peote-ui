@@ -29,6 +29,7 @@ import peote.ui.style.interfaces.Style;
 import peote.ui.style.interfaces.FontStyle;
 import peote.ui.style.interfaces.StyleID;
 
+
 @:access(peote.view)
 @:allow(peote.ui.interactive)
 class PeoteUIDisplay extends Display
@@ -114,6 +115,8 @@ implements peote.layout.ILayoutElement
 			lastTouchDownIndex.set(i, -1);
 			draggingTouchElements.set(i, new Array<Interactive>());
 		}
+		
+		initInput2Action();
 	}
 	
 	public function clear() {
@@ -155,7 +158,7 @@ implements peote.layout.ILayoutElement
 	#end
 
 	// optimized function to check if mouseposition inside UIDisplay
-	@:access(peote.view.PeoteView)	
+	//@:access(peote.view.PeoteView)	
 	inline function _isPointInside(px:Int, py:Int) {
 		px = Std.int(px / peoteView.xz - peoteView.xOffset);
 		py = Std.int(py / peoteView.yz - peoteView.yOffset);
@@ -1050,31 +1053,70 @@ implements peote.layout.ILayoutElement
 	}
 	
 	// ----------------- KEYBOARD - EVENTS ----------------------------
+		
+	// ------------ TODO: bindings to input2action-lib "action"s  ----------
+	var actionConfig:input2action.ActionConfig = [
+		{ action: "cursorLeft" , keyboard: KeyCode.LEFT  },
+		{ action: "cursorRight", keyboard: KeyCode.RIGHT },
+		//KeyCode.DELETE
+		//KeyCode.BACKSPACE
+		//KeyCode.HOME
+		//KeyCode.END
+		// SELECT ALL
+		// CUT
+		// COPY
+		// PASTE
+	];
 	
-	// ------------ Input Events on the UIDisplay itselfs ----------
+	var input2Action:input2action.Input2Action;
+	var actionMap:input2action.ActionMap;
+	
+	function initInput2Action() {
+		actionMap = [
+			"cursorLeft"  => { action:cursorCharLeft , repeatKeyboardDefault:true },
+			"cursorRight" => { action:cursorCharRight, repeatKeyboardDefault:true },
+		];
+		input2Action = new input2action.Input2Action(actionConfig, actionMap);
+		input2Action.setKeyboard(actionConfig);
+	}
+	
+	public inline function cursorCharLeft(_, _)  if (inputFocusElement != null) inputFocusElement.cursorCharLeft();
+	public inline function cursorCharRight(_, _) if (inputFocusElement != null) inputFocusElement.cursorCharRight();
+	
 	
 	//public var onKeyDown:UIDisplay->InputEvent->Void = null;
 
+	@:access(input2action.Input2Action)
 	public inline function keyDown (keyCode:KeyCode, modifier:KeyModifier):Void
 	{
-		trace("key DOWN");
-		switch (keyCode) {
-			#if html5
-			case KeyCode.TAB: untyped __js__('event.preventDefault();');
-			#end
-			//case KeyCode.F: window.fullscreen = !window.fullscreen;
-			default:
-		}
+		//trace("key DOWN");
+		if (inputFocusElement != null)
+			switch (keyCode) {
+				#if html5
+				case KeyCode.TAB: untyped __js__('event.preventDefault();');
+				#end
+				default:
+			}
 		
+		input2Action.keyDown(keyCode, modifier);
 	}
 	
+	@:access(input2action.Input2Action)
 	public inline function keyUp (keyCode:KeyCode, modifier:KeyModifier):Void
 	{
-		trace("key UP");
+		//trace("key UP");
 		switch (keyCode) {
 			//case KeyCode.NUMPAD_PLUS:
 			default:
 		}
+		
+		input2Action.keyUp(keyCode, modifier);
+	}
+	
+	public inline function textInput (chars:String):Void {
+		trace("textInput:", chars);
+		if (inputFocusElement != null) inputFocusElement.textInput(chars);
+		//if (inputFocusElement != null) textLineEdit.textInput(chars);
 	}
 	
 	// -------------------------- text inputfocus  --------------------------
@@ -1082,12 +1124,6 @@ implements peote.layout.ILayoutElement
 	static var inputFocusUIDisplay:PeoteUIDisplay = null;
 	var inputFocusElement:TextLine = null;
 	var textLineEdit:TextLineEdit = null;
-	
-	public inline function textInput (chars:String):Void {
-		trace("textInput:", chars);
-		//if (inputFocusElement != null) inputFocusElement.textInput(chars);
-		if (inputFocusElement != null) textLineEdit.textInput(chars);
-	}
 	
 	public inline function setInputFocus(t:TextLine, e:PointerEvent=null) {
 		if (inputFocusElement != t) {
@@ -1124,7 +1160,6 @@ implements peote.layout.ILayoutElement
 		t.onSelectStop(e);
 	}
 		
-	// ------------ TODO: bindings to input2action-lib "action"s  ----------
 	
 	
 	// ----------------- Dragging ----------------------------

@@ -146,13 +146,17 @@ implements peote.layout.ILayoutElement
 		if (from < 0) from = 0;
 		if (to < 0) to = 0;
 		if (from <= to) { selectFrom = from; selectTo = to;	} else { selectFrom = to; selectTo = from; }
-		if (line != null && selectionStyle != null) {
-			if (selectTo > line.length) selectTo = line.length;
-			setCreateSelectionMasked( (isVisible && selectionIsVisible), (selectionElement == null) );
+		if (selectFrom == selectTo) selectionHide();
+		else {
+			if (line != null && selectionStyle != null) {
+				if (selectTo > line.length) selectTo = line.length;
+				setCreateSelectionMasked( (isVisible && selectionIsVisible), (selectionElement == null) );
+			}
+			selectionShow();
 		}
-		selectionShow();
 	}
-	
+	public inline function hasSelection():Bool return (selectFrom != selectTo);
+	public inline function removeSelection() { selectFrom = selectTo; selectionHide(); }
 	
 	// -------- cursor style ---------
 	var cursorProgram:peote.ui.style.interfaces.StyleProgram = null;
@@ -680,9 +684,16 @@ implements peote.layout.ILayoutElement
 	// ----------- Cursor  -----------
 	
 		
-	inline function cursorLeft(isShift:Bool, isCtrl:Bool)
+	public inline function cursorCharLeft()
 	{
-		trace("cursor left");
+		if (hasSelection()) { cursor = selectFrom; removeSelection(); }
+		else cursor--;
+	}
+
+	public inline function cursorCharRight()
+	{
+		if (hasSelection()) { cursor = selectTo; removeSelection(); }
+		else cursor++;
 	}
 
 	// ----------- Selection Events -----------
@@ -702,8 +713,8 @@ implements peote.layout.ILayoutElement
 		
 	function onSelectStart(e:peote.ui.event.PointerEvent):Void {
 		trace("selectStart", xOffset);
-		cursor = getCharAtPosition(e.x);
-		selectStartFrom = selectTo = cursor;
+		removeSelection();
+		selectStartFrom = cursor = getCharAtPosition(e.x);
 		xOffsetAtSelectStart = xOffset;
 		selectionHide();
 	}
@@ -822,6 +833,10 @@ implements peote.layout.ILayoutElement
 	public var onDrag(never, set):UITextLine<$styleType>->Float->Float->Void;
 	inline function set_onDrag(f:UITextLine<$styleType>->Float->Float->Void):UITextLine<$styleType>->Float->Float->Void
 		return setOnDrag(this, f);
+	
+	public var onFocus(never, set):UITextLine<$styleType>->Void;
+	inline function set_onFocus(f:UITextLine<$styleType>->Void):UITextLine<$styleType>->Void
+		return setOnFocus(this, f);
 	
 }
 

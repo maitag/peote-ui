@@ -26,5 +26,8 @@ interface TextLine
 	public function selectionShow():Void;
 	public function selectionHide():Void;
 	
-	private function cursorLeft(isShift:Bool, isCtrl:Bool):Void;
+	
+	// ------- Input Actions ---------
+	public function cursorCharLeft():Void;
+	public function cursorCharRight():Void;
 }
