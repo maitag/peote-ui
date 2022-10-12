@@ -419,7 +419,7 @@ implements peote.layout.ILayoutElement
 		if (line != null)
 		{		
 			fontProgram.lineSetStyle(line, fontStyle);		
-			if (isVisible) fontProgram.updateLine(line);
+			if (isVisible) fontProgram.lineUpdate(line);
 			
 			if (backgroundElement != null) {
 				backgroundElement.setStyle(backgroundStyle);
@@ -475,7 +475,7 @@ implements peote.layout.ILayoutElement
 				}
 				default: macro {}
 			}}		
-			fontProgram.updateLine(line);
+			fontProgram.lineUpdate(line);
 		}
 				
 		#if (!peoteui_no_textmasking && !peoteui_no_masking)
@@ -513,7 +513,7 @@ implements peote.layout.ILayoutElement
 			if (backgroundIsVisible && backgroundElement != null) backgroundProgram.addElement(backgroundElement);			
 			if (selectionIsVisible && selectionElement != null) selectionProgram.addElement(selectionElement);			
 			if (cursorIsVisible && cursorElement != null) cursorProgram.addElement(cursorElement);
-			fontProgram.addLine(line);
+			fontProgram.lineAdd(line);
 		} 
 		else {
 			createFontStyle();			
@@ -545,7 +545,7 @@ implements peote.layout.ILayoutElement
 			var _height = height - topSpace - bottomSpace;
 			
 			fontProgram.lineSetPositionSize(line, _x, _y + y_offset, _width, getAlignedXOffset(xOffset), isVisible);
-			fontProgram.updateLine(line);
+			fontProgram.lineUpdate(line);
 			
 			#if (!peoteui_no_textmasking && !peoteui_no_masking)
 			if (masked) {
@@ -566,7 +566,7 @@ implements peote.layout.ILayoutElement
 	override inline function onRemoveVisibleFromDisplay()
 	{
 		//trace("onRemoveVisibleFromDisplay()");
-		fontProgram.removeLine(line);
+		fontProgram.lineRemove(line);
 		#if (!peoteui_no_textmasking && !peoteui_no_masking)
 		fontProgram.removeMask(maskElement);
 		#end		
@@ -638,7 +638,7 @@ implements peote.layout.ILayoutElement
 		if (forceAutoHeight != null) autoHeight = forceAutoHeight;
 		
 		if (line != null) {
-			fontProgram.setLine(line, text, x, y, (autoWidth) ? null : width, xOffset, this.fontStyle, null, isVisible);
+			fontProgram.lineSet(line, text, x, y, (autoWidth) ? null : width, xOffset, this.fontStyle, null, isVisible);
 			if (cursor > line.length) cursor = line.length;
 			if (selectTo > line.length) selectTo = line.length;
 			if (autoSize > 0) {
@@ -668,7 +668,7 @@ implements peote.layout.ILayoutElement
 		//trace("UITextLine - textInput:", s);
 		if (line != null) {
 			insertChars(chars, cursor, fontStyle);
-			fontProgram.updateLine(line);
+			fontProgram.lineUpdate(line);
 		}
 		
 		// TODO:
