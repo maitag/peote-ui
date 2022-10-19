@@ -12,10 +12,6 @@ import peote.text.Font;
 
 import peote.ui.PeoteUIDisplay;
 
-//import peote.ui.style.RoundBorderStyle;
-import peote.ui.style.SimpleStyle;
-import peote.ui.style.TextLineStyle;
-
 import peote.ui.interactive.UITextLine;
 import peote.ui.event.PointerEvent;
 //import peote.ui.event.WheelEvent;
@@ -24,8 +20,15 @@ import peote.ui.event.PointerEvent;
 //import peote.ui.util.HAlign;
 //import peote.ui.util.VAlign;
 
+//import peote.ui.style.RoundBorderStyle;
+import peote.ui.style.SimpleStyle;
+import peote.ui.style.TextLineStyle;
+
 import peote.ui.style.interfaces.FontStyle;
 
+// ------------------------------------------
+// --- using a custom FontStyle here --------
+// ------------------------------------------
 
 @packed // this is need for ttfcompile fonts (gl3font)
 @:structInit
@@ -37,7 +40,9 @@ class MyFontStyle implements FontStyle
 	@global public var weight = 0.5; //0.49 <- more thick (only for ttfcompiled fonts)
 }
 
-// -----------------------------------------
+// ------------------------------------
+// -------- application start  --------
+// ------------------------------------
 
 class SimpleText extends Application
 {
@@ -55,9 +60,12 @@ class SimpleText extends Application
 		}
 	}
 
+	// ---------------------------------------------------------------------------
+	// --- before starting PeoteUIDisplay, it have to load the fonts at first  ---
+	// ---------------------------------------------------------------------------
+
 	public function startSample(window:Window)
 	{
-		// load the FONT:
 		new Font<MyFontStyle>("assets/fonts/packed/hack/config.json").load( onFontLoaded );
 	}
 	

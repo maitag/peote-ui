@@ -86,6 +86,7 @@ class TestStyles extends Application
 		b.backgroundStyle.color = Color.GREY5;
 		b.updateStyle();
 	}
+	
 	// ---------------- all Fonts are loaded  ----------------------
 	
 	public function onFontLoaded(fontPacked:Font<FontStylePacked>, fontTiled:Font<FontStyleTiled>) // font needs type here !
