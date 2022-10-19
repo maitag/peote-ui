@@ -93,9 +93,10 @@ class TestStyles extends Application
 		fontButtons = fontTiled; // make global for the button() function
 		
 		var simpleStyle  = new SimpleStyle(Color.RED);
-		var roundBorderStyle = new RoundBorderStyle(Color.GREEN);		
+		var roundBorderStyle = new RoundBorderStyle(Color.GREEN);
 		var cursorStyle = SimpleStyle.createById(1); // different id is need if using more then one into available styles
-
+		
+		
 		var fontStylePacked:FontStylePacked = { width:20, height:20 };		
 		var fontStyleTiled = fontTiled.createFontStyle(); // alternative way of creation
 		
@@ -110,6 +111,7 @@ class TestStyles extends Application
 		
 		//uiDisplay.getStyleProgram(roundBorderStyle).alphaEnabled = false;				
 		uiDisplay.addFontStyleProgram(fontStyleTiled, fontTiled);
+		
 		uiDisplay.addStyleProgram(cursorStyle, true).alphaEnabled = true;
 		
 		
@@ -125,7 +127,8 @@ class TestStyles extends Application
 		var backgroundRoundStyle = roundBorderStyle.copy(Color.YELLOW);		
 		var selectionSimpleStyle = simpleStyle.copy(Color.GREY4);
 		var selectionRoundStyle = roundBorderStyle.copy(Color.GREY4);		
-		var cursorSimpleStyle = simpleStyle.copy();
+		//var cursorSimpleStyle = simpleStyle.copy();
+		var cursorSimpleStyle = cursorStyle.copy(Color.RED.setAlpha(0.5));
 		var cursorRoundStyle = roundBorderStyle.copy();
 		
 		var textStyle:TextLineStyle = {

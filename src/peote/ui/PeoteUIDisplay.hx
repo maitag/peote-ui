@@ -176,10 +176,10 @@ implements peote.layout.ILayoutElement
 			this.autoAddStyles = (autoAddStyles == null) ? false : autoAddStyles;
 			var noFontYet = true;
 			for (style in availableStyles) {
-				var id = style.getID() | (style.id << 16);
+				var id = style.getUUID();
 				if (usedStyleID.contains(id)) throw('Error by creating new UIDisplay. Give each of the styles "${Type.getClassName(Type.getClass(style))}" an unique ID to have multiple of them into the availableStyles list!');
 				usedStyleID.push(id);
-				if (isFontStyle(style)) {
+				if ( style.isFontStyle() ) {
 					usedStyleProgram.push(null); // <- will be created by first UITextLine
 					noFontYet = false;
 				} 
@@ -189,7 +189,6 @@ implements peote.layout.ILayoutElement
 					this.addProgram(program);
 					if (noFontYet) stylePosBeforeFont++;
 				}
-					
 			}
 		}
 	}
@@ -221,12 +220,11 @@ implements peote.layout.ILayoutElement
 	// -------------------------------
 	
 	inline public function addStyleProgram(style:Style, addOnTop:Bool = false):Program {
-		//if ( isFontStyle(style) ) throw('Error by addStyleProgram(). The style "${Type.getClassName(Type.getClass(style))}(${style.id})" is a FontStyle, so use addFontStyleProgram() instead!');
 		var program:Program;
-		var stylePos = usedStyleID.indexOf( style.getID() | (style.id << 16) );
+		var stylePos = usedStyleID.indexOf( style.getUUID() );
 		if (stylePos < 0) {
 			program = (style:Dynamic).createStyleProgram();
-			autoAddStyleProgram(cast program, style.getID() | (style.id << 16), addOnTop );
+			autoAddStyleProgram(cast program, style.getUUID(), addOnTop);
 		}
 		else {
 			program = cast usedStyleProgram[stylePos];
@@ -235,24 +233,24 @@ implements peote.layout.ILayoutElement
 				addProgramAtStylePos(program, stylePos);
 			}
 		}
+		//trace("usedStyleID:",usedStyleID);
 		return program;
 	}
 		
 	 public function addFontStyleProgram(style:FontStyle, font:Dynamic, addOnTop:Bool = true):Program {
 		// TODO: check font type
-		//if ( !isFontStyle(style) ) throw('Error by addFontStyleProgram(). The style "${Type.getClassName(Type.getClass(style))}(${style.id})" is not a FontStyle, so use addStyleProgram() instead!');
 		var program:Program;
-		var stylePos = usedStyleID.indexOf( style.getID() | (style.id << 16) );
+		var stylePos = usedStyleID.indexOf( style.getUUID() );
 		if (stylePos < 0) {
 			if (font == null) throw('Error by addFontStyleProgram(). The style "${Type.getClassName(Type.getClass(style))}(${style.id})" needs a corresponding font parameter.');
-			program = font.createFontProgram(style, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end);
-			autoAddStyleProgram(cast program, style.getID() | (style.id << 16), addOnTop);
+			program = font.createFontProgram(style, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end, 1024, 1024, true);
+			autoAddStyleProgram(cast program, style.getUUID(), addOnTop);
 		}
 		else {
 			program = cast usedStyleProgram[stylePos];
 			if (program == null) {
 				if (font == null) throw('Error by getProgram(). The style "${Type.getClassName(Type.getClass(style))}(${style.id})" is a FontStyle so it needs a corresponding font parameter.');
-				program = font.createFontProgram(style, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end);				
+				program = font.createFontProgram(style, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end, 1024, 1024, true);				
 				addProgramAtStylePos(program, stylePos);
 			}
 		}
@@ -260,8 +258,7 @@ implements peote.layout.ILayoutElement
 	}
 		
 	inline public function getStyleProgram(style:Style):Program {
-		//if ( isFontStyle(style) ) throw('Error by getStyleProgram(). The style "${Type.getClassName(Type.getClass(style))}(${style.id})" is a FontStyle, so use getFontStyleProgram() instead!');
-		var stylePos = usedStyleID.indexOf( style.getID() | (style.id << 16) );
+		var stylePos = usedStyleID.indexOf( style.getUUID() );
 		if (stylePos < 0) throw('Error by getProgram(). The style "${Type.getClassName(Type.getClass(style))}" id=${style.id} is not inside the availableStyles of UIDisplay.');
 		var program:Program = cast usedStyleProgram[stylePos];
 		if (program == null) {
@@ -273,19 +270,17 @@ implements peote.layout.ILayoutElement
 	
 	inline public function getFontStyleProgram(style:FontStyle, font:Dynamic):Program {
 		// TODO: check font type
-		//if ( !isFontStyle(style) ) throw('Error by getFontStyleProgram(). The style "${Type.getClassName(Type.getClass(style))}(${style.id})" is not a FontStyle, so use getStyleProgram() instead!');
-		var stylePos = usedStyleID.indexOf( style.getID() | (style.id << 16) );
+		var stylePos = usedStyleID.indexOf( style.getUUID() );
 		if (stylePos < 0) throw('Error by getProgram(). The style "${Type.getClassName(Type.getClass(style))}" id=${style.id} is not inside the availableStyles of UIDisplay.');
 		var program:Program = cast usedStyleProgram[stylePos];
 		if (program == null) {
 			if (font == null) throw('Error by getProgram(). The style "${Type.getClassName(Type.getClass(style))}(${style.id})" is a FontStyle so it needs a corresponding font parameter.');
-			program = font.createFontProgram(style, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end);
+			program = font.createFontProgram(style, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end, 1024, 1024, true);
 			addProgramAtStylePos(program, stylePos);
 		} 
 		return program;
 	}
 	
-	inline function isFontStyle(style:StyleID) return (style.getID() > 255);
 	
 	// TODO: to clean up all programs
 	//inline function removeStyleProgram(program:Program, stylePos:Int) {
@@ -1056,8 +1051,8 @@ implements peote.layout.ILayoutElement
 		
 	// ------------ TODO: bindings to input2action-lib "action"s  ----------
 	var actionConfig:input2action.ActionConfig = [
-		{ action: "cursorLeft" , keyboard: KeyCode.LEFT  },
-		{ action: "cursorRight", keyboard: KeyCode.RIGHT },
+		{ action: "cursorCharLeft" , keyboard: KeyCode.LEFT  },
+		{ action: "cursorCharRight", keyboard: KeyCode.RIGHT },
 		//KeyCode.DELETE
 		//KeyCode.BACKSPACE
 		//KeyCode.HOME
@@ -1073,17 +1068,13 @@ implements peote.layout.ILayoutElement
 	
 	function initInput2Action() {
 		actionMap = [
-			"cursorLeft"  => { action:cursorCharLeft , repeatKeyboardDefault:true },
-			"cursorRight" => { action:cursorCharRight, repeatKeyboardDefault:true },
+			"cursorCharLeft"  => { action:(_, _) -> if (inputFocusElement != null) inputFocusElement.cursorCharLeft() , repeatKeyboardDefault:true },
+			"cursorCharRight" => { action:(_, _) -> if (inputFocusElement != null) inputFocusElement.cursorCharRight(), repeatKeyboardDefault:true },
 		];
 		input2Action = new input2action.Input2Action(actionConfig, actionMap);
 		input2Action.setKeyboard(actionConfig);
 	}
-	
-	public inline function cursorCharLeft(_, _)  if (inputFocusElement != null) inputFocusElement.cursorCharLeft();
-	public inline function cursorCharRight(_, _) if (inputFocusElement != null) inputFocusElement.cursorCharRight();
-	
-	
+		
 	//public var onKeyDown:UIDisplay->InputEvent->Void = null;
 
 	@:access(input2action.Input2Action)

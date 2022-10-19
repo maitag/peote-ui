@@ -1,15 +1,13 @@
 package peote.ui.style;
 
 import peote.view.Color;
-import peote.ui.util.Unique;
 import peote.ui.style.interfaces.FontStyle;
-import peote.ui.style.interfaces.StyleID;
 
 
 //@multiSlot    // multiple slots per texture to store multiple unicode-ranges
 //@multiTexture // multiple textures to store multiple unicode-ranges
 @:structInit
-class FontStyleTiled implements FontStyle implements StyleID
+class FontStyleTiled implements FontStyle
 {
 	//@global public var color:Color = Color.BLACK;
 	public var color:Color = Color.BLACK;
@@ -35,11 +33,7 @@ class FontStyleTiled implements FontStyle implements StyleID
 	//public var bgColor:Color = Color.BLACK;
 			
 	// -----------------------------------------
-	
-	static var ID:Int = Unique.fontStyleID;
-	public inline function getID():Int return ID;
-	public var id(default, null):Int = 0;
-		
+			
 	public function new(
 		?color:Null<Color>,
 		?width:Null<Float>,

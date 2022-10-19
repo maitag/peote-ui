@@ -8,6 +8,8 @@ import peote.ui.event.WheelEvent;
 
 private typedef UIDisplayEventParams = UIDisplay->PointerEvent->Void;
 private typedef UIDisplayWheelEventParams = UIDisplay->WheelEvent->Void;
+private typedef UIDisplayDragEventParams = UIDisplay->Float->Float->Void;
+private typedef UIDisplayFocusEventParams = UIDisplay->Void;
 
 @:allow(peote.ui)
 class UIDisplay extends Interactive
@@ -24,6 +26,7 @@ class UIDisplay extends Interactive
 	
 	override inline function updateVisible():Void
 	{
+		// TODO: masking
 		display.x = x;
 		display.y = y;
 		display.width = width;
@@ -68,5 +71,10 @@ class UIDisplay extends Interactive
 	public var onMouseWheel(default, set):UIDisplayWheelEventParams;
 	inline function set_onMouseWheel(f:UIDisplayWheelEventParams):UIDisplayWheelEventParams  return setOnMouseWheel(this, f);
 	
+	public var onDrag(never, set):UIElementDragEventParams;
+	inline function set_onDrag(f:UIElementDragEventParams):UIElementDragEventParams return setOnDrag(this, f);
+	
+	public var onFocus(never, set):UIElementFocusEventParams;
+	inline function set_onFocus(f:UIElementFocusEventParams):UIElementFocusEventParams return setOnFocus(this, f);
 	
 }

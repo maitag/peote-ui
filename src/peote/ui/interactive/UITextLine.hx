@@ -63,7 +63,7 @@ implements peote.layout.ILayoutElement
 		}
 		else { // already have styleprogram and element 
 			if (style != null) {
-				if (style.getID() | (style.id << 16) != backgroundStyle.getID() | (backgroundStyle.id << 16))
+				if (style.getUUID() != backgroundStyle.getUUID())
 				{	// if is need another styleprogram
 					if (isVisible && backgroundIsVisible) backgroundProgram.removeElement(backgroundElement);
 					backgroundProgram = null;
@@ -108,7 +108,7 @@ implements peote.layout.ILayoutElement
 		}
 		else { // already have styleprogram and element 
 			if (style != null) {
-				if (style.getID() | (style.id << 16) != selectionStyle.getID() | (selectionStyle.id << 16)) { // if is need another styleprogram
+				if (style.getUUID() != selectionStyle.getUUID()) { // if is need another styleprogram
 					if (isVisible && selectionIsVisible) selectionProgram.removeElement(selectionElement);
 					selectionProgram = null;
 					selectionStyle = style;
@@ -169,7 +169,7 @@ implements peote.layout.ILayoutElement
 		}
 		else { // already have styleprogram and element 
 			if (style != null) {
-				if (style.getID() | (style.id << 16) != cursorStyle.getID() | (cursorStyle.id << 16)) { // if is need another styleprogram
+				if (style.getUUID() != cursorStyle.getUUID()) { // if is need another styleprogram
 					if (isVisible && cursorIsVisible) cursorProgram.removeElement(cursorElement);
 					cursorProgram = null;
 					cursorStyle = style;
@@ -578,21 +578,21 @@ implements peote.layout.ILayoutElement
 	
 	inline function createFontStyle()
 	{
-		var fontStylePos = uiDisplay.usedStyleID.indexOf( fontStyle.getID() | (fontStyle.id << 16) );
+		var fontStylePos = uiDisplay.usedStyleID.indexOf( fontStyle.getUUID() );
 		if (fontStylePos < 0) {
-			if (uiDisplay.autoAddStyles) uiDisplay.autoAddStyleProgram( cast fontProgram = font.createFontProgram(fontStyle, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end), fontStyle.getID() | (fontStyle.id << 16) , true );
+			if (uiDisplay.autoAddStyles) uiDisplay.autoAddStyleProgram( cast fontProgram = font.createFontProgram(fontStyle, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end, 1024, 1024, true), fontStyle.getUUID(), true );
 			else throw('Error by creating new UITextLine. The style "'+Type.getClassName(Type.getClass(fontStyle))+'" id='+fontStyle.id+' is not inside the availableStyle list of UIDisplay.');
 		} else {
 			fontProgram = cast uiDisplay.usedStyleProgram[fontStylePos];
-			if (fontProgram == null) uiDisplay.addProgramAtStylePos(cast fontProgram = font.createFontProgram(fontStyle, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end), fontStylePos);
+			if (fontProgram == null) uiDisplay.addProgramAtStylePos(cast fontProgram = font.createFontProgram(fontStyle, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end, 1024, 1024, true), fontStylePos);
 		}
 	}
 	
 	inline function createBackgroundStyle(addUpdate:Bool)
 	{
-		var stylePos = uiDisplay.usedStyleID.indexOf( backgroundStyle.getID() | (backgroundStyle.id << 16) );
+		var stylePos = uiDisplay.usedStyleID.indexOf( backgroundStyle.getUUID() );
 		if (stylePos < 0) {
-			if (uiDisplay.autoAddStyles) uiDisplay.autoAddStyleProgram(cast backgroundProgram = backgroundStyle.createStyleProgram(), backgroundStyle.getID() | (backgroundStyle.id << 16) );
+			if (uiDisplay.autoAddStyles) uiDisplay.autoAddStyleProgram(cast backgroundProgram = backgroundStyle.createStyleProgram(), backgroundStyle.getUUID() );
 			else throw('Error by creating background for new UITextLine. The style "'+Type.getClassName(Type.getClass(backgroundStyle))+'" id='+backgroundStyle.id+' is not inside the availableStyle list of UIDisplay.');
 		} else {
 			backgroundProgram = cast uiDisplay.usedStyleProgram[stylePos];
@@ -603,10 +603,10 @@ implements peote.layout.ILayoutElement
 	}
 	
 	inline function createSelectionStyle(x:Int, y:Int, w:Int, h:Int, mx:Int, my:Int, mw:Int, mh:Int, z:Int)
-	{	trace("createSelectionStyle");
-		var stylePos = uiDisplay.usedStyleID.indexOf( selectionStyle.getID() | (selectionStyle.id << 16) );
+	{	//trace("createSelectionStyle");
+		var stylePos = uiDisplay.usedStyleID.indexOf( selectionStyle.getUUID() );
 		if (stylePos < 0) {
-			if (uiDisplay.autoAddStyles) uiDisplay.autoAddStyleProgram(cast selectionProgram = selectionStyle.createStyleProgram(), selectionStyle.getID() | (selectionStyle.id << 16) );
+			if (uiDisplay.autoAddStyles) uiDisplay.autoAddStyleProgram(cast selectionProgram = selectionStyle.createStyleProgram(), selectionStyle.getUUID());
 			else throw('Error by creating selection for new UITextLine. The style "'+Type.getClassName(Type.getClass(selectionStyle))+'" id='+selectionStyle.id+' is not inside the availableStyle list of UIDisplay.');
 		} else {
 			selectionProgram = cast uiDisplay.usedStyleProgram[stylePos];
@@ -616,10 +616,10 @@ implements peote.layout.ILayoutElement
 	}
 	
 	inline function createCursorStyle(x:Int, y:Int, w:Int, h:Int, mx:Int, my:Int, mw:Int, mh:Int, z:Int)
-	{	trace("createCursorStyle");
-		var stylePos = uiDisplay.usedStyleID.indexOf( cursorStyle.getID() | (cursorStyle.id << 16) );
+	{	//trace("createCursorStyle");
+		var stylePos = uiDisplay.usedStyleID.indexOf( cursorStyle.getUUID() );
 		if (stylePos < 0) {
-			if (uiDisplay.autoAddStyles) uiDisplay.autoAddStyleProgram(cast cursorProgram = cursorStyle.createStyleProgram(), cursorStyle.getID() | (cursorStyle.id << 16) );
+			if (uiDisplay.autoAddStyles) uiDisplay.autoAddStyleProgram(cast cursorProgram = cursorStyle.createStyleProgram(), cursorStyle.getUUID() );
 			else throw('Error by creating cursor for new UITextLine. The style "'+Type.getClassName(Type.getClass(cursorStyle))+'" id='+cursorStyle.id+' is not inside the availableStyle list of UIDisplay.');
 		} else {
 			cursorProgram = cast uiDisplay.usedStyleProgram[stylePos];

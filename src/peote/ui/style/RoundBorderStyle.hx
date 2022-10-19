@@ -7,13 +7,11 @@ import peote.view.Buffer;
 
 import peote.ui.interactive.Interactive;
 import peote.ui.style.interfaces.Style;
-import peote.ui.style.interfaces.StyleID;
 import peote.ui.style.interfaces.StyleProgram;
 import peote.ui.style.interfaces.StyleElement;
-import peote.ui.util.Unique;
 
 @:structInit
-class RoundBorderStyle implements Style implements StyleID
+class RoundBorderStyle implements Style
 {	
 	// style
 	public var color       :Color = Color.GREY2;
@@ -22,11 +20,7 @@ class RoundBorderStyle implements Style implements StyleID
 	public var borderRadius:Float = 20.0;
 	
 	// -----------------------------------------	
-	
-	static var ID:Int = Unique.styleID;
-	public inline function getID():Int return ID;
-	public var id(default, null):Int = 0;
-		
+			
 	public function new(
 		?color       :Null<Color>,
 		?borderColor :Null<Color>,

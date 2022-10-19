@@ -32,7 +32,7 @@ import peote.ui.style.interfaces.StyleID;
 @packed // for ttfcompile types (gl3font)
 #end
 @:structInit
-class MyFontStyle implements FontStyle implements StyleID
+class MyFontStyle implements FontStyle
 {
 	public var color:Color = Color.GREEN;
 	
@@ -47,10 +47,6 @@ class MyFontStyle implements FontStyle implements StyleID
 		
 	// -----------------------------------------
 	
-	static var ID:Int = Unique.fontStyleID;
-	public inline function getID():Int return ID;
-	public var id(default, null):Int;
-		
 	public function new(id:Int = 0) {
 		this.id = id;
 	}

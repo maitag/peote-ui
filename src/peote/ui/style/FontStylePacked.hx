@@ -1,15 +1,13 @@
 package peote.ui.style;
 
 import peote.view.Color;
-import peote.ui.util.Unique;
 import peote.ui.style.interfaces.FontStyle;
-import peote.ui.style.interfaces.StyleID;
 
 @packed         // glyphes are packed into textureatlas with ttfcompile (gl3font)
 //@multiSlot    // multiple slots per texture to store multiple unicode-ranges
 //@multiTexture // multiple textures to store multiple unicode-ranges
 @:structInit
-class FontStylePacked implements FontStyle implements StyleID
+class FontStylePacked implements FontStyle
 {
 	//@global public var color:Color = Color.BLACK;
 	public var color:Color = Color.BLACK;
@@ -36,11 +34,7 @@ class FontStylePacked implements FontStyle implements StyleID
 	public var letterSpace:Float = 0.0;
 	
 	// -----------------------------------------
-	
-	static var ID:Int = Unique.fontStyleID;
-	public inline function getID():Int return ID;
-	public var id(default, null):Int = 0;
-		
+			
 	public function new(
 		?color:Null<Color>,
 		?width:Null<Float>,
@@ -62,7 +56,7 @@ class FontStylePacked implements FontStyle implements StyleID
 		?tilt:Null<Float>,
 		?letterSpace:Null<Float>
 	):FontStylePacked {
-		var newStyle = (style != null) ? style.copy(color, width, height, tilt ,letterSpace) : new FontStylePacked(color, width, height, tilt ,letterSpace);
+		var newStyle = (style != null) ? style.copy(color, width, height, tilt ,letterSpace) : new FontStylePacked(color, width, height, tilt, letterSpace);
 		newStyle.id = id;
 		return newStyle;
 	}
