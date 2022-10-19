@@ -21,40 +21,22 @@ import peote.ui.event.PointerEvent;
 //import peote.ui.event.WheelEvent;
 import peote.ui.util.HAlign;
 import peote.ui.util.VAlign;
-import peote.ui.util.Unique;
 
 import peote.ui.style.interfaces.Style;
 import peote.ui.style.interfaces.FontStyle;
-import peote.ui.style.interfaces.StyleID;
 
 
-#if packed 
-@packed // for ttfcompile types (gl3font)
-#end
+@packed // this is need for ttfcompile fonts (gl3font)
 @:structInit
 class MyFontStyle implements FontStyle
 {
 	public var color:Color = Color.GREEN;
-	
-	#if packed 
 	public var width:Float = 38; // (<- is it still fixed to get from font-defaults if this is MISSING ?)
 	public var height:Float = 36;
-	@global public var weight = 0.5;
-	#else
-	public var width:Float = 20;
-	public var height:Float = 36;
-	#end
-		
-	// -----------------------------------------
-	
-	public function new(id:Int = 0) {
-		this.id = id;
-	}
-	
-	public inline function copy():MyFontStyle {
-		return new MyFontStyle(id);
-	}
+	@global public var weight = 0.5; //0.49 <- more thick (only for ttfcompiled fonts)
 }
+
+// -----------------------------------------
 
 class SimpleText extends Application
 {
@@ -75,11 +57,7 @@ class SimpleText extends Application
 	public function startSample(window:Window)
 	{
 		// load the FONT:
-		#if packed 
 		new Font<MyFontStyle>("assets/fonts/packed/hack/config.json").load( onFontLoaded );
-		#else
-		new Font<MyFontStyle>("assets/fonts/tiled/hack_ascii.json").load( onFontLoaded );
-		#end		
 	}
 	
 	public function onFontLoaded(font:Font<MyFontStyle>) // don'T forget argument-type here !

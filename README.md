@@ -12,22 +12,22 @@ For fast opengl-rendering:
 haxelib git peote-view https://github.com/maitag/peote-view
 haxelib git peote-text https://github.com/maitag/peote-text
 ```
-  
-  
+
+
 To put ui-elements into a nested layout:
 ```
 haxelib git peote-layout https://github.com/maitag/peote-layout
 ```
 While `PeoteUI` and it's widget-workflow is depend on [peote-layout](https://github.com/maitag/peote-layout),
 you can also using `PeoteUIDisplay` and layout it manually like into sample here: [peote-layout/samples/peote-ui](https://github.com/maitag/peote-layout/tree/main/samples/peote-ui).
-  
-  
+
+
 To map keyboard-shortcuts or using gamepad for input-control you need [input2action](https://github.com/maitag/input2action):
 ```
 haxelib git peote-view https://github.com/maitag/input2action
 ```
-  
-  
+
+
 Finally install the lib itself by:
 ```
 haxelib git peote-view https://github.com/maitag/peote-ui

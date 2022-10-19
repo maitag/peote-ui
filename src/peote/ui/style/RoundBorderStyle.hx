@@ -21,7 +21,7 @@ class RoundBorderStyle implements Style
 	
 	// -----------------------------------------	
 			
-	public function new(
+/*	public function new(
 		?color       :Null<Color>,
 		?borderColor :Null<Color>,
 		?borderSize  :Null<Float>,
@@ -32,8 +32,8 @@ class RoundBorderStyle implements Style
 		if (borderSize   != null) this.borderSize   = borderSize;
 		if (borderRadius != null) this.borderRadius = borderRadius;
 	}
-	
-	static public function createById(id:Int, ?style:RoundBorderStyle,
+*/	
+/*	static public function createById(id:Int, ?style:RoundBorderStyle,
 		?color:Null<Color>,
 		?borderColor :Null<Color>,
 		?borderSize  :Null<Float>,
@@ -43,8 +43,8 @@ class RoundBorderStyle implements Style
 		newStyle.id = id;
 		return newStyle;
 	}
-	
-	// no inline here cos of neko
+*/	
+/*	// no inline here cos of neko
 	public function copy(
 		?color       :Null<Color>,
 		?borderColor :Null<Color>,
@@ -60,7 +60,7 @@ class RoundBorderStyle implements Style
 		newStyle.id = id;
 		return newStyle;
 	}
-
+*/
 	//@:keep inline function createStyleProgram():RoundBorderStyleProgram return new RoundBorderStyleProgram();
 	@:keep public inline function createStyleProgram():StyleProgram return new RoundBorderStyleProgram();
 }

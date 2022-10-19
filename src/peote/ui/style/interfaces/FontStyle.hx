@@ -38,7 +38,7 @@ class FontStyleMacro
 		// ------------------------------
 		
 		var fields = Context.getBuildFields();
-		peote.ui.style.interfaces.Style.StyleMacro.preapareFields(fields, (++FontStyleMacro.UUID) << 21 );
+		peote.ui.style.interfaces.Style.StyleMacro.preapareFields(fields, (++FontStyleMacro.UUID) << 21, classname );
 		
 		//for (field in fields) trace(new haxe.macro.Printer().printField(field)); trace("");
 		

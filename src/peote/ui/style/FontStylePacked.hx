@@ -35,7 +35,7 @@ class FontStylePacked implements FontStyle
 	
 	// -----------------------------------------
 			
-	public function new(
+/*	public function new(
 		?color:Null<Color>,
 		?width:Null<Float>,
 		?height:Null<Float>,
@@ -48,8 +48,8 @@ class FontStylePacked implements FontStyle
 		if (tilt   != null) this.tilt   = tilt;
 		if (letterSpace != null) this.letterSpace = letterSpace;
 	}
-	
-	static public function createById(id:Int, ?style:FontStylePacked,
+*/	
+/*	static public function createById(id:Int, ?style:FontStylePacked,
 		?color:Null<Color>,
 		?width:Null<Float>,
 		?height:Null<Float>,
@@ -60,8 +60,8 @@ class FontStylePacked implements FontStyle
 		newStyle.id = id;
 		return newStyle;
 	}
-	
-	public inline function copy(
+*/	
+/*	public inline function copy(
 		?color:Null<Color>,
 		?width:Null<Float>,
 		?height:Null<Float>,
@@ -78,5 +78,5 @@ class FontStylePacked implements FontStyle
 		newStyle.id = id;
 		return newStyle;
 	}
-		
+*/		
 }

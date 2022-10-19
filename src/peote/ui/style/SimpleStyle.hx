@@ -18,21 +18,21 @@ class SimpleStyle implements Style
 		
 	// -----------------------------------------	
 		
-	public function new(
+/*	public function new(
 		?color:Null<Color>
 	) {
 		if (color != null) this.color = color;
 	}
-	
-	static public function createById(id:Int, ?style:SimpleStyle,
+*/	
+/*	static public function createById(id:Int, ?style:SimpleStyle,
 		?color:Null<Color>
 	):SimpleStyle {
 		var newStyle = (style != null) ? style.copy(color) : new SimpleStyle(color);
 		newStyle.id = id;
 		return newStyle;
 	}
-	
-	// no inline here cos of neko
+*/	
+/*	// no inline here cos of neko
 	public function copy(
 		?color:Null<Color>
 	):SimpleStyle {
@@ -42,7 +42,7 @@ class SimpleStyle implements Style
 		newStyle.id = id;
 		return newStyle;
 	}
-	
+*/	
 	//@:keep inline function createStyleProgram():SimpleStyleProgram return new SimpleStyleProgram();
 	@:keep public inline function createStyleProgram():StyleProgram return new SimpleStyleProgram();
 }
