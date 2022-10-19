@@ -27,12 +27,13 @@ class FontStyleMacro
 		
 		// ---------------------------------------
 
-		#if peoteui_debug_macro
 		var classname:String = switch (Context.getLocalType()) {
 			case TInst(t, _): t.toString();
 			default: Context.error("Type for FontStyle expected", Context.currentPos());
 		}
-		Log.trace('preparing Fontstyle: $classname');	
+		
+		#if peoteui_debug_macro
+		Log.trace('preparing Fontstyle: $classname');
 		#end
 		
 		// ------------------------------

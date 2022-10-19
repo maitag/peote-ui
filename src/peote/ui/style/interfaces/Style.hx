@@ -15,7 +15,7 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.Log;
 
-class StyleMacro 
+class StyleMacro
 {
 	static var UUID:Int = 0;
 	
@@ -27,11 +27,12 @@ class StyleMacro
 		
 		// ---------------------------------------
 
-		#if peoteui_debug_macro
 		var classname:String = switch (Context.getLocalType()) {
 			case TInst(t, _): t.toString();
 			default: Context.error("Type for Style expected", Context.currentPos());
 		}
+		
+		#if peoteui_debug_macro
 		Log.trace('preparing Style: $classname');	
 		#end
 		
