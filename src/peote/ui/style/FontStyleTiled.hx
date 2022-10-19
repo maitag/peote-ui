@@ -25,6 +25,9 @@ class FontStyleTiled implements FontStyle
 	
 	//@global public var tilt:Float = 0.0;
 	public var tilt:Float = 0.0;
+
+	
+	
 	
 	// additional spacing after each letter
 	//@global public var letterSpace:Float = 2.0;
@@ -32,50 +35,5 @@ class FontStyleTiled implements FontStyle
 	
 	//public var bgColor:Color = Color.BLACK;
 			
-	// -----------------------------------------
-			
-/*	public function new(
-		?color:Null<Color>,
-		?width:Null<Float>,
-		?height:Null<Float>,
-		?tilt:Null<Float>,
-		?letterSpace:Null<Float>
-	) {
-		if (color  != null) this.color  = color;
-		if (width  != null) this.width  = width;
-		if (height != null) this.height = height;
-		if (tilt   != null) this.tilt   = tilt;
-		if (letterSpace != null) this.letterSpace = letterSpace;
-	}
-*/	
-/*	static public function createById(id:Int, ?style:FontStyleTiled,
-		?color:Null<Color>,
-		?width:Null<Float>,
-		?height:Null<Float>,
-		?tilt:Null<Float>,
-		?letterSpace:Null<Float>
-	):FontStyleTiled {
-		var newStyle = (style != null) ? style.copy(color, width, height, tilt ,letterSpace) : new FontStyleTiled(color, width, height, tilt ,letterSpace);
-		newStyle.id = id;
-		return newStyle;
-	}
-*/	
-/*	public inline function copy(
-		?color:Null<Color>,
-		?width:Null<Float>,
-		?height:Null<Float>,
-		?tilt:Null<Float>,
-		?letterSpace:Null<Float>
-	):FontStyleTiled {
-		var newStyle = new FontStyleTiled(
-			(color  != null) ? color  : this.color,		
-			(width  != null) ? width  : this.width,		
-			(height != null) ? height : this.height,
-			(tilt   != null) ? tilt   : this.tilt,
-			(letterSpace != null) ? letterSpace : this.letterSpace	
-		);
-		newStyle.id = id;
-		return newStyle;
-	}
-*/	
+	// -------------------------------------
 }

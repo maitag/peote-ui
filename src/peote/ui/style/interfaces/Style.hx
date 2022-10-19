@@ -54,17 +54,12 @@ class StyleMacro
 	{
 		var c = className.split(".");
 		var classPack = (c.length > 1) ? c.splice(0, c.length - 1) : [];
-		className = c[0];
-		//trace(classPack, className);
+		className = c[0]; //trace(classPack, className);
 		
 		// ------ collect used vars -----
-		//var nameType = new Array<{name:String, type:String}>();
-		var nameType = new Array<{name:String, type:TypePath}>();
-		
+		var nameType = new Array<{name:String, type:TypePath}>();		
 		for (f in fields) {
-			switch (f.kind)
-			{	
-				//case FVar(type, val): nameType.push( {name:f.name, type:switch (type) {case TPath(tp):tp.name; default:"";} });
+			switch (f.kind) {	
 				case FVar(type, val): nameType.push( {name:f.name, type:switch (type) {case TPath(tp):tp; default:null;} });
 				default: //trace(f.kind);
 			}
@@ -80,7 +75,8 @@ class StyleMacro
 		var newFun:Function = {
 			args:newAndCopyArgs,
 			//expr: macro $b{ [ for (v in nameType) macro if ($i{v.name} != null)  $i{'this.${v.name}'} = $i{v.name} ] }
-			expr: macro $b{ [ for (v in nameType) Context.parse('if (${v.name} != null) this.${v.name} = ${v.name}',Context.currentPos()) ] }			
+			expr: macro $b{ [ for (v in nameType) Context.parse('if (${v.name} != null) this.${v.name} = ${v.name}', Context.currentPos()) ] },
+			ret:null
 		}		
 		fields.push({
 			name: "new",

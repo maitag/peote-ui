@@ -1,11 +1,6 @@
 package;
 
 import haxe.CallStack;
-import haxe.Timer; 
-import peote.ui.style.RoundBorderStyle;
-import peote.ui.style.SimpleStyle;
-import peote.ui.style.TextLineStyle;
-import peote.ui.util.TextSize;
 
 import lime.app.Application;
 import lime.ui.Window;
@@ -16,13 +11,19 @@ import peote.view.Color;
 import peote.text.Font;
 
 import peote.ui.PeoteUIDisplay;
+
+//import peote.ui.style.RoundBorderStyle;
+import peote.ui.style.SimpleStyle;
+import peote.ui.style.TextLineStyle;
+
 import peote.ui.interactive.UITextLine;
 import peote.ui.event.PointerEvent;
 //import peote.ui.event.WheelEvent;
-import peote.ui.util.HAlign;
-import peote.ui.util.VAlign;
 
-import peote.ui.style.interfaces.Style;
+//import peote.ui.util.TextSize;
+//import peote.ui.util.HAlign;
+//import peote.ui.util.VAlign;
+
 import peote.ui.style.interfaces.FontStyle;
 
 

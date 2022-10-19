@@ -20,47 +20,6 @@ class RoundBorderStyle implements Style
 	public var borderRadius:Float = 20.0;
 	
 	// -----------------------------------------	
-			
-/*	public function new(
-		?color       :Null<Color>,
-		?borderColor :Null<Color>,
-		?borderSize  :Null<Float>,
-		?borderRadius:Null<Float> 
-	) {
-		if (color        != null) this.color        = color;		
-		if (borderColor  != null) this.borderColor  = borderColor;
-		if (borderSize   != null) this.borderSize   = borderSize;
-		if (borderRadius != null) this.borderRadius = borderRadius;
-	}
-*/	
-/*	static public function createById(id:Int, ?style:RoundBorderStyle,
-		?color:Null<Color>,
-		?borderColor :Null<Color>,
-		?borderSize  :Null<Float>,
-		?borderRadius:Null<Float> 
-	):RoundBorderStyle {
-		var newStyle = (style != null) ? style.copy(color, borderColor, borderSize, borderRadius) : new RoundBorderStyle(color, borderColor, borderSize, borderRadius);
-		newStyle.id = id;
-		return newStyle;
-	}
-*/	
-/*	// no inline here cos of neko
-	public function copy(
-		?color       :Null<Color>,
-		?borderColor :Null<Color>,
-		?borderSize  :Null<Float>,
-		?borderRadius:Null<Float> 
-	):RoundBorderStyle {
-		var newStyle = new RoundBorderStyle(
-			(color        != null) ? color        : this.color,		
-			(borderColor  != null) ? borderColor  : this.borderColor,
-			(borderSize   != null) ? borderSize   : this.borderSize,
-			(borderRadius != null) ? borderRadius : this.borderRadius
-		);
-		newStyle.id = id;
-		return newStyle;
-	}
-*/
 	//@:keep inline function createStyleProgram():RoundBorderStyleProgram return new RoundBorderStyleProgram();
 	@:keep public inline function createStyleProgram():StyleProgram return new RoundBorderStyleProgram();
 }
