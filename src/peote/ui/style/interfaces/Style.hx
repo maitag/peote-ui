@@ -73,12 +73,23 @@ class StyleMacro
 		//var newAndCopyArgs = [ for (v in nameType) {name:v.name, type:TPath({ name:"Null<"+v.type.name+">", pack:[], params:[] }), opt:true, value:null} ],
 		var newAndCopyArgs = [ for (v in nameType) {name:v.name, type:(v.type == null) ? null : TPath({ name:v.type.name, pack:[], params:[] }), opt:false, value:macro null} ];
 		
+		
+		/* // some inspirations how could do it as well (thx to filt3rek)
+		var c = macro class FakeClass {
+			public function new( ??? ) { ??? }
+		}
+		fields.push(c.fields[ 0 ]);
+
+		var f = macro function( ??? ) {	???	}
+		var newFunc = switch f.expr { case EFunction(_, o): o; case _: null; }		
+		*/		
 		var newFun:Function = {
 			args:newAndCopyArgs,
 			//expr: macro $b{ [ for (v in nameType) macro if ($i{v.name} != null)  $i{'this.${v.name}'} = $i{v.name} ] }
 			expr: macro $b{ [ for (v in nameType) Context.parse('if (${v.name} != null) this.${v.name} = ${v.name}', Context.currentPos()) ] },
 			ret:null
-		}		
+		}
+		
 		fields.push({
 			name: "new",
 			access: [Access.APublic, Access.AInline],
