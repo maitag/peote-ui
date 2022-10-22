@@ -18,7 +18,7 @@ import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
 
 
-class SimpleSlider extends Application
+class CustomSlider extends Application
 {
 	var peoteView:PeoteView;
 	var uiDisplay:PeoteUIDisplay;

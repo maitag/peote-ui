@@ -13,6 +13,9 @@ private typedef UIDisplayFocusEventParams = UIDisplay->Void;
 
 @:allow(peote.ui)
 class UIDisplay extends Interactive
+#if peote_layout
+implements peote.layout.ILayoutElement
+#end
 {	
 	public var display:Display = null; // TODO: use a setter to change the display at runtime
 	
