@@ -399,8 +399,13 @@ implements peote.layout.ILayoutElement
 	var lastMouseX:Float = 0.0;
 	var lastMouseY:Float = 0.0;
 	
+	var isTriggerMouse = false; // to keep sure its not called recursively
 	public inline function triggerMouse(uiElement:Interactive) {
-		if ( uiElement.hasMoveEvent != 0 && uiElement.pointIsInside(localX(lastMouseX), localY(lastMouseY)) ) mouseMove(lastMouseX, lastMouseY);
+		if (!isTriggerMouse && uiElement.hasMoveEvent != 0 && uiElement.pointIsInside(localX(lastMouseX), localY(lastMouseY)) ) {
+			isTriggerMouse = true;
+			mouseMove(lastMouseX, lastMouseY);
+			isTriggerMouse = false;
+		}
 	}
 	
 	public inline function mouseMove (mouseX:Float, mouseY:Float, checkForEvent:Int = HAS_OVEROUT_MOVE):Int
