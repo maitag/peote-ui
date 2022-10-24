@@ -39,7 +39,7 @@ class Sliders extends Application
 	{
 		peoteView = new PeoteView(window);
 		
-		uiDisplay = new PeoteUIDisplay(20, 20, window.width-40, window.height-40, Color.GREY1);
+		uiDisplay = new PeoteUIDisplay(10, 10, window.width-20, window.height-20, Color.GREY1);
 		peoteView.addDisplay(uiDisplay);
 		
 		var roundBorderStyle:RoundBorderStyle = {
@@ -51,20 +51,50 @@ class Sliders extends Application
 		
 		var sliderStyle:SliderStyle = {
 			backgroundStyle: roundBorderStyle,
-			draggerStyle: roundBorderStyle,
-			//type: SliderType.VERTICAL,
-			//minDraggerSize:0.1, 
-			//draggable:true, // is default
+			draggerStyle: roundBorderStyle.copy(Color.YELLOW),
 		};
 		
-		var slider = new UISlider(10, 130, 350, 60, sliderStyle);
+		var hSlider = new UISlider(80, 10, 500, 60, sliderStyle);
+		setSliderEvents(hSlider);
+		uiDisplay.add(hSlider);
 		
-		slider.onPointerOver = function(uiSlider:UISlider, e:PointerEvent) {
-			//uiSlider.backgroundStyle.color = Color.GREEN;
-			//uiSlider.updateBackgroundStyle();
+		
+		var vSlider = new UISlider(10, 10, 60, 500, sliderStyle);
+		setSliderEvents(vSlider);
+		uiDisplay.add(vSlider);
+		
+		hSlider.onChange = function(uiSlider:UISlider, percent:Float) {
+			trace( 'hSlider at: ${percent*100}%' );
+			vSlider.value = percent;
 		}
 		
-/*		slider.onPointerOut = function(uiSlider:UISlider, e:PointerEvent) {
+		vSlider.onChange = function(uiSlider:UISlider, percent:Float) {
+			trace( 'vSlider at: ${percent*100}%' );
+			hSlider.value = percent;
+		}
+		
+		
+		
+		// TODO: make uiElement to switch between
+		//uiDisplay.mouseEnabled = false;
+		//uiDisplay.touchEnabled = false;
+		
+		#if android
+		uiDisplay.mouseEnabled = false;
+		peoteView.zoom = 3;
+		#end
+		
+		PeoteUIDisplay.registerEvents(window);			
+	}	
+
+	public function setSliderEvents(slider:UISlider) 
+	{
+		slider.onPointerOver = function(uiSlider:UISlider, e:PointerEvent) {
+			uiSlider.backgroundStyle.color = Color.GREEN;
+			uiSlider.updateBackgroundStyle();
+		}
+		
+		slider.onPointerOut = function(uiSlider:UISlider, e:PointerEvent) {
 			uiSlider.backgroundStyle.color = Color.GREY2;
 			uiSlider.updateBackgroundStyle();
 		}
@@ -75,7 +105,7 @@ class Sliders extends Application
 		}
 		
 		slider.onDraggerPointerOut = function(uiSlider:UISlider, e:PointerEvent) {
-			uiSlider.draggerStyle.color = Color.BLUE;
+			uiSlider.draggerStyle.color = Color.YELLOW;
 			uiSlider.updateDraggerStyle();
 		}
 		
@@ -89,33 +119,10 @@ class Sliders extends Application
 			uiSlider.updateDraggerStyle();		
 		}
 		
-		// if slider value is changing
-		slider.onChange = function(uiSlider:UISlider, percent:Float) {
-			trace( 'Slider at: ${percent*100}%' );
-		}
-		
 		slider.onMouseWheel = function(uiSlider:UISlider, e:WheelEvent) {
-			uiSlider.value += e.deltaX * 0.1;
+			uiSlider.value += e.deltaY * 0.1;
 		}
-*/		
-		uiDisplay.add(slider);
 		
-		
-		
-		// TODO: make uiElement to switch between
-		//uiDisplay.mouseEnabled = false;
-		//uiDisplay.touchEnabled = false;
-		peoteView.zoom = 0.8;
-		peoteView.xOffset = 30;
-		uiDisplay.zoom = 1.7;
-		uiDisplay.xOffset = 50;
-		
-		#if android
-		uiDisplay.mouseEnabled = false;
-		peoteView.zoom = 3;
-		#end
-		
-		PeoteUIDisplay.registerEvents(window);			
-	}	
-
+	}
+	
 }

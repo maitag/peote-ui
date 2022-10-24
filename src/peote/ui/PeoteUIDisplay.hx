@@ -396,12 +396,19 @@ implements peote.layout.ILayoutElement
 	var isMouseInside:Bool = false;
 	var isMouseOver:Bool = false;
 	
+	var lastMouseX:Float = 0.0;
+	var lastMouseY:Float = 0.0;
+	
+	public inline function triggerMouse(uiElement:Interactive) {
+		if ( uiElement.hasMoveEvent != 0 && uiElement.pointIsInside(localX(lastMouseX), localY(lastMouseY)) ) mouseMove(lastMouseX, lastMouseY);
+	}
+	
 	public inline function mouseMove (mouseX:Float, mouseY:Float, checkForEvent:Int = HAS_OVEROUT_MOVE):Int
 	{
 		if (mouseEnabled && peoteView != null)
 		{
-			var x = Std.int(mouseX);
-			var y = Std.int(mouseY);
+			var x = Std.int(lastMouseX = mouseX);
+			var y = Std.int(lastMouseY = mouseY);
 			
 			var isInside:Bool = false;
 			var pickedIndex = -1;

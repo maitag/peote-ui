@@ -8,7 +8,7 @@ class SliderStyleImpl
 	public var backgroundStyle:Style = null;	
 	public var draggerStyle:Style = null;
 	
-	// to make a vertical or horizontal slider,
+	// force a vertical or horizontal slider,
 	// by default it's set automatically (by aspect ratio of slidersize)
 	public var vertical:Null<Bool> = null;    		
 	
@@ -17,14 +17,14 @@ class SliderStyleImpl
 
 	// default slider behavior is:
     // 0.0 < -- > 1.0
-    //             ^
-    //             |
-    //             v
-    //            0.0	
+    //  ^
+    //  |
+    //  v
+    // 1.0	
 	// to change this -> feel free to reverse
 	public var reverse:Bool = false;
    
-		
+	
 	// ------------- into slider waist sizing -----------------
 	
 	// dragger pixel-size, is automatic set to slider size by default

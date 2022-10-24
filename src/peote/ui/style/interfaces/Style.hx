@@ -70,9 +70,24 @@ class StyleMacro
 		
 		// ------ generate new() constructor ------
 		
-		//var newAndCopyArgs = [ for (v in nameType) {name:v.name, type:TPath({ name:"Null<"+v.type.name+">", pack:[], params:[] }), opt:true, value:null} ],
-		var newAndCopyArgs = [ for (v in nameType) {name:v.name, type:(v.type == null) ? null : TPath({ name:v.type.name, pack:[], params:[] }), opt:false, value:macro null} ];
-		
+/*		var newAndCopyArgs = [ for (v in nameType)
+			{	name: v.name,
+				type: (v.type == null) ? null : TPath({ name:v.type.name, pack:[], params:[] }),
+				opt: false,
+				value: macro null
+			}
+		];
+*/		
+		// thx to Rudi:
+		var newAndCopyArgs = [ for (v in nameType)
+			{	var ct = TPath(v.type);
+				{	name: v.name,
+					type: (v.type == null) ? null : macro :Null<$ct>,
+					opt: true,
+					value: null
+				}
+			}
+		];
 		
 		/* // some inspirations how could do it as well (thx to filt3rek)
 		var c = macro class FakeClass {
@@ -84,10 +99,14 @@ class StyleMacro
 		var newFunc = switch f.expr { case EFunction(_, o): o; case _: null; }		
 		*/		
 		var newFun:Function = {
-			args:newAndCopyArgs,
-			//expr: macro $b{ [ for (v in nameType) macro if ($i{v.name} != null)  $i{'this.${v.name}'} = $i{v.name} ] }
-			expr: macro $b{ [ for (v in nameType) Context.parse('if (${v.name} != null) this.${v.name} = ${v.name}', Context.currentPos()) ] },
-			ret:null
+			args: newAndCopyArgs,
+			//expr: macro $b{ [ for (v in nameType) Context.parse('if (${v.name} != null) this.${v.name} = ${v.name}', Context.currentPos()) ] },
+			expr: macro $b{ [for (v in nameType)
+				{	var vname = v.name; // thx to Rudi
+					macro if ($i{vname} != null) this.$vname = $i{vname};
+				}
+			]},
+			ret: null
 		}
 		
 		fields.push({

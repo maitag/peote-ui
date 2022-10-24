@@ -335,6 +335,9 @@ implements peote.layout.ILayoutElement
 		return uiDisplay.localY(globalY) - y;
 	}
 	
+	public inline function pointIsInside(x:Float, y:Float):Bool {
+		return (this.x <= x && x < this.x + width) && (this.y <= y && y < this.y + height);
+	}
 	
 	// ----------------- Event-Bindings ----------------------
 

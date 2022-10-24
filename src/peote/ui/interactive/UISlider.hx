@@ -17,33 +17,137 @@ class UISlider extends Interactive
 #if peote_layout
 implements peote.layout.ILayoutElement
 #end
-{	
+{
+	public var isVertical(default, null):Bool = false;
+	
+	public var _value:Float = 0.0;
+	
+	public var value(get, set):Float;
+	inline function get_value():Float return _value;
+	inline function set_value(v:Float):Float {
+		setValue(v, false);
+		return v;
+	}
+	
+	public inline function setValue(value:Float, triggerOnChange:Bool = true) 
+	{
+		if (value < 0.0) value = 0.0 else if (value > 1.0) value = 1.0;
+ 		if (isVertical) dragger.y = Std.int( y + (height - dragger.height) * value );
+		else dragger.x = Std.int( x + (width - dragger.width) * value );
+		dragger.updateLayout();
+		if (isVisible) uiDisplay.triggerMouse(this);
+		if (triggerOnChange && onChange != null) onChange(this, value);
+		_value = value;
+	}
+	
 	public var dragger:UIElement = null;
+	public var background:UIElement = null;
+	
+	public var backgroundStyle(get, set):Dynamic;
+	inline function get_backgroundStyle():Dynamic return background.style;
+	inline function set_backgroundStyle(style:Dynamic):Dynamic return background.style = style;
+	
+	public var draggerStyle(get, set):Dynamic;
+	inline function get_draggerStyle():Dynamic return dragger.style;
+	inline function set_draggerStyle(style:Dynamic):Dynamic return dragger.style = style;
 	
 	public function new(xPosition:Int=0, yPosition:Int=0, width:Int=100, height:Int=100, zIndex:Int=0, sliderStyle:SliderStyle=null) 
 	{
 		super(xPosition, yPosition, width, height, zIndex);
+
+		if (width < height) isVertical = true;
 		
-		// ...
+		if (sliderStyle.backgroundStyle != null) background = new UIElement(xPosition, yPosition, width, height, zIndex, sliderStyle.backgroundStyle);
+		
+		var draggerWidth:Int; 
+		var draggerHeight:Int;
+		if (isVertical) {
+			if (sliderStyle.draggerSize != null) draggerWidth = sliderStyle.draggerSize else draggerWidth = width;
+			if (sliderStyle.draggerLength != null) draggerHeight = sliderStyle.draggerLength else draggerHeight = width;
+		}
+		else {
+			if (sliderStyle.draggerSize != null) draggerHeight = sliderStyle.draggerSize else draggerHeight = height;
+			if (sliderStyle.draggerLength != null) draggerWidth = sliderStyle.draggerLength else draggerWidth = height;
+		}
+		
+		if (sliderStyle.draggerStyle != null) dragger = new UIElement(xPosition, yPosition, draggerWidth, draggerHeight, zIndex+1, sliderStyle.draggerStyle);
+		
+		// set the drag-area to same size as the slider
+		dragger.setDragArea(xPosition, yPosition, width, height);
+
+		dragger.onPointerOver = function(uiElement:UIElement, e:PointerEvent) if (onDraggerPointerOver != null) onDraggerPointerOver(this, e);
+		dragger.onPointerOut = function(uiElement:UIElement, e:PointerEvent) if (onDraggerPointerOut != null) onDraggerPointerOut(this, e);
+
+		// start/stop dragging
+		dragger.onPointerDown = function(uiElement:UIElement, e:PointerEvent) {
+			if (onDraggerPointerDown != null) onDraggerPointerDown(this, e);
+			uiElement.startDragging(e); // <----- start dragging
+		}
+		
+		dragger.onPointerUp = function(uiElement:UIElement, e:PointerEvent) {
+			uiElement.stopDragging(e);  // <----- stop dragging
+			if (onDraggerPointerUp != null) onDraggerPointerUp(this, e);
+		}
+		
+		// onDrag event
+		dragger.onDrag = function(uiElement:UIElement, percentX:Float, percentY:Float) {
+			_value = (isVertical) ? percentY : percentX;
+			if (onChange != null) onChange(this, (isVertical) ? percentY : percentX);
+		}
+		
+		// to bubble events down to the background
+		dragger.overOutEventsBubbleTo = this;
+		dragger.upDownEventsBubbleTo = this;
+		dragger.wheelEventsBubbleTo = this;
+
+
 	}
 		
-	override function updateVisible():Void
+	public inline function updateBackgroundStyle() if (background != null) background.updateVisibleStyle();
+	public inline function updateDraggerStyle() if (dragger != null) dragger.updateVisibleStyle();
+	
+	override inline function updateVisibleStyle():Void
 	{
-		
+		updateBackgroundStyle();
+		updateDraggerStyle();
+	}
+	
+	override inline function updateVisibleLayout():Void
+	{
+		if (background != null) background.updateVisibleLayout();
+		if (dragger != null) dragger.updateVisibleLayout();
+	}
+
+	override inline function updateVisible():Void
+	{
+		if (background != null) background.updateVisible();
+		if (dragger != null) dragger.updateVisible();
 	}
 	
 	// -----------------
 	
 	override inline function onAddVisibleToDisplay()
 	{
-		
+		trace("onAddVisibleToDisplay");
+		if (background != null) uiDisplay.add(background);
+		if (dragger != null) uiDisplay.add(dragger);
 	}
 	
 	override inline function onRemoveVisibleFromDisplay()
 	{		
+		if (background != null) uiDisplay.remove(background);
+		if (dragger != null) uiDisplay.remove(dragger);
 		
 	}
 
+	// ------- DraggerEvents ----------------
+	public var onDraggerPointerOver(null, default):UISliderEventParams = null;
+	public var onDraggerPointerOut(null, default):UISliderEventParams = null;
+	public var onDraggerPointerDown(null, default):UISliderEventParams = null;
+	public var onDraggerPointerUp(null, default):UISliderEventParams = null;
+	
+	public var onChange(null, default):UISlider->Float->Void = null;
+	
 	// ---------- Events --------------------
 	
 	public var onPointerOver(never, set):UISliderEventParams;
@@ -63,7 +167,7 @@ implements peote.layout.ILayoutElement
 	
 	public var onPointerClick(never, set):UISliderEventParams;
 	inline function set_onPointerClick(f:UISliderEventParams):UISliderEventParams return setOnPointerClick(this, f);
-		
+	
 	public var onMouseWheel(default, set):UISliderWheelEventParams;
 	inline function set_onMouseWheel(f:UISliderWheelEventParams):UISliderWheelEventParams  return setOnMouseWheel(this, f);
 	
