@@ -48,8 +48,8 @@ implements peote.layout.ILayoutElement
 		setValue(value + delta, triggerOnChange, triggerMouseMove);
 	}
 
-	public var dragger:UIElement = null;
-	public var background:UIElement = null;
+	var dragger:UIElement = null;
+	var background:UIElement = null;
 	
 	public var backgroundStyle(get, set):Dynamic;
 	inline function get_backgroundStyle():Dynamic return background.style;
@@ -91,9 +91,15 @@ implements peote.layout.ILayoutElement
 			if (onDraggerPointerDown != null) onDraggerPointerDown(this, e);
 			dragger.masked = false;
 			dragger.startDragging(e); // <----- start dragging
+			trace("Dragger: DOWN", dragger.isDragging);
 		}
 		
 		dragger.onPointerUp = function(uiElement:UIElement, e:PointerEvent) {
+			trace("Dragger: UP ", dragger.isDragging, uiDisplay.draggingMouseElements.length);
+			
+			// PROBLEM: SUPER-Glitch here if buffer-index is changed so not same as pickable anymore or something
+			// how could it not be the same "dragger"-instance here anymore =?= 
+			
 			dragger.stopDragging(e);  // <----- stop dragging
 			_updateDraggerMask();
 			if (onDraggerPointerUp != null) onDraggerPointerUp(this, e);
@@ -171,13 +177,13 @@ implements peote.layout.ILayoutElement
 	// -----------------
 	
 	override inline function onAddVisibleToDisplay()
-	{
+	{ 	//trace("SliderShows");
 		if (background != null) uiDisplay.add(background);
 		if (dragger != null && !dragger.isVisible) uiDisplay.add(dragger);
 	}
 	
 	override inline function onRemoveVisibleFromDisplay()
-	{		
+	{	//trace("SliderHides", dragger.isVisible);
 		if (background != null) uiDisplay.remove(background);
 		if (dragger != null && dragger.isVisible) uiDisplay.remove(dragger);
 		

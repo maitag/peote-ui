@@ -100,14 +100,16 @@ implements peote.layout.ILayoutElement
 		//skins = new Array<Skin>();
 		
 		lastMouseDownIndex = new Vector<Int>(3);
-		draggingMouseElements = new Array<Interactive>();
 		for (i in 0...lastMouseDownIndex.length) {
 			lastMouseDownIndex.set(i, -1);
 		}
+		
+		draggingMouseElements = new Array<Interactive>();
 
 		this.maxTouchpoints = maxTouchpoints;
 		lastTouchOverIndex = new Vector<Int>(maxTouchpoints);
 		lastTouchDownIndex = new Vector<Int>(maxTouchpoints);
+		
 		draggingTouchElements = new Vector<Array<Interactive>>(maxTouchpoints);
 				
 		for (i in 0...maxTouchpoints) {
@@ -334,6 +336,7 @@ implements peote.layout.ILayoutElement
 	
 	// ----------------------------------------
 	public function startDraggingElement(uiElement:Interactive, e:PointerEvent):Void {
+		//trace("start dragging element", uiElement.isDragging);
 		if (! uiElement.isDragging) {
 			uiElement.isDragging = true;
 			switch (e.type) {
@@ -346,12 +349,14 @@ implements peote.layout.ILayoutElement
 	}
 
 	public function stopDraggingElement(uiElement:Interactive, e:PointerEvent):Void {
+		//trace("stop dragging element", uiElement.isDragging, draggingMouseElements.length);
 		if (uiElement.isDragging) {
 			uiElement.isDragging = false;
 			switch (e.type) {
 				case MOUSE: {
-					draggingMouseElements.remove(uiElement);
+					draggingMouseElements.remove(uiElement); //draggingMouseElements =[];
 					if (draggingMouseElements.length == 0) mouseMove(e.x, e.y);
+					//trace("after", uiElement.isDragging, draggingMouseElements.length);
 				}
 				case TOUCH: {
 					var draggingTouchElemArray = draggingTouchElements.get(e.touch.id);

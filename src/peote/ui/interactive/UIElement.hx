@@ -118,7 +118,7 @@ implements peote.layout.ILayoutElement
 	}
 	
 	override inline function onRemoveVisibleFromDisplay()
-	{		
+	{	//trace("UIElement onRemoveVisibleFromDisplay");
 		if (styleIsVisible && styleElement != null) styleProgram.removeElement(styleElement);
 	}
 

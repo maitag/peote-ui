@@ -1,6 +1,5 @@
 package peote.ui.interactive;
 
-import haxe.ds.IntMap;
 import peote.ui.interactive.Interactive;
 import peote.ui.interactive.UIElement;
 import peote.ui.style.interfaces.Style;
@@ -129,7 +128,7 @@ implements peote.layout.ILayoutElement
 	}
 	
 	override inline function onRemoveVisibleFromDisplay()
-	{		
+	{	
 		if (background != null) uiDisplay.remove(background);
 		for (uiElement in uiElements) uiDisplay.remove(uiElement);
 	}

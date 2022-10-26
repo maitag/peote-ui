@@ -90,9 +90,9 @@ class Areas extends Application
 		area.add(sliderInside);
 		
 		
-		// -----------------------------------
-		// ---- creating the Sliders ---------
-		// -----------------------------------
+		// -----------------------------------------------
+		// ---- creating the Scrollbar - Sliders ---------
+		// -----------------------------------------------
 		
 		
 		var hSlider = new UISlider(60, 15, 500, 40, sliderStyle);

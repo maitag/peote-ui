@@ -364,8 +364,8 @@ implements peote.layout.ILayoutElement
 				_maskElementY(_y, _height);
 			}
 		} 
-		else if (right >= _x + _width) {
-			if (x >= _x + _width) hide();
+		else if (right > _x + _width) {
+			if (x > _x + _width) hide();
 			else {
 				maskX = 0;
 				maskWidth = width - (right - (_x + _width));
@@ -385,13 +385,13 @@ implements peote.layout.ILayoutElement
 			if (bottom < _y) hide();
 			else {
 				maskY = _y - y;
-				if (bottom >= _y + _height) maskHeight = _height;
-				else maskHeight = height - maskY;
+				if (bottom > _y + _height) maskHeight = _height;
+				else maskHeight = height + maskY;
 				show();
 			}
 		} 
-		else if (bottom >= _y + _height) {
-			if (y >= _y + _height) hide();
+		else if (bottom > _y + _height) {
+			if (y > _y + _height) hide();
 			else {
 				maskY = 0;
 				maskHeight = height - (bottom - (_y + _height));
