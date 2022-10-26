@@ -7,13 +7,14 @@
 	<!-- <meta build-number="714" /> --> <!-- let set the buildnumber manual (android) -->
 	<!-- check this for GG-Playstore: <setenv name="ANDROID_GRADLE_TASK" value=":app:bundleRelease" /> -->
 	
-	<app main="Sliders" path="bin" file="Main" />
+	<app main="Areas" path="bin" file="Main" />
 	<!--
 		SimpleElements,
 		SimpleText,
+		SimpleDragArea,
 		CustomSlider,
 		Sliders,
-		SimpleDragArea,
+		Areas,
 		// TODO: FocusAndNavigation,
 		TestStyles,
 		TestEventBubbling,

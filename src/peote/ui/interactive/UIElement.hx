@@ -110,7 +110,7 @@ implements peote.layout.ILayoutElement
 			if (uiDisplay.autoAddStyles) uiDisplay.autoAddStyleProgram(cast styleProgram = style.createStyleProgram(), style.getUUID());
 			else throw('Error by creating new InteractiveElement. The style "${Type.getClassName(Type.getClass(style))}" id=${style.id} is not inside the availableStyle list of UIDisplay.');
 		} else {
-			styleProgram = cast uiDisplay.usedStyleProgram[stylePos]; trace("styleProgram", (styleProgram == null));
+			styleProgram = cast uiDisplay.usedStyleProgram[stylePos];
 			if (styleProgram == null) uiDisplay.addProgramAtStylePos(cast styleProgram = style.createStyleProgram(), stylePos);				
 		}
 		styleElement = styleProgram.createElement(this, style);

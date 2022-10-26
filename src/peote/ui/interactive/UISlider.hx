@@ -25,21 +25,29 @@ implements peote.layout.ILayoutElement
 	public var value(get, set):Float;
 	inline function get_value():Float return _value;
 	inline function set_value(v:Float):Float {
-		setValue(v, false);
+		setValue(v, false, false);
 		return v;
 	}
 	
-	public inline function setValue(value:Float, triggerOnChange:Bool = true) 
+	public inline function setValue(value:Float, triggerOnChange:Bool = true, triggerMouseMove:Bool = true) 
 	{
+		if (dragger.isDragging) return;
+		
 		if (value < 0.0) value = 0.0 else if (value > 1.0) value = 1.0;
  		if (isVertical) dragger.y = Std.int( y + (height - dragger.height) * value );
 		else dragger.x = Std.int( x + (width - dragger.width) * value );
-		dragger.updateLayout();
-		if (isVisible) uiDisplay.triggerMouse(this);
+		//dragger.updateLayout();
+		_updateDraggerMask();
+		if (isVisible && triggerMouseMove) uiDisplay.triggerMouse(this);
 		if (triggerOnChange && onChange != null) onChange(this, value);
 		_value = value;
 	}
 	
+	public inline function setDelta(delta:Float, triggerOnChange:Bool = true, triggerMouseMove:Bool = true) 
+	{
+		setValue(value + delta, triggerOnChange, triggerMouseMove);
+	}
+
 	public var dragger:UIElement = null;
 	public var background:UIElement = null;
 	
@@ -81,11 +89,13 @@ implements peote.layout.ILayoutElement
 		// start/stop dragging
 		dragger.onPointerDown = function(uiElement:UIElement, e:PointerEvent) {
 			if (onDraggerPointerDown != null) onDraggerPointerDown(this, e);
-			uiElement.startDragging(e); // <----- start dragging
+			dragger.masked = false;
+			dragger.startDragging(e); // <----- start dragging
 		}
 		
 		dragger.onPointerUp = function(uiElement:UIElement, e:PointerEvent) {
-			uiElement.stopDragging(e);  // <----- stop dragging
+			dragger.stopDragging(e);  // <----- stop dragging
+			_updateDraggerMask();
 			if (onDraggerPointerUp != null) onDraggerPointerUp(this, e);
 		}
 		
@@ -95,7 +105,7 @@ implements peote.layout.ILayoutElement
 			if (onChange != null) onChange(this, (isVertical) ? percentY : percentX);
 		}
 		
-		// to bubble events down to the background
+		// to bubble events down to the dragger
 		dragger.overOutEventsBubbleTo = this;
 		dragger.upDownEventsBubbleTo = this;
 		dragger.wheelEventsBubbleTo = this;
@@ -114,29 +124,62 @@ implements peote.layout.ILayoutElement
 	
 	override inline function updateVisibleLayout():Void
 	{
-		if (background != null) background.updateVisibleLayout();
-		if (dragger != null) dragger.updateVisibleLayout();
+		if (background != null) {
+			background.x = x; background.y = y;
+			if (masked) {
+				background.maskX = maskX; background.maskY = maskY; background.maskWidth = maskWidth; background.maskHeight = maskHeight;
+				background.masked = true;
+			}
+			background.updateVisibleLayout();
+		}
+		if (dragger != null) {
+			//dragger.x = x; dragger.y = y;
+			
+			if (isVertical) {
+				dragger.x = x;
+				dragger.y = Std.int( y + (height - dragger.height) * value );
+			}
+			else {
+				dragger.y = y;
+				dragger.x = Std.int( x + (width - dragger.width) * value );
+			}
+			
+			dragger.setDragArea(x, y, width, height);
+			_updateDraggerMask();
+		}
 	}
 
+	function _updateDraggerMask()
+	{				
+		if (masked) 
+		{
+			dragger.maskByElement(this);			
+			dragger.masked = true;
+		}
+		
+		//dragger.update();
+		dragger.updateLayout();
+	}
+	
+	
 	override inline function updateVisible():Void
 	{
-		if (background != null) background.updateVisible();
-		if (dragger != null) dragger.updateVisible();
+		updateVisibleStyle();
+		updateVisibleLayout();
 	}
 	
 	// -----------------
 	
 	override inline function onAddVisibleToDisplay()
 	{
-		trace("onAddVisibleToDisplay");
 		if (background != null) uiDisplay.add(background);
-		if (dragger != null) uiDisplay.add(dragger);
+		if (dragger != null && !dragger.isVisible) uiDisplay.add(dragger);
 	}
 	
 	override inline function onRemoveVisibleFromDisplay()
 	{		
 		if (background != null) uiDisplay.remove(background);
-		if (dragger != null) uiDisplay.remove(dragger);
+		if (dragger != null && dragger.isVisible) uiDisplay.remove(dragger);
 		
 	}
 
