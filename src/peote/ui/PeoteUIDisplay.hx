@@ -292,8 +292,7 @@ implements peote.layout.ILayoutElement
 	//}
 		
 	
-	// -------------------------------------------------------
-	
+	// -------------------------------------------------------	
 	public function add(uiElement:Interactive):Void {
 		//TODO
 		if (uiElement.isVisible && uiElement.uiDisplay != null) {
@@ -301,8 +300,7 @@ implements peote.layout.ILayoutElement
 			//else 
 			throw('Error, uiElement is already added to UIDisplay ${uiElement.uiDisplay.number}');
 		}
-
-		uiElements.push(uiElement);
+		uiElements.push(uiElement);		
 		uiElement.onAddToDisplay(this);
 	}
 	

@@ -79,8 +79,7 @@ class Interactive
 implements peote.layout.ILayoutElement
 #end
 {
-	// ---------------------------------------------------------
-	
+	// ---------------------------------------------------------	
 	public var uiDisplay(default, null):PeoteUIDisplay = null;
 	public var isVisible(default, null):Bool = false;
 
@@ -351,6 +350,7 @@ implements peote.layout.ILayoutElement
 	{
 		if (uiElement.masked) mask(uiElement.x + uiElement.maskX, uiElement.y + uiElement.maskY, uiElement.maskWidth, uiElement.maskHeight);
 		else mask(uiElement.x, uiElement.y, uiElement.width, uiElement.width);
+		//trace(maskX, maskY, maskWidth, maskHeight);
 	}
 	
 	inline function mask(_x:Int, _y:Int, _width:Int, _height:Int) 
@@ -386,7 +386,7 @@ implements peote.layout.ILayoutElement
 			else {
 				maskY = _y - y;
 				if (bottom > _y + _height) maskHeight = _height;
-				else maskHeight = height + maskY;
+				else maskHeight = height - maskY;
 				show();
 			}
 		} 
@@ -558,20 +558,52 @@ implements peote.layout.ILayoutElement
 	private function removePickableMove()
 	{
 		//trace("removePickableOver");
-		if (isVisible) uiDisplay.movePickBuffer.removeElement( pickableMove );  //pickableOver=null
+		if (isVisible) {
+			var index = uiDisplay.movePickBuffer.getElementIndex(pickableMove);
+			// if not the last one into buffer
+			if (index < uiDisplay.movePickBuffer.length() - 1) {
+				if ( uiDisplay.mouseEnabled && uiDisplay.lastMouseOverIndex == uiDisplay.clickPickBuffer.length() - 1)
+						uiDisplay.lastMouseOverIndex = index;
+				if (uiDisplay.touchEnabled) {
+					for (i in 0...uiDisplay.lastTouchOverIndex.length) {
+						if ( uiDisplay.lastTouchOverIndex.get(i) == uiDisplay.movePickBuffer.length() - 1)
+							uiDisplay.lastTouchOverIndex.set(i, index);
+					}
+				}
+			}
+			uiDisplay.movePickBuffer.removeElement( pickableMove );  //pickableOver=null
+		}
 	}
 	
 	private function addPickableClick()
 	{
 		//trace("addPickableClick");
-		if (pickableClick==null) pickableClick = new Pickable(this);
+		if (pickableClick == null) pickableClick = new Pickable(this);		
 		if (isVisible) uiDisplay.clickPickBuffer.addElement( pickableClick );
 	}
 	
 	private function removePickableClick()
 	{
 		//trace("removePickableClick");
-		if (isVisible) uiDisplay.clickPickBuffer.removeElement( pickableClick ); //pickableClick=null
+		if (isVisible) {
+			var index = uiDisplay.clickPickBuffer.getElementIndex(pickableClick);
+			// if not the last one into buffer
+			if (index < uiDisplay.clickPickBuffer.length() - 1) {
+				if (uiDisplay.mouseEnabled) {
+					for (i in 0...uiDisplay.lastMouseDownIndex.length) {
+						if ( uiDisplay.lastMouseDownIndex.get(i) == uiDisplay.clickPickBuffer.length() - 1)
+							uiDisplay.lastMouseDownIndex.set(i, index);
+					}
+				}
+				if (uiDisplay.touchEnabled) {
+					for (i in 0...uiDisplay.lastTouchDownIndex.length) {
+						if ( uiDisplay.lastTouchDownIndex.get(i) == uiDisplay.clickPickBuffer.length() - 1)
+							uiDisplay.lastTouchDownIndex.set(i, index);
+					}
+				}
+			}
+			uiDisplay.clickPickBuffer.removeElement( pickableClick ); //pickableClick=null
+		}
 	}
 	
 	

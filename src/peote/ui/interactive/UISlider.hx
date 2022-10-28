@@ -91,11 +91,11 @@ implements peote.layout.ILayoutElement
 			if (onDraggerPointerDown != null) onDraggerPointerDown(this, e);
 			dragger.masked = false;
 			dragger.startDragging(e); // <----- start dragging
-			trace("Dragger: DOWN", dragger.isDragging);
+			//trace("Dragger: DOWN", dragger.isDragging);
 		}
 		
 		dragger.onPointerUp = function(uiElement:UIElement, e:PointerEvent) {
-			trace("Dragger: UP ", dragger.isDragging, uiDisplay.draggingMouseElements.length);
+			//trace("Dragger: UP ", dragger.isDragging, uiDisplay.draggingMouseElements.length);
 			
 			// PROBLEM: SUPER-Glitch here if buffer-index is changed so not same as pickable anymore or something
 			// how could it not be the same "dragger"-instance here anymore =?= 
