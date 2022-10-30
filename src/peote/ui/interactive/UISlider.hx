@@ -157,9 +157,9 @@ implements peote.layout.ILayoutElement
 
 	function _updateDraggerMask()
 	{				
-		if (masked) 
+		if (masked)
 		{
-			dragger.maskByElement(this);			
+			dragger.maskByElement(this);		
 			dragger.masked = true;
 		}
 		
@@ -177,13 +177,14 @@ implements peote.layout.ILayoutElement
 	// -----------------
 	
 	override inline function onAddVisibleToDisplay()
-	{ 	//trace("SliderShows");
+	{ 	
 		if (background != null) uiDisplay.add(background);
+		//trace("Show Dragger", dragger.isVisible);
 		if (dragger != null && !dragger.isVisible) uiDisplay.add(dragger);
 	}
 	
 	override inline function onRemoveVisibleFromDisplay()
-	{	//trace("SliderHides", dragger.isVisible);
+	{	//if (dragger != null && dragger.isVisible) trace("Hide Dragger");
 		if (background != null) uiDisplay.remove(background);
 		if (dragger != null && dragger.isVisible) uiDisplay.remove(dragger);
 		

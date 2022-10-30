@@ -346,64 +346,6 @@ implements peote.layout.ILayoutElement
 		return (this.x <= x && x < this.x + width) && (this.y <= y && y < this.y + height);
 	}
 	
-	inline function maskByElement(uiElement:Interactive)
-	{
-		if (uiElement.masked) mask(uiElement.x + uiElement.maskX, uiElement.y + uiElement.maskY, uiElement.maskWidth, uiElement.maskHeight);
-		else mask(uiElement.x, uiElement.y, uiElement.width, uiElement.width);
-		//trace(maskX, maskY, maskWidth, maskHeight);
-	}
-	
-	inline function mask(_x:Int, _y:Int, _width:Int, _height:Int) 
-	{
-		if (x < _x) {
-			if (right < _x) hide();
-			else {
-				maskX = _x - x;
-				if (right >= _x + _width) maskWidth = _width;
-				else maskWidth = width - maskX;
-				_maskElementY(_y, _height);
-			}
-		} 
-		else if (right > _x + _width) {
-			if (x > _x + _width) hide();
-			else {
-				maskX = 0;
-				maskWidth = width - (right - (_x + _width));
-				_maskElementY(_y, _height);
-			}
-		}
-		else {
-			maskX = 0;
-			maskWidth = width;
-			_maskElementY(_y, _height);
-		}
-	}
-	
-	inline function _maskElementY(_y:Int, _height:Int) 
-	{
-		if (y < _y) {
-			if (bottom < _y) hide();
-			else {
-				maskY = _y - y;
-				if (bottom > _y + _height) maskHeight = _height;
-				else maskHeight = height - maskY;
-				show();
-			}
-		} 
-		else if (bottom > _y + _height) {
-			if (y > _y + _height) hide();
-			else {
-				maskY = 0;
-				maskHeight = height - (bottom - (_y + _height));
-				show();
-			}
-		}
-		else {
-			maskY = 0;
-			maskHeight = height;
-			show();
-		}
-	}
 	// ----------------- Event-Bindings ----------------------
 
 	private inline function setOnPointerOver<T>(object:T, f:T->PointerEvent->Void):T->PointerEvent->Void {
@@ -606,7 +548,67 @@ implements peote.layout.ILayoutElement
 		}
 	}
 	
+	// -----------------------------------------------------------------
 	
+	inline function maskByElement(uiElement:Interactive)
+	{
+		if (uiElement.masked) mask(uiElement.x + uiElement.maskX, uiElement.y + uiElement.maskY, uiElement.maskWidth, uiElement.maskHeight);
+		else mask(uiElement.x, uiElement.y, uiElement.width, uiElement.width);
+		//trace(maskX, maskY, maskWidth, maskHeight);
+	}
+	
+	inline function mask(_x:Int, _y:Int, _width:Int, _height:Int) 
+	{
+		if (x < _x) {
+			if (right < _x) { maskWidth = 0; hide(); }
+			else {
+				maskX = _x - x;
+				if (right >= _x + _width) maskWidth = _width;
+				else maskWidth = width - maskX;
+				_maskElementY(_y, _height);
+			}
+		} 
+		else if (right > _x + _width) {
+			if (x > _x + _width) { maskWidth = 0; hide(); }
+			else {
+				maskX = 0;
+				maskWidth = width - (right - (_x + _width));
+				_maskElementY(_y, _height);
+			}
+		}
+		else {
+			maskX = 0;
+			maskWidth = width;
+			_maskElementY(_y, _height);
+		}
+	}
+	
+	inline function _maskElementY(_y:Int, _height:Int) 
+	{
+		if (y < _y) {
+			if (bottom < _y) { maskHeight = 0; hide(); }
+			else {
+				maskY = _y - y;
+				if (bottom > _y + _height) maskHeight = _height;
+				else maskHeight = height - maskY;
+				show();
+			}
+		} 
+		else if (bottom > _y + _height) {
+			if (y > _y + _height)  { maskHeight = 0; hide(); }
+			else {
+				maskY = 0;
+				maskHeight = height - (bottom - (_y + _height));
+				show();
+			}
+		}
+		else {
+			maskY = 0;
+			maskHeight = height;
+			show();
+		}
+	}
+		
 	
 	#if peote_layout
 	// ----------- Interface for peote-layout --------------------
@@ -627,7 +629,7 @@ implements peote.layout.ILayoutElement
 				hide();
 			}
 			else {
-				_update(layoutContainer);
+				_updateByLayout(layoutContainer);
 			}
 		}
 		else if (!layoutContainer.isHidden) // not full outside of the Mask anymore
@@ -635,12 +637,12 @@ implements peote.layout.ILayoutElement
 			#if peotelayout_debug
 			//trace("showed", layoutContainer.layout.name);
 			#end
-			_update(layoutContainer);
+			_updateByLayout(layoutContainer);
 			show();
 		}		
 	}
 	
-	public inline function _update(layoutContainer:peote.layout.LayoutContainer) {
+	public inline function _updateByLayout(layoutContainer:peote.layout.LayoutContainer) {
 		x = Math.round(layoutContainer.x);
 		y = Math.round(layoutContainer.y);
 		z = Math.round(layoutContainer.depth);

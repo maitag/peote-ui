@@ -104,7 +104,6 @@ implements peote.layout.ILayoutElement
 			uiElement.y += deltaYOffset;
 			
 			if (uiElement.masked) {
-				//maskElement(uiElement, x , right , y , bottom );
 				uiElement.maskByElement(this);
 			}
 			
