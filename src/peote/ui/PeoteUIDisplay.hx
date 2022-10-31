@@ -305,9 +305,23 @@ implements peote.layout.ILayoutElement
 	}
 	
 	public function remove(uiElement:Interactive):Void {
-		//TODO
+		
+		// TODO: check for GLITCH here!
+		// send pointerout if was over while deleting
+		if (lastMouseOverIndex >= 0) {
+			var lastElem = movePickBuffer.getElement(lastMouseOverIndex).uiElement;
+			if (lastElem == uiElement) {
+				while (lastElem != null) {
+					lastElem.pointerOut({x: -1, y: -1, type:PointerType.MOUSE});
+					lastElem = lastElem.overOutEventsBubbleTo;
+				}
+				lastMouseOverIndex = -1;
+			}
+		}
+		
 		uiElements.remove(uiElement);
 		uiElement.onRemoveFromDisplay(this);
+		
 	}
 	
 	public function removeAll():Void {
@@ -352,9 +366,8 @@ implements peote.layout.ILayoutElement
 			uiElement.isDragging = false;
 			switch (e.type) {
 				case MOUSE: {
-					draggingMouseElements.remove(uiElement); //draggingMouseElements =[];
+					draggingMouseElements.remove(uiElement);
 					if (draggingMouseElements.length == 0) mouseMove(e.x, e.y);
-					//trace("after", uiElement.isDragging, draggingMouseElements.length);
 				}
 				case TOUCH: {
 					var draggingTouchElemArray = draggingTouchElements.get(e.touch.id);
@@ -435,7 +448,8 @@ implements peote.layout.ILayoutElement
 			{
 				for (uiElement in draggingMouseElements) {
 					uiElement.dragTo(x, y);
-					update(uiElement);
+					//update(uiElement);
+					uiElement.updateLayout();
 				}
 			}
 			else

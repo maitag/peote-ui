@@ -84,16 +84,20 @@ implements peote.layout.ILayoutElement
 			styleElement.setLayout(this);
 			if (isVisible && styleIsVisible) styleProgram.update(styleElement);
 		}
+		updateUIElementLayout(); // hook to childclass
 	}
+	function updateUIElementLayout():Void {} // to override by childclasses
 	
 	override inline function updateVisible():Void
-	{
+	{	
 		if (styleElement != null) {
 			styleElement.setStyle(style);
 			styleElement.setLayout(this);
 			if (isVisible && styleIsVisible) styleProgram.update(styleElement);
 		}
+		updateUIElement(); // hook to childclass
 	}
+	function updateUIElement():Void {} // to override by childclasses
 	
 	override inline function onAddVisibleToDisplay():Void
 	{
@@ -101,7 +105,10 @@ implements peote.layout.ILayoutElement
 			if (styleIsVisible) styleProgram.addElement(styleElement);
 		}
 		else if (style != null) createStyle(styleIsVisible);
-	}
+		
+		onAddUIElementToDisplay();
+	}	
+	function onAddUIElementToDisplay():Void {} // to override by childclasses
 	
 	inline function createStyle(addUpdate:Bool)
 	{
@@ -119,8 +126,10 @@ implements peote.layout.ILayoutElement
 	
 	override inline function onRemoveVisibleFromDisplay()
 	{	//trace("UIElement onRemoveVisibleFromDisplay");
+		onRemoveUIElementFromDisplay();
 		if (styleIsVisible && styleElement != null) styleProgram.removeElement(styleElement);
 	}
+	function onRemoveUIElementFromDisplay():Void {} // to override by childclasses
 
 	
 	// ---------- Events --------------------

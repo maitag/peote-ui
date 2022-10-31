@@ -2,6 +2,7 @@ package peote.ui.interactive;
 
 import peote.ui.interactive.Interactive;
 import peote.ui.interactive.UIElement;
+import peote.ui.interactive.interfaces.ParentElement;
 import peote.ui.style.SliderStyle;
 
 import peote.ui.event.PointerEvent;
@@ -13,11 +14,18 @@ private typedef UISliderDragEventParams = UISlider->Float->Float->Void;
 private typedef UISliderFocusEventParams = UISlider->Void;
 
 @:allow(peote.ui)
-class UISlider extends Interactive
+class UISlider extends Interactive implements ParentElement
 #if peote_layout
 implements peote.layout.ILayoutElement
 #end
 {
+	public var xOffset:Int = 0;
+	public var yOffset:Int = 0;
+	
+	var last_x:Int;
+	var last_y:Int;
+			
+
 	public var isVertical(default, null):Bool = false;
 	
 	public var _value:Float = 0.0;
@@ -34,10 +42,11 @@ implements peote.layout.ILayoutElement
 		if (dragger.isDragging) return;
 		
 		if (value < 0.0) value = 0.0 else if (value > 1.0) value = 1.0;
- 		if (isVertical) dragger.y = Std.int( y + (height - dragger.height) * value );
-		else dragger.x = Std.int( x + (width - dragger.width) * value );
-		//dragger.updateLayout();
-		_updateDraggerMask();
+ 		if (isVertical) dragger.yLocal = Std.int( (height - dragger.height) * value );
+		else dragger.xLocal = Std.int( (width - dragger.width) * value );
+		
+		dragger.updateLayout();
+		
 		if (isVisible && triggerMouseMove) uiDisplay.triggerMouse(this);
 		if (triggerOnChange && onChange != null) onChange(this, value);
 		_value = value;
@@ -59,16 +68,23 @@ implements peote.layout.ILayoutElement
 	inline function get_draggerStyle():Dynamic return dragger.style;
 	inline function set_draggerStyle(style:Dynamic):Dynamic return dragger.style = style;
 	
-	public function new(xPosition:Int=0, yPosition:Int=0, width:Int=100, height:Int=100, zIndex:Int=0, sliderStyle:SliderStyle=null) 
+	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int=0, sliderStyle:SliderStyle=null) 
 	{
 		super(xPosition, yPosition, width, height, zIndex);
 
+		last_x = xPosition;
+		last_y = yPosition;
+		
 		if (width < height) isVertical = true;
 		
-		if (sliderStyle.backgroundStyle != null) background = new UIElement(xPosition, yPosition, width, height, zIndex, sliderStyle.backgroundStyle);
+		if (sliderStyle.backgroundStyle != null) {
+			background = new UIElement(0, 0, width, height, zIndex, sliderStyle.backgroundStyle);
+			background.parent = this; // updates positions by setting parent
+		}
 		
 		var draggerWidth:Int; 
 		var draggerHeight:Int;
+		
 		if (isVertical) {
 			if (sliderStyle.draggerSize != null) draggerWidth = sliderStyle.draggerSize else draggerWidth = width;
 			if (sliderStyle.draggerLength != null) draggerHeight = sliderStyle.draggerLength else draggerHeight = width;
@@ -78,7 +94,10 @@ implements peote.layout.ILayoutElement
 			if (sliderStyle.draggerLength != null) draggerWidth = sliderStyle.draggerLength else draggerWidth = height;
 		}
 		
-		if (sliderStyle.draggerStyle != null) dragger = new UIElement(xPosition, yPosition, draggerWidth, draggerHeight, zIndex+1, sliderStyle.draggerStyle);
+		if (sliderStyle.draggerStyle != null) {
+			dragger = new UIElement(0, 0, draggerWidth, draggerHeight, zIndex+1, sliderStyle.draggerStyle);
+			dragger.parent = this; // updates positions by setting parent
+		}
 		
 		// set the drag-area to same size as the slider
 		dragger.setDragArea(xPosition, yPosition, width, height);
@@ -89,19 +108,13 @@ implements peote.layout.ILayoutElement
 		// start/stop dragging
 		dragger.onPointerDown = function(uiElement:UIElement, e:PointerEvent) {
 			if (onDraggerPointerDown != null) onDraggerPointerDown(this, e);
-			dragger.masked = false;
+			dragger.masked = false; // <-- dragg allways the fully dragger (unmask it before)
 			dragger.startDragging(e); // <----- start dragging
-			//trace("Dragger: DOWN", dragger.isDragging);
 		}
 		
 		dragger.onPointerUp = function(uiElement:UIElement, e:PointerEvent) {
-			//trace("Dragger: UP ", dragger.isDragging, uiDisplay.draggingMouseElements.length);
-			
-			// PROBLEM: SUPER-Glitch here if buffer-index is changed so not same as pickable anymore or something
-			// how could it not be the same "dragger"-instance here anymore =?= 
-			
 			dragger.stopDragging(e);  // <----- stop dragging
-			_updateDraggerMask();
+			updateLayout();
 			if (onDraggerPointerUp != null) onDraggerPointerUp(this, e);
 		}
 		
@@ -115,10 +128,8 @@ implements peote.layout.ILayoutElement
 		dragger.overOutEventsBubbleTo = this;
 		dragger.upDownEventsBubbleTo = this;
 		dragger.wheelEventsBubbleTo = this;
-
-
 	}
-		
+	
 	public inline function updateBackgroundStyle() if (background != null) background.updateVisibleStyle();
 	public inline function updateDraggerStyle() if (dragger != null) dragger.updateVisibleStyle();
 	
@@ -130,43 +141,25 @@ implements peote.layout.ILayoutElement
 	
 	override inline function updateVisibleLayout():Void
 	{
+		if (!isVisible) return;
+		
+		var deltaX = x - last_x;
+		var deltaY = y - last_y;
+		last_x = x;
+		last_y = y;
+		
 		if (background != null) {
-			background.x = x; background.y = y;
-			if (masked) {
-				background.maskX = maskX; background.maskY = maskY; background.maskWidth = maskWidth; background.maskHeight = maskHeight;
-				background.masked = true;
-			}
-			background.updateVisibleLayout();
+			background.x += deltaX;
+			background.y += deltaY;
+			background.updateLayout();
 		}
 		if (dragger != null) {
-			//dragger.x = x; dragger.y = y;
-			
-			if (isVertical) {
-				dragger.x = x;
-				dragger.y = Std.int( y + (height - dragger.height) * value );
-			}
-			else {
-				dragger.y = y;
-				dragger.x = Std.int( x + (width - dragger.width) * value );
-			}
-			
+			dragger.x += deltaX;
+			dragger.y += deltaY;
 			dragger.setDragArea(x, y, width, height);
-			_updateDraggerMask();
+			dragger.updateLayout();
 		}
-	}
-
-	function _updateDraggerMask()
-	{				
-		if (masked)
-		{
-			dragger.maskByElement(this);		
-			dragger.masked = true;
-		}
-		
-		//dragger.update();
-		dragger.updateLayout();
-	}
-	
+	}	
 	
 	override inline function updateVisible():Void
 	{
@@ -177,16 +170,21 @@ implements peote.layout.ILayoutElement
 	// -----------------
 	
 	override inline function onAddVisibleToDisplay()
-	{ 	
+	{
 		if (background != null) uiDisplay.add(background);
-		//trace("Show Dragger", dragger.isVisible);
-		if (dragger != null && !dragger.isVisible) uiDisplay.add(dragger);
+		if (dragger != null) {
+			uiDisplay.add(dragger);
+		}
 	}
 	
 	override inline function onRemoveVisibleFromDisplay()
-	{	//if (dragger != null && dragger.isVisible) trace("Hide Dragger");
-		if (background != null) uiDisplay.remove(background);
-		if (dragger != null && dragger.isVisible) uiDisplay.remove(dragger);
+	{
+		if (background != null) {
+			uiDisplay.remove(background);
+		}
+		if (dragger != null && dragger.isVisible) {
+			uiDisplay.remove(dragger);
+		}
 		
 	}
 

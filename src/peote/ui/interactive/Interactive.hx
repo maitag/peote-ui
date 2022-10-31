@@ -7,6 +7,7 @@ import peote.ui.event.WheelEvent;
 
 import peote.ui.PeoteUIDisplay;
 
+import peote.ui.interactive.interfaces.ParentElement;
 
 class Pickable implements Element
 {
@@ -126,6 +127,52 @@ implements peote.layout.ILayoutElement
 		return false;
 	}
 */	
+	
+	public var xLocal(get, set):Int;
+	public var yLocal(get, set):Int;
+
+	#if (peoteui_no_parent)
+	
+	public static inline var parent:Interactive = null;
+	
+	inline function get_xLocal():Int return x;
+	inline function set_xLocal(_xLocal:Int):Int return x = _xLocal;
+	inline function get_yLocal():Int return y;
+	inline function set_yLocal(_yLocal:Int):Int return y = _yLocal;
+	
+	#else
+	
+	public var parent(default, set):ParentElement = null;
+	inline function set_parent(p:ParentElement):ParentElement {
+		if (p == null) {
+			if (parent != null) {
+				x -= parent.x + parent.xOffset;
+				y -= parent.y + parent.yOffset;
+				z -= parent.z + 1;
+			}
+			parent = null;
+		}
+		else if (parent == null) {
+			x += p.x + p.xOffset;
+			y += p.y + p.yOffset;
+			z += p.z + 1;
+			parent = p;
+		}
+		else if (parent != p) {
+			x -= parent.x + parent.xOffset - p.x - p.xOffset;
+			y -= parent.y + parent.yOffset - p.y - p.yOffset;
+			z -= parent.z - p.z;
+			parent = p;
+		}
+		return p;
+	}
+	
+	inline function get_xLocal():Int return if (parent == null) x else x - parent.x - parent.xOffset;
+	inline function set_xLocal(_xLocal:Int):Int return if (parent == null) x = _xLocal else x = parent.x + parent.xOffset + _xLocal;
+	inline function get_yLocal():Int return if (parent == null) y else y - parent.y - parent.yOffset;
+	inline function set_yLocal(_yLocal:Int):Int return if (parent == null) y = _yLocal else y = parent.y + parent.yOffset + _yLocal;
+	#end
+		
 	public var x:Int;
 	public var y:Int;
 	public var width:Int;
@@ -185,8 +232,14 @@ implements peote.layout.ILayoutElement
 	{
 		x = xPosition;
 		y = yPosition;
-		this.width  = maskWidth  = width;
-		this.height = maskHeight = height;
+		
+		this.width  = width;
+		this.height = height;
+		
+		#if (!peoteui_no_masking)
+		maskWidth  = width;
+		maskHeight = height;
+		#end
 		z = zIndex;
 				
 		pointerOver  = noOperation;
@@ -202,21 +255,28 @@ implements peote.layout.ILayoutElement
 	
 	public function updateStyle():Void
 	{
-		updateVisibleStyle();
+		updateVisibleStyle(); // hook to childclass
 	}
 	
 	public function updateLayout():Void
 	{
-		updateVisibleLayout();
+		#if (!peoteui_no_parent)
+		if (parent != null && !isDragging) maskByElement(cast parent);
+		#end
+		updateVisibleLayout(); // hook to childclass
 		updatePickable();
 	}
 	
 	public function update():Void
 	{
-		updateVisible();
+		#if (!peoteui_no_parent)
+		if (parent != null && !isDragging) maskByElement(cast parent);
+		#end
+		updateVisible(); // hook to childclass
 		updatePickable();
 	}
 	
+	// TODO: rename all hooks into: updateInteractive... 
 	function updateVisibleStyle():Void {} // to override by childclasses
 	function updateVisibleLayout():Void {} // to override by childclasses
 	function updateVisible():Void {} // to override by childclasses	
@@ -239,7 +299,7 @@ implements peote.layout.ILayoutElement
 	{
 		this.uiDisplay = uiDisplay;
 		isVisible = true;
-		onAddVisibleToDisplay();
+		onAddVisibleToDisplay(); // hook to childclass
 		if ( hasMoveEvent  != 0 ) addPickableMove();	
 		if ( hasClickEvent != 0 ) addPickableClick();
 	}
@@ -251,7 +311,7 @@ implements peote.layout.ILayoutElement
 	inline function onRemoveFromDisplay(uiDisplay:PeoteUIDisplay)
 	{		
 		if (uiDisplay != this.uiDisplay) throw('Error, $this is not inside uiDisplay: $uiDisplay');
-		onRemoveVisibleFromDisplay();
+		onRemoveVisibleFromDisplay(); // hook to childclass
 		if ( hasMoveEvent  != 0 ) removePickableMove();
 		if ( hasClickEvent != 0 ) removePickableClick();		
 		isVisible = false;
@@ -492,19 +552,19 @@ implements peote.layout.ILayoutElement
 		
 	private function addPickableMove()
 	{
-		//trace("addPickableOver");
+		//trace("addPickableMove");
 		if (pickableMove==null) pickableMove = new Pickable(this);
 		if (isVisible) uiDisplay.movePickBuffer.addElement( pickableMove );
 	}
 	
 	private function removePickableMove()
 	{
-		//trace("removePickableOver");
+		//trace("removePickableMove");
 		if (isVisible) {
 			var index = uiDisplay.movePickBuffer.getElementIndex(pickableMove);
 			// if not the last one into buffer
 			if (index < uiDisplay.movePickBuffer.length() - 1) {
-				if ( uiDisplay.mouseEnabled && uiDisplay.lastMouseOverIndex == uiDisplay.clickPickBuffer.length() - 1)
+				if ( uiDisplay.mouseEnabled && uiDisplay.lastMouseOverIndex == uiDisplay.movePickBuffer.length() - 1)
 						uiDisplay.lastMouseOverIndex = index;
 				if (uiDisplay.touchEnabled) {
 					for (i in 0...uiDisplay.lastTouchOverIndex.length) {
@@ -552,62 +612,78 @@ implements peote.layout.ILayoutElement
 	
 	inline function maskByElement(uiElement:Interactive)
 	{
-		if (uiElement.masked) mask(uiElement.x + uiElement.maskX, uiElement.y + uiElement.maskY, uiElement.maskWidth, uiElement.maskHeight);
-		else mask(uiElement.x, uiElement.y, uiElement.width, uiElement.width);
-		//trace(maskX, maskY, maskWidth, maskHeight);
+		#if (!peoteui_no_masking)
+		masked = if (uiElement.masked) 
+			mask(uiElement.x + uiElement.maskX, uiElement.y + uiElement.maskY, uiElement.maskWidth, uiElement.maskHeight, uiElement.isVisible);
+		else mask(uiElement.x, uiElement.y, uiElement.width, uiElement.height, uiElement.isVisible);
+		//trace(masked, maskX, maskY, maskWidth, maskHeight);
+		#else
+		if (uiElement.isVisible && isOutsideOf(uiElement.x, uiElement.y, uiElement.width, uiElement.height)) 
+			hide();
+		else if (uiElement.isVisible) show();
+		#end
 	}
 	
-	inline function mask(_x:Int, _y:Int, _width:Int, _height:Int) 
+	inline function isOutsideOf(_x:Int, _y:Int, _width:Int, _height:Int) {
+		return (right <= _x || x >= _x + _width || bottom <= _y || y >= _y + _height);
+	}
+	
+	#if (!peoteui_no_masking)
+	inline function mask(_x:Int, _y:Int, _width:Int, _height:Int, _isVisible:Bool):Bool
 	{
 		if (x < _x) {
-			if (right < _x) { maskWidth = 0; hide(); }
+			if (right <= _x) { maskWidth = 0; if (_isVisible && isVisible) uiDisplay.remove(this); return false;}
 			else {
 				maskX = _x - x;
 				if (right >= _x + _width) maskWidth = _width;
 				else maskWidth = width - maskX;
-				_maskElementY(_y, _height);
+				return _maskElementY(_y, _height, true, _isVisible);
 			}
 		} 
 		else if (right > _x + _width) {
-			if (x > _x + _width) { maskWidth = 0; hide(); }
+			if (x >= _x + _width) { maskWidth = 0; if (_isVisible && isVisible) uiDisplay.remove(this); return false;}
 			else {
 				maskX = 0;
 				maskWidth = width - (right - (_x + _width));
-				_maskElementY(_y, _height);
+				return _maskElementY(_y, _height, true, _isVisible);
 			}
 		}
 		else {
 			maskX = 0;
 			maskWidth = width;
-			_maskElementY(_y, _height);
+			return _maskElementY(_y, _height, false, _isVisible);
 		}
 	}
 	
-	inline function _maskElementY(_y:Int, _height:Int) 
+	inline function _maskElementY(_y:Int, _height:Int, xMasked, _isVisible:Bool):Bool
 	{
 		if (y < _y) {
-			if (bottom < _y) { maskHeight = 0; hide(); }
+			if (bottom <= _y) { maskHeight = 0; if (_isVisible && isVisible) uiDisplay.remove(this); return false; }
 			else {
 				maskY = _y - y;
-				if (bottom > _y + _height) maskHeight = _height;
+				if (bottom >= _y + _height) maskHeight = _height;
 				else maskHeight = height - maskY;
-				show();
+				if (_isVisible && !isVisible) uiDisplay.add(this);
+				return true;
 			}
 		} 
 		else if (bottom > _y + _height) {
-			if (y > _y + _height)  { maskHeight = 0; hide(); }
+			if (y >= _y + _height)  { maskHeight = 0; if (_isVisible && isVisible) uiDisplay.remove(this); return false; }
 			else {
 				maskY = 0;
 				maskHeight = height - (bottom - (_y + _height));
-				show();
+				if (_isVisible && !isVisible) uiDisplay.add(this);
+				return true;
 			}
 		}
 		else {
 			maskY = 0;
 			maskHeight = height;
-			show();
+			if (_isVisible && !isVisible) uiDisplay.add(this);
+			return xMasked;
 		}
 	}
+	#end
 		
 	
 	#if peote_layout
