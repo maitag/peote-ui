@@ -116,7 +116,7 @@ class Areas extends Application
 		
 		// fill into some textlines
 
-		var textLine = new UITextLine<FontStyleTiled>(85, 0, 1, "Hello World", font, fontStyle, textStyle);
+		var textLine = new UITextLine<FontStyleTiled>(85, 0, 1, "10 000 Sliders", font, fontStyle, textStyle);
 		textLine.onPointerOver = (_, _)-> trace("textLine onPointerOver");
 		textLine.onPointerOut  = (_, _)-> trace("textLine onPointerOut");
 		textLine.onPointerClick  = (t, e:PointerEvent)-> {
@@ -136,8 +136,20 @@ class Areas extends Application
 		
 		// fill in sliders
 		
-		for (i in 0...100) {
+		for (i in 0...2500) {
 			var sliderInside = new UISlider(0, 30+30*i, 200, 30, sliderInsideStyle);
+			setSliderEvents(sliderInside);
+			area.add(sliderInside);
+			
+			sliderInside = new UISlider(200, 30+30*i, 200, 30, sliderInsideStyle);
+			setSliderEvents(sliderInside);
+			area.add(sliderInside);
+			
+			sliderInside = new UISlider(400, 30+30*i, 200, 30, sliderInsideStyle);
+			setSliderEvents(sliderInside);
+			area.add(sliderInside);
+			
+			sliderInside = new UISlider(600, 30+30*i, 200, 30, sliderInsideStyle);
 			setSliderEvents(sliderInside);
 			area.add(sliderInside);
 		}
@@ -155,7 +167,7 @@ class Areas extends Application
 		hSlider.onChange = function(uiSlider:UISlider, percent:Float) {
 			//area.x = 60 + Std.int(250 * percent); area.update();
 			//uiElement.x =  Std.int(700 * percent-100); area.updateLayout();
-			area.xOffset =  Std.int(500 * percent); area.update();
+			area.xOffset =  -Std.int(300 * percent); area.update();
 		}
 		
 		
@@ -168,7 +180,7 @@ class Areas extends Application
 			//uiElement.xLocal =  Std.int(500 * percent); uiElement.updateLayout();
 			//textLine.yLocal =  Std.int(500 * percent); textLine.updateLayout();
 			//sliderInside.xLocal =  Std.int(500 * percent); sliderInside.updateLayout();
-			area.yOffset = -Std.int(3000 * percent); area.updateLayout();
+			area.yOffset = - Std.int(74600 * percent ) ; area.updateLayout();
 		}
 		
 		
@@ -218,7 +230,7 @@ class Areas extends Application
 		}
 		
 		slider.onMouseWheel = function(uiSlider:UISlider, e:WheelEvent) {
-			uiSlider.setDelta( e.deltaY * 0.1 );
+			uiSlider.setDelta( ((e.deltaY > 0) ? 1 : -1 )* 0.05 );
 		}
 		
 	}

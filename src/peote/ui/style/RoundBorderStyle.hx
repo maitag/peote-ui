@@ -113,7 +113,7 @@ class RoundBorderStyleProgram extends Program implements StyleProgram
 	
 	public function new()
 	{
-		super(new Buffer<RoundBorderStyleElement>(16, 8));
+		super(new Buffer<RoundBorderStyleElement>(1024, 1024));
 		
 		// ------- ShaderStyle -------------
 		

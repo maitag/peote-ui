@@ -89,11 +89,11 @@ implements peote.layout.ILayoutElement
 		addAvailableStyles(availableStyles, autoAddStyles);
 		
 		// elements for mouseOver/Out ----------------------
-		movePickBuffer = new Buffer<Pickable>(16, 8); // TODO: fill with constants
+		movePickBuffer = new Buffer<Pickable>(1024, 1024); // TODO: fill with constants
 		movePickProgram = new Program(movePickBuffer);
 				
 		// elements for mouseDown/Up ----------------------
-		clickPickBuffer = new Buffer<Pickable>(16, 8); // TODO: fill with constants
+		clickPickBuffer = new Buffer<Pickable>(1024, 1024); // TODO: fill with constants
 		clickPickProgram = new Program(clickPickBuffer);
 	
 		uiElements = new Array<Interactive>();

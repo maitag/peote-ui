@@ -98,7 +98,7 @@ class SimpleStyleProgram extends Program implements StyleProgram
 	
 	public inline function new()
 	{
-		super(new Buffer<SimpleStyleElement>(16, 8));
+		super(new Buffer<SimpleStyleElement>(1024, 1024));
 	}
 
 	public inline function createElement(uiElement:Interactive, style:Dynamic):StyleElement
