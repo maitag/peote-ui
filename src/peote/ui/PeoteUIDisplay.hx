@@ -442,7 +442,7 @@ implements peote.layout.ILayoutElement
 			
 			if (intoSelectionTextLine != null) // text selection
 			{
-				intoSelectionTextLine.onSelect({x:x, y:y, type:PointerType.MOUSE});
+				intoSelectionTextLine.onSelect({x:Std.int(localX(x)), y:Std.int(localX(y)), type:PointerType.MOUSE});
 			}
 			else if (draggingMouseElements.length > 0) // Dragging
 			{
@@ -1166,18 +1166,20 @@ implements peote.layout.ILayoutElement
 	}
 	
 	// -------------------------- text selection  --------------------------
+	public inline function localPointerEvent(e:PointerEvent):PointerEvent 
+		return {x:Std.int(localX(e.x)), y:Std.int(localY(e.y)), type:e.type, touch:e.touch, mouseButton:e.mouseButton};
 	
 	static var intoSelectionTextLine:TextLine = null;
 
 	public function startSelection(t:TextLine, e:PointerEvent) {
-		if (intoSelectionTextLine != null) t.onSelectStop(e); // if there is another into selectionMode
+		if (intoSelectionTextLine != null) t.onSelectStop(localPointerEvent(e)); // if there is another into selectionMode
 		intoSelectionTextLine = t;
-		t.onSelectStart(e);
+		t.onSelectStart(localPointerEvent(e));
 	}
 	
 	public function stopSelection(t:TextLine, e:PointerEvent) {
 		intoSelectionTextLine = null;
-		t.onSelectStop(e);
+		t.onSelectStop(localPointerEvent(e));
 	}
 		
 	

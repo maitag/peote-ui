@@ -1,7 +1,7 @@
 package peote.ui.style.interfaces;
 
 #if !macro
-@:remove
+//@:remove // works not on cpp !
 @:autoBuild(peote.ui.style.interfaces.StyleMacro.build())
 interface Style extends StyleID {
 	public function createStyleProgram():StyleProgram;	
