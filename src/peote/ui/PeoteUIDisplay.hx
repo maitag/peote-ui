@@ -22,8 +22,7 @@ import peote.view.Color;
 import peote.view.utils.RenderListItem;
 
 import peote.ui.interactive.Interactive;
-import peote.ui.interactive.edit.TextLineEdit;
-import peote.ui.interactive.interfaces.TextLine;
+import peote.ui.interactive.interfaces.InputText;
 
 import peote.ui.style.interfaces.Style;
 import peote.ui.style.interfaces.FontStyle;
@@ -1136,16 +1135,14 @@ implements peote.layout.ILayoutElement
 	public inline function textInput (chars:String):Void {
 		trace("textInput:", chars);
 		if (inputFocusElement != null) inputFocusElement.textInput(chars);
-		//if (inputFocusElement != null) textLineEdit.textInput(chars);
 	}
 	
 	// -------------------------- text inputfocus  --------------------------
 	
 	static var inputFocusUIDisplay:PeoteUIDisplay = null;
-	var inputFocusElement:TextLine = null;
-	var textLineEdit:TextLineEdit = null;
+	var inputFocusElement:InputText = null;
 	
-	public inline function setInputFocus(t:TextLine, e:PointerEvent=null) {
+	public inline function setInputFocus(t:InputText, e:PointerEvent=null) {
 		if (inputFocusElement != t) {
 			trace("setInputFocus");
 
@@ -1153,13 +1150,11 @@ implements peote.layout.ILayoutElement
 			
 			if (inputFocusElement != null) removeInputFocus(inputFocusElement);
 			inputFocusElement = t;
-			if (textLineEdit == null) textLineEdit = new TextLineEdit();
-			textLineEdit.textLine = t;
 			t.cursorShow();
 		}
 	}
 	
-	public inline function removeInputFocus(t:TextLine) {
+	public inline function removeInputFocus(t:InputText) {
 		trace("removeInputFocus");
 		// TODO
 		t.cursorHide();
@@ -1169,15 +1164,15 @@ implements peote.layout.ILayoutElement
 	public inline function localPointerEvent(e:PointerEvent):PointerEvent 
 		return {x:Std.int(localX(e.x)), y:Std.int(localY(e.y)), type:e.type, touch:e.touch, mouseButton:e.mouseButton};
 	
-	static var intoSelectionTextLine:TextLine = null;
+	static var intoSelectionTextLine:InputText = null;
 
-	public function startSelection(t:TextLine, e:PointerEvent) {
+	public function startSelection(t:InputText, e:PointerEvent) {
 		if (intoSelectionTextLine != null) t.onSelectStop(localPointerEvent(e)); // if there is another into selectionMode
 		intoSelectionTextLine = t;
 		t.onSelectStart(localPointerEvent(e));
 	}
 	
-	public function stopSelection(t:TextLine, e:PointerEvent) {
+	public function stopSelection(t:InputText, e:PointerEvent) {
 		intoSelectionTextLine = null;
 		t.onSelectStop(localPointerEvent(e));
 	}

@@ -30,12 +30,12 @@ abstract TextLineStyle(TextLineStyleImpl) from TextLineStyleImpl to TextLineStyl
 	//}
 	
 	@:from
-	static public function fromStyle(s:Style):TextLineStyle {
+	static public inline function fromStyle(s:Style):TextLineStyle {
 		return {backgroundStyle:s};
 	}
 
 	@:to
-	public function toStyle():Style {
+	public inline function toStyle():Style {
 		return this.backgroundStyle;
 	}	
 }

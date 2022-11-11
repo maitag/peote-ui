@@ -79,6 +79,8 @@ class FocusAndNavigation extends Application
 		
 		// TODO: let navigate the focus between them by keyboard and controller
 		
+		// best would be a new ADT -> NavigationGraph <- where it can be also a node itself !
+		// to bind easy to input2action and peoteUIDisplay to set "focus" by keyboard/gamepad/...
 		
 		
 		// TODO: make uiElement to switch between

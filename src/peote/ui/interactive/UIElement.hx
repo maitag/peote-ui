@@ -21,7 +21,8 @@ implements peote.layout.ILayoutElement
 	var styleProgram:StyleProgram = null;
 	var styleElement:StyleElement = null;	
 	public var style(default, set):Dynamic = null;
-	inline function set_style(_style:Dynamic):Dynamic {
+	//inline function set_style(_style:Dynamic):Dynamic {
+	inline function set_style(_style:Style):Style {
 		if (styleElement == null) { // not added to Display yet
 			style = _style;
 			if (_style != null && uiDisplay != null) createStyle(isVisible && styleIsVisible);

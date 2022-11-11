@@ -1,8 +1,8 @@
 package peote.ui.interactive;
 
 #if !macro
-@:genericBuild(peote.ui.interactive.UITextLine.UITextLineMacro.build("UITextLine"))
-class UITextLine<T> extends peote.ui.interactive.Interactive {}
+@:genericBuild(peote.ui.interactive.UITextPage.UITextPageMacro.build("UITextPage"))
+class UITextPage<T> extends peote.ui.interactive.Interactive {}
 #else
 
 import haxe.macro.Expr;
@@ -11,7 +11,7 @@ import peote.text.util.Macro;
 //import peote.text.util.GlyphStyleHasField;
 //import peote.text.util.GlyphStyleHasMeta;
 
-class UITextLineMacro
+class UITextPageMacro
 {
 	static public function build(name:String):ComplexType return Macro.build(name, buildClass);
 	static public function buildClass(className:String, classPackage:Array<String>, stylePack:Array<String>, styleModule:String, styleName:String, styleSuperModule:String, styleSuperName:String, styleType:ComplexType, styleField:Array<String>):ComplexType
@@ -25,11 +25,11 @@ class UITextLineMacro
 			//var glyphType = peote.text.Glyph.GlyphMacro.buildClass("Glyph", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType);
 			//var fontType = peote.text.Font.FontMacro.buildClass("Font", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
 			//var fontProgramType = peote.text.FontProgram.FontProgramMacro.buildClass("FontProgram", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
-			//var lineType  = peote.text.Line.LineMacro.buildClass("Line", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
+			//var pageType  = peote.text.Page.PageMacro.buildClass("Page", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
 			
 			//var fontPath = TPath({ pack:["peote","text"], name:"Font" + Macro.classNameExtension(styleName, styleModule), params:[] });
 			//var fontProgramPath = TPath({ pack:["peote","text"], name:"FontProgram" + Macro.classNameExtension(styleName, styleModule), params:[] });
-			//var linePath = TPath({ pack:["peote","text"], name:"Line" + Macro.classNameExtension(styleName, styleModule), params:[] });
+			//var pagePath = TPath({ pack:["peote","text"], name:"Page" + Macro.classNameExtension(styleName, styleModule), params:[] });
 
 			
 			//var glyphStyleHasMeta = peote.text.Glyph.GlyphMacro.parseGlyphStyleMetas(styleModule+"."+styleName); // trace("FontProgram: glyphStyleHasMeta", glyphStyleHasMeta);
@@ -272,7 +272,7 @@ implements peote.layout.ILayoutElement
 	                    //font:$fontType, fontStyle:$styleType) 
 	                    font:peote.text.Font<$styleType>, ?fontStyle:$styleType, ?textLineStyle:peote.ui.style.TextLineStyle) //textStyle=null
 	{
-		//trace("NEW UITextLine");		
+		//trace("NEW UITextPage");		
 		var width:Int = 0;
 		var height:Int = 0;
 		if (textSize != null) {
@@ -584,7 +584,7 @@ implements peote.layout.ILayoutElement
 		var fontStylePos = uiDisplay.usedStyleID.indexOf( fontStyle.getUUID() );
 		if (fontStylePos < 0) {
 			if (uiDisplay.autoAddStyles) uiDisplay.autoAddStyleProgram( cast fontProgram = font.createFontProgram(fontStyle, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end, 1024, 1024, true), fontStyle.getUUID(), true );
-			else throw('Error by creating new UITextLine. The style "'+Type.getClassName(Type.getClass(fontStyle))+'" id='+fontStyle.id+' is not inside the availableStyle list of UIDisplay.');
+			else throw('Error by creating new UITextPage. The style "'+Type.getClassName(Type.getClass(fontStyle))+'" id='+fontStyle.id+' is not inside the availableStyle list of UIDisplay.');
 		} else {
 			fontProgram = cast uiDisplay.usedStyleProgram[fontStylePos];
 			if (fontProgram == null) uiDisplay.addProgramAtStylePos(cast fontProgram = font.createFontProgram(fontStyle, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end, 1024, 1024, true), fontStylePos);
@@ -596,7 +596,7 @@ implements peote.layout.ILayoutElement
 		var stylePos = uiDisplay.usedStyleID.indexOf( backgroundStyle.getUUID() );
 		if (stylePos < 0) {
 			if (uiDisplay.autoAddStyles) uiDisplay.autoAddStyleProgram(cast backgroundProgram = backgroundStyle.createStyleProgram(), backgroundStyle.getUUID() );
-			else throw('Error by creating background for new UITextLine. The style "'+Type.getClassName(Type.getClass(backgroundStyle))+'" id='+backgroundStyle.id+' is not inside the availableStyle list of UIDisplay.');
+			else throw('Error by creating background for new UITextPage. The style "'+Type.getClassName(Type.getClass(backgroundStyle))+'" id='+backgroundStyle.id+' is not inside the availableStyle list of UIDisplay.');
 		} else {
 			backgroundProgram = cast uiDisplay.usedStyleProgram[stylePos];
 			if (backgroundProgram == null) uiDisplay.addProgramAtStylePos(cast backgroundProgram = backgroundStyle.createStyleProgram(), stylePos);				
@@ -610,7 +610,7 @@ implements peote.layout.ILayoutElement
 		var stylePos = uiDisplay.usedStyleID.indexOf( selectionStyle.getUUID() );
 		if (stylePos < 0) {
 			if (uiDisplay.autoAddStyles) uiDisplay.autoAddStyleProgram(cast selectionProgram = selectionStyle.createStyleProgram(), selectionStyle.getUUID());
-			else throw('Error by creating selection for new UITextLine. The style "'+Type.getClassName(Type.getClass(selectionStyle))+'" id='+selectionStyle.id+' is not inside the availableStyle list of UIDisplay.');
+			else throw('Error by creating selection for new UITextPage. The style "'+Type.getClassName(Type.getClass(selectionStyle))+'" id='+selectionStyle.id+' is not inside the availableStyle list of UIDisplay.');
 		} else {
 			selectionProgram = cast uiDisplay.usedStyleProgram[stylePos];
 			if (selectionProgram == null) uiDisplay.addProgramAtStylePos(cast selectionProgram = selectionStyle.createStyleProgram(), stylePos);				
@@ -623,7 +623,7 @@ implements peote.layout.ILayoutElement
 		var stylePos = uiDisplay.usedStyleID.indexOf( cursorStyle.getUUID() );
 		if (stylePos < 0) {
 			if (uiDisplay.autoAddStyles) uiDisplay.autoAddStyleProgram(cast cursorProgram = cursorStyle.createStyleProgram(), cursorStyle.getUUID() );
-			else throw('Error by creating cursor for new UITextLine. The style "'+Type.getClassName(Type.getClass(cursorStyle))+'" id='+cursorStyle.id+' is not inside the availableStyle list of UIDisplay.');
+			else throw('Error by creating cursor for new UITextPage. The style "'+Type.getClassName(Type.getClass(cursorStyle))+'" id='+cursorStyle.id+' is not inside the availableStyle list of UIDisplay.');
 		} else {
 			cursorProgram = cast uiDisplay.usedStyleProgram[stylePos];
 			if (cursorProgram == null) uiDisplay.addProgramAtStylePos(cast cursorProgram = cursorStyle.createStyleProgram(), stylePos);				
@@ -668,7 +668,7 @@ implements peote.layout.ILayoutElement
 	}
 	
 	public inline function textInput(chars:String):Void {
-		//trace("UITextLine - textInput:", s);
+		//trace("UITextPage - textInput:", s);
 		if (line != null) {
 			insertChars(chars, cursor, fontStyle);
 			fontProgram.lineUpdate(line);
@@ -769,15 +769,15 @@ implements peote.layout.ILayoutElement
 		fontProgram.lineSetChars(line, chars, position, glyphStyle, isVisible);		
 	}
 	
-	public inline function insertChar(charcode:Int, position:Int = 0, glyphStyle:$styleType = null) {
+	public inline function insertChar(charcode:Int, position:Int = 0, glyphStyle:$styleType = null) {		
 		fontProgram.lineInsertChar(line, charcode, position, glyphStyle, isVisible);
 	}
 	
-	public inline function insertChars(chars:String, position:Int = 0, glyphStyle:$styleType = null) {
+	public inline function insertChars(chars:String, position:Int = 0, glyphStyle:$styleType = null) {		
 		fontProgram.lineInsertChars(line, chars, position, glyphStyle, isVisible);
 	}
 	
-	public inline function appendChars(chars:String, glyphStyle:$styleType = null) {
+	public inline function appendChars(chars:String, glyphStyle:$styleType = null) {		
 		fontProgram.lineAppendChars(line, chars, glyphStyle, isVisible); 
 	}
 
@@ -805,40 +805,40 @@ implements peote.layout.ILayoutElement
 	
 	// ----------- events ------------------
 	
-	public var onPointerOver(never, set):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerOver(f:UITextLine<$styleType>->peote.ui.event.PointerEvent->Void):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void
+	public var onPointerOver(never, set):UITextPage<$styleType>->peote.ui.event.PointerEvent->Void;
+	inline function set_onPointerOver(f:UITextPage<$styleType>->peote.ui.event.PointerEvent->Void):UITextPage<$styleType>->peote.ui.event.PointerEvent->Void
 		return setOnPointerOver(this, f);
 	
-	public var onPointerOut(never, set):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerOut(f:UITextLine<$styleType>->peote.ui.event.PointerEvent->Void):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void 
+	public var onPointerOut(never, set):UITextPage<$styleType>->peote.ui.event.PointerEvent->Void;
+	inline function set_onPointerOut(f:UITextPage<$styleType>->peote.ui.event.PointerEvent->Void):UITextPage<$styleType>->peote.ui.event.PointerEvent->Void 
 		return setOnPointerOut(this, f);
 	
-	public var onPointerMove(never, set):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerMove(f:UITextLine<$styleType>->peote.ui.event.PointerEvent->Void):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void
+	public var onPointerMove(never, set):UITextPage<$styleType>->peote.ui.event.PointerEvent->Void;
+	inline function set_onPointerMove(f:UITextPage<$styleType>->peote.ui.event.PointerEvent->Void):UITextPage<$styleType>->peote.ui.event.PointerEvent->Void
 		return setOnPointerMove(this, f);
 	
-	public var onPointerDown(never, set):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerDown(f:UITextLine<$styleType>->peote.ui.event.PointerEvent->Void):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void
+	public var onPointerDown(never, set):UITextPage<$styleType>->peote.ui.event.PointerEvent->Void;
+	inline function set_onPointerDown(f:UITextPage<$styleType>->peote.ui.event.PointerEvent->Void):UITextPage<$styleType>->peote.ui.event.PointerEvent->Void
 		return setOnPointerDown(this, f);
 	
-	public var onPointerUp(never, set):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerUp(f:UITextLine<$styleType>->peote.ui.event.PointerEvent->Void):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void
+	public var onPointerUp(never, set):UITextPage<$styleType>->peote.ui.event.PointerEvent->Void;
+	inline function set_onPointerUp(f:UITextPage<$styleType>->peote.ui.event.PointerEvent->Void):UITextPage<$styleType>->peote.ui.event.PointerEvent->Void
 		return setOnPointerUp(this, f);
 	
-	public var onPointerClick(never, set):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerClick(f:UITextLine<$styleType>->peote.ui.event.PointerEvent->Void):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void
+	public var onPointerClick(never, set):UITextPage<$styleType>->peote.ui.event.PointerEvent->Void;
+	inline function set_onPointerClick(f:UITextPage<$styleType>->peote.ui.event.PointerEvent->Void):UITextPage<$styleType>->peote.ui.event.PointerEvent->Void
 		return setOnPointerClick(this, f);
 		
-	public var onMouseWheel(never, set):UITextLine<$styleType>->peote.ui.event.WheelEvent->Void;
-	inline function set_onMouseWheel(f:UITextLine<$styleType>->peote.ui.event.WheelEvent->Void):UITextLine<$styleType>->peote.ui.event.WheelEvent->Void 
+	public var onMouseWheel(never, set):UITextPage<$styleType>->peote.ui.event.WheelEvent->Void;
+	inline function set_onMouseWheel(f:UITextPage<$styleType>->peote.ui.event.WheelEvent->Void):UITextPage<$styleType>->peote.ui.event.WheelEvent->Void 
 		return setOnMouseWheel(this, f);
 				
-	public var onDrag(never, set):UITextLine<$styleType>->Float->Float->Void;
-	inline function set_onDrag(f:UITextLine<$styleType>->Float->Float->Void):UITextLine<$styleType>->Float->Float->Void
+	public var onDrag(never, set):UITextPage<$styleType>->Float->Float->Void;
+	inline function set_onDrag(f:UITextPage<$styleType>->Float->Float->Void):UITextPage<$styleType>->Float->Float->Void
 		return setOnDrag(this, f);
 	
-	public var onFocus(never, set):UITextLine<$styleType>->Void;
-	inline function set_onFocus(f:UITextLine<$styleType>->Void):UITextLine<$styleType>->Void
+	public var onFocus(never, set):UITextPage<$styleType>->Void;
+	inline function set_onFocus(f:UITextPage<$styleType>->Void):UITextPage<$styleType>->Void
 		return setOnFocus(this, f);
 	
 }

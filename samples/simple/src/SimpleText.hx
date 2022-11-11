@@ -13,6 +13,7 @@ import peote.text.Font;
 import peote.ui.PeoteUIDisplay;
 
 import peote.ui.interactive.UITextLine;
+import peote.ui.interactive.UITextPage;
 import peote.ui.event.PointerEvent;
 //import peote.ui.event.WheelEvent;
 
@@ -86,7 +87,7 @@ class SimpleText extends Application
 
 		var textLine = new UITextLine<MyFontStyle>(20, 20, "hello", font, fontStyle);
 		// alternatively it can also be:
-		//var textLine = font.createUITextLine(x, y+=yOffset, "hello", fontStyle, Color.BLACK);
+		//var textLine = font.createUITextLine(x, y+=yOffset, "hello", fontStyle);
 		
 		// set events
 		textLine.onPointerOver = function(t:UITextLine<MyFontStyle>, e:PointerEvent) {
@@ -128,6 +129,55 @@ class SimpleText extends Application
 		uiDisplay.add(inputLine);
 		
 
+		// -------------------------------
+		// ------ simple TextPage --------
+		// -------------------------------
+
+		var textPage = new UITextPage<MyFontStyle>(20, 100, "This text\ncontains\nlinebreaks", font, fontStyle);
+		// alternatively it can also be:
+		//var textPage = font.createUITextPage(x, y+=yOffset, "This text\ncontains linebreaks", fontStyle);
+		
+		// set events
+		textPage.onPointerOver = function(t:UITextPage<MyFontStyle>, e:PointerEvent) {
+			t.fontStyle.color = Color.YELLOW;
+			t.updateStyle();
+		}
+		textPage.onPointerOut = function(t:UITextPage<MyFontStyle>, e:PointerEvent) {
+			t.fontStyle.color = Color.GREEN;
+			t.updateStyle();
+		}
+		uiDisplay.add(textPage);			
+
+		
+		// -------------------------------------------
+		// ----------- input TextPage ----------------
+		// -------------------------------------------
+				
+		var fontStyleInput = new MyFontStyle();
+		fontStyleInput.color = Color.GREY5;
+		//fontStyleInput.height = 30;
+		//fontStyleInput.width = 20;
+		
+		var textStyle:TextLineStyle = {
+			backgroundStyle:simpleStyle,
+			selectionStyle:SimpleStyle.createById(1, Color.GREY3), // new ID for new Layer
+			cursorStyle:SimpleStyle.createById(2, Color.RED)       // new ID for new Layer
+		}
+		
+		var inputPage = new UITextPage<MyFontStyle>(300, 100, "input-\ntext", font, fontStyleInput, textStyle);
+
+		// set events
+		inputPage.onPointerDown = function(t:UITextPage<MyFontStyle>, e:PointerEvent) {
+			t.setInputFocus(e); // alternatively: uiDisplay.setInputFocus(t);
+			t.startSelection(e);
+		}
+		inputPage.onPointerUp = function(t:UITextPage<MyFontStyle>, e:PointerEvent) {
+			t.stopSelection(e);
+		}
+		uiDisplay.add(inputPage);
+		
+
+		
 		
 		
 		#if android

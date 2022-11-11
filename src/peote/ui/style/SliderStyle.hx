@@ -47,12 +47,12 @@ class SliderStyleImpl
 abstract SliderStyle(SliderStyleImpl) from SliderStyleImpl to SliderStyleImpl
 {
 	@:from
-	static public function fromStyle(s:Style):SliderStyle {
+	static public inline function fromStyle(s:Style):SliderStyle {
 		return {backgroundStyle:s};
 	}
 
 	@:to
-	public function toStyle():Style {
+	public inline function toStyle():Style {
 		return this.backgroundStyle;
 	}	
 }

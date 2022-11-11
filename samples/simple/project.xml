@@ -7,7 +7,7 @@
 	<!-- <meta build-number="714" /> --> <!-- let set the buildnumber manual (android) -->
 	<!-- check this for GG-Playstore: <setenv name="ANDROID_GRADLE_TASK" value=":app:bundleRelease" /> -->
 	
-	<app main="Areas" path="bin" file="Main" />
+	<app main="SimpleText" path="bin" file="Main" />
 	<!--
 		SimpleElements,
 		SimpleText,
@@ -16,8 +16,9 @@
 		Sliders,
 		Areas,
 		// TODO: FocusAndNavigation,
-		TestStyles,
 		TestEventBubbling,
+		TestStyles,
+		TestTextPage,
 		...
 	-->
 	
@@ -26,6 +27,7 @@
 	<!--<window fps="60" width="800" height="600" vsync="true" resizable="true" hardware="true" allow-shaders="true" require-shaders="true" depth-buffer="true" stencil-buffer="false" /> -->
 	<window width="800" height="600" fps="61" />
 	<window width="0" height="0" fps="61" if="html5||android" />
+	<window if="html5" allowHighDPI="false" />
 	
 	<!--<set name="angle" if="windows" />-->
 	
