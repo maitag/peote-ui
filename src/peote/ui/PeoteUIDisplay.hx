@@ -1096,8 +1096,8 @@ implements peote.layout.ILayoutElement
 	
 	function initInput2Action() {
 		actionMap = [
-			"cursorCharLeft"  => { action:(_, _) -> if (inputFocusElement != null) inputFocusElement.cursorCharLeft() , repeatKeyboardDefault:true },
-			"cursorCharRight" => { action:(_, _) -> if (inputFocusElement != null) inputFocusElement.cursorCharRight(), repeatKeyboardDefault:true },
+			"cursorCharLeft"  => { action:(_, _) -> if (inputTextElement != null) inputTextElement.cursorCharLeft() , repeatKeyboardDefault:true },
+			"cursorCharRight" => { action:(_, _) -> if (inputTextElement != null) inputTextElement.cursorCharRight(), repeatKeyboardDefault:true },
 		];
 		input2Action = new input2action.Input2Action(actionConfig, actionMap);
 		input2Action.setKeyboard(actionConfig);
@@ -1109,7 +1109,7 @@ implements peote.layout.ILayoutElement
 	public inline function keyDown (keyCode:KeyCode, modifier:KeyModifier):Void
 	{
 		//trace("key DOWN");
-		if (inputFocusElement != null)
+		if (inputTextElement != null)
 			switch (keyCode) {
 				#if html5
 				case KeyCode.TAB: untyped __js__('event.preventDefault();');
@@ -1134,22 +1134,22 @@ implements peote.layout.ILayoutElement
 	
 	public inline function textInput (chars:String):Void {
 		trace("textInput:", chars);
-		if (inputFocusElement != null) inputFocusElement.textInput(chars);
+		if (inputTextElement != null) inputTextElement.textInput(chars);
 	}
 	
 	// -------------------------- text inputfocus  --------------------------
 	
 	static var inputFocusUIDisplay:PeoteUIDisplay = null;
-	var inputFocusElement:InputText = null;
+	var inputTextElement:InputText = null;
 	
 	public inline function setInputFocus(t:InputText, e:PointerEvent=null) {
-		if (inputFocusElement != t) {
+		if (inputTextElement != t) {
 			trace("setInputFocus");
 
 			inputFocusUIDisplay = this;
 			
-			if (inputFocusElement != null) removeInputFocus(inputFocusElement);
-			inputFocusElement = t;
+			if (inputTextElement != null) removeInputFocus(inputTextElement);
+			inputTextElement = t;
 			t.cursorShow();
 		}
 	}

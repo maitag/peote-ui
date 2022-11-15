@@ -46,7 +46,7 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 implements peote.layout.ILayoutElement
 #end
 {	
-	var line:peote.text.Line<$styleType> = null; //$lineType
+	var page:peote.text.Page<$styleType> = null; //$pageType
 	
 	var fontProgram:peote.text.FontProgram<$styleType>; //$fontProgramType	
 	var font:peote.text.Font<$styleType>; //$fontType	
@@ -60,7 +60,7 @@ implements peote.layout.ILayoutElement
 	inline function set_backgroundStyle(style:peote.ui.style.interfaces.Style):peote.ui.style.interfaces.Style {
 		if (backgroundElement == null) { // not added to Display yet
 			backgroundStyle = style;
-			if (style != null && line != null) createBackgroundStyle(isVisible && backgroundIsVisible);
+			if (style != null && page != null) createBackgroundStyle(isVisible && backgroundIsVisible);
 		}
 		else { // already have styleprogram and element 
 			if (style != null) {
@@ -86,7 +86,7 @@ implements peote.layout.ILayoutElement
 	}
 	public var backgroundIsVisible(default, set):Bool = true;
 	inline function set_backgroundIsVisible(b:Bool):Bool {
-		if (line != null && backgroundStyle != null) {
+		if (page != null && backgroundStyle != null) {
 			if (b && !backgroundIsVisible) {
 				if (backgroundElement == null) createBackgroundStyle(isVisible); // create new selectElement
 				else if (isVisible) backgroundProgram.addElement(backgroundElement);
@@ -104,9 +104,10 @@ implements peote.layout.ILayoutElement
 	public var selectionStyle(default, set):Dynamic = null;
 	//inline function set_selectionStyle(style:Dynamic):Dynamic {
 	inline function set_selectionStyle(style:peote.ui.style.interfaces.Style):peote.ui.style.interfaces.Style {
-		if (selectionElement == null) { // not added to Display yet
+//TODO:
+/*		if (selectionElement == null) { // not added to Display yet
 			selectionStyle = style;
-			if (style != null && line != null) createSelectionMasked(isVisible && selectionIsVisible);
+			if (style != null && page != null) createSelectionMasked(isVisible && selectionIsVisible);
 		}
 		else { // already have styleprogram and element 
 			if (style != null) {
@@ -127,36 +128,38 @@ implements peote.layout.ILayoutElement
 				selectionStyle = null; selectionProgram = null; selectionElement = null;
 			}
 		}		
-		return selectionStyle;
+*/		return selectionStyle;
 	}	
 	public var selectionIsVisible(default, set):Bool = false;
 	inline function set_selectionIsVisible(b:Bool):Bool {
-		if (line != null && selectionStyle != null) {
+//TODO:
+/*		if (page != null && selectionStyle != null) {
 			if (b && !selectionIsVisible) {
 				if (selectionElement == null) createSelectionMasked(isVisible); // create new selectElement
 				else if (isVisible) selectionProgram.addElement(selectionElement);
 			}
 			else if (!b && selectionIsVisible && selectionElement != null && isVisible) selectionProgram.removeElement(selectionElement);
 		}
-		return selectionIsVisible = b;
+*/		return selectionIsVisible = b;
 	}	
 	public inline function selectionShow():Void selectionIsVisible = true;
 	public inline function selectionHide():Void selectionIsVisible = false;
 	var selectFrom:Int = 0;
 	var selectTo:Int = 0;	
 	public function select(from:Int, to:Int):Void {
-		if (from < 0) from = 0;
+//TODO:
+/*		if (from < 0) from = 0;
 		if (to < 0) to = 0;
 		if (from <= to) { selectFrom = from; selectTo = to;	} else { selectFrom = to; selectTo = from; }
 		if (selectFrom == selectTo) selectionHide();
 		else {
-			if (line != null && selectionStyle != null) {
+			if (page != null && selectionStyle != null) {
 				if (selectTo > line.length) selectTo = line.length;
 				setCreateSelectionMasked( (isVisible && selectionIsVisible), (selectionElement == null) );
 			}
 			selectionShow();
 		}
-	}
+*/	}
 	public inline function hasSelection():Bool return (selectFrom != selectTo);
 	public inline function removeSelection() { selectFrom = selectTo; selectionHide(); }
 	
@@ -168,7 +171,7 @@ implements peote.layout.ILayoutElement
 	inline function set_cursorStyle(style:peote.ui.style.interfaces.Style):peote.ui.style.interfaces.Style {
 		if (cursorElement == null) { // not added to Display yet
 			cursorStyle = style;
-			if (style != null && line != null) createCursorMasked(isVisible && cursorIsVisible);
+			if (style != null && page != null) createCursorMasked(isVisible && cursorIsVisible);
 		}
 		else { // already have styleprogram and element 
 			if (style != null) {
@@ -193,7 +196,7 @@ implements peote.layout.ILayoutElement
 	}		
 	public var cursorIsVisible(default, set):Bool = false;
 	inline function set_cursorIsVisible(b:Bool):Bool {
-		if (line != null && cursorStyle != null) {
+		if (page != null && cursorStyle != null) {
 			if (b && !cursorIsVisible) {
 				if (cursorElement == null) createCursorMasked(isVisible); // create new selectElement
 				else if (isVisible) cursorProgram.addElement(cursorElement);
@@ -208,16 +211,17 @@ implements peote.layout.ILayoutElement
 	inline function set_cursor(pos:Int):Int {		
 		if (pos < 0) cursor = 0;
 		else {
-			if (line != null) {
-				if (pos > line.length) cursor = line.length;
-				else cursor = pos;
+			if (page != null) {
+//TODO:				if (pos > line.length) cursor = line.length;
+				//else 
+					cursor = pos;
 			}
 			else {
 				if (pos > text.length) cursor = text.length;
 				else cursor = pos;
 			}
 		}		
-		if (line != null && cursorStyle != null) {	
+		if (page != null && cursorStyle != null) {	
 			setCreateCursorMasked( (isVisible && cursorIsVisible), (cursorElement == null) );
 		}
 		return cursor;
@@ -227,11 +231,11 @@ implements peote.layout.ILayoutElement
 	// ---------- text ---------------	
 	@:isVar public var text(get, set):String = null;
 	inline function get_text():String {
-		if (line == null) return text;
-		else return fontProgram.lineGetChars(line);
+		if (page == null) return text;
+		else return fontProgram.pageGetChars(page);
 	}
 	inline function set_text(t:String):String {
-		if (line == null || t == null) return text = t;
+		if (page == null || t == null) return text = t;
 		else {
 			setText(t);
 			return t;
@@ -312,22 +316,22 @@ implements peote.layout.ILayoutElement
 	inline function getAlignedXOffset(_xOffset:Float):Float
 	{
 		return switch (hAlign) {
-			case peote.ui.util.HAlign.CENTER: (width - leftSpace - rightSpace - Math.floor(line.textSize))/2 + _xOffset;
-			case peote.ui.util.HAlign.RIGHT: width - leftSpace - rightSpace - Math.floor(line.textSize) + _xOffset;
+			case peote.ui.util.HAlign.CENTER: (width - leftSpace - rightSpace - Math.floor(page.textWidth)) / 2 + _xOffset;
+			case peote.ui.util.HAlign.RIGHT: width - leftSpace - rightSpace - Math.floor(page.textWidth) + _xOffset;
 			default: _xOffset;
 		}
 	}
 	
-	inline function getAlignedYOffset():Float
+	inline function getAlignedYOffset(_yOffset:Float):Float
 	{
 		return switch (vAlign) {
-			case peote.ui.util.VAlign.CENTER: (height - topSpace - bottomSpace - line.height) / 2 + yOffset;
-			case peote.ui.util.VAlign.BOTTOM: height - topSpace - bottomSpace - line.height + yOffset;
-			default: yOffset;
+			case peote.ui.util.VAlign.CENTER: (height - topSpace - bottomSpace - Math.floor(page.textHeight)) / 2 + _yOffset;
+			case peote.ui.util.VAlign.BOTTOM: height - topSpace - bottomSpace - Math.floor(page.textHeight) + _yOffset;
+			default: _yOffset;
 		}
 	}
 	
-	inline function createSelectionMasked(addUpdate:Bool) setCreateSelectionMasked(addUpdate, true);
+/*	inline function createSelectionMasked(addUpdate:Bool) setCreateSelectionMasked(addUpdate, true);
 	inline function setCreateSelectionMasked(addUpdate:Bool, create:Bool) 
 	{
 		var _x = x + leftSpace;
@@ -342,7 +346,7 @@ implements peote.layout.ILayoutElement
 			if (y + maskY + maskHeight < _y + _height) _height = maskY + maskHeight + y - _y;
 		}
 		#end
-		_setCreateSelection(_x, _y, _width, _height, getAlignedYOffset() + topSpace, addUpdate, create);
+		_setCreateSelection(_x, _y, _width, _height, getAlignedYOffset(yOffset) + topSpace, addUpdate, create);
 	}
 	inline function createSelection(x:Int, y:Int, w:Int, h:Int, y_offset:Float, addUpdate:Bool) _setCreateSelection(x, y, w, h, y_offset, addUpdate, true);
 	inline function setSelection(x:Int, y:Int, w:Int, h:Int, y_offset:Float, addUpdate:Bool) _setCreateSelection(x, y, w, h, y_offset, addUpdate, false);
@@ -371,7 +375,7 @@ implements peote.layout.ILayoutElement
 			if (addUpdate) selectionProgram.update(selectionElement);
 		}
 	}
-	
+*/	
 	inline function createCursorMasked(addUpdate:Bool) setCreateCursorMasked(addUpdate, true);
 	inline function setCreateCursorMasked(addUpdate:Bool, create:Bool) 
 	{
@@ -387,16 +391,18 @@ implements peote.layout.ILayoutElement
 			if (y + maskY + maskHeight < _y + _height) _height = maskY + maskHeight + y - _y;
 		}
 		#end
-		_setCreateCursor(_x, _y, _width, _height, getAlignedYOffset() + topSpace, addUpdate, create);
+		_setCreateCursor(_x, _y, _width, _height, getAlignedYOffset(yOffset) + topSpace, addUpdate, create);
 	}
 	inline function createCursor(x:Int, y:Int, w:Int, h:Int, y_offset:Float, addUpdate:Bool) _setCreateCursor(x, y, w, h, y_offset, addUpdate, true);
 	inline function setCursor(x:Int, y:Int, w:Int, h:Int, y_offset:Float, addUpdate:Bool) _setCreateCursor(x, y, w, h, y_offset, addUpdate, false);
 	inline function _setCreateCursor(_x:Int, _y:Int, _width:Int, _height:Int, y_offset:Float, addUpdate:Bool, create:Bool)
 	{
-		var cursorX = Math.round(getPositionAtChar(cursor));
+//TODO:		var cursorX = Math.round(getPositionAtChar(cursor));
+		var cursorX = 0;
 		var cursorWidth = 2; // TODO: make customizable
 		var cursorY = Math.round(y + y_offset);
-		var cursorHeight = Math.round(line.height);		
+//TODO:		var cursorHeight = Math.round(line.height);
+		var cursorHeight = 20;
 		var mx = 0; var my = 0; var mw = cursorWidth; var mh = cursorHeight;
 		
 		#if (!peoteui_no_textmasking && !peoteui_no_masking)
@@ -419,20 +425,21 @@ implements peote.layout.ILayoutElement
 	
 	override inline function updateVisibleStyle()
 	{
-		if (line != null)
-		{		
-			fontProgram.lineSetStyle(line, fontStyle);		
-			if (isVisible) fontProgram.lineUpdate(line);
+		if (page != null)
+		{
+//TODO:		fontProgram.pageSetStyle(page, fontStyle);		
+			if (isVisible) fontProgram.pageUpdate(page);
 			
 			if (backgroundElement != null) {
 				backgroundElement.setStyle(backgroundStyle);
 				if (isVisible && backgroundIsVisible) backgroundProgram.update(backgroundElement);
 			}
-			if (selectionElement != null) {
+//TODO:		
+/*			if (selectionElement != null) {
 				selectionElement.setStyle(selectionStyle);		
 				if (isVisible && selectionIsVisible) selectionProgram.update(selectionElement);
 			}
-			if (cursorElement != null) {
+*/			if (cursorElement != null) {
 				cursorElement.setStyle(cursorStyle);		
 				if (isVisible && cursorIsVisible) cursorProgram.update(cursorElement);
 			}
@@ -441,31 +448,31 @@ implements peote.layout.ILayoutElement
 		
 	override inline function updateVisibleLayout():Void
 	{
-		if (line != null) updateLineLayout(false);
+		if (page != null) updateLineLayout(false);
 	}
 		
 	override inline function updateVisible():Void // updates style and layout
 	{
-		if (line != null) updateLineLayout(true);
+		if (page != null) updateLineLayout(true);
 	}
 		
 	inline function updateLineLayout(updateStyle:Bool):Void
 	{
 		if (autoSize > 0) { // auto aligning width and height to textsize
-			if (autoHeight) height = Std.int(line.height) + topSpace + bottomSpace;
-			if (autoWidth) width = Std.int(line.textSize) + leftSpace + rightSpace;
+			if (autoHeight) height = Std.int(page.textHeight) + topSpace + bottomSpace;
+			if (autoWidth) width = Std.int(page.textWidth) + leftSpace + rightSpace;
 			updatePickable(); // fit interactive pickables to new width and height
 		}
 			
-		var y_offset:Float = getAlignedYOffset(); // var y_offset:Float = (autoHeight) ? yOffset : getAlignedYOffset();
+		var y_offset:Float = getAlignedYOffset(yOffset); // var y_offset:Float = (autoHeight) ? yOffset : getAlignedYOffset(yOffset);
 		
 		var _x = x + leftSpace;
 		var _y = y + topSpace;
 		var _width  = width  - leftSpace - rightSpace;
 		var _height = height - topSpace - bottomSpace;
 		
-		if (updateStyle) fontProgram.lineSetStyle(line, fontStyle, isVisible);
-		fontProgram.lineSetPositionSize(line, _x, _y + y_offset, _width, getAlignedXOffset(xOffset), isVisible);
+//TODO:		if (updateStyle) fontProgram.pageSetStyle(page, fontStyle, isVisible);
+		fontProgram.pageSetPositionSize(page, _x, _y, _width, _height, getAlignedXOffset(xOffset), getAlignedYOffset(yOffset), isVisible);
 
 		if (isVisible) {
 			// TODO: optimize setting z-index in depend of styletyp and better allways adding fontprograms at end of uiDisplay (onAddVisibleToDisplay)
@@ -473,12 +480,12 @@ implements peote.layout.ILayoutElement
 				case true: macro {
 					if (fontStyle.zIndex != z) {
 						fontStyle.zIndex = z;
-						fontProgram.lineSetStyle(line, fontStyle);
+//TODO:					fontProgram.pageSetStyle(page, fontStyle);
 					}
 				}
 				default: macro {}
 			}}		
-			fontProgram.lineUpdate(line);
+			fontProgram.pageUpdate(page);
 		}
 				
 		#if (!peoteui_no_textmasking && !peoteui_no_masking)
@@ -496,27 +503,28 @@ implements peote.layout.ILayoutElement
 			backgroundElement.setLayout(this);
 			if (isVisible && backgroundIsVisible) backgroundProgram.update(backgroundElement);
 		}
-		if (selectionElement != null) {
-			if (updateStyle) selectionElement.setStyle(selectionStyle);
-			setSelection(_x, _y, _width, _height, y_offset + topSpace, (isVisible && selectionIsVisible));
-		}
+//TODO:		
+		//if (selectionElement != null) {
+			//if (updateStyle) selectionElement.setStyle(selectionStyle);
+			//setSelection(_x, _y, _width, _height, y_offset + topSpace, (isVisible && selectionIsVisible));
+		//}
 		if (cursorElement != null) {
 			if (updateStyle) cursorElement.setStyle(cursorStyle);
 			setCursor(_x, _y, _width, _height, y_offset + topSpace, (isVisible && cursorIsVisible));
 		}
 	}
-		
+	
 	override inline function onAddVisibleToDisplay()
 	{
-		//trace("onAddVisibleToDisplay()", autoWidth, autoHeight);		
-		if (line != null) {
+		trace("onAddVisibleToDisplay()", autoWidth, autoHeight);		
+		if (page != null) {
 			#if (!peoteui_no_textmasking && !peoteui_no_masking)
 			fontProgram.addMask(maskElement);
 			#end			
 			if (backgroundIsVisible && backgroundElement != null) backgroundProgram.addElement(backgroundElement);			
-			if (selectionIsVisible && selectionElement != null) selectionProgram.addElement(selectionElement);			
+//TODO:		if (selectionIsVisible && selectionElement != null) selectionProgram.addElement(selectionElement);			
 			if (cursorIsVisible && cursorElement != null) cursorProgram.addElement(cursorElement);
-			fontProgram.lineAdd(line);
+			fontProgram.pageAdd(page);
 		} 
 		else {
 			createFontStyle();			
@@ -525,30 +533,31 @@ implements peote.layout.ILayoutElement
 				case true: macro {
 					if (fontStyle.zIndex != z) {
 						fontStyle.zIndex = z;
-						fontProgram.lineSetStyle(line, fontStyle);
+						fontProgram.pageSetStyle(page, fontStyle);
 					}
 				}
 				default: macro {}
 			}}		
 */			
-			line = fontProgram.createLine(text, x, y, (autoWidth) ? null : width, xOffset, fontStyle);			
-			text = null; // let GC clear the string (after this.line is created this.text is allways get by fontProgram)
+			page = fontProgram.createPage(text, x, y, (autoWidth) ? null : width, (autoHeight) ? null : height, xOffset, fontStyle);
+			text = null; // let GC clear the string (after this.page is created this.text is allways get by fontProgram)
 			if (autoSize > 0) { // auto aligning width and height to textsize
-				if (autoHeight) height = Std.int(line.height) + topSpace + bottomSpace;
-				if (autoWidth) width = Std.int(line.textSize) + leftSpace + rightSpace;
+				if (autoHeight) height = Std.int(page.textHeight) + topSpace + bottomSpace;
+//TODO: 		if (autoWidth) width = Std.int(page.textWidth) + leftSpace + rightSpace;
+				width = Std.int(200) + leftSpace + rightSpace;
 				if ( hasMoveEvent  != 0 ) pickableMove.update(this);
 				if ( hasClickEvent != 0 ) pickableClick.update(this);
 			}
 			
-			var y_offset:Float = getAlignedYOffset(); // var y_offset:Float = (autoHeight) ? yOffset : getAlignedYOffset();
+			var y_offset:Float = getAlignedYOffset(yOffset); // var y_offset:Float = (autoHeight) ? yOffset : getAlignedYOffset();
 			
 			var _x = x + leftSpace;
 			var _y = y + topSpace;
 			var _width  = width  - leftSpace - rightSpace;
 			var _height = height - topSpace - bottomSpace;
-			
-			fontProgram.lineSetPositionSize(line, _x, _y + y_offset, _width, getAlignedXOffset(xOffset), isVisible);
-			fontProgram.lineUpdate(line);
+//TODO		
+			fontProgram.pageSetPositionSize(page, _x, _y, _width, _height, getAlignedXOffset(xOffset), getAlignedYOffset(yOffset), isVisible);
+			fontProgram.pageUpdate(page);
 			
 			#if (!peoteui_no_textmasking && !peoteui_no_masking)
 			if (masked) {
@@ -561,7 +570,7 @@ implements peote.layout.ILayoutElement
 			#end	
 			
 			if (backgroundStyle != null) createBackgroundStyle(backgroundIsVisible);
-			if (selectionStyle != null) createSelection(_x, _y, _width, _height, y_offset + topSpace, selectionIsVisible);
+//TODO:		if (selectionStyle != null) createSelection(_x, _y, _width, _height, y_offset + topSpace, selectionIsVisible);
 			if (cursorStyle != null) createCursor(_x, _y, _width, _height, y_offset + topSpace, cursorIsVisible);
 		}		
 	}
@@ -569,12 +578,12 @@ implements peote.layout.ILayoutElement
 	override inline function onRemoveVisibleFromDisplay()
 	{
 		//trace("onRemoveVisibleFromDisplay()");
-		fontProgram.lineRemove(line);
+		fontProgram.pageRemove(page);
 		#if (!peoteui_no_textmasking && !peoteui_no_masking)
 		fontProgram.removeMask(maskElement);
 		#end		
 		if (backgroundIsVisible && backgroundElement != null) backgroundProgram.removeElement(backgroundElement);
-		if (selectionIsVisible && selectionElement != null) selectionProgram.removeElement(selectionElement);
+//TODO:	if (selectionIsVisible && selectionElement != null) selectionProgram.removeElement(selectionElement);
 		if (cursorIsVisible && cursorElement != null) cursorProgram.removeElement(cursorElement);
 	}
 
@@ -617,7 +626,7 @@ implements peote.layout.ILayoutElement
 		}
 		selectionElement = selectionProgram.createElementAt(this, x, y, w, h, mx, my, mw, mh, z, selectionStyle);
 	}
-	
+		
 	inline function createCursorStyle(x:Int, y:Int, w:Int, h:Int, mx:Int, my:Int, mw:Int, mh:Int, z:Int)
 	{	//trace("createCursorStyle");
 		var stylePos = uiDisplay.usedStyleID.indexOf( cursorStyle.getUUID() );
@@ -630,8 +639,8 @@ implements peote.layout.ILayoutElement
 		}
 		cursorElement = cursorProgram.createElementAt(this, x, y, w, h, mx, my, mw, mh, z, cursorStyle);
 	}
-	
-	
+
+
 	// ----------------------- change the text  -----------------------	
 	public function setText(text:String, fontStyle:Null<$styleType> = null, forceAutoWidth:Null<Bool> = null, forceAutoHeight:Null<Bool> = null, autoUpdate = false)
 	{
@@ -640,14 +649,16 @@ implements peote.layout.ILayoutElement
 		if (forceAutoWidth != null) autoWidth = forceAutoWidth;
 		if (forceAutoHeight != null) autoHeight = forceAutoHeight;
 		
-		if (line != null) {
-			fontProgram.lineSet(line, text, x, y, (autoWidth) ? null : width, xOffset, this.fontStyle, null, isVisible);
-			if (cursor > line.length) cursor = line.length;
-			if (selectTo > line.length) selectTo = line.length;
+		if (page != null) {
+			fontProgram.pageSet(page, text, x, y, (autoWidth) ? null : width, xOffset, this.fontStyle, null, isVisible);
+// TODO:
+			//if (cursor > line.length) cursor = line.length;
+			//if (selectTo > line.length) selectTo = line.length;
 			if (autoSize > 0) {
 				// auto aligning width and height to new textsize
-				if (autoHeight) height = Std.int(line.height);
-				if (autoWidth) width = Std.int(line.textSize);
+				if (autoHeight) height = Std.int(page.textHeight);
+//TODO:				if (autoWidth) width = Std.int(page.textWidth);
+				if (autoWidth) width = Std.int(200);
 				if (autoUpdate) updatePickable();
 			}
 			if (autoUpdate) updateVisibleLayout();
@@ -669,14 +680,14 @@ implements peote.layout.ILayoutElement
 	
 	public inline function textInput(chars:String):Void {
 		//trace("UITextPage - textInput:", s);
-		if (line != null) {
-			insertChars(chars, cursor, fontStyle);
-			fontProgram.lineUpdate(line);
+		if (page != null) {
+//TODO:		insertChars(chars, cursor, fontStyle);
+			fontProgram.pageUpdate(page);
 		}
 		
 		// TODO:
 		if (autoSize & 2 > 0) {
-			width = Std.int(line.textSize);
+			width = Std.int(page.textWidth);
 			updatePickable();
 		}
 		// TODO: only on halign etc.
@@ -689,14 +700,14 @@ implements peote.layout.ILayoutElement
 		
 	public inline function cursorCharLeft()
 	{
-		if (hasSelection()) { cursor = selectFrom; removeSelection(); }
-		else cursor--;
+//TODO:	if (hasSelection()) { cursor = selectFrom; removeSelection(); }
+		//else cursor--;
 	}
 
 	public inline function cursorCharRight()
 	{
-		if (hasSelection()) { cursor = selectTo; removeSelection(); }
-		else cursor++;
+//TODO:	if (hasSelection()) { cursor = selectTo; removeSelection(); }
+		//else cursor++;
 	}
 
 	// ----------- Selection Events -----------
@@ -716,18 +727,18 @@ implements peote.layout.ILayoutElement
 		
 	function onSelectStart(e:peote.ui.event.PointerEvent):Void {
 		trace("selectStart", xOffset);
-		removeSelection();
+/*		removeSelection();
 		selectStartFrom = cursor = getCharAtPosition(e.x);
 		xOffsetAtSelectStart = xOffset;
 		selectionHide();
-	}
+*/	}
 	
 	function onSelectStop(e:peote.ui.event.PointerEvent = null):Void {
 		trace("selectStop", (e != null) ? e.x : "", xOffset);
 	}
 	
 	function onSelect(e:peote.ui.event.PointerEvent):Void {
-		if (localX(e.x) < leftSpace) {
+/*		if (localX(e.x) < leftSpace) {
 			if (localX(e.x) < getAlignedXOffset(leftSpace) + xOffsetAtSelectStart) {
 				xOffset = Math.max(- getAlignedXOffset(0), xOffsetAtSelectStart);
 			}
@@ -735,8 +746,8 @@ implements peote.layout.ILayoutElement
 			updateLineLayout(false); // OPTIMIZING: not for the background!
 		}
 		else if (localX(e.x) > width - rightSpace) {
-			if ( localX(e.x) > getAlignedXOffset(line.textSize + leftSpace  + xOffsetAtSelectStart ) ) {
-				xOffset = Math.min(-getAlignedXOffset(Math.floor(line.textSize) - width + leftSpace + rightSpace), xOffsetAtSelectStart);
+			if ( localX(e.x) > getAlignedXOffset(page.textWidth + leftSpace  + xOffsetAtSelectStart ) ) {
+				xOffset = Math.min(-getAlignedXOffset(Math.floor(page.textWidth) - width + leftSpace + rightSpace), xOffsetAtSelectStart);
 			} 
 			else xOffset = width - localX(e.x) - rightSpace  + xOffsetAtSelectStart;
 			updateLineLayout(false); // OPTIMIZING: not for the background!
@@ -749,7 +760,7 @@ implements peote.layout.ILayoutElement
 		select( selectStartFrom, cursor );
 		// TODO: detect the char left right while xOffset changes at the border
 		//       OR allways change xScroll to make cursor fully visible!
-	}
+*/	}
 
 	
 	
@@ -757,7 +768,7 @@ implements peote.layout.ILayoutElement
 	
 	// ----------------------- delegated methods from FontProgram -----------------------
 
-	public inline function setStyle(glyphStyle:$styleType, from:Int = 0, to:Null<Int> = null) {
+/*	public inline function setStyle(glyphStyle:$styleType, from:Int = 0, to:Null<Int> = null) {
 		fontProgram.lineSetStyle(line, glyphStyle, from, to, isVisible);
 	}
 	
@@ -772,11 +783,11 @@ implements peote.layout.ILayoutElement
 	public inline function insertChar(charcode:Int, position:Int = 0, glyphStyle:$styleType = null) {		
 		fontProgram.lineInsertChar(line, charcode, position, glyphStyle, isVisible);
 	}
-	
-	public inline function insertChars(chars:String, position:Int = 0, glyphStyle:$styleType = null) {		
-		fontProgram.lineInsertChars(line, chars, position, glyphStyle, isVisible);
+*/	
+	public inline function insertChars(chars:String, lineNumber:Int = 0, position:Int = 0, glyphStyle:$styleType = null) {		
+		fontProgram.pageInsertChars(page, chars, lineNumber, position, glyphStyle, isVisible);
 	}
-	
+/*	
 	public inline function appendChars(chars:String, glyphStyle:$styleType = null) {		
 		fontProgram.lineAppendChars(line, chars, glyphStyle, isVisible); 
 	}
@@ -800,7 +811,7 @@ implements peote.layout.ILayoutElement
 	public inline function getCharAtPosition(xPosition:Float):Int {
 		return fontProgram.lineGetCharAtPosition(line, xPosition);
 	}
-	
+*/	
 
 	
 	// ----------- events ------------------

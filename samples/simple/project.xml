@@ -7,7 +7,7 @@
 	<!-- <meta build-number="714" /> --> <!-- let set the buildnumber manual (android) -->
 	<!-- check this for GG-Playstore: <setenv name="ANDROID_GRADLE_TASK" value=":app:bundleRelease" /> -->
 	
-	<app main="SimpleText" path="bin" file="Main" />
+	<app main="TestTextPage" path="bin" file="Main" />
 	<!--
 		SimpleElements,
 		SimpleText,

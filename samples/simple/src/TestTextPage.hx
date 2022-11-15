@@ -133,7 +133,7 @@ class TestTextPage extends Application
 			cursorStyle:cursorSimpleStyle
 		}
 
-		var textPage = new UITextPage<FontStylePacked>(240, 25, "Hello World", fontPacked, fontStylePacked, textStyle);
+		var textPage = new UITextPage<FontStylePacked>(240, 5, "Hello World\nTesting UITextPAge", fontPacked, fontStylePacked, textStyle);
 		textPage.onPointerOver = (_, _)-> trace("textPage onPointerOver");
 		textPage.onPointerOut  = (_, _)-> trace("textPage onPointerOut");
 		textPage.onPointerClick  = (t, e:PointerEvent)-> {
@@ -192,7 +192,7 @@ class TestTextPage extends Application
 				
 		// ------------ selection Style ------------
 		buttonY += 12;
-		button(
+/*		button(
 			"select 0-8",  ()-> textPage.select(0,8),
 		    "4-10", ()-> textPage.select(4,10),
 		    "5-2", ()-> textPage.select(5,2)
@@ -205,7 +205,7 @@ class TestTextPage extends Application
 		button("set roundStyle", ()-> textPage.selectionStyle = selectionRoundStyle);
 		button("remove style", ()-> textPage.selectionStyle = null);
 
-		// ------------- cursor Style -------------
+*/		// ------------- cursor Style -------------
 		buttonY += 12;
 		button(
 			"cursorShow/Hide", ()->if (textPage.cursorIsVisible) textPage.cursorHide() else textPage.cursorShow(),
