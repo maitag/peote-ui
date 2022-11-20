@@ -17,6 +17,48 @@ import peote.ui.util.HAlign;
 import peote.ui.interactive.*;
 import peote.ui.style.*;
 
+import peote.view.Display;
+import peote.view.Program;
+import peote.view.Buffer;
+import peote.view.Element;
+
+class Elem implements Element {
+    @posX
+    @anim("Position", "pingpong")
+    public var x:Int;
+    
+    @posY
+    public var y:Int;
+
+    @sizeX
+    public var w = 50;
+
+    @sizeY
+    public var h:Int = 50;
+
+    @color
+    public var color:Color = 0xffffffff;
+
+    public function new(x:Int, y:Int) {
+        this.x = x;
+        this.y = y;
+        animPosition(x, x + 100);
+        timePosition(0.0, 2.0);
+    }
+	
+	// -------------------
+	
+	static var buffer:Buffer<Elem>;
+	static var program:Program;
+	
+	public static function playIntoDisplay(display:Display) {
+		buffer = new peote.view.Buffer<Elem>(16);
+		program = new peote.view.Program(buffer);
+		display.addProgram(program);
+		for(i in 0...4) buffer.addElement(new Elem(40, 60 * i));
+	}
+	
+}
 
 class TestUIArea extends Application
 {
@@ -41,7 +83,8 @@ class TestUIArea extends Application
 	public function onFontLoaded(font:Font<FontStyleTiled>) // don'T forget argument-type here !
 	{
 		peoteView = new PeoteView(window);
-		
+		peoteView.start();
+
 		// ---- setting up some styles -----
 		
 		var boxStyle  = new BoxStyle(Color.GREY4);
@@ -66,6 +109,16 @@ class TestUIArea extends Application
 		
 		uiDisplay = new PeoteUIDisplay(10, 10, window.width-20, window.height-20, Color.GREY1, [roundBorderStyle, boxStyle, fontStyle]);
 		peoteView.addDisplay(uiDisplay);
+		
+		
+		
+		
+		// p r o t o TO try ELEM
+		var testDisplay = new Display(0, 0, 800, 600);
+		peoteView.addDisplay(testDisplay);
+		Elem.playIntoDisplay(testDisplay);
+
+		
 		
 		
 		// -----------------------------------
