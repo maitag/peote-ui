@@ -73,21 +73,41 @@ class TestUIArea extends Application
 		// -----------------------------------
 		
 		var area = new UIArea(60, 60, 500, 500, new BoxStyle() );
-		area.setDragArea(0, 0, uiDisplay.width, uiDisplay.height); // to let it drag
+		var textLine = new UITextLine<FontStyleTiled>(0, 0, {width:500, hAlign:HAlign.CENTER}, 1, "=== UIArea ===", font, fontStyle, roundBorderStyle.copy(Color.GREY3));
+		var hSlider = new UISlider(0, 480, 480, 20, sliderStyle);
+		var vSlider = new UISlider(480, 20, 20, 460, sliderStyle);
+
+		// ---- uiElement button to change the size ----		
+		var resizerBottomRight:UIElement = new UIElement(area.x + area.width - 20, area.x + area.height - 20, 20, 20, 2, roundBorderStyle);	
+		resizerBottomRight.setDragArea(60, 60, uiDisplay.width, uiDisplay.height);
+		resizerBottomRight.onPointerDown = (_, e:PointerEvent)-> resizerBottomRight.startDragging(e);
+		resizerBottomRight.onPointerUp = (_, e:PointerEvent)-> resizerBottomRight.stopDragging(e);
+		resizerBottomRight.onDrag = (_, x:Float, y:Float) -> {
+			area.width = resizerBottomRight.x + resizerBottomRight.width - area.x;
+			area.height = resizerBottomRight.y + resizerBottomRight.height - area.y;
+			area.updateLayout();
+			textLine.width = area.width;
+			textLine.updateLayout();
+			// TODO: sliders not updating!
+			hSlider.width = area.width - 20;
+			hSlider.updateLayout();
+		};
+		uiDisplay.add(resizerBottomRight);
+		
+		// to let the area drag
+		area.setDragArea(0, 0, uiDisplay.width, uiDisplay.height);
+		// update the resizers if area is dragging
+		area.onDrag = (_, x:Float, y:Float) -> {
+			resizerBottomRight.x = area.x + area.width - resizerBottomRight.width;
+			resizerBottomRight.y = area.y + area.height - resizerBottomRight.height;
+			resizerBottomRight.updateLayout();
+		};
 		uiDisplay.add(area);
 		
-		
 		// ---- header textline what starts dragging ----		
-		var textLine = new UITextLine<FontStyleTiled>(0, 0, {width:500, hAlign:HAlign.CENTER}, 1, "=== UIArea ===", font, fontStyle, roundBorderStyle.copy(Color.GREY3));
 		textLine.onPointerDown = (_, e:PointerEvent)-> area.startDragging(e);
 		textLine.onPointerUp = (_, e:PointerEvent)-> area.stopDragging(e);
-		area.add(textLine);
-
-		
-		// ---- uiElement button to change the size ----		
-		var uiElement = new UIElement(480, 480, 20, 20, roundBorderStyle);	
-		area.add(uiElement);
-		
+		area.add(textLine);		
 		
 		
 		// ---------------------------------------------------------
@@ -109,12 +129,10 @@ class TestUIArea extends Application
 		// ---------------------------------------------------------
 		
 		// ---- Sliders to scroll the innerArea ----		
-		var hSlider = new UISlider(0, 480, 480, 20, sliderStyle);
 		hSlider.onMouseWheel = (_, e:WheelEvent) -> hSlider.setDelta( ((e.deltaY > 0) ? 1 : -1 )* 0.05 );
 		hSlider.onChange = (_, percent:Float) -> {content.xOffset =  -Std.int(300 * percent); content.updateLayout();}
 		area.add(hSlider);
 		
-		var vSlider = new UISlider(480, 20, 20, 460, sliderStyle);
 		vSlider.onMouseWheel = (_, e:WheelEvent) -> vSlider.setDelta( ((e.deltaY > 0) ? 1 : -1 )* 0.05 );
 		vSlider.onChange = (_, percent:Float) -> {content.yOffset = - Std.int(300 * percent ) ; content.updateLayout();}
 		area.add(vSlider);
