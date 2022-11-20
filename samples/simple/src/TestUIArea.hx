@@ -25,8 +25,7 @@ class TestUIArea extends Application
 	
 	override function onWindowCreate():Void
 	{
-		switch (window.context.type)
-		{
+		switch (window.context.type) {
 			case WEBGL, OPENGL, OPENGLES:
 				try startSample(window)
 				catch (_) trace(CallStack.toString(CallStack.exceptionStack()), _);
@@ -56,69 +55,44 @@ class TestUIArea extends Application
 		
 		var fontStyle = new FontStyleTiled();
 
+		var sliderStyle:SliderStyle = {
+			backgroundStyle: roundBorderStyle.copy(),
+			draggerStyle: roundBorderStyle.copy(Color.YELLOW),
+		};
 		
-		// -----------------------------------
+		// ---------------------------------------------------------
 		// --- creating PeoteUIDisplay with some styles in Order ---
-		// -----------------------------------
+		// ---------------------------------------------------------
 		
 		uiDisplay = new PeoteUIDisplay(10, 10, window.width-20, window.height-20, Color.GREY1, [roundBorderStyle, boxStyle, fontStyle]);
 		peoteView.addDisplay(uiDisplay);
 		
 		
 		// -----------------------------------
-		// -- creating some text and slider styles --
-		// -----------------------------------
-		
-		var textStyle:TextLineStyle = {
-			backgroundStyle:roundBorderStyle.copy(Color.GREY3),
-			selectionStyle:boxStyle,
-			cursorStyle:boxStyle.copy(Color.RED)
-		}
-		
-		var sliderStyle:SliderStyle = {
-			backgroundStyle: roundBorderStyle.copy(),
-			draggerStyle: roundBorderStyle.copy(Color.YELLOW),
-		};
-		
-		var sliderInsideStyle:SliderStyle = {
-			backgroundStyle: roundBorderStyle.copy(),
-			draggerStyle: roundBorderStyle.copy(Color.YELLOW),
-		};
-
-		
-		// -----------------------------------
 		// ---- creating an Area ------------
 		// -----------------------------------
 		
 		var area = new UIArea(60, 60, 500, 500, new BoxStyle() );
+		area.setDragArea(0, 0, uiDisplay.width, uiDisplay.height); // to let it drag
 		uiDisplay.add(area);
 		
 		
-		// header textline what starts dragging
-
+		// ---- header textline what starts dragging ----		
 		var textLine = new UITextLine<FontStyleTiled>(0, 0, {width:500, hAlign:HAlign.CENTER}, 1, "=== UIArea ===", font, fontStyle, roundBorderStyle.copy(Color.GREY3));
-		textLine.onPointerOver = (_, _)-> trace("textLine onPointerOver");
-		textLine.onPointerOut  = (_, _)-> trace("textLine onPointerOut");
-		textLine.onPointerClick  = (t, e:PointerEvent)-> {
-			trace("textLine onPointerClick", e);
-		}
-		textLine.onPointerDown = (t, e:PointerEvent)-> {
-			trace("textLine onPointerDown");
-		}
-		textLine.onPointerUp = (t, e:PointerEvent)-> {
-			trace("textLine onPointerUp");
-		}
+		textLine.onPointerDown = (_, e:PointerEvent)-> area.startDragging(e);
+		textLine.onPointerUp = (_, e:PointerEvent)-> area.stopDragging(e);
 		area.add(textLine);
 
 		
-		// uiElement button to change the size
-		
+		// ---- uiElement button to change the size ----		
 		var uiElement = new UIElement(480, 480, 20, 20, roundBorderStyle);	
 		area.add(uiElement);
 		
 		
+		
 		// ---------------------------------------------------------
-		// inner UIArea for some scrollable content
+		// -----  inner UIArea for some scrollable content ---------
+		// ---------------------------------------------------------
 		
 		var content = new UIArea(0, 20, 480, 460, roundBorderStyle);
 		area.add(content);
@@ -126,29 +100,28 @@ class TestUIArea extends Application
 		// put things into content:
 		var uiElement = new UIElement(0, 0, 100, 30, roundBorderStyle);	
 		content.add(uiElement);
+
+
+		
+		
 		
 		
 		// ---------------------------------------------------------
-
 		
-		// Sliders to scroll innerArea	
-		
+		// ---- Sliders to scroll the innerArea ----		
 		var hSlider = new UISlider(0, 480, 480, 20, sliderStyle);
-		setSliderEvents(hSlider);
-		hSlider.onChange = function(uiSlider:UISlider, percent:Float) {
-			content.xOffset =  -Std.int(300 * percent); area.update();
-		}
+		hSlider.onMouseWheel = (_, e:WheelEvent) -> hSlider.setDelta( ((e.deltaY > 0) ? 1 : -1 )* 0.05 );
+		hSlider.onChange = (_, percent:Float) -> {content.xOffset =  -Std.int(300 * percent); content.updateLayout();}
 		area.add(hSlider);
 		
 		var vSlider = new UISlider(480, 20, 20, 460, sliderStyle);
-		setSliderEvents(vSlider);
-		vSlider.onChange = function(uiSlider:UISlider, percent:Float) {
-			content.yOffset = - Std.int(300 * percent ) ; area.updateLayout();
-		}
+		vSlider.onMouseWheel = (_, e:WheelEvent) -> vSlider.setDelta( ((e.deltaY > 0) ? 1 : -1 )* 0.05 );
+		vSlider.onChange = (_, percent:Float) -> {content.yOffset = - Std.int(300 * percent ) ; content.updateLayout();}
 		area.add(vSlider);
 		
 		
-		
+		// ---------------------------------------------------------
+	
 		// TODO: make uiElement to switch between
 		//uiDisplay.mouseEnabled = false;
 		//uiDisplay.touchEnabled = false;
@@ -161,42 +134,5 @@ class TestUIArea extends Application
 		PeoteUIDisplay.registerEvents(window);			
 	}	
 
-	public function setSliderEvents(slider:UISlider) 
-	{
-		slider.onPointerOver = function(uiSlider:UISlider, e:PointerEvent) {
-			uiSlider.backgroundStyle.color = Color.GREEN;
-			uiSlider.updateBackgroundStyle();
-		}
-		
-		slider.onPointerOut = function(uiSlider:UISlider, e:PointerEvent) {
-			uiSlider.backgroundStyle.color = Color.GREY2;
-			uiSlider.updateBackgroundStyle();
-		}
-		
-		slider.onDraggerPointerOver = function(uiSlider:UISlider, e:PointerEvent) {
-			uiSlider.draggerStyle.color = Color.RED;
-			uiSlider.updateDraggerStyle();
-		}
-		
-		slider.onDraggerPointerOut = function(uiSlider:UISlider, e:PointerEvent) {
-			uiSlider.draggerStyle.color = Color.YELLOW;
-			uiSlider.updateDraggerStyle();
-		}
-		
-		slider.onDraggerPointerDown = function(uiSlider:UISlider, e:PointerEvent) {
-			uiSlider.draggerStyle.borderColor = Color.YELLOW;
-			uiSlider.updateDraggerStyle();			
-		}
-		
-		slider.onDraggerPointerUp = function(uiSlider:UISlider, e:PointerEvent) {
-			uiSlider.draggerStyle.borderColor = Color.GREY4;
-			uiSlider.updateDraggerStyle();		
-		}
-		
-		slider.onMouseWheel = function(uiSlider:UISlider, e:WheelEvent) {
-			uiSlider.setDelta( ((e.deltaY > 0) ? 1 : -1 )* 0.05 );
-		}
-		
-	}
 	
 }
