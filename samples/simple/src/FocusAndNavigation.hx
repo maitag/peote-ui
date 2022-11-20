@@ -11,7 +11,7 @@ import peote.view.Color;
 import peote.ui.PeoteUIDisplay;
 import peote.ui.interactive.UIElement;
 
-import peote.ui.style.SimpleStyle;
+import peote.ui.style.BoxStyle;
 import peote.ui.style.RoundBorderStyle;
 
 import peote.ui.event.PointerEvent;

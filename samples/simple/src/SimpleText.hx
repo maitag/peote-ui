@@ -22,7 +22,7 @@ import peote.ui.event.PointerEvent;
 //import peote.ui.util.VAlign;
 
 //import peote.ui.style.RoundBorderStyle;
-import peote.ui.style.SimpleStyle;
+import peote.ui.style.BoxStyle;
 import peote.ui.style.TextLineStyle;
 
 import peote.ui.style.interfaces.FontStyle;
@@ -74,7 +74,7 @@ class SimpleText extends Application
 	{					
 		var fontStyle = new MyFontStyle();
 		
-		var simpleStyle = new SimpleStyle(Color.BLACK);
+		var boxStyle = new BoxStyle(Color.BLACK);
 		
 		peoteView = new PeoteView(window);
 		uiDisplay = new PeoteUIDisplay(0, 0, window.width, window.height, Color.GREY1);
@@ -111,9 +111,9 @@ class SimpleText extends Application
 		//fontStyleInput.width = 20;
 		
 		var textStyle:TextLineStyle = {
-			backgroundStyle:simpleStyle,
-			selectionStyle:SimpleStyle.createById(1, Color.GREY3), // new ID for new Layer
-			cursorStyle:SimpleStyle.createById(2, Color.RED)       // new ID for new Layer
+			backgroundStyle:boxStyle,
+			selectionStyle:BoxStyle.createById(1, Color.GREY3), // new ID for new Layer
+			cursorStyle:BoxStyle.createById(2, Color.RED)       // new ID for new Layer
 		}
 		
 		var inputLine = new UITextLine<MyFontStyle>(300, 20, "input", font, fontStyleInput, textStyle);
@@ -159,9 +159,9 @@ class SimpleText extends Application
 		//fontStyleInput.width = 20;
 		
 		var textStyle:TextLineStyle = {
-			backgroundStyle:simpleStyle,
-			selectionStyle:SimpleStyle.createById(1, Color.GREY3), // new ID for new Layer
-			cursorStyle:SimpleStyle.createById(2, Color.RED)       // new ID for new Layer
+			backgroundStyle:boxStyle,
+			selectionStyle:BoxStyle.createById(1, Color.GREY3), // new ID for new Layer
+			cursorStyle:BoxStyle.createById(2, Color.RED)       // new ID for new Layer
 		}
 		
 		var inputPage = new UITextPage<MyFontStyle>(300, 100, "input-\ntext", font, fontStyleInput, textStyle);

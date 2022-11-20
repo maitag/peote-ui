@@ -93,9 +93,9 @@ class TestTextPage extends Application
 	{
 		fontButtons = fontTiled; // make global for the button() function
 		
-		var simpleStyle  = new SimpleStyle(Color.RED);
+		var boxStyle  = new BoxStyle(Color.RED);
 		var roundBorderStyle = new RoundBorderStyle(Color.GREEN);
-		var cursorStyle = SimpleStyle.createById(1); // different id is need if using more then one into available styles
+		var cursorStyle = BoxStyle.createById(1); // different id is need if using more then one into available styles
 		
 		
 		var fontStylePacked:FontStylePacked = { width:20, height:20 };		
@@ -104,8 +104,8 @@ class TestTextPage extends Application
 		peoteView = new PeoteView(window);
 		uiDisplay = new PeoteUIDisplay(0, 0, window.width, window.height, Color.GREY1
 		// available styles into render-order (without it will auto add at runtime and fontstyles allways on top)
-			//,[ simpleStyle, roundBorderStyle, fontStylePacked, fontStyleTiled, cursorStyle]
-			,[ simpleStyle, roundBorderStyle, fontStylePacked ], true // allow to auto add Styles
+			//,[ boxStyle, roundBorderStyle, fontStylePacked, fontStyleTiled, cursorStyle]
+			,[ boxStyle, roundBorderStyle, fontStylePacked ], true // allow to auto add Styles
 		);
 		peoteView.addDisplay(uiDisplay);
 		
@@ -119,11 +119,11 @@ class TestTextPage extends Application
 		
 		// ----------- create UITextLine -----------
 		
-		var backgroundSimpleStyle = simpleStyle.copy(Color.YELLOW);
+		var backgroundSimpleStyle = boxStyle.copy(Color.YELLOW);
 		var backgroundRoundStyle = roundBorderStyle.copy(Color.YELLOW);		
-		var selectionSimpleStyle = simpleStyle.copy(Color.GREY4);
+		var selectionSimpleStyle = boxStyle.copy(Color.GREY4);
 		var selectionRoundStyle = roundBorderStyle.copy(Color.GREY4);		
-		//var cursorSimpleStyle = simpleStyle.copy();
+		//var cursorSimpleStyle = boxStyle.copy();
 		var cursorSimpleStyle = cursorStyle.copy(Color.RED.setAlpha(0.5));
 		var cursorRoundStyle = roundBorderStyle.copy();
 		
@@ -166,7 +166,7 @@ class TestTextPage extends Application
 			"styleShow/Hide",  ()-> element.styleIsVisible = !element.styleIsVisible,		
 			"color", ()-> {	element.style.color = Color.random(); element.updateStyle(); }
 		);
-		button("set simplestyle", ()-> element.style = simpleStyle);
+		button("set simplestyle", ()-> element.style = boxStyle);
 		button("set roundStyle", ()-> element.style = roundBorderStyle);
 		button("remove style", ()-> element.style = null);
 		
@@ -186,7 +186,7 @@ class TestTextPage extends Application
 			"backgroundShow/Hide", ()-> if (textPage.backgroundIsVisible) textPage.backgroundHide() else textPage.backgroundShow(),	
 			"color", ()-> { textPage.backgroundStyle.color = Color.random(); textPage.updateStyle(); }
 		);			
-		button("set simpleStyle", ()-> textPage.backgroundStyle = backgroundSimpleStyle);
+		button("set boxStyle", ()-> textPage.backgroundStyle = backgroundSimpleStyle);
 		button("set roundStyle",  ()-> textPage.backgroundStyle = backgroundRoundStyle);
 		button("remove style",    ()-> textPage.backgroundStyle = null);
 				

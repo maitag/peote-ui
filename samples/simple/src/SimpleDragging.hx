@@ -17,7 +17,7 @@ import peote.ui.style.RoundBorderStyle;
 import peote.ui.event.PointerEvent;
 
 
-class SimpleDragArea extends Application
+class SimpleDragging extends Application
 {
 	var peoteView:PeoteView;
 	var uiDisplay:PeoteUIDisplay;

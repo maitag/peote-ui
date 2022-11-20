@@ -11,14 +11,14 @@ import peote.ui.style.interfaces.StyleProgram;
 import peote.ui.style.interfaces.StyleElement;
 
 @:structInit
-class SimpleStyle implements Style
+class BoxStyle implements Style
 {
 	// style
 	public var color:Color = Color.GREY2;
 		
 	// -----------------------------------------	
-	//@:keep inline function createStyleProgram():SimpleStyleProgram return new SimpleStyleProgram();
-	@:keep public inline function createStyleProgram():StyleProgram return new SimpleStyleProgram();
+	//@:keep inline function createStyleProgram():BoxStyleProgram return new BoxStyleProgram();
+	@:keep public inline function createStyleProgram():StyleProgram return new BoxStyleProgram();
 }
 
 
@@ -26,7 +26,7 @@ class SimpleStyle implements Style
 // ---------------- peote-view Element and Program -------------------
 // -------------------------------------------------------------------
 
-class SimpleStyleElement implements StyleElement implements Element
+class BoxStyleElement implements StyleElement implements Element
 {
 	// style
 	@color var color:Color;
@@ -92,23 +92,23 @@ class SimpleStyleElement implements StyleElement implements Element
 	}
 }
 
-class SimpleStyleProgram extends Program implements StyleProgram
+class BoxStyleProgram extends Program implements StyleProgram
 {
-	inline function getBuffer():Buffer<SimpleStyleElement> return cast buffer;
+	inline function getBuffer():Buffer<BoxStyleElement> return cast buffer;
 	
 	public inline function new()
 	{
-		super(new Buffer<SimpleStyleElement>(1024, 1024));
+		super(new Buffer<BoxStyleElement>(1024, 1024));
 	}
 
 	public inline function createElement(uiElement:Interactive, style:Dynamic):StyleElement
 	{
-		return new SimpleStyleElement(style, uiElement);
+		return new BoxStyleElement(style, uiElement);
 	}
 	
 	public inline function createElementAt(uiElement:Interactive, x:Int, y:Int, w:Int, h:Int, mx:Int, my:Int, mw:Int, mh:Int, z:Int, style:Dynamic):StyleElement
 	{
-		var e = new SimpleStyleElement(style);
+		var e = new BoxStyleElement(style);
 		e.setMasked(uiElement, x, y, w, h, mx, my, mw, mh, z);
 		return e;
 	}

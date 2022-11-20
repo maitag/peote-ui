@@ -19,7 +19,7 @@ import peote.ui.interactive.*;
 import peote.ui.style.*;
 
 
-class Areas extends Application
+class LargeScrollArea extends Application
 {
 	var peoteView:PeoteView;
 	var uiDisplay:PeoteUIDisplay;
@@ -46,7 +46,7 @@ class Areas extends Application
 		
 		// ---- setting up some styles -----
 		
-		var simpleStyle  = new SimpleStyle(Color.GREY4);
+		var boxStyle  = new BoxStyle(Color.GREY4);
 
 		var roundBorderStyle:RoundBorderStyle = {
 			color: Color.GREY2,
@@ -60,7 +60,7 @@ class Areas extends Application
 		
 		// --- creating PeoteUIDisplay with some styles in Order ---
 		
-		uiDisplay = new PeoteUIDisplay(10, 10, window.width-20, window.height-20, Color.GREY1, [roundBorderStyle, simpleStyle, fontStyle]);
+		uiDisplay = new PeoteUIDisplay(10, 10, window.width-20, window.height-20, Color.GREY1, [roundBorderStyle, boxStyle, fontStyle]);
 		peoteView.addDisplay(uiDisplay);
 		
 		
@@ -68,8 +68,8 @@ class Areas extends Application
 		
 		var textStyle:TextLineStyle = {
 			backgroundStyle:roundBorderStyle.copy(Color.GREY3),
-			selectionStyle:simpleStyle,
-			cursorStyle:simpleStyle.copy(Color.RED)
+			selectionStyle:boxStyle,
+			cursorStyle:boxStyle.copy(Color.RED)
 		}
 		
 		var sliderStyle:SliderStyle = {
@@ -87,7 +87,7 @@ class Areas extends Application
 		// ---- creating an Area ------------
 		// -----------------------------------
 		
-		var area = new UIArea(60, 60, 500, 500, new SimpleStyle() );
+		var area = new UIArea(60, 60, 500, 500, new BoxStyle() );
 		uiDisplay.add(area);
 		
 		
