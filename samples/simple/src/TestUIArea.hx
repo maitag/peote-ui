@@ -39,11 +39,12 @@ class Elem implements Element {
     @color
     public var color:Color = 0xffffffff;
 
-    public function new(x:Int, y:Int) {
+    public function new(x:Int, y:Int, color:Color, timeStart:Float, timeDuration:Float = 3.0) {
         this.x = x;
         this.y = y;
-        animPosition(x, x + 100);
-        timePosition(0.0, 2.0);
+        this.color = color;
+        animPosition(x, x + 150);
+        timePosition(timeStart, timeDuration);
     }
 	
 	// -------------------
@@ -55,7 +56,7 @@ class Elem implements Element {
 		buffer = new peote.view.Buffer<Elem>(16);
 		program = new peote.view.Program(buffer);
 		display.addProgram(program);
-		for(i in 0...4) buffer.addElement(new Elem(40, 60 * i));
+		for (i in 0...4) buffer.addElement(new Elem(0, 50 * i, Color.random(), i));
 	}
 	
 }
@@ -87,7 +88,7 @@ class TestUIArea extends Application
 
 		// ---- setting up some styles -----
 		
-		var boxStyle  = new BoxStyle(Color.GREY4);
+		var boxStyle  = new BoxStyle(Color.GREY2);
 
 		var roundBorderStyle:RoundBorderStyle = {
 			color: Color.GREY2,
@@ -111,21 +112,11 @@ class TestUIArea extends Application
 		peoteView.addDisplay(uiDisplay);
 		
 		
-		
-		
-		// p r o t o TO try ELEM
-		var testDisplay = new Display(0, 0, 800, 600);
-		peoteView.addDisplay(testDisplay);
-		Elem.playIntoDisplay(testDisplay);
-
-		
-		
-		
 		// -----------------------------------
 		// ---- creating an Area ------------
 		// -----------------------------------
 		
-		var area = new UIArea(60, 60, 500, 500, new BoxStyle() );
+		var area = new UIArea(60, 60, 500, 500, roundBorderStyle );
 		var textLine = new UITextLine<FontStyleTiled>(0, 0, {width:500, hAlign:HAlign.CENTER}, 1, "=== UIArea ===", font, fontStyle, roundBorderStyle.copy(Color.GREY3));
 		var hSlider = new UISlider(0, 480, 480, 20, sliderStyle);
 		var vSlider = new UISlider(480, 20, 20, 460, sliderStyle);
@@ -167,13 +158,13 @@ class TestUIArea extends Application
 		// -----  inner UIArea for some scrollable content ---------
 		// ---------------------------------------------------------
 		
-		var content = new UIArea(0, 20, 480, 460, roundBorderStyle);
+		var content = new UIArea(3, 20, 477, 460, boxStyle);
 		area.add(content);
 
 		// put things into content:
-		var uiElement = new UIElement(0, 0, 100, 30, roundBorderStyle);	
-		content.add(uiElement);
-
+		var uiDisplay = new UIDisplay(0, 0, 200, 200, Color.BLUE);	
+		content.add(uiDisplay);
+		Elem.playIntoDisplay(uiDisplay.display);
 
 		
 		

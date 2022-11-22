@@ -2,15 +2,15 @@
 
 There are 2 ways how to use peote-ui.
 
-
 ## PeoteUIDisplay (extends [peote-view](https://github.com/maitag/peote-view) Display)
 
 This is the simplest way where interactive elements can be placed 
 directly by x/y values inside the Display with a given size.
 
 Available elements you can add:
+- Interactive (have no Style so its hidden and only interacts)
 - UIElement
-- UIDisplay (extends peote-view Display)
+- UIDisplay (holds a peote-view Display, e.g. for game-content)
 - UITextLine<FontStyle>
 
 TODO:
