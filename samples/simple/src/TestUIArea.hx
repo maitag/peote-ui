@@ -88,7 +88,7 @@ class TestUIArea extends Application
 
 		// ---- setting up some styles -----
 		
-		var boxStyle  = new BoxStyle(Color.GREY2);
+		var boxStyle  = new BoxStyle(0x041144ff);
 
 		var roundBorderStyle:RoundBorderStyle = {
 			color: Color.GREY2,
@@ -117,13 +117,19 @@ class TestUIArea extends Application
 		// -----------------------------------
 		
 		var area = new UIArea(60, 60, 500, 500, roundBorderStyle );
+		uiDisplay.add(area);
 		var textLine = new UITextLine<FontStyleTiled>(0, 0, {width:500, hAlign:HAlign.CENTER}, 1, "=== UIArea ===", font, fontStyle, roundBorderStyle.copy(Color.GREY3));
+		area.add(textLine);		
 		var hSlider = new UISlider(0, 480, 480, 20, sliderStyle);
+		area.add(hSlider);
 		var vSlider = new UISlider(480, 20, 20, 460, sliderStyle);
-
+		area.add(vSlider);
+		var content = new UIArea(3, 20, 477, 460, boxStyle);
+		area.add(content);
+		
 		// ---- uiElement button to change the size ----		
 		var resizerBottomRight:UIElement = new UIElement(area.x + area.width - 20, area.x + area.height - 20, 20, 20, 2, roundBorderStyle);	
-		resizerBottomRight.setDragArea(60, 60, uiDisplay.width, uiDisplay.height);
+		resizerBottomRight.setDragArea(area.x + 100, area.y + 50, uiDisplay.width - area.x - 100, uiDisplay.height - area.y - 50);
 		resizerBottomRight.onPointerDown = (_, e:PointerEvent)-> resizerBottomRight.startDragging(e);
 		resizerBottomRight.onPointerUp = (_, e:PointerEvent)-> resizerBottomRight.stopDragging(e);
 		resizerBottomRight.onDrag = (_, x:Float, y:Float) -> {
@@ -132,9 +138,15 @@ class TestUIArea extends Application
 			area.updateLayout();
 			textLine.width = area.width;
 			textLine.updateLayout();
-			// TODO: sliders not updating!
+			content.width = area.width - 23;
+			content.height = area.height - 40;
+			content.updateLayout();
 			hSlider.width = area.width - 20;
+			hSlider.y = area.y + area.height - hSlider.height;
 			hSlider.updateLayout();
+			vSlider.height = content.height;
+			vSlider.x = area.x + area.width - vSlider.width;
+			vSlider.updateLayout();
 		};
 		uiDisplay.add(resizerBottomRight);
 		
@@ -144,22 +156,19 @@ class TestUIArea extends Application
 		area.onDrag = (_, x:Float, y:Float) -> {
 			resizerBottomRight.x = area.x + area.width - resizerBottomRight.width;
 			resizerBottomRight.y = area.y + area.height - resizerBottomRight.height;
+			resizerBottomRight.setDragArea(area.x + 100, area.y + 50, uiDisplay.width - area.x - 100, uiDisplay.height - area.y - 50);
 			resizerBottomRight.updateLayout();
 		};
-		uiDisplay.add(area);
 		
 		// ---- header textline what starts dragging ----		
 		textLine.onPointerDown = (_, e:PointerEvent)-> area.startDragging(e);
 		textLine.onPointerUp = (_, e:PointerEvent)-> area.stopDragging(e);
-		area.add(textLine);		
 		
 		
 		// ---------------------------------------------------------
 		// -----  inner UIArea for some scrollable content ---------
 		// ---------------------------------------------------------
 		
-		var content = new UIArea(3, 20, 477, 460, boxStyle);
-		area.add(content);
 
 		// put things into content:
 		var uiDisplay = new UIDisplay(0, 0, 200, 200, Color.BLUE);	
@@ -175,11 +184,9 @@ class TestUIArea extends Application
 		// ---- Sliders to scroll the innerArea ----		
 		hSlider.onMouseWheel = (_, e:WheelEvent) -> hSlider.setDelta( ((e.deltaY > 0) ? 1 : -1 )* 0.05 );
 		hSlider.onChange = (_, percent:Float) -> {content.xOffset =  -Std.int(300 * percent); content.updateLayout();}
-		area.add(hSlider);
 		
 		vSlider.onMouseWheel = (_, e:WheelEvent) -> vSlider.setDelta( ((e.deltaY > 0) ? 1 : -1 )* 0.05 );
 		vSlider.onChange = (_, percent:Float) -> {content.yOffset = - Std.int(300 * percent ) ; content.updateLayout();}
-		area.add(vSlider);
 		
 		
 		// ---------------------------------------------------------

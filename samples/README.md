@@ -12,6 +12,8 @@ Available elements you can add:
 - UIElement
 - UIDisplay (holds a peote-view Display, e.g. for game-content)
 - UITextLine<FontStyle>
+- UISlider
+- UIArea
 
 TODO:
 - UITextPage<FontStyle> 

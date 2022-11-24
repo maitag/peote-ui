@@ -68,6 +68,8 @@ implements peote.layout.ILayoutElement
 	inline function get_draggerStyle():Dynamic return dragger.style;
 	inline function set_draggerStyle(style:Dynamic):Dynamic return dragger.style = style;
 	
+	var sliderStyle:SliderStyle;
+	
 	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int=0, sliderStyle:SliderStyle=null) 
 	{
 		super(xPosition, yPosition, width, height, zIndex);
@@ -76,6 +78,8 @@ implements peote.layout.ILayoutElement
 		last_y = yPosition;
 		
 		if (width < height) isVertical = true;
+		
+		this.sliderStyle = sliderStyle;
 		
 		if (sliderStyle.backgroundStyle != null) {
 			background = new UIElement(0, 0, width, height, zIndex, sliderStyle.backgroundStyle);
@@ -151,11 +155,21 @@ implements peote.layout.ILayoutElement
 		if (background != null) {
 			background.x += deltaX;
 			background.y += deltaY;
+			background.width = width;
+			background.height = height;
 			background.updateLayout();
 		}
 		if (dragger != null) {
 			dragger.x += deltaX;
 			dragger.y += deltaY;
+			if (isVertical) {
+				if (sliderStyle.draggerSize == null) dragger.width = width;
+				if (sliderStyle.draggerLength == null) dragger.height = width;
+			}
+			else {
+				if (sliderStyle.draggerSize == null) dragger.height = height;
+				if (sliderStyle.draggerLength == null) dragger.width = height;
+			}
 			dragger.setDragArea(x, y, width, height);
 			dragger.updateLayout();
 		}
