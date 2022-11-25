@@ -561,12 +561,12 @@ implements peote.layout.ILayoutElement
 		if (isVisible) {
 			var index = uiDisplay.movePickBuffer.getElementIndex(pickableMove);
 			// if not the last one into buffer
-			if (index < uiDisplay.movePickBuffer.length() - 1) {
-				if ( uiDisplay.mouseEnabled && uiDisplay.lastMouseOverIndex == uiDisplay.movePickBuffer.length() - 1)
+			if (index < uiDisplay.movePickBuffer.length - 1) {
+				if ( uiDisplay.mouseEnabled && uiDisplay.lastMouseOverIndex == uiDisplay.movePickBuffer.length - 1)
 						uiDisplay.lastMouseOverIndex = index;
 				if (uiDisplay.touchEnabled) {
 					for (i in 0...uiDisplay.lastTouchOverIndex.length) {
-						if ( uiDisplay.lastTouchOverIndex.get(i) == uiDisplay.movePickBuffer.length() - 1)
+						if ( uiDisplay.lastTouchOverIndex.get(i) == uiDisplay.movePickBuffer.length - 1)
 							uiDisplay.lastTouchOverIndex.set(i, index);
 					}
 				}
@@ -588,16 +588,16 @@ implements peote.layout.ILayoutElement
 		if (isVisible) {
 			var index = uiDisplay.clickPickBuffer.getElementIndex(pickableClick);
 			// if not the last one into buffer
-			if (index < uiDisplay.clickPickBuffer.length() - 1) {
+			if (index < uiDisplay.clickPickBuffer.length - 1) {
 				if (uiDisplay.mouseEnabled) {
 					for (i in 0...uiDisplay.lastMouseDownIndex.length) {
-						if ( uiDisplay.lastMouseDownIndex.get(i) == uiDisplay.clickPickBuffer.length() - 1)
+						if ( uiDisplay.lastMouseDownIndex.get(i) == uiDisplay.clickPickBuffer.length - 1)
 							uiDisplay.lastMouseDownIndex.set(i, index);
 					}
 				}
 				if (uiDisplay.touchEnabled) {
 					for (i in 0...uiDisplay.lastTouchDownIndex.length) {
-						if ( uiDisplay.lastTouchDownIndex.get(i) == uiDisplay.clickPickBuffer.length() - 1)
+						if ( uiDisplay.lastTouchDownIndex.get(i) == uiDisplay.clickPickBuffer.length - 1)
 							uiDisplay.lastTouchDownIndex.set(i, index);
 					}
 				}
