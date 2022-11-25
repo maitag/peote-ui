@@ -193,7 +193,9 @@ class TestUIArea extends Application
 		
 
 		// put things into content:
-		var uiDisplay = new UIDisplay(20, 20, 200, 200, Color.BLUE);	
+		var uiDisplay = new UIDisplay(20, 20, 200, 200, Color.BLUE);
+		uiDisplay.onPointerOver = (_,_)-> uiDisplay.display.color = Color.RED;
+		uiDisplay.onPointerOut  = (_,_)-> uiDisplay.display.color = Color.BLUE;
 		content.add(uiDisplay);
 		Elem.playIntoDisplay(uiDisplay.display);
 
@@ -207,10 +209,10 @@ class TestUIArea extends Application
 		
 		// ---- Sliders to scroll the innerArea ----		
 		hSlider.onMouseWheel = (_, e:WheelEvent) -> hSlider.setDelta( ((e.deltaY > 0) ? 1 : -1 )* 0.05 );
-		hSlider.onChange = (_, percent:Float) -> {content.xOffset =  -Std.int(300 * percent); content.updateLayout();}
+		hSlider.onChange = (_, percent:Float) -> {content.xOffset =  -Std.int(420 * percent); content.updateLayout(); }
 		
 		vSlider.onMouseWheel = (_, e:WheelEvent) -> vSlider.setDelta( ((e.deltaY > 0) ? 1 : -1 )* 0.05 );
-		vSlider.onChange = (_, percent:Float) -> {content.yOffset = - Std.int(300 * percent ) ; content.updateLayout();}
+		vSlider.onChange = (_, percent:Float) -> {content.yOffset = - Std.int(420 * percent ); content.updateLayout();}
 		
 		
 		// ---------------------------------------------------------
