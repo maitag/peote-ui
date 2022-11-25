@@ -356,7 +356,6 @@ implements peote.layout.ILayoutElement
 		dragMaxY = dragAreaY + dragAreaHeight;
 	}
 	
-	@:access(peote.view.Display, peote.view.PeoteView)
 	inline function dragTo(dragToX:Int, dragToY:Int):Void
 	{
 		dragToX = Std.int(dragToX / uiDisplay.peoteView.xz / uiDisplay.xz);
@@ -376,7 +375,6 @@ implements peote.layout.ILayoutElement
 		if (drag != null) drag((x - dragMinX) / (dragMaxX - dragMinX - width), (y - dragMinY) / (dragMaxY - dragMinY - height));
 	}
 
-	@:access(peote.view.Display, peote.view.PeoteView)
 	public function startDragging(e:PointerEvent)
 	{
 		if (isVisible) {

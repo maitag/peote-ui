@@ -104,7 +104,7 @@ implements peote.layout.ILayoutElement
 		}
 		
 		// set the drag-area to same size as the slider
-		dragger.setDragArea(xPosition, yPosition, width, height);
+		//dragger.setDragArea(xPosition, yPosition, width, height);
 
 		dragger.onPointerOver = function(uiElement:UIElement, e:PointerEvent) if (onDraggerPointerOver != null) onDraggerPointerOver(this, e);
 		dragger.onPointerOut = function(uiElement:UIElement, e:PointerEvent) if (onDraggerPointerOut != null) onDraggerPointerOut(this, e);
@@ -188,6 +188,8 @@ implements peote.layout.ILayoutElement
 		if (background != null) uiDisplay.add(background);
 		if (dragger != null) {
 			uiDisplay.add(dragger);
+			// set the drag-area to same size as the slider
+			dragger.setDragArea(x, y, width, height);
 		}
 	}
 	

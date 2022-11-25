@@ -36,9 +36,11 @@ class SimpleDragging extends Application
 	public function startSample(window:Window)
 	{
 		peoteView = new PeoteView(window);
+		//peoteView.zoom = 0.8;
 		
 		uiDisplay = new PeoteUIDisplay(20, 20, window.width-40, window.height-40, Color.GREY1);
 		peoteView.addDisplay(uiDisplay);
+		//uiDisplay.zoom = 0.5;
 		
 		var style = new RoundBorderStyle();
 		style.color = Color.GREY1;

@@ -1,6 +1,7 @@
 package;
 
 import haxe.CallStack;
+import lime.ui.MouseCursor;
 
 import lime.app.Application;
 import lime.ui.Window;
@@ -64,7 +65,7 @@ class Elem implements Element {
 class TestUIArea extends Application
 {
 	var peoteView:PeoteView;
-	var uiDisplay:PeoteUIDisplay;
+	var peoteUiDisplay:PeoteUIDisplay;
 	
 	override function onWindowCreate():Void
 	{
@@ -108,16 +109,20 @@ class TestUIArea extends Application
 		// --- creating PeoteUIDisplay with some styles in Order ---
 		// ---------------------------------------------------------
 		
-		uiDisplay = new PeoteUIDisplay(10, 10, window.width-20, window.height-20, Color.GREY1, [roundBorderStyle, boxStyle, fontStyle]);
-		peoteView.addDisplay(uiDisplay);
-		
+		peoteUiDisplay = new PeoteUIDisplay(10, 10, window.width-20, window.height-20, Color.GREY1, [roundBorderStyle, boxStyle, fontStyle]);
+		peoteView.addDisplay(peoteUiDisplay);
+		//peoteUiDisplay.zoom = 0.75;
+		//peoteUiDisplay.xOffset = 30;
+		//peoteView.zoom = 0.75;
+		//peoteView.xOffset = 20;
+
 		
 		// -----------------------------------
 		// ---- creating an Area ------------
 		// -----------------------------------
 		
-		var area = new UIArea(60, 60, 500, 500, roundBorderStyle );
-		uiDisplay.add(area);
+		var area = new UIArea(0, 0, 500, 500, roundBorderStyle );
+		peoteUiDisplay.add(area);
 		var textLine = new UITextLine<FontStyleTiled>(0, 0, {width:500, hAlign:HAlign.CENTER}, 1, "=== UIArea ===", font, fontStyle, roundBorderStyle.copy(Color.GREY3));
 		area.add(textLine);		
 		var hSlider = new UISlider(0, 480, 480, 20, sliderStyle);
@@ -129,7 +134,16 @@ class TestUIArea extends Application
 		
 		// ---- uiElement button to change the size ----		
 		var resizerBottomRight:UIElement = new UIElement(area.x + area.width - 20, area.x + area.height - 20, 20, 20, 2, roundBorderStyle);	
-		resizerBottomRight.setDragArea(area.x + 100, area.y + 50, uiDisplay.width - area.x - 100, uiDisplay.height - area.y - 50);
+		peoteUiDisplay.add(resizerBottomRight);
+		var resizerBottomRightSetDragArea = () -> {
+			resizerBottomRight.setDragArea(
+				Std.int(area.x + 240),
+				Std.int(area.y + 140),
+				Std.int((peoteUiDisplay.width  - peoteUiDisplay.xOffset) / peoteUiDisplay.xz  - area.x - 240),
+				Std.int((peoteUiDisplay.height - peoteUiDisplay.yOffset) / peoteUiDisplay.yz  - area.y - 140)
+			);
+		};
+		resizerBottomRightSetDragArea();
 		resizerBottomRight.onPointerDown = (_, e:PointerEvent)-> resizerBottomRight.startDragging(e);
 		resizerBottomRight.onPointerUp = (_, e:PointerEvent)-> resizerBottomRight.stopDragging(e);
 		resizerBottomRight.onDrag = (_, x:Float, y:Float) -> {
@@ -148,21 +162,29 @@ class TestUIArea extends Application
 			vSlider.x = area.x + area.width - vSlider.width;
 			vSlider.updateLayout();
 		};
-		uiDisplay.add(resizerBottomRight);
+		resizerBottomRight.onPointerOver = (_,_)-> window.cursor = MouseCursor.RESIZE_NWSE;
+		resizerBottomRight.onPointerOut  = (_,_)-> window.cursor = MouseCursor.DEFAULT;
 		
 		// to let the area drag
-		area.setDragArea(0, 0, uiDisplay.width, uiDisplay.height);
+		area.setDragArea(
+			Std.int(-peoteUiDisplay.xOffset / peoteUiDisplay.xz),
+			Std.int(-peoteUiDisplay.yOffset / peoteUiDisplay.yz),
+			Std.int(peoteUiDisplay.width    / peoteUiDisplay.xz),
+			Std.int(peoteUiDisplay.height   / peoteUiDisplay.yz)
+		);
 		// update the resizers if area is dragging
 		area.onDrag = (_, x:Float, y:Float) -> {
 			resizerBottomRight.x = area.x + area.width - resizerBottomRight.width;
 			resizerBottomRight.y = area.y + area.height - resizerBottomRight.height;
-			resizerBottomRight.setDragArea(area.x + 100, area.y + 50, uiDisplay.width - area.x - 100, uiDisplay.height - area.y - 50);
 			resizerBottomRight.updateLayout();
 		};
 		
 		// ---- header textline what starts dragging ----		
 		textLine.onPointerDown = (_, e:PointerEvent)-> area.startDragging(e);
-		textLine.onPointerUp = (_, e:PointerEvent)-> area.stopDragging(e);
+		textLine.onPointerUp = (_, e:PointerEvent)-> {
+			area.stopDragging(e);
+			resizerBottomRightSetDragArea();
+		}
 		
 		
 		// ---------------------------------------------------------
@@ -171,11 +193,13 @@ class TestUIArea extends Application
 		
 
 		// put things into content:
-		var uiDisplay = new UIDisplay(0, 0, 200, 200, Color.BLUE);	
+		var uiDisplay = new UIDisplay(20, 20, 200, 200, Color.BLUE);	
 		content.add(uiDisplay);
 		Elem.playIntoDisplay(uiDisplay.display);
 
 		
+		var uiElement = new UIElement(220, 20, 200, 200, roundBorderStyle);
+		content.add(uiElement);
 		
 		
 		
@@ -194,6 +218,8 @@ class TestUIArea extends Application
 		// TODO: make uiElement to switch between
 		//uiDisplay.mouseEnabled = false;
 		//uiDisplay.touchEnabled = false;
+		
+		//peoteUiDisplay.zoom = 0.5;
 		
 		#if android
 		uiDisplay.mouseEnabled = false;

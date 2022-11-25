@@ -38,8 +38,10 @@ class Sliders extends Application
 	public function startSample(window:Window)
 	{
 		peoteView = new PeoteView(window);
+		//peoteView.zoom = 0.5;
 		
-		uiDisplay = new PeoteUIDisplay(10, 10, window.width-20, window.height-20, Color.GREY1);
+		uiDisplay = new PeoteUIDisplay(10, 10, window.width - 20, window.height - 20, Color.GREY1);
+		//uiDisplay.zoom = 0.5;
 		peoteView.addDisplay(uiDisplay);
 		
 		var roundBorderStyle:RoundBorderStyle = {
@@ -78,6 +80,9 @@ class Sliders extends Application
 		// TODO: make uiElement to switch between
 		//uiDisplay.mouseEnabled = false;
 		//uiDisplay.touchEnabled = false;
+		
+		//peoteView.zoom = 0.5;
+		//uiDisplay.zoom = 0.5;
 		
 		#if android
 		uiDisplay.mouseEnabled = false;
