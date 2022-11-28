@@ -281,12 +281,12 @@ implements peote.layout.ILayoutElement
 		var height:Int = 0;
 		if (textSize != null) {
 			if (textSize.height != null) { height = textSize.height; autoHeight = false; }
-			if (textSize.width  != null) { width  = textSize.width; autoWidth = false; }
+			if (textSize.width  != null) { width  = textSize.width;  autoWidth  = false; }
 			if (textSize.hAlign != null) hAlign = textSize.hAlign;
 			if (textSize.vAlign != null) vAlign = textSize.vAlign;
 			if (textSize.xOffset != null) xOffset = textSize.xOffset;
 			if (textSize.yOffset != null) yOffset = textSize.yOffset;
-			if (textSize.leftSpace != null) leftSpace = textSize.leftSpace;
+			if (textSize.leftSpace != null)  leftSpace  = textSize.leftSpace;
 			if (textSize.rightSpace != null) rightSpace = textSize.rightSpace;
 			if (textSize.topSpace != null) topSpace = textSize.topSpace;
 			if (textSize.bottomSpace != null) bottomSpace = textSize.bottomSpace;
@@ -459,8 +459,8 @@ implements peote.layout.ILayoutElement
 	inline function updateLineLayout(updateStyle:Bool):Void
 	{
 		if (autoSize > 0) { // auto aligning width and height to textsize
-			if (autoHeight) height = Std.int(page.textHeight) + topSpace + bottomSpace;
-			if (autoWidth) width = Std.int(page.textWidth) + leftSpace + rightSpace;
+			if (autoHeight) height = Std.int(page.textHeight) + topSpace  + bottomSpace;
+			if (autoWidth)  width  = Std.int(page.textWidth)  + leftSpace + rightSpace;
 			updatePickable(); // fit interactive pickables to new width and height
 		}
 			
@@ -543,8 +543,7 @@ implements peote.layout.ILayoutElement
 			text = null; // let GC clear the string (after this.page is created this.text is allways get by fontProgram)
 			if (autoSize > 0) { // auto aligning width and height to textsize
 				if (autoHeight) height = Std.int(page.textHeight) + topSpace + bottomSpace;
-//TODO: 		if (autoWidth) width = Std.int(page.textWidth) + leftSpace + rightSpace;
-				width = Std.int(200) + leftSpace + rightSpace;
+				if (autoWidth)  width  = Std.int(page.textWidth)  + leftSpace + rightSpace;
 				if ( hasMoveEvent  != 0 ) pickableMove.update(this);
 				if ( hasClickEvent != 0 ) pickableClick.update(this);
 			}
@@ -646,7 +645,7 @@ implements peote.layout.ILayoutElement
 	{
 		if (fontStyle != null) this.fontStyle = fontStyle;
 		
-		if (forceAutoWidth != null) autoWidth = forceAutoWidth;
+		if (forceAutoWidth != null)  autoWidth  = forceAutoWidth;
 		if (forceAutoHeight != null) autoHeight = forceAutoHeight;
 		
 		if (page != null) {
@@ -657,8 +656,7 @@ implements peote.layout.ILayoutElement
 			if (autoSize > 0) {
 				// auto aligning width and height to new textsize
 				if (autoHeight) height = Std.int(page.textHeight);
-//TODO:				if (autoWidth) width = Std.int(page.textWidth);
-				if (autoWidth) width = Std.int(200);
+				if (autoWidth)  width  = Std.int(page.textWidth);
 				if (autoUpdate) updatePickable();
 			}
 			if (autoUpdate) updateVisibleLayout();
