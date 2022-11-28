@@ -464,7 +464,8 @@ implements peote.layout.ILayoutElement
 			updatePickable(); // fit interactive pickables to new width and height
 		}
 			
-		var y_offset:Float = getAlignedYOffset(yOffset); // var y_offset:Float = (autoHeight) ? yOffset : getAlignedYOffset(yOffset);
+		//var y_offset:Float = getAlignedYOffset(yOffset);
+		var y_offset:Float = (autoHeight) ? yOffset : getAlignedYOffset(yOffset);
 		
 		var _x = x + leftSpace;
 		var _y = y + topSpace;
@@ -472,8 +473,8 @@ implements peote.layout.ILayoutElement
 		var _height = height - topSpace - bottomSpace;
 		
 //TODO:		if (updateStyle) fontProgram.pageSetStyle(page, fontStyle, isVisible);
-		fontProgram.pageSetPositionSize(page, _x, _y, _width, _height, getAlignedXOffset(xOffset), getAlignedYOffset(yOffset), isVisible);
-
+		fontProgram.pageSetPositionSize(page, _x, _y, _width, _height, getAlignedXOffset(xOffset), y_offset, isVisible);		
+		
 		if (isVisible) {
 			// TODO: optimize setting z-index in depend of styletyp and better allways adding fontprograms at end of uiDisplay (onAddVisibleToDisplay)
 			${switch (glyphStyleHasField.local_zIndex) {
@@ -539,7 +540,7 @@ implements peote.layout.ILayoutElement
 				default: macro {}
 			}}		
 */			
-			page = fontProgram.createPage(text, x, y, (autoWidth) ? null : width, (autoHeight) ? null : height, xOffset, fontStyle);
+			page = fontProgram.createPage(text, x, y, (autoWidth) ? null : width, (autoHeight) ? null : height, xOffset, yOffset, fontStyle);
 			text = null; // let GC clear the string (after this.page is created this.text is allways get by fontProgram)
 			if (autoSize > 0) { // auto aligning width and height to textsize
 				if (autoHeight) height = Std.int(page.textHeight) + topSpace + bottomSpace;
@@ -649,7 +650,7 @@ implements peote.layout.ILayoutElement
 		if (forceAutoHeight != null) autoHeight = forceAutoHeight;
 		
 		if (page != null) {
-			fontProgram.pageSet(page, text, x, y, (autoWidth) ? null : width, xOffset, this.fontStyle, null, isVisible);
+			fontProgram.pageSet(page, text, x, y, (autoWidth) ? null : width, (autoHeight) ? null : height, xOffset, yOffset, this.fontStyle, null, isVisible);
 // TODO:
 			//if (cursor > line.length) cursor = line.length;
 			//if (selectTo > line.length) selectTo = line.length;
