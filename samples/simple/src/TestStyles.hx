@@ -259,9 +259,9 @@ class TestStyles extends Application
 			"autoWidth", ()-> { textLine.autoWidth = true; textLine.updateLayout(); }
 		);
 		button(
-			"left"  , ()-> { textLine.xOffset = 0; textLine.hAlign = HAlign.LEFT;   textLine.updateLayout(); },
-			"center", ()-> { textLine.xOffset = 0; textLine.hAlign = HAlign.CENTER; textLine.updateLayout(); },
-			"right" , ()-> { textLine.xOffset = 0; textLine.hAlign = HAlign.RIGHT;  textLine.updateLayout(); }
+			"left"  , ()-> { textLine.hAlign = HAlign.LEFT;   textLine.updateLayout(); },
+			"center", ()-> { textLine.hAlign = HAlign.CENTER; textLine.updateLayout(); },
+			"right" , ()-> { textLine.hAlign = HAlign.RIGHT;  textLine.updateLayout(); }
 		);		
 		button(
 			"leftSpace++", ()-> { textLine.leftSpace++; textLine.updateLayout(); },
@@ -280,9 +280,9 @@ class TestStyles extends Application
 			"autoHeight", ()-> { textLine.autoHeight = true; textLine.updateLayout(); }
 		);
 		button(
-			"top"  ,   ()-> { textLine.yOffset = 0; textLine.vAlign = VAlign.TOP;   textLine.updateLayout(); },
-			"center",  ()-> { textLine.yOffset = 0; textLine.vAlign = VAlign.CENTER; textLine.updateLayout(); },
-			"bottom" , ()-> { textLine.yOffset = 0; textLine.vAlign = VAlign.BOTTOM;  textLine.updateLayout(); }
+			"top"  ,   ()-> { textLine.vAlign = VAlign.TOP;   textLine.updateLayout(); },
+			"center",  ()-> { textLine.vAlign = VAlign.CENTER; textLine.updateLayout(); },
+			"bottom" , ()-> { textLine.vAlign = VAlign.BOTTOM;  textLine.updateLayout(); }
 		);		
 		button(
 			"topSpace++", ()-> { textLine.topSpace++; textLine.updateLayout(); },

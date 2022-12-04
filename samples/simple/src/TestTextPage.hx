@@ -133,7 +133,7 @@ class TestTextPage extends Application
 			cursorStyle:cursorSimpleStyle
 		}
 
-		var textPage = new UITextPage<FontStylePacked>(240, 5, "Hello World\nTesting UITextPAge", fontPacked, fontStylePacked, textStyle);
+		var textPage = new UITextPage<FontStylePacked>(240, 5, "Hello World\nTesting UITextPage", fontPacked, fontStylePacked, textStyle);
 		textPage.onPointerOver = (_, _)-> trace("textPage onPointerOver");
 		textPage.onPointerOut  = (_, _)-> trace("textPage onPointerOut");
 		textPage.onPointerClick  = (t, e:PointerEvent)-> {
@@ -149,7 +149,7 @@ class TestTextPage extends Application
 			t.stopSelection(e);
 		}
 		textPage.maskWidth = 100;
-		textPage.maskHeight = 20;
+		textPage.maskHeight = 40;
 				
 		// ----------------------------------------------------------
 		// -------------------- LEFT BUTTONS ROW --------------------
@@ -224,9 +224,9 @@ class TestTextPage extends Application
 		// ------- text and fontStyle -------
 		buttonY = 6;	
 		button(
-			"text1", ()-> textPage.setText("Hello World", textPage.autoWidth, textPage.autoHeight, true),
-			"text2", ()-> textPage.setText("testing more", textPage.autoWidth, textPage.autoHeight, true),
-			"text3", ()-> textPage.setText("ui stuff", textPage.autoWidth, textPage.autoHeight, true)
+			"text1", ()-> textPage.setText("Hello World\nline1", textPage.autoWidth, textPage.autoHeight, true),
+			"text2", ()-> textPage.setText("a\nb\nc", textPage.autoWidth, textPage.autoHeight, true),
+			"text3", ()-> textPage.setText("only one line", textPage.autoWidth, textPage.autoHeight, true)
 		);		
 		button(
 			"fontStyle color", ()-> { textPage.fontStyle = fontStylePacked.copy(Color.random().setAlpha(1.0)); textPage.updateStyle(); },
@@ -254,9 +254,9 @@ class TestTextPage extends Application
 			"autoWidth", ()-> { textPage.autoWidth = true; textPage.updateLayout(); }
 		);
 		button(
-			"left"  , ()-> { textPage.xOffset = 0; textPage.hAlign = HAlign.LEFT;   textPage.updateLayout(); },
-			"center", ()-> { textPage.xOffset = 0; textPage.hAlign = HAlign.CENTER; textPage.updateLayout(); },
-			"right" , ()-> { textPage.xOffset = 0; textPage.hAlign = HAlign.RIGHT;  textPage.updateLayout(); }
+			"left"  , ()-> { textPage.hAlign = HAlign.LEFT;   textPage.updateLayout(); },
+			"center", ()-> { textPage.hAlign = HAlign.CENTER; textPage.updateLayout(); },
+			"right" , ()-> { textPage.hAlign = HAlign.RIGHT;  textPage.updateLayout(); }
 		);		
 		button(
 			"leftSpace++", ()-> { textPage.leftSpace++; textPage.updateLayout(); },
@@ -275,9 +275,9 @@ class TestTextPage extends Application
 			"autoHeight", ()-> { textPage.autoHeight = true; textPage.updateLayout(); }
 		);
 		button(
-			"top"  ,   ()-> { textPage.yOffset = 0; textPage.vAlign = VAlign.TOP;   textPage.updateLayout(); },
-			"center",  ()-> { textPage.yOffset = 0; textPage.vAlign = VAlign.CENTER; textPage.updateLayout(); },
-			"bottom" , ()-> { textPage.yOffset = 0; textPage.vAlign = VAlign.BOTTOM;  textPage.updateLayout(); }
+			"top"  ,   ()-> { textPage.vAlign = VAlign.TOP;   textPage.updateLayout(); },
+			"center",  ()-> { textPage.vAlign = VAlign.CENTER; textPage.updateLayout(); },
+			"bottom" , ()-> { textPage.vAlign = VAlign.BOTTOM;  textPage.updateLayout(); }
 		);		
 		button(
 			"topSpace++", ()-> { textPage.topSpace++; textPage.updateLayout(); },

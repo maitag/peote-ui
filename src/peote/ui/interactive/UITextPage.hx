@@ -315,7 +315,7 @@ implements peote.layout.ILayoutElement
 	
 	inline function getAlignedXOffset(_xOffset:Float):Float
 	{
-		return switch (hAlign) {
+		return (autoWidth) ? _xOffset : switch (hAlign) {
 			case peote.ui.util.HAlign.CENTER: (width - leftSpace - rightSpace - Math.floor(page.textWidth)) / 2 + _xOffset;
 			case peote.ui.util.HAlign.RIGHT: width - leftSpace - rightSpace - Math.floor(page.textWidth) + _xOffset;
 			default: _xOffset;
@@ -324,7 +324,7 @@ implements peote.layout.ILayoutElement
 	
 	inline function getAlignedYOffset(_yOffset:Float):Float
 	{
-		return switch (vAlign) {
+		return (autoHeight) ? _yOffset : switch (vAlign) {
 			case peote.ui.util.VAlign.CENTER: (height - topSpace - bottomSpace - Math.floor(page.textHeight)) / 2 + _yOffset;
 			case peote.ui.util.VAlign.BOTTOM: height - topSpace - bottomSpace - Math.floor(page.textHeight) + _yOffset;
 			default: _yOffset;
@@ -427,7 +427,7 @@ implements peote.layout.ILayoutElement
 	{
 		if (page != null)
 		{
-//TODO:		fontProgram.pageSetStyle(page, fontStyle);		
+			fontProgram.pageSetStyle(page, fontStyle);		
 			if (isVisible) fontProgram.pageUpdate(page);
 			
 			if (backgroundElement != null) {
@@ -458,21 +458,21 @@ implements peote.layout.ILayoutElement
 		
 	inline function updateLineLayout(updateStyle:Bool):Void
 	{
+		if (updateStyle) fontProgram.pageSetStyle(page, fontStyle, isVisible);
+		
 		if (autoSize > 0) { // auto aligning width and height to textsize
 			if (autoHeight) height = Std.int(page.textHeight) + topSpace  + bottomSpace;
 			if (autoWidth)  width  = Std.int(page.textWidth)  + leftSpace + rightSpace;
 			updatePickable(); // fit interactive pickables to new width and height
 		}
 			
-		//var y_offset:Float = getAlignedYOffset(yOffset);
-		var y_offset:Float = (autoHeight) ? yOffset : getAlignedYOffset(yOffset);
-		
 		var _x = x + leftSpace;
 		var _y = y + topSpace;
 		var _width  = width  - leftSpace - rightSpace;
 		var _height = height - topSpace - bottomSpace;
 		
-//TODO:		if (updateStyle) fontProgram.pageSetStyle(page, fontStyle, isVisible);
+		var y_offset:Float = getAlignedYOffset(yOffset);
+		
 		fontProgram.pageSetPositionSize(page, _x, _y, _width, _height, getAlignedXOffset(xOffset), y_offset, isVisible);		
 		
 		if (isVisible) {
@@ -541,7 +541,7 @@ implements peote.layout.ILayoutElement
 			}}		
 */			
 			page = fontProgram.createPage(text, x, y, (autoWidth) ? null : width, (autoHeight) ? null : height, xOffset, yOffset, fontStyle);
-			text = null; // let GC clear the string (after this.page is created this.text is allways get by fontProgram)
+			text = null; // let GC clear the string (can be get back by fontProgram)
 			if (autoSize > 0) { // auto aligning width and height to textsize
 				if (autoHeight) height = Std.int(page.textHeight) + topSpace + bottomSpace;
 				if (autoWidth)  width  = Std.int(page.textWidth)  + leftSpace + rightSpace;
@@ -549,14 +549,14 @@ implements peote.layout.ILayoutElement
 				if ( hasClickEvent != 0 ) pickableClick.update(this);
 			}
 			
-			var y_offset:Float = getAlignedYOffset(yOffset); // var y_offset:Float = (autoHeight) ? yOffset : getAlignedYOffset();
-			
 			var _x = x + leftSpace;
 			var _y = y + topSpace;
 			var _width  = width  - leftSpace - rightSpace;
 			var _height = height - topSpace - bottomSpace;
-//TODO		
-			fontProgram.pageSetPositionSize(page, _x, _y, _width, _height, getAlignedXOffset(xOffset), getAlignedYOffset(yOffset), isVisible);
+			
+			var y_offset:Float = getAlignedYOffset(yOffset);
+			
+			fontProgram.pageSetPositionSize(page, _x, _y, _width, _height, getAlignedXOffset(xOffset), y_offset, isVisible);
 			fontProgram.pageUpdate(page);
 			
 			#if (!peoteui_no_textmasking && !peoteui_no_masking)
