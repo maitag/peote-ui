@@ -11,11 +11,12 @@ import peote.view.Color;
 import peote.text.Font;
 
 import peote.ui.PeoteUIDisplay;
-import peote.ui.interactive.UITextLine;
 import peote.ui.interactive.UITextPage;
+import peote.ui.interactive.UISlider;
 import peote.ui.event.PointerEvent;
 import peote.ui.style.BoxStyle;
 import peote.ui.style.TextLineStyle;
+import peote.ui.style.SliderStyle;
 
 import peote.ui.style.interfaces.FontStyle;
 
@@ -86,7 +87,9 @@ class LargeText extends Application
 			function(loaded:Int, size:Int) trace('loading progress ' + Std.int(loaded / size * 100) + "%" , ' ($loaded / $size)'),
 			function(errorMsg:String) trace('error $errorMsg'),
 			function(text:String) // on load
-			{ 
+			{
+				// ------ text area ------
+				
 				var textPage = new UITextPage<MyFontStyle>(
 					0, 0,
 					{width:760, height:560, leftSpace:8, topSpace:6},
@@ -96,6 +99,36 @@ class LargeText extends Application
 					boxStyle
 				);
 				uiDisplay.add(textPage);
+				
+				
+				// ------ sliders --------
+				
+				var sliderStyle:SliderStyle = {
+					backgroundStyle: boxStyle,
+					draggerStyle: boxStyle.copy(Color.GREEN),
+				};
+				
+				var hSlider = new UISlider(0, 562, 760, 40, sliderStyle);
+				//setSliderEvents(hSlider);
+				uiDisplay.add(hSlider);
+				
+				var vSlider = new UISlider(762, 0, 40, 560, sliderStyle);
+				//setSliderEvents(vSlider);
+				uiDisplay.add(vSlider);
+				
+				hSlider.onChange = function(uiSlider:UISlider, percent:Float) {
+					//trace( 'hSlider at: ${percent*100}%' );
+					textPage.xOffset = - (textPage.textWidth - 760) * percent;
+					textPage.updateLayout();
+				}
+				
+				vSlider.onChange = function(uiSlider:UISlider, percent:Float) {
+					//trace( 'vSlider at: ${percent*100}%' );
+					textPage.yOffset = - (textPage.textHeight - 560) * percent;
+					textPage.updateLayout();
+				}
+				
+				
 			}
 		);				
 		
