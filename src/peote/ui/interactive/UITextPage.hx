@@ -258,7 +258,7 @@ implements peote.layout.ILayoutElement
 	}
 	
 	public var hAlign:peote.ui.util.HAlign = peote.ui.util.HAlign.LEFT;
-	public var vAlign:peote.ui.util.VAlign = peote.ui.util.VAlign.CENTER;
+	public var vAlign:peote.ui.util.VAlign = peote.ui.util.VAlign.TOP;
 	
 	public var xOffset:Float = 0;
 	public var yOffset:Float = 0;
