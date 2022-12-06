@@ -82,6 +82,7 @@ class LargeText extends Application
 		
 		// TODO:  m a c r o - s p i c e  here to cache the data into asset-folder
 		// so if it not already exists it should load it from url into evidence room
+		// PLEASE help me (and Rudy -> NOT YOU <- this time!)
 		
 		Loader.text( url, // path
 			function(loaded:Int, size:Int) trace('loading progress ' + Std.int(loaded / size * 100) + "%" , ' ($loaded / $size)'),
