@@ -30,6 +30,9 @@ class AssetMacro {
 				
 				// loading data
 				data = haxe.Http.requestUrl(url);
+				
+				// save to disk
+				File.saveContent(path, data);
 			} 
 			catch (e) throw('\n\nCan\'t load testdata from $url \n(' + e + ')\nPlease load it manually and save into $assetPath!\n');
 		}
