@@ -15,7 +15,6 @@ import peote.ui.interactive.UITextPage;
 import peote.ui.interactive.UISlider;
 import peote.ui.event.PointerEvent;
 import peote.ui.style.BoxStyle;
-import peote.ui.style.TextLineStyle;
 import peote.ui.style.SliderStyle;
 
 import peote.ui.style.interfaces.FontStyle;
@@ -35,6 +34,16 @@ class MyFontStyle implements FontStyle
 	public var height:Float = 24;
 	@global public var weight = 0.5; //0.49 <- more thickness (only for ttfcompiled fonts!)
 }
+
+
+/*@:structInit
+class MyFontStyle implements FontStyle
+{
+	@global public var color:Color = Color.GREEN;
+	@global public var width:Float = 10;
+	@global public var height:Float = 17;
+}
+*/
 
 // ------------------------------------
 // -------- application start  --------
@@ -63,6 +72,7 @@ class LargeText extends Application
 	public function startSample(window:Window)
 	{
 		new Font<MyFontStyle>("assets/fonts/packed/hack/config.json").load( onFontLoaded );
+		//new Font<MyFontStyle>("assets/fonts/tiled/hack_ascii.json").load( onFontLoaded );
 	}
 	
 	public function onFontLoaded(font:Font<MyFontStyle>) // don'T forget argument-type here !
@@ -78,13 +88,12 @@ class LargeText extends Application
 		// ------ simple TextPage --------
 		// -------------------------------		
 		
-		var url = "https://www.gutenberg.org/cache/epub/919/pg919.txt";		
+		var assetPath = AssetMacro.wget(
+			"https://www.gutenberg.org/cache/epub/919/pg919.txt", "assets/testdata/spinoza-ethic-I.txt"
+			//"https://archive.org/download/SartreLaNause1974/Sartre%20-%20La%20naus%C3%A9e%20-%201974_djvu.txt", "assets/testdata/satre-la-nausee.txt"
+		);
 		
-		// TODO:  m a c r o - s p i c e  here to cache the data into asset-folder
-		// so if it not already exists it should load it from url into evidence room
-		// PLEASE help me (and Rudy -> NOT YOU <- this time!)
-		
-		Loader.text( url, // path
+		Loader.text( assetPath,
 			function(loaded:Int, size:Int) trace('loading progress ' + Std.int(loaded / size * 100) + "%" , ' ($loaded / $size)'),
 			function(errorMsg:String) trace('error $errorMsg'),
 			function(text:String) // on load
