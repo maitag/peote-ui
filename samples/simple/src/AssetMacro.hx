@@ -2,7 +2,6 @@ package;
 
 #if macro
 import haxe.macro.Expr;
-import haxe.io.Path;
 import sys.FileSystem;
 import haxe.io.Path;
 import sys.io.File;
@@ -30,7 +29,7 @@ class AssetMacro {
 				  // save to disk
 				  File.saveContent(path, data);
 				}
-				req.onError = function(e) trace('error: $e');
+				req.onError = function(e) throw(e);
 				req.request(false);
 			} 
 			catch (e) throw('\n\nCan\'t load testdata from $url \n(' + e + ')\nPlease load it manually and save into $assetPath!\n');
