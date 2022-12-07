@@ -46,7 +46,13 @@ class $className extends peote.ui.interactive.Interactive implements peote.ui.in
 implements peote.layout.ILayoutElement
 #end
 {	
-	var page:peote.text.Page<$styleType> = null; //$pageType
+	var page:peote.text.Page<$styleType> = null; // $pageType
+	
+	public var textWidth(get, never):Float;
+	inline function get_textWidth():Float return page.textWidth;
+	
+	public var textHeight(get, never):Float;
+	inline function get_textHeight():Float return page.textHeight;
 	
 	var fontProgram:peote.text.FontProgram<$styleType>; //$fontProgramType	
 	var font:peote.text.Font<$styleType>; //$fontType	
