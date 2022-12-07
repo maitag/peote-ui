@@ -26,13 +26,12 @@ class AssetMacro {
 				// hack around ssl-certification (https://github.com/HaxeFoundation/haxe/issues/9481#issuecomment-633579121)
 				var req = new sys.Http(url);
 				req.setHeader("Agent-Orange", ""); // or any user-agent ;)
+				req.onData = function(data:String) {
+				  // save to disk
+				  File.saveContent(path, data);
+				}
+				req.onError = function(e) trace('error: $e');
 				req.request(false);
-				
-				// loading data
-				data = haxe.Http.requestUrl(url);
-				
-				// save to disk
-				File.saveContent(path, data);
 			} 
 			catch (e) throw('\n\nCan\'t load testdata from $url \n(' + e + ')\nPlease load it manually and save into $assetPath!\n');
 		}
