@@ -25,7 +25,7 @@ class AssetMacro {
 			try {
 				// hack around ssl-certification (https://github.com/HaxeFoundation/haxe/issues/9481#issuecomment-633579121)
 				var req = new sys.Http(url);
-				req.setHeader("Agent-Orange", ""); // or any user-agent ;)
+				req.setHeader("User-Agent", "Haxe");
 				req.onData = function(data:String) {
 				  // save to disk
 				  File.saveContent(path, data);
