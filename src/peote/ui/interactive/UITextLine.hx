@@ -270,7 +270,7 @@ implements peote.layout.ILayoutElement
 	
 	public function new(xPosition:Int, yPosition:Int, ?textSize:peote.ui.util.TextSize, zIndex:Int = 0, text:String,
 	                    //font:$fontType, fontStyle:$styleType) 
-	                    font:peote.text.Font<$styleType>, ?fontStyle:$styleType, ?textLineStyle:peote.ui.style.TextLineStyle) //textStyle=null
+	                    font:peote.text.Font<$styleType>, ?fontStyle:$styleType, ?textStyle:peote.ui.style.TextStyle) //textStyle=null
 	{
 		//trace("NEW UITextLine");		
 		var width:Int = 0;
@@ -302,10 +302,10 @@ implements peote.layout.ILayoutElement
 			default: macro {}
 		}}
 		
-		if (textLineStyle != null) {
-			backgroundStyle = textLineStyle.backgroundStyle;
-			selectionStyle = textLineStyle.selectionStyle;
-			cursorStyle = textLineStyle.cursorStyle;
+		if (textStyle != null) {
+			backgroundStyle = textStyle.backgroundStyle;
+			selectionStyle = textStyle.selectionStyle;
+			cursorStyle = textStyle.cursorStyle;
 		}
 	}
 	
@@ -660,8 +660,8 @@ implements peote.layout.ILayoutElement
 	// ---------------------------------------------------------------
 	// ------------------- Focus and TextInput -----------------------
 	// ---------------------------------------------------------------	
-	public inline function setInputFocus(e:peote.ui.event.PointerEvent=null):Void {
-		if (uiDisplay != null) uiDisplay.setInputFocus(this, e);
+	public inline function setInputFocus(e:peote.ui.event.PointerEvent=null, setCursor:Bool = false):Void {
+		if (uiDisplay != null) uiDisplay.setInputFocus(this, e, setCursor);
 	}
 	
 	public inline function removeInputFocus() {
@@ -686,6 +686,9 @@ implements peote.layout.ILayoutElement
 
 	
 	// ----------- Cursor  -----------
+	public function setCursorToPointer(e:peote.ui.event.PointerEvent):Void {
+		if (uiDisplay != null) cursor = getCharAtPosition(e.x);
+	}
 	
 		
 	public inline function cursorCharLeft()

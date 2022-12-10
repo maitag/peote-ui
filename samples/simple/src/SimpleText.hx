@@ -23,7 +23,7 @@ import peote.ui.event.PointerEvent;
 
 //import peote.ui.style.RoundBorderStyle;
 import peote.ui.style.BoxStyle;
-import peote.ui.style.TextLineStyle;
+import peote.ui.style.TextStyle;
 
 import peote.ui.style.interfaces.FontStyle;
 
@@ -110,7 +110,7 @@ class SimpleText extends Application
 		//fontStyleInput.height = 30;
 		//fontStyleInput.width = 20;
 		
-		var textStyle:TextLineStyle = {
+		var textStyle:TextStyle = {
 			backgroundStyle:boxStyle,
 			selectionStyle:BoxStyle.createById(1, Color.GREY3), // new ID for new Layer
 			cursorStyle:BoxStyle.createById(2, Color.RED)       // new ID for new Layer
@@ -121,10 +121,17 @@ class SimpleText extends Application
 		// set events
 		inputLine.onPointerDown = function(t:UITextLine<MyFontStyle>, e:PointerEvent) {
 			t.setInputFocus(e); // alternatively: uiDisplay.setInputFocus(t);
+			//t.setInputFocus(e, true); // to also set the cursor
+			
 			t.startSelection(e);
+			
+			// to only set the cursor:
+			//t.setCursorToPointer(e); // set cursor to pointer-down position
+			//uiDisplay.onPointerMove = (_,e)->t.setCursorToPointer(e); // also move the cursor while dragging!
 		}
 		inputLine.onPointerUp = function(t:UITextLine<MyFontStyle>, e:PointerEvent) {
 			t.stopSelection(e);
+			//uiDisplay.onPointerMove = null; // stops moving the cursor while dragging
 		}
 		uiDisplay.add(inputLine);
 		
@@ -135,7 +142,7 @@ class SimpleText extends Application
 
 		var textPage = new UITextPage<MyFontStyle>(20, 100, "This text\ncontains\nlinebreaks", font, fontStyle);
 		// alternatively it can also be:
-		//var textPage = font.createUITextPage(x, y+=yOffset, "This text\ncontains linebreaks", fontStyle);
+		//var textPage = font.createUITextPage(20, 100, "This text\ncontains\nlinebreaks", fontStyle);
 		
 		// set events
 		textPage.onPointerOver = function(t:UITextPage<MyFontStyle>, e:PointerEvent) {
@@ -158,7 +165,7 @@ class SimpleText extends Application
 		//fontStyleInput.height = 30;
 		//fontStyleInput.width = 20;
 		
-		var textStyle:TextLineStyle = {
+		var textStyle:TextStyle = {
 			backgroundStyle:boxStyle,
 			selectionStyle:BoxStyle.createById(1, Color.GREY3), // new ID for new Layer
 			cursorStyle:BoxStyle.createById(2, Color.RED)       // new ID for new Layer

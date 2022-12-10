@@ -1142,7 +1142,7 @@ implements peote.layout.ILayoutElement
 	static var inputFocusUIDisplay:PeoteUIDisplay = null;
 	var inputTextElement:InputText = null;
 	
-	public inline function setInputFocus(t:InputText, e:PointerEvent=null) {
+	public inline function setInputFocus(t:InputText, e:PointerEvent=null, setCursor:Bool = false) {
 		if (inputTextElement != t) {
 			trace("setInputFocus");
 
@@ -1150,6 +1150,7 @@ implements peote.layout.ILayoutElement
 			
 			if (inputTextElement != null) removeInputFocus(inputTextElement);
 			inputTextElement = t;
+			if (setCursor) t.setCursorToPointer(e);
 			t.cursorShow();
 		}
 	}

@@ -66,7 +66,7 @@ class LargeScrollArea extends Application
 		
 		// -- creating some text and slider styles --
 		
-		var textStyle:TextLineStyle = {
+		var textStyle:TextStyle = {
 			backgroundStyle:roundBorderStyle.copy(Color.GREY3),
 			selectionStyle:boxStyle,
 			cursorStyle:boxStyle.copy(Color.RED)

@@ -127,7 +127,7 @@ class TestTextPage extends Application
 		var cursorSimpleStyle = cursorStyle.copy(Color.RED.setAlpha(0.5));
 		var cursorRoundStyle = roundBorderStyle.copy();
 		
-		var textStyle:TextLineStyle = {
+		var textStyle:TextStyle = {
 			backgroundStyle:backgroundSimpleStyle,
 			selectionStyle:selectionSimpleStyle,
 			cursorStyle:cursorSimpleStyle

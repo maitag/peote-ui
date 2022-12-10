@@ -417,7 +417,7 @@ implements peote.layout.ILayoutElement
 			if ( hasMoveEvent == 0 ) addPickableMove();
 			hasMoveEvent |= UIEventMove.over;
 		}
-		else {
+		else if (hasMoveEvent & UIEventMove.over > 0) {
 			hasMoveEvent &= ~UIEventMove.over;
 			if ( hasMoveEvent == 0 ) removePickableMove();
 			pointerOver = noOperation;
@@ -435,7 +435,7 @@ implements peote.layout.ILayoutElement
 			if ( hasMoveEvent == 0 ) addPickableMove();
 			hasMoveEvent |= UIEventMove.out;
 		}
-		else {
+		else if (hasMoveEvent & UIEventMove.out > 0) {
 			hasMoveEvent &= ~UIEventMove.out;
 			if ( hasMoveEvent == 0 ) removePickableMove();
 			pointerOut = noOperation;
@@ -453,7 +453,7 @@ implements peote.layout.ILayoutElement
 			if ( hasMoveEvent == 0 ) addPickableMove();
 			hasMoveEvent |= UIEventMove.move;
 		}
-		else {
+		else if (hasMoveEvent & UIEventMove.move > 0) {
 			hasMoveEvent &= ~UIEventMove.move;
 			if ( hasMoveEvent == 0 ) removePickableMove();
 			pointerMove = noOperation;
@@ -471,7 +471,7 @@ implements peote.layout.ILayoutElement
 			if ( hasMoveEvent == 0 ) addPickableMove();
 			hasMoveEvent |= UIEventMove.wheel;
 		}
-		else {
+		else if (hasMoveEvent & UIEventMove.wheel > 0) {
 			hasMoveEvent &= ~UIEventMove.wheel;
 			if ( hasMoveEvent == 0 ) removePickableMove();
 			mouseWheel = noWheelOperation;
@@ -491,7 +491,7 @@ implements peote.layout.ILayoutElement
 			if ( hasClickEvent == 0 ) addPickableClick();
 			hasClickEvent |= UIEventClick.up;
 		}
-		else {
+		else if (hasMoveEvent & UIEventClick.up > 0) {
 			hasClickEvent &= ~UIEventClick.up;
 			if ( hasClickEvent == 0 ) removePickableClick();
 			pointerUp = noOperation;
@@ -509,7 +509,7 @@ implements peote.layout.ILayoutElement
 			if ( hasClickEvent == 0 ) addPickableClick();
 			hasClickEvent |= UIEventClick.down;
 		}
-		else {
+		else if (hasMoveEvent & UIEventClick.down > 0) {
 			hasClickEvent &= ~UIEventClick.down;
 			if ( hasClickEvent == 0 ) removePickableClick();
 			pointerDown = noOperation;
@@ -527,7 +527,7 @@ implements peote.layout.ILayoutElement
 			if ( hasClickEvent == 0 ) addPickableClick();
 			hasClickEvent |= UIEventClick.click;
 		}
-		else {
+		else if (hasMoveEvent & UIEventClick.click > 0) {
 			hasClickEvent &= ~UIEventClick.click;
 			if ( hasClickEvent == 0 ) removePickableClick();
 			pointerClick = noOperation;
