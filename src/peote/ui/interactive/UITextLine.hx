@@ -206,19 +206,21 @@ implements peote.layout.ILayoutElement
 	public inline function cursorHide():Void cursorIsVisible = false;
 	public var cursor(default,set):Int = 0;
 	inline function set_cursor(pos:Int):Int {		
-		if (pos < 0) cursor = 0;
-		else {
-			if (line != null) {
-				if (pos > line.length) cursor = line.length;
-				else cursor = pos;
-			}
+		if (pos != cursor) {
+			if (pos < 0) cursor = 0;
 			else {
-				if (pos > text.length) cursor = text.length;
-				else cursor = pos;
+				if (line != null) {
+					if (pos > line.length) cursor = line.length;
+					else cursor = pos;
+				}
+				else {
+					if (pos > text.length) cursor = text.length;
+					else cursor = pos;
+				}
+			}		
+			if (line != null && cursorStyle != null) {	
+				setCreateCursorMasked( (isVisible && cursorIsVisible), (cursorElement == null) );
 			}
-		}		
-		if (line != null && cursorStyle != null) {	
-			setCreateCursorMasked( (isVisible && cursorIsVisible), (cursorElement == null) );
 		}
 		return cursor;
 	}	
@@ -303,8 +305,8 @@ implements peote.layout.ILayoutElement
 		}}
 		
 		if (textStyle != null) {
-			backgroundStyle = textStyle.backgroundStyle;
-			selectionStyle = textStyle.selectionStyle;
+			if (textStyle.backgroundStyle != null) backgroundStyle = textStyle.backgroundStyle;
+			if (textStyle.selectionStyle != null) selectionStyle = textStyle.selectionStyle;
 			cursorStyle = textStyle.cursorStyle;
 		}
 	}
@@ -393,26 +395,26 @@ implements peote.layout.ILayoutElement
 	inline function setCursor(x:Int, y:Int, w:Int, h:Int, y_offset:Float, addUpdate:Bool) _setCreateCursor(x, y, w, h, y_offset, addUpdate, false);
 	inline function _setCreateCursor(_x:Int, _y:Int, _width:Int, _height:Int, y_offset:Float, addUpdate:Bool, create:Bool)
 	{
-		var cursorX = Math.round(getPositionAtChar(cursor));
-		var cursorWidth = 2; // TODO: make customizable
-		var cursorY = Math.round(y + y_offset);
-		var cursorHeight = Math.round(line.height);		
-		var mx = 0; var my = 0; var mw = cursorWidth; var mh = cursorHeight;
+		var cx = Math.round(getPositionAtChar(cursor));
+		var cw = 2; // TODO: make customizable
+		var cy = Math.round(y + y_offset);
+		var ch = Math.round(line.height);		
+		var mx = 0; var my = 0; var mw = cw; var mh = ch;
 		
 		#if (!peoteui_no_textmasking && !peoteui_no_masking)
-		if (cursorX < _x) { mw -= (_x - cursorX); mx = _x - cursorX; if (mw > _width) mw = _width; }
-		else if (cursorX + cursorWidth > _x + _width) mw = _x + _width - cursorX;
+		if (cx < _x) { mw -= (_x - cx); mx = _x - cx; if (mw > _width) mw = _width; }
+		else if (cx + cw > _x + _width) mw = _x + _width - cx;
 		if (mw < 0) mw = 0;
-		if (cursorY < _y) { mh -= (_y - cursorY); my = _y - cursorY; if (mh > _height) mh = _height; }
-		else if (cursorY + cursorHeight > _y + _height) mh = _y + _height - cursorY;
+		if (cy < _y) { mh -= (_y - cy); my = _y - cy; if (mh > _height) mh = _height; }
+		else if (cy + ch > _y + _height) mh = _y + _height - cy;
 		if (mh < 0) mh = 0;
 		#end
 		if (create)	{
-			createCursorStyle(cursorX, cursorY, cursorWidth, cursorHeight, mx, my, mw, mh, z); // TODO zIndex
+			createCursorStyle(cx, cy, cw, ch, mx, my, mw, mh, z); // TODO zIndex
 			if (addUpdate) cursorProgram.addElement(cursorElement);
 		}
 		else {
-			cursorElement.setMasked(this, cursorX, cursorY, cursorWidth, cursorHeight, mx, my, mw, mh, z); // TODO zIndex
+			cursorElement.setMasked(this, cx, cy, cw, ch, mx, my, mw, mh, z); // TODO zIndex
 			if (addUpdate) cursorProgram.update(cursorElement);
 		}
 	}

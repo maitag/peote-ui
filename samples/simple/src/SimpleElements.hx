@@ -32,6 +32,8 @@ class SimpleElements extends Application
 
 	public function startSample(window:Window)
 	{
+		trace("DPI", window.display.dpi );
+
 		peoteView = new PeoteView(window);
 		
 		var roundBorderStyle = new RoundBorderStyle();

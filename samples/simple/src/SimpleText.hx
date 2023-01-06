@@ -1,6 +1,7 @@
 package;
 
 import haxe.CallStack;
+import peote.ui.util.HAlign;
 
 import lime.app.Application;
 import lime.ui.Window;
@@ -32,6 +33,7 @@ import peote.ui.style.interfaces.FontStyle;
 // ------------------------------------------
 
 @packed // this is need for ttfcompile fonts (gl3font)
+@globalLineSpace // all pageLines using the same page.lineSpace (gap to next line into page)
 @:structInit
 class MyFontStyle implements FontStyle
 {
@@ -117,6 +119,7 @@ class SimpleText extends Application
 		}
 		
 		var inputLine = new UITextLine<MyFontStyle>(300, 20, "input", font, fontStyleInput, textStyle);
+		//var inputLine = new UITextLine<MyFontStyle>(300, 20, {width:200, hAlign:HAlign.CENTER}, "input", font, fontStyleInput, textStyle);
 
 		// set events
 		inputLine.onPointerDown = function(t:UITextLine<MyFontStyle>, e:PointerEvent) {

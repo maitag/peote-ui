@@ -1150,9 +1150,10 @@ implements peote.layout.ILayoutElement
 			
 			if (inputTextElement != null) removeInputFocus(inputTextElement);
 			inputTextElement = t;
-			if (setCursor) t.setCursorToPointer(e);
+			
 			t.cursorShow();
 		}
+		if (setCursor) t.setCursorToPointer(e);
 	}
 	
 	public inline function removeInputFocus(t:InputText) {

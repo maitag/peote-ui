@@ -38,6 +38,8 @@ class TestTextPage extends Application
 
 	public function startSample(window:Window)
 	{
+		// trace("window.display", window.display );
+		
 		// load the FONTs:
 		new Font<FontStylePacked>("assets/fonts/packed/hack/config.json").load( 
 			function(fontPacked:Font<FontStylePacked>) {
@@ -137,16 +139,16 @@ class TestTextPage extends Application
 		textPage.onPointerOver = (_, _)-> trace("textPage onPointerOver");
 		textPage.onPointerOut  = (_, _)-> trace("textPage onPointerOut");
 		textPage.onPointerClick  = (t, e:PointerEvent)-> {
-			trace("textPage onPointerClick", e);
+			//trace("textPage onPointerClick", e);
 		}
 		textPage.onPointerDown = function(t, e:PointerEvent) {
 			trace("textPage onPointerDown");
-			t.setInputFocus(e); // alternatively: uiDisplay.setInputFocus(t);
-			t.startSelection(e);
+			t.setInputFocus(e, true); // alternatively: uiDisplay.setInputFocus(t);
+			//t.startSelection(e);
 		}
 		textPage.onPointerUp = function(t, e:PointerEvent) {
 			trace("textPage onPointerUp");
-			t.stopSelection(e);
+			//t.stopSelection(e);
 		}
 		textPage.maskWidth = 100;
 		textPage.maskHeight = 40;
@@ -186,9 +188,9 @@ class TestTextPage extends Application
 			"backgroundShow/Hide", ()-> if (textPage.backgroundIsVisible) textPage.backgroundHide() else textPage.backgroundShow(),	
 			"color", ()-> { textPage.backgroundStyle.color = Color.random(); textPage.updateStyle(); }
 		);			
-		button("set boxStyle", ()-> textPage.backgroundStyle = backgroundSimpleStyle);
-		button("set roundStyle",  ()-> textPage.backgroundStyle = backgroundRoundStyle);
-		button("remove style",    ()-> textPage.backgroundStyle = null);
+		button("set boxStyle", ()-> if (textPage.backgroundStyle != null) textPage.backgroundStyle = backgroundSimpleStyle);
+		button("set roundStyle",  ()-> if (textPage.backgroundStyle != null) textPage.backgroundStyle = backgroundRoundStyle);
+		button("remove style",    ()-> if (textPage.backgroundStyle != null) textPage.backgroundStyle = null);
 				
 		// ------------ selection Style ------------
 		buttonY += 12;
@@ -211,9 +213,9 @@ class TestTextPage extends Application
 			"cursorShow/Hide", ()->if (textPage.cursorIsVisible) textPage.cursorHide() else textPage.cursorShow(),
 			"color", ()-> { textPage.cursorStyle.color = Color.random(); textPage.updateStyle(); } 
 		);		
-		button("set simplestyle", ()-> textPage.cursorStyle = cursorSimpleStyle);
-		button("set roundStyle", ()-> textPage.cursorStyle = cursorRoundStyle);
-		button("remove style", ()-> textPage.cursorStyle = null);
+		button("set simplestyle", ()-> if (textPage.cursorStyle != null) textPage.cursorStyle = cursorSimpleStyle);
+		button("set roundStyle", ()-> if (textPage.cursorStyle != null) textPage.cursorStyle = cursorRoundStyle);
+		button("remove style", ()-> if (textPage.cursorStyle != null) textPage.cursorStyle = null);
 
 		
 		// ----------------------------------------------------------

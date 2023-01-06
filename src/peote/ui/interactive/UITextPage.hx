@@ -47,6 +47,7 @@ implements peote.layout.ILayoutElement
 #end
 {	
 	var page:peote.text.Page<$styleType> = null; // $pageType
+	var pageLine:peote.text.PageLine<$styleType> = null; //$lineType
 	
 	public var textWidth(get, never):Float;
 	inline function get_textWidth():Float return page.textWidth;
@@ -214,25 +215,43 @@ implements peote.layout.ILayoutElement
 	public inline function cursorShow():Void cursorIsVisible = true;
 	public inline function cursorHide():Void cursorIsVisible = false;
 	public var cursor(default,set):Int = 0;
-	inline function set_cursor(pos:Int):Int {		
-		if (pos < 0) cursor = 0;
-		else {
-			if (page != null) {
-//TODO:				if (pos > line.length) cursor = line.length;
-				//else 
-					cursor = pos;
+	inline function set_cursor(pos:Int):Int {
+		if (pos != cursor) {
+			if (pos < 0) cursor = 0;
+			else if (page != null && pos > pageLine.length) cursor = pageLine.length;
+			else cursor = pos;
+			
+			if (page != null && cursorStyle != null) {	
+				setCreateCursorMasked( (isVisible && cursorIsVisible), (cursorElement == null) );
 			}
-			else {
-				if (pos > text.length) cursor = text.length;
-				else cursor = pos;
-			}
-		}		
-		if (page != null && cursorStyle != null) {	
-			setCreateCursorMasked( (isVisible && cursorIsVisible), (cursorElement == null) );
 		}
 		return cursor;
-	}	
+	}
 	
+	public var cursorLine(default,set):Int = 0;
+	inline function set_cursorLine(pos:Int):Int {		
+		if (pos != cursorLine) {
+			if (pos < 0) cursorLine = 0;
+			else if (page != null && pos >= page.length) cursorLine = page.length - 1;
+			else cursorLine = pos;
+			
+			if (page != null) {
+				pageLine = page.getPageLine(cursorLine);
+				if (cursorStyle != null) setCreateCursorMasked( (isVisible && cursorIsVisible), (cursorElement == null) );
+			}
+		}
+		return cursorLine;
+	}
+	
+	// helpers (only for pages)
+/*	public var cursorX(get,set):Int;
+	inline function get_cursorX():Int return cursor;
+	inline function set_cursorX(pos:Int):Int return set_cursor(pos);
+	
+	public var cursorY(get,set):Int;
+	inline function get_cursorY():Int return cursorLine;
+	inline function set_cursorY(pos:Int):Int return set_cursorLine(pos);
+*/	
 	
 	// ---------- text ---------------	
 	@:isVar public var text(get, set):String = null;
@@ -313,8 +332,8 @@ implements peote.layout.ILayoutElement
 		}}
 		
 		if (textStyle != null) {
-			backgroundStyle = textStyle.backgroundStyle;
-			selectionStyle = textStyle.selectionStyle;
+			if (textStyle.backgroundStyle != null) backgroundStyle = textStyle.backgroundStyle;
+			if (textStyle.selectionStyle != null) selectionStyle = textStyle.selectionStyle;
 			cursorStyle = textStyle.cursorStyle;
 		}
 	}
@@ -403,28 +422,26 @@ implements peote.layout.ILayoutElement
 	inline function setCursor(x:Int, y:Int, w:Int, h:Int, y_offset:Float, addUpdate:Bool) _setCreateCursor(x, y, w, h, y_offset, addUpdate, false);
 	inline function _setCreateCursor(_x:Int, _y:Int, _width:Int, _height:Int, y_offset:Float, addUpdate:Bool, create:Bool)
 	{
-//TODO:		var cursorX = Math.round(getPositionAtChar(cursor));
-		var cursorX = 0;
-		var cursorWidth = 2; // TODO: make customizable
-		var cursorY = Math.round(y + y_offset);
-//TODO:		var cursorHeight = Math.round(line.height);
-		var cursorHeight = 20;
-		var mx = 0; var my = 0; var mw = cursorWidth; var mh = cursorHeight;
+		var cx = Math.round(getPositionAtChar(cursor));
+		var cw = 2; // TODO: make customizable
+		var cy = Math.round(getPositionAtLine(cursorLine));
+		var ch = Math.round(pageLine.height);
+		var mx = 0; var my = 0; var mw = cw; var mh = ch;
 		
 		#if (!peoteui_no_textmasking && !peoteui_no_masking)
-		if (cursorX < _x) { mw -= (_x - cursorX); mx = _x - cursorX; if (mw > _width) mw = _width; }
-		else if (cursorX + cursorWidth > _x + _width) mw = _x + _width - cursorX;
+		if (cx < _x) { mw -= (_x - cx); mx = _x - cx; if (mw > _width) mw = _width; }
+		else if (cx + cw > _x + _width) mw = _x + _width - cx;
 		if (mw < 0) mw = 0;
-		if (cursorY < _y) { mh -= (_y - cursorY); my = _y - cursorY; if (mh > _height) mh = _height; }
-		else if (cursorY + cursorHeight > _y + _height) mh = _y + _height - cursorY;
+		if (cy < _y) { mh -= (_y - cy); my = _y - cy; if (mh > _height) mh = _height; }
+		else if (cy + ch > _y + _height) mh = _y + _height - cy;
 		if (mh < 0) mh = 0;
 		#end
 		if (create)	{
-			createCursorStyle(cursorX, cursorY, cursorWidth, cursorHeight, mx, my, mw, mh, z); // TODO zIndex
+			createCursorStyle(cx, cy, cw, ch, mx, my, mw, mh, z); // TODO zIndex
 			if (addUpdate) cursorProgram.addElement(cursorElement);
 		}
 		else {
-			cursorElement.setMasked(this, cursorX, cursorY, cursorWidth, cursorHeight, mx, my, mw, mh, z); // TODO zIndex
+			cursorElement.setMasked(this, cx, cy, cw, ch, mx, my, mw, mh, z); // TODO zIndex
 			if (addUpdate) cursorProgram.update(cursorElement);
 		}
 	}
@@ -547,6 +564,11 @@ implements peote.layout.ILayoutElement
 			}}		
 */			
 			page = fontProgram.createPage(text, x, y, (autoWidth) ? null : width, (autoHeight) ? null : height, xOffset, yOffset, fontStyle);
+			
+			if (cursorLine >= page.length) cursorLine = page.length - 1;
+			pageLine = page.getPageLine(cursorLine);
+			if (cursor > pageLine.length) cursor = pageLine.length;
+			
 			text = null; // let GC clear the string (can be get back by fontProgram)
 			if (autoSize > 0) { // auto aligning width and height to textsize
 				if (autoHeight) height = Std.int(page.textHeight) + topSpace + bottomSpace;
@@ -702,7 +724,10 @@ implements peote.layout.ILayoutElement
 	
 	// ----------- Cursor  -----------
 	public function setCursorToPointer(e:peote.ui.event.PointerEvent):Void {
-		//if (uiDisplay != null) cursor = getCharAtPosition(e.x);
+		if (uiDisplay != null) {
+			cursorLine = getLineAtPosition(e.y);
+			cursor = getCharAtPosition(e.x);
+		}
 	}
 	
 	
@@ -812,15 +837,23 @@ implements peote.layout.ILayoutElement
 	public inline function cutChars(from:Int = 0, to:Null<Int> = null):String {
 		return fontProgram.lineCutChars(line, from, to, isVisible);
 	}
-	
+*/	
 	public inline function getPositionAtChar(position:Int):Float {
-		return fontProgram.lineGetPositionAtChar(line, position);
+		return fontProgram.pageGetPositionAtChar(page, pageLine, position);
+	}
+	
+	public inline function getPositionAtLine(lineNumber:Int):Float {
+		return fontProgram.pageGetPositionAtLine(page, lineNumber);
 	}
 	
 	public inline function getCharAtPosition(xPosition:Float):Int {
-		return fontProgram.lineGetCharAtPosition(line, xPosition);
+		return fontProgram.pageGetCharAtPosition(page, pageLine, xPosition);
 	}
-*/	
+	
+	public inline function getLineAtPosition(yPosition:Float):Int {
+		return fontProgram.pageGetLineAtPosition(page, yPosition);
+	}
+	
 
 	
 	// ----------- events ------------------
