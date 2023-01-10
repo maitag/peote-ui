@@ -1,6 +1,9 @@
 package peote.ui;
 
 import haxe.ds.Vector;
+import peote.ui.interactive.input2action.InputTextLine;
+import peote.ui.interactive.input2action.InputTextPage;
+import peote.ui.interactive.interfaces.InputFocus;
 
 import lime.graphics.RenderContext;
 import lime.ui.Window;
@@ -117,7 +120,8 @@ implements peote.layout.ILayoutElement
 			draggingTouchElements.set(i, new Array<Interactive>());
 		}
 		
-		initInput2Action();
+		InputTextLine.init();
+		InputTextPage.init();
 	}
 	
 	public function clear() {
@@ -1077,39 +1081,14 @@ implements peote.layout.ILayoutElement
 	
 	// ----------------- KEYBOARD - EVENTS ----------------------------
 		
-	// ------------ TODO: bindings to input2action-lib "action"s  ----------
-	var actionConfig:input2action.ActionConfig = [
-		{ action: "cursorCharLeft" , keyboard: KeyCode.LEFT  },
-		{ action: "cursorCharRight", keyboard: KeyCode.RIGHT },
-		//KeyCode.DELETE
-		//KeyCode.BACKSPACE
-		//KeyCode.HOME
-		//KeyCode.END
-		// SELECT ALL
-		// CUT
-		// COPY
-		// PASTE
-	];
 	
-	var input2Action:input2action.Input2Action;
-	var actionMap:input2action.ActionMap;
-	
-	function initInput2Action() {
-		actionMap = [
-			"cursorCharLeft"  => { action:(_, _) -> if (inputTextElement != null) inputTextElement.cursorCharLeft() , repeatKeyboardDefault:true },
-			"cursorCharRight" => { action:(_, _) -> if (inputTextElement != null) inputTextElement.cursorCharRight(), repeatKeyboardDefault:true },
-		];
-		input2Action = new input2action.Input2Action(actionConfig, actionMap);
-		input2Action.setKeyboard(actionConfig);
-	}
-		
 	//public var onKeyDown:UIDisplay->InputEvent->Void = null;
 
 	@:access(input2action.Input2Action)
-	public inline function keyDown (keyCode:KeyCode, modifier:KeyModifier):Void
+	inline function keyDown (keyCode:KeyCode, modifier:KeyModifier):Void
 	{
 		//trace("key DOWN");
-		if (inputTextElement != null)
+		if (inputFocusElement != null)
 			switch (keyCode) {
 				#if html5
 				case KeyCode.TAB: untyped __js__('event.preventDefault();');
@@ -1117,11 +1096,11 @@ implements peote.layout.ILayoutElement
 				default:
 			}
 		
-		input2Action.keyDown(keyCode, modifier);
+		if (inputFocusElement != null) inputFocusElement.keyDown(keyCode, modifier);
 	}
 	
 	@:access(input2action.Input2Action)
-	public inline function keyUp (keyCode:KeyCode, modifier:KeyModifier):Void
+	inline function keyUp (keyCode:KeyCode, modifier:KeyModifier):Void
 	{
 		//trace("key UP");
 		switch (keyCode) {
@@ -1129,37 +1108,33 @@ implements peote.layout.ILayoutElement
 			default:
 		}
 		
-		input2Action.keyUp(keyCode, modifier);
+		if (inputFocusElement != null) inputFocusElement.keyUp(keyCode, modifier);
 	}
 	
-	public inline function textInput (chars:String):Void {
+	inline function textInput (chars:String):Void {
 		trace("textInput:", chars);
-		if (inputTextElement != null) inputTextElement.textInput(chars);
+		if (inputFocusElement != null) inputFocusElement.textInput(chars);
 	}
 	
 	// -------------------------- text inputfocus  --------------------------
 	
 	static var inputFocusUIDisplay:PeoteUIDisplay = null;
-	var inputTextElement:InputText = null;
+	var inputFocusElement:InputFocus = null;
 	
-	public inline function setInputFocus(t:InputText, e:PointerEvent=null, setCursor:Bool = false) {
-		if (inputTextElement != t) {
+	inline function setInputFocus(t:InputFocus, e:PointerEvent=null) {
+		if (inputFocusElement != t) {
 			trace("setInputFocus");
 
 			inputFocusUIDisplay = this;
 			
-			if (inputTextElement != null) removeInputFocus(inputTextElement);
-			inputTextElement = t;
-			
-			t.cursorShow();
+			if (inputFocusElement != null) inputFocusElement.removeInputFocus();
+			inputFocusElement = t;
 		}
-		if (setCursor) t.setCursorToPointer(e);
 	}
 	
-	public inline function removeInputFocus(t:InputText) {
+	inline function removeInputFocus(t:InputFocus) {
 		trace("removeInputFocus");
-		// TODO
-		t.cursorHide();
+		inputFocusElement = null;
 	}
 	
 	// -------------------------- text selection  --------------------------
@@ -1169,7 +1144,7 @@ implements peote.layout.ILayoutElement
 	static var intoSelectionTextLine:InputText = null;
 
 	public function startSelection(t:InputText, e:PointerEvent) {
-		if (intoSelectionTextLine != null) t.onSelectStop(localPointerEvent(e)); // if there is another into selectionMode
+		if (intoSelectionTextLine != null) intoSelectionTextLine.onSelectStop(localPointerEvent(e)); // if there is another into selectionMode
 		intoSelectionTextLine = t;
 		t.onSelectStart(localPointerEvent(e));
 	}

@@ -41,7 +41,10 @@ class UITextLineMacro
 
 // -------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------
-class $className extends peote.ui.interactive.Interactive implements peote.ui.interactive.interfaces.InputText
+class $className extends peote.ui.interactive.Interactive
+	implements peote.ui.interactive.interfaces.ActionTextLine
+	implements peote.ui.interactive.interfaces.InputFocus
+	implements peote.ui.interactive.interfaces.InputText
 #if peote_layout
 implements peote.layout.ILayoutElement
 #end
@@ -662,12 +665,16 @@ implements peote.layout.ILayoutElement
 	// ---------------------------------------------------------------
 	// ------------------- Focus and TextInput -----------------------
 	// ---------------------------------------------------------------	
-	public inline function setInputFocus(e:peote.ui.event.PointerEvent=null, setCursor:Bool = false):Void {
-		if (uiDisplay != null) uiDisplay.setInputFocus(this, e, setCursor);
+	public inline function setInputFocus(e:peote.ui.event.PointerEvent = null, setCursor:Bool = false):Void {
+		peote.ui.interactive.input2action.InputTextLine.focusElement = this;
+		if (uiDisplay != null) uiDisplay.setInputFocus(this, e);
+		if (setCursor) setCursorToPointer(e);
+		cursorShow();
 	}
 	
 	public inline function removeInputFocus() {
 		if (uiDisplay != null) uiDisplay.removeInputFocus(this);
+		cursorHide();
 	}
 	
 	public inline function textInput(chars:String):Void {
@@ -686,6 +693,34 @@ implements peote.layout.ILayoutElement
 		updateVisibleLayout();
 	}
 
+	// ------- Keyboard Input -------
+	public var input2Action:input2action.Input2Action = null;
+
+	// for the interface InputFocus 
+	@:access(input2action.Input2Action)
+	public inline function keyDown (keyCode:lime.ui.KeyCode, modifier:lime.ui.KeyModifier):Void
+	{
+		//trace("key DOWN");
+		//switch (keyCode) {
+			//default:
+		//}
+		if (input2Action != null) input2Action.keyDown(keyCode, modifier);
+		else peote.ui.interactive.input2action.InputTextLine.input2Action.keyDown(keyCode, modifier);
+	}
+	
+	@:access(input2action.Input2Action)
+	public inline function keyUp (keyCode:lime.ui.KeyCode, modifier:lime.ui.KeyModifier):Void
+	{
+		//trace("key UP");
+		//switch (keyCode) {
+			//default:
+		//}
+		if (input2Action != null) input2Action.keyUp(keyCode, modifier);
+		else peote.ui.interactive.input2action.InputTextLine.input2Action.keyUp(keyCode, modifier);
+	}
+	
+
+	
 	
 	// ----------- Cursor  -----------
 	public function setCursorToPointer(e:peote.ui.event.PointerEvent):Void {
@@ -806,8 +841,6 @@ implements peote.layout.ILayoutElement
 	public inline function getCharAtPosition(xPosition:Float):Int {
 		return fontProgram.lineGetCharAtPosition(line, xPosition);
 	}
-	
-
 	
 	// ----------- events ------------------
 	

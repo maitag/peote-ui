@@ -28,6 +28,9 @@ import peote.ui.style.TextStyle;
 
 import peote.ui.style.interfaces.FontStyle;
 
+import input2action.*;
+import lime.ui.KeyCode;
+
 // ------------------------------------------
 // --- using a custom FontStyle here --------
 // ------------------------------------------
@@ -156,8 +159,11 @@ class SimpleText extends Application
 			t.fontStyle.color = Color.GREEN;
 			t.updateStyle();
 		}
+		
 		uiDisplay.add(textPage);			
 
+		
+		
 		
 		// -------------------------------------------
 		// ----------- input TextPage ----------------
@@ -174,20 +180,45 @@ class SimpleText extends Application
 			cursorStyle:BoxStyle.createById(2, Color.RED)       // new ID for new Layer
 		}
 		
-		var inputPage = new UITextPage<MyFontStyle>(300, 100, "input-\ntext", font, fontStyleInput, textStyle);
+		var inputPage = new UITextPage<MyFontStyle>(300, 100, "input-\ntext\nUITextPage", font, fontStyleInput, textStyle);
 
 		// set events
 		inputPage.onPointerDown = function(t:UITextPage<MyFontStyle>, e:PointerEvent) {
-			t.setInputFocus(e); // alternatively: uiDisplay.setInputFocus(t);
-			t.startSelection(e);
+			t.setInputFocus(e, true);
+			
+			//t.startSelection(e);
 		}
 		inputPage.onPointerUp = function(t:UITextPage<MyFontStyle>, e:PointerEvent) {
-			t.stopSelection(e);
+			//t.stopSelection(e);
 		}
+		
 		uiDisplay.add(inputPage);
 		
 
+		// use custom keyboard-control via input2action
 		
+		var actionConfig:ActionConfig = [
+			{ action: "cursorCharLeft" , keyboard: KeyCode.LEFT  },
+			{ action: "cursorCharRight", keyboard: KeyCode.RIGHT },
+			//KeyCode.DELETE
+			//KeyCode.BACKSPACE
+			//KeyCode.HOME
+			//KeyCode.END
+			// SELECT ALL
+			// CUT
+			// COPY
+			// PASTE
+		];
+		
+		var actionMap = [
+			"cursorCharLeft"  => { action:(_, _) -> inputPage.cursorCharLeft() , repeatKeyboardDefault:true },
+			"cursorCharRight"  => { action:(_, _) -> inputPage.cursorCharRight() , repeatKeyboardDefault:true },
+		];
+
+		var input2Action = new Input2Action(actionConfig, actionMap);
+		input2Action.setKeyboard();
+		
+		inputPage.input2Action = input2Action;
 		
 		
 		#if android
