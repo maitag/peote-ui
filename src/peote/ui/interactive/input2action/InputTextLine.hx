@@ -1,5 +1,7 @@
 package peote.ui.interactive.input2action;
 
+import lime.ui.KeyCode;
+
 import input2action.Input2Action;
 import input2action.ActionConfig;
 import input2action.ActionMap;
@@ -11,8 +13,10 @@ class InputTextLine
 	// static functions to call the focused elements actions for input2action
 	
 	public static var actionConfig:ActionConfig = [
-		{ action: "cursorCharLeft" , keyboard: lime.ui.KeyCode.LEFT  },
-		{ action: "cursorCharRight", keyboard: lime.ui.KeyCode.RIGHT },
+		{ action: "cursorLeft" , keyboard: KeyCode.LEFT  },
+		{ action: "cursorRight", keyboard: KeyCode.RIGHT },
+		
+		
 		//KeyCode.DELETE
 		//KeyCode.BACKSPACE
 		//KeyCode.HOME
@@ -21,11 +25,14 @@ class InputTextLine
 		// CUT
 		// COPY
 		// PASTE
+		
 	];
 	
 	public static var actionMap:ActionMap = [
-		"cursorCharLeft"  => { action:cursorCharLeft , repeatKeyboardDefault:true },
-		"cursorCharRight" => { action:cursorCharRight, repeatKeyboardDefault:true },
+		"cursorLeft"  => { action:cursorLeft , repeatKeyboardDefault:true },
+		"cursorRight" => { action:cursorRight, repeatKeyboardDefault:true },
+		
+		
 	];
 	
 	
@@ -35,13 +42,11 @@ class InputTextLine
 	}
 	
 	
-	public static var input2Action:Input2Action;
-	
+	public static var input2Action:Input2Action;	
 	public static var focusElement:ActionTextLine;
-	
-	
-	static inline function cursorCharLeft(_,_)  focusElement.cursorCharLeft();
-	static inline function cursorCharRight(_,_) focusElement.cursorCharRight();
+		
+	static inline function cursorLeft(_,_)  focusElement.cursorLeft();
+	static inline function cursorRight(_,_) focusElement.cursorRight();
 
 	
 }

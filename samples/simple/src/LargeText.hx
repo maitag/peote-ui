@@ -16,6 +16,7 @@ import peote.ui.interactive.UISlider;
 import peote.ui.event.PointerEvent;
 import peote.ui.style.BoxStyle;
 import peote.ui.style.SliderStyle;
+import peote.ui.style.TextStyle;
 
 import peote.ui.style.interfaces.FontStyle;
 
@@ -83,6 +84,11 @@ class LargeText extends Application
 						
 		var fontStyle = new MyFontStyle();		
 		var boxStyle = new BoxStyle(0x0e1306ff);
+		var textStyle:TextStyle = {
+			backgroundStyle:boxStyle,
+			selectionStyle:BoxStyle.createById(1, Color.GREY3), // new ID for new Layer
+			cursorStyle:BoxStyle.createById(2, Color.RED)       // new ID for new Layer
+		}
 		
 		// -------------------------------
 		// ------ simple TextPage --------
@@ -106,8 +112,16 @@ class LargeText extends Application
 					text,
 					font,
 					fontStyle,
-					boxStyle
+					textStyle //boxStyle
 				);
+				// set events
+				textPage.onPointerDown = function(t:UITextPage<MyFontStyle>, e:PointerEvent) {
+					t.setInputFocus(e, true);			
+					//t.startSelection(e);
+				}
+				textPage.onPointerUp = function(t:UITextPage<MyFontStyle>, e:PointerEvent) {
+					//t.stopSelection(e);
+				}
 				uiDisplay.add(textPage);
 				
 				

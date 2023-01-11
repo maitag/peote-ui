@@ -231,6 +231,7 @@ implements peote.layout.ILayoutElement
 		return cursor;
 	}
 	
+	var cursorWant = -1; // remember cursor if there is smaller lines by going up/down
 	public var cursorLine(default,set):Int = 0;
 	inline function set_cursorLine(pos:Int):Int {		
 		if (pos != cursorLine) {
@@ -240,6 +241,12 @@ implements peote.layout.ILayoutElement
 			
 			if (page != null) {
 				pageLine = page.getPageLine(cursorLine);
+				if (cursor > pageLine.length) {
+					if (cursorWant == -1) cursorWant = cursor;
+					cursor = pageLine.length;
+				} 
+				else if (cursorWant > 0) cursor = cursorWant;
+				
 				if (cursorStyle != null) setCreateCursorMasked( (isVisible && cursorIsVisible), (cursorElement == null) );
 			}
 		}
@@ -731,7 +738,7 @@ implements peote.layout.ILayoutElement
 			updatePickable();
 		}
 		// TODO: only on halign etc.
-		updateVisibleLayout();
+		updateVisibleLayout(); // TODO: at now it updates the line twice!
 	}
 
 	// ------- Keyboard Input -------
@@ -739,20 +746,18 @@ implements peote.layout.ILayoutElement
 
 	// for the interface InputFocus 
 	@:access(input2action.Input2Action)
-	public inline function keyDown (keyCode:lime.ui.KeyCode, modifier:lime.ui.KeyModifier):Void
+	public inline function keyDown(keyCode:lime.ui.KeyCode, modifier:lime.ui.KeyModifier):Void
 	{
 		//trace("key DOWN");
 		//switch (keyCode) {
 			//default:
-		//}
-		
-		// ...let the user overwrite or add also new action!
+		//}		
 		if (input2Action != null) input2Action.keyDown(keyCode, modifier);
 		else peote.ui.interactive.input2action.InputTextPage.input2Action.keyDown(keyCode, modifier);
 	}
 	
 	@:access(input2action.Input2Action)
-	public inline function keyUp (keyCode:lime.ui.KeyCode, modifier:lime.ui.KeyModifier):Void
+	public inline function keyUp(keyCode:lime.ui.KeyCode, modifier:lime.ui.KeyModifier):Void
 	{
 		//trace("key UP");
 		//switch (keyCode) {
@@ -768,23 +773,40 @@ implements peote.layout.ILayoutElement
 		if (uiDisplay != null) {
 			cursorLine = getLineAtPosition(e.y);
 			cursor = getCharAtPosition(e.x);
+			cursorWant = -1;
 		}
 	}
 	
 	
 		
-	public inline function cursorCharLeft()
+	public inline function cursorLeft()
 	{
 //TODO:	if (hasSelection()) { cursor = selectFrom; removeSelection(); }
 		//else cursor--;
 		cursor--;
+		cursorWant = -1;
 	}
 
-	public inline function cursorCharRight()
+	public inline function cursorRight()
 	{
 //TODO:	if (hasSelection()) { cursor = selectTo; removeSelection(); }
 		//else cursor++;
 		cursor++;
+		cursorWant = -1;
+	}
+
+	public inline function cursorUp()
+	{
+//TODO:	if (hasSelection()) { cursor = selectFrom; removeSelection(); }
+		//else cursorLine--;
+		cursorLine--;
+	}
+
+	public inline function cursorDown()
+	{
+//TODO:	if (hasSelection()) { cursor = selectTo; removeSelection(); }
+		//else cursorLine++;
+		cursorLine++;
 	}
 
 	// ----------- Selection Events -----------

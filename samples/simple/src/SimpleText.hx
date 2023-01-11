@@ -184,8 +184,7 @@ class SimpleText extends Application
 
 		// set events
 		inputPage.onPointerDown = function(t:UITextPage<MyFontStyle>, e:PointerEvent) {
-			t.setInputFocus(e, true);
-			
+			t.setInputFocus(e, true);			
 			//t.startSelection(e);
 		}
 		inputPage.onPointerUp = function(t:UITextPage<MyFontStyle>, e:PointerEvent) {
@@ -197,7 +196,7 @@ class SimpleText extends Application
 
 		// use custom keyboard-control via input2action
 		
-		var actionConfig:ActionConfig = [
+/*		var actionConfig:ActionConfig = [
 			{ action: "cursorCharLeft" , keyboard: KeyCode.LEFT  },
 			{ action: "cursorCharRight", keyboard: KeyCode.RIGHT },
 			//KeyCode.DELETE
@@ -219,7 +218,7 @@ class SimpleText extends Application
 		input2Action.setKeyboard();
 		
 		inputPage.input2Action = input2Action;
-		
+*/		
 		
 		#if android
 		uiDisplay.mouseEnabled = false;

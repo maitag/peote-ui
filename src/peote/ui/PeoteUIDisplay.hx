@@ -1088,31 +1088,26 @@ implements peote.layout.ILayoutElement
 	inline function keyDown (keyCode:KeyCode, modifier:KeyModifier):Void
 	{
 		//trace("key DOWN");
-		if (inputFocusElement != null)
-			switch (keyCode) {
+		if (inputFocusElement != null) {
+/*			switch (keyCode) {
 				#if html5
 				case KeyCode.TAB: untyped __js__('event.preventDefault();');
 				#end
 				default:
 			}
-		
-		if (inputFocusElement != null) inputFocusElement.keyDown(keyCode, modifier);
+*/		
+			inputFocusElement.keyDown(keyCode, modifier);
+		}
 	}
 	
 	@:access(input2action.Input2Action)
 	inline function keyUp (keyCode:KeyCode, modifier:KeyModifier):Void
 	{
-		//trace("key UP");
-		switch (keyCode) {
-			//case KeyCode.NUMPAD_PLUS:
-			default:
-		}
-		
 		if (inputFocusElement != null) inputFocusElement.keyUp(keyCode, modifier);
 	}
 	
 	inline function textInput (chars:String):Void {
-		trace("textInput:", chars);
+		//trace("textInput:", chars.length);
 		if (inputFocusElement != null) inputFocusElement.textInput(chars);
 	}
 	
@@ -1424,6 +1419,9 @@ implements peote.layout.ILayoutElement
 	// -------- register Events from Lime Application ----------
 	
 	public static function registerEvents(window:Window) {
+		
+		window.textInputEnabled = true; // this is disabled on default for html5
+
 		
 		window.onMouseUp.add(mouseUpActive);
 		window.onMouseDown.add(mouseDownActive);

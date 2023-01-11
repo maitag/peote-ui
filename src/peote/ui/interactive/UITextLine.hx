@@ -690,7 +690,7 @@ implements peote.layout.ILayoutElement
 			updatePickable();
 		}
 		// TODO: only on halign etc.
-		updateVisibleLayout();
+		updateVisibleLayout(); // TODO: at now it updates the line twice!
 	}
 
 	// ------- Keyboard Input -------
@@ -698,7 +698,7 @@ implements peote.layout.ILayoutElement
 
 	// for the interface InputFocus 
 	@:access(input2action.Input2Action)
-	public inline function keyDown (keyCode:lime.ui.KeyCode, modifier:lime.ui.KeyModifier):Void
+	public inline function keyDown(keyCode:lime.ui.KeyCode, modifier:lime.ui.KeyModifier):Void
 	{
 		//trace("key DOWN");
 		//switch (keyCode) {
@@ -709,7 +709,7 @@ implements peote.layout.ILayoutElement
 	}
 	
 	@:access(input2action.Input2Action)
-	public inline function keyUp (keyCode:lime.ui.KeyCode, modifier:lime.ui.KeyModifier):Void
+	public inline function keyUp(keyCode:lime.ui.KeyCode, modifier:lime.ui.KeyModifier):Void
 	{
 		//trace("key UP");
 		//switch (keyCode) {
@@ -728,13 +728,13 @@ implements peote.layout.ILayoutElement
 	}
 	
 		
-	public inline function cursorCharLeft()
+	public inline function cursorLeft()
 	{
 		if (hasSelection()) { cursor = selectFrom; removeSelection(); }
 		else cursor--;
 	}
 
-	public inline function cursorCharRight()
+	public inline function cursorRight()
 	{
 		if (hasSelection()) { cursor = selectTo; removeSelection(); }
 		else cursor++;
