@@ -161,7 +161,7 @@ implements peote.layout.ILayoutElement
 		}
 	}
 	public inline function hasSelection():Bool return (selectFrom != selectTo);
-	public inline function removeSelection() { selectFrom = selectTo; selectionHide(); }
+	public inline function removeSelection() { selectFrom = selectTo = 0; selectionHide(); }
 	
 	// -------- cursor style ---------
 	var cursorProgram:peote.ui.style.interfaces.StyleProgram = null;
@@ -398,6 +398,8 @@ implements peote.layout.ILayoutElement
 	inline function setCursor(x:Int, y:Int, w:Int, h:Int, y_offset:Float, addUpdate:Bool) _setCreateCursor(x, y, w, h, y_offset, addUpdate, false);
 	inline function _setCreateCursor(_x:Int, _y:Int, _width:Int, _height:Int, y_offset:Float, addUpdate:Bool, create:Bool)
 	{
+		_width += 3; // TODO: fix for cursor at line-end
+		
 		var cx = Math.round(getPositionAtChar(cursor));
 		var cw = 2; // TODO: make customizable
 		var cy = Math.round(y + y_offset);
@@ -788,14 +790,32 @@ implements peote.layout.ILayoutElement
 	public inline function deleteChar()
 	{
 		if (hasSelection()) {
-			//deleteChars(select_from, select_to); 
+			fontProgram.lineDeleteChars(line, selectFrom, selectTo, isVisible);
+			cursor = selectFrom;
+			removeSelection();
 		}
 		else if (cursor < line.length) {
-				deleteCharAt(cursor);
-				fontProgram.lineUpdate(line);
+			fontProgram.lineDeleteChar(line, cursor, isVisible);
 		}
+		updateVisibleLayout(); // TODO: at now it updates the line twice!
+		//fontProgram.pageUpdate(page);
 	}
 
+	public inline function backspace()
+	{
+		if (hasSelection()) {
+			fontProgram.lineDeleteChars(line, selectFrom, selectTo, isVisible);
+			cursor = selectFrom;
+			removeSelection();
+		}
+		else if (cursor > 0) {
+			cursor--;
+			fontProgram.lineDeleteChar(line, cursor, isVisible);
+		}
+		updateVisibleLayout(); // TODO: at now it updates the line twice!
+		//fontProgram.pageUpdate(page);
+	}
+	
 	public inline function cursorLeft()
 	{
 		if (hasSelection()) { cursor = selectFrom; removeSelection(); }

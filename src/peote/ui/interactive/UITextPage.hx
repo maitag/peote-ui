@@ -432,6 +432,8 @@ implements peote.layout.ILayoutElement
 	inline function setCursor(x:Int, y:Int, w:Int, h:Int, y_offset:Float, addUpdate:Bool) _setCreateCursor(x, y, w, h, y_offset, addUpdate, false);
 	inline function _setCreateCursor(_x:Int, _y:Int, _width:Int, _height:Int, y_offset:Float, addUpdate:Bool, create:Bool)
 	{
+		_width += 3; // TODO: fix for cursor at line-end
+
 		var cx = Math.round(getPositionAtChar(cursor));
 		var cw = 2; // TODO: make customizable
 		var cy = Math.round(getPositionAtLine(cursorLine));
@@ -867,6 +869,7 @@ implements peote.layout.ILayoutElement
 			}
 			else {
 				cursor--;
+				cursorWant = -1;
 				fontProgram.pageDeleteChar(page, pageLine, cursorLine, cursor, isVisible);
 				if (cursor == pageLine.length && pageLine.length == 0)
 					pageLine = page.getPageLine(cursorLine); // little FIX because the Fontprogram is deleting an empty pageline
@@ -885,24 +888,34 @@ implements peote.layout.ILayoutElement
 			fontProgram.pageAddLinefeedAt(page, pageLine, cursorLine, cursor, isVisible);
 			cursorLine++;
 			cursor = 0;
+			cursorWant = -1;
 			updateVisibleLayout(); // TODO: at now it updates the line twice!
 			//fontProgram.pageUpdate(page);
 		}
-		
 	}
 	
 	public inline function cursorLeft()
 	{
-		//TODO:	
 		if (hasSelection()) { cursor = selectFrom; removeSelection(); }
+		else if (cursor == 0) {
+			if (cursorLine > 0) {
+				cursorLine--;
+				cursor = pageLine.length;
+			}
+		}
 		else cursor--;
 		cursorWant = -1;
 	}
 
 	public inline function cursorRight()
 	{
-		//TODO:
 		if (hasSelection()) { cursor = selectTo; removeSelection(); }
+		else if (cursor == pageLine.length) {
+			if (cursorLine < page.length-1) {
+				cursorLine++;
+				cursor = 0;
+			}
+		}
 		else cursor++;
 		cursorWant = -1;
 	}

@@ -15,6 +15,7 @@ class InputTextPage
 	public static var actionConfig:ActionConfig = [
 		{ action: "deleteChar" , keyboard: KeyCode.DELETE},
 		{ action: "backspace"  , keyboard: KeyCode.BACKSPACE},
+		
 		{ action: "enter"      , keyboard: KeyCode.RETURN},
 		{ action: "cursorLeft" , keyboard: KeyCode.LEFT  },
 		{ action: "cursorRight", keyboard: KeyCode.RIGHT },
@@ -34,6 +35,7 @@ class InputTextPage
 	public static var actionMap:ActionMap = [
 		"deleteChar"  => { action:deleteChar , repeatKeyboardDefault:true },
 		"backspace"   => { action:backspace  , repeatKeyboardDefault:true },
+		
 		"enter"       => { action:enter      , repeatKeyboardDefault:true },
 		"cursorLeft"  => { action:cursorLeft , repeatKeyboardDefault:true },
 		"cursorRight" => { action:cursorRight, repeatKeyboardDefault:true },
@@ -52,7 +54,8 @@ class InputTextPage
 	public static var focusElement:ActionTextPage;		
 	
 	static inline function deleteChar (_,_) focusElement.deleteChar();
-	static inline function backspace  (_,_) focusElement.backspace();
+	static inline function backspace  (_, _) focusElement.backspace();
+	
 	static inline function enter      (_,_) focusElement.enter();
 	static inline function cursorLeft (_,_) focusElement.cursorLeft();
 	static inline function cursorRight(_,_) focusElement.cursorRight();

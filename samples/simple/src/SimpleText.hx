@@ -82,7 +82,7 @@ class SimpleText extends Application
 		var boxStyle = new BoxStyle(Color.BLACK);
 		
 		peoteView = new PeoteView(window);
-		uiDisplay = new PeoteUIDisplay(0, 0, window.width, window.height, Color.GREY1);
+		uiDisplay = new PeoteUIDisplay(0, 0, 1600, 1200, Color.GREY1);
 		peoteView.addDisplay(uiDisplay);		
 		
 				
@@ -90,7 +90,7 @@ class SimpleText extends Application
 		// ------ simple TextLine with autosize and no textStyle --------
 		// --------------------------------------------------------------
 
-		var textLine = new UITextLine<MyFontStyle>(20, 20, "hello", font, fontStyle);
+		var textLine = new UITextLine<MyFontStyle>(20, 20, "UITextLine", font, fontStyle);
 		// alternatively it can also be:
 		//var textLine = font.createUITextLine(x, y+=yOffset, "hello", fontStyle);
 		
@@ -121,7 +121,7 @@ class SimpleText extends Application
 			cursorStyle:BoxStyle.createById(2, Color.RED)       // new ID for new Layer
 		}
 		
-		var inputLine = new UITextLine<MyFontStyle>(300, 20, "input", font, fontStyleInput, textStyle);
+		var inputLine = new UITextLine<MyFontStyle>(300, 20, "input UITextLine", font, fontStyleInput, textStyle);
 		//var inputLine = new UITextLine<MyFontStyle>(300, 20, {width:200, hAlign:HAlign.CENTER}, "input", font, fontStyleInput, textStyle);
 
 		// set events
@@ -146,7 +146,7 @@ class SimpleText extends Application
 		// ------ simple TextPage --------
 		// -------------------------------
 
-		var textPage = new UITextPage<MyFontStyle>(20, 100, "This text\ncontains\nlinebreaks", font, fontStyle);
+		var textPage = new UITextPage<MyFontStyle>(20, 100, "UITextPage\ncan contain\nlinebreaks", font, fontStyle);
 		// alternatively it can also be:
 		//var textPage = font.createUITextPage(20, 100, "This text\ncontains\nlinebreaks", fontStyle);
 		
@@ -180,7 +180,7 @@ class SimpleText extends Application
 			cursorStyle:BoxStyle.createById(2, Color.RED)       // new ID for new Layer
 		}
 		
-		var inputPage = new UITextPage<MyFontStyle>(300, 100, "input-\ntext\nUITextPage", font, fontStyleInput, textStyle);
+		var inputPage = new UITextPage<MyFontStyle>(300, 100, "input\ntext by\nUITextPage", font, fontStyleInput, textStyle);
 
 		// set events
 		inputPage.onPointerDown = function(t:UITextPage<MyFontStyle>, e:PointerEvent) {
