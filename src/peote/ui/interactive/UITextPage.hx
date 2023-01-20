@@ -840,49 +840,40 @@ implements peote.layout.ILayoutElement
 		if (hasSelection()) {
 			//deleteChars(select_from, select_to); 
 		}
-		else if (cursor < pageLine.length) {// TODO
-			deleteCharAt(cursor);
-			fontProgram.pageLineUpdate(pageLine);
-			
-			//if (cursor == line.length) cursorSet(line.length);
+		else {
+			fontProgram.pageDeleteChar(page, pageLine, cursorLine, cursor, isVisible);
+			if (cursor == pageLine.length && pageLine.length == 0)
+				pageLine = page.getPageLine(cursorLine); // little FIX because the Fontprogram is deleting an empty pageline
 		}
-		else { // last into line
-			fontProgram.pageRemoveLinefeed(page, pageLine, cursorLine, isVisible);
-			
-			//trace("page.updateLineFrom/To", page.updateLineFrom, page.updateLineTo);
-			//trace("page.visibleLineFrom/To", page.visibleLineFrom, page.visibleLineTo);
-			
-			fontProgram.pageUpdate(page);
-		}
+		updateVisibleLayout(); // TODO: at now it updates the line twice!
+		//fontProgram.pageUpdate(page);
 	}
 	
 	public inline function cursorLeft()
 	{
-//TODO:	if (hasSelection()) { cursor = selectFrom; removeSelection(); }
-		//else cursor--;
-		cursor--;
+		//TODO:	
+		if (hasSelection()) { cursor = selectFrom; removeSelection(); }
+		else cursor--;
 		cursorWant = -1;
 	}
 
 	public inline function cursorRight()
 	{
-//TODO:	if (hasSelection()) { cursor = selectTo; removeSelection(); }
-		//else cursor++;
-		cursor++;
+		//TODO:
+		if (hasSelection()) { cursor = selectTo; removeSelection(); }
+		else cursor++;
 		cursorWant = -1;
 	}
 
 	public inline function cursorUp()
 	{
-//TODO:	if (hasSelection()) { cursor = selectFrom; removeSelection(); }
-		//else cursorLine--;
+		if (hasSelection()) removeSelection();
 		cursorLine--;
 	}
 
 	public inline function cursorDown()
 	{
-//TODO:	if (hasSelection()) { cursor = selectTo; removeSelection(); }
-		//else cursorLine++;
+		if (hasSelection()) removeSelection();
 		cursorLine++;
 	}
 	
@@ -916,8 +907,8 @@ implements peote.layout.ILayoutElement
 		fontProgram.lineAppendChars(line, chars, glyphStyle, isVisible); 
 	}
 */
-	public inline function deleteCharAt(position:Int = 0) {
-		fontProgram.pageLineDeleteChar(pageLine, page.x, page.width, page.xOffset, position, isVisible);
+	public inline function deleteCharAt(lineNumber:Int = 0, position:Int = 0) {
+		fontProgram.pageDeleteChar(page, lineNumber, position, isVisible);
 	}
 
 /*	public inline function deleteChars(from:Int = 0, to:Null<Int> = null) {
