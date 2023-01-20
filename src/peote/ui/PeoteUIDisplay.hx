@@ -1432,13 +1432,14 @@ implements peote.layout.ILayoutElement
 		Touch.onEnd.add(touchEndActive);
 		Touch.onCancel.add(touchCancelActive);
 
-		#if (! html5)
+		#if html5
+		window.onMouseMove.add(mouseMoveActive);
+		window.onLeave.add(windowLeaveActive);
+		window.onActivate.add(_windowActivateHackFocus);
+		#else
 		window.onRender.add(_mouseMoveFrameSynced);
 		window.onMouseMove.add(_mouseMove);
 		window.onLeave.add(_windowLeave);
-		#else
-		window.onMouseMove.add(mouseMoveActive);
-		window.onLeave.add(windowLeaveActive);
 		#end
 		
 		// keyboard & text
@@ -1448,7 +1449,14 @@ implements peote.layout.ILayoutElement
 		
 	}
 	
-	#if (! html5)
+	#if html5
+		@:access(lime._internal.backend.html5.HTML5Window)
+		static inline function _windowActivateHackFocus() {
+		//Timer.delay(function() {
+			lime._internal.backend.html5.HTML5Window.textInput.focus();
+		//}, 200);
+		}
+	#else
 		static var isMouseMove = false;
 		static var lastMouseMoveX:Float = 0.0;
 		static var lastMouseMoveY:Float = 0.0;
@@ -1483,13 +1491,13 @@ implements peote.layout.ILayoutElement
 		Touch.onEnd.remove(touchEndActive);
 		Touch.onCancel.remove(touchCancelActive);
 
-		#if (! html5)
+		#if html5
+		window.onMouseMove.remove(mouseMoveActive);
+		window.onLeave.remove(windowLeaveActive);
+		#else
 		window.onRender.remove(_mouseMoveFrameSynced);
 		window.onMouseMove.remove(_mouseMove);
 		window.onLeave.remove(_windowLeave);
-		#else
-		window.onMouseMove.remove(mouseMoveActive);
-		window.onLeave.remove(windowLeaveActive);
 		#end
 		
 		// keyboard & text
