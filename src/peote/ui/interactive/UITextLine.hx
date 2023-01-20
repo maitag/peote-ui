@@ -682,6 +682,8 @@ implements peote.layout.ILayoutElement
 		if (line != null) {
 			insertChars(chars, cursor, fontStyle);
 			fontProgram.lineUpdate(line);
+			// TODO: cursor also for more then one char
+			cursor++;
 		}
 		
 		// TODO:
@@ -720,26 +722,12 @@ implements peote.layout.ILayoutElement
 	}
 	
 
-	
-	
 	// ----------- Cursor  -----------
+	
 	public function setCursorToPointer(e:peote.ui.event.PointerEvent):Void {
 		if (uiDisplay != null) cursor = getCharAtPosition(e.x);
 	}
 	
-		
-	public inline function cursorLeft()
-	{
-		if (hasSelection()) { cursor = selectFrom; removeSelection(); }
-		else cursor--;
-	}
-
-	public inline function cursorRight()
-	{
-		if (hasSelection()) { cursor = selectTo; removeSelection(); }
-		else cursor++;
-	}
-
 	// ----------- Selection Events -----------
 	
 	public function startSelection(e:peote.ui.event.PointerEvent):Void {
@@ -792,9 +780,34 @@ implements peote.layout.ILayoutElement
 		//       OR allways change xScroll to make cursor fully visible!
 	}
 
+		
+	// --------------------------------
+	// ------------ ACTIONS -----------
+	// --------------------------------	
 	
-	
-	
+	public inline function deleteChar()
+	{
+		if (hasSelection()) {
+			//deleteChars(select_from, select_to); 
+		}
+		else if (cursor < line.length) {
+				deleteCharAt(cursor);
+				fontProgram.lineUpdate(line);
+		}
+	}
+
+	public inline function cursorLeft()
+	{
+		if (hasSelection()) { cursor = selectFrom; removeSelection(); }
+		else cursor--;
+	}
+
+	public inline function cursorRight()
+	{
+		if (hasSelection()) { cursor = selectTo; removeSelection(); }
+		else cursor++;
+	}
+
 	
 	// ----------------------- delegated methods from FontProgram -----------------------
 
@@ -822,7 +835,7 @@ implements peote.layout.ILayoutElement
 		fontProgram.lineAppendChars(line, chars, glyphStyle, isVisible); 
 	}
 
-	public inline function deleteChar(position:Int = 0) {
+	public inline function deleteCharAt(position:Int = 0) {
 		fontProgram.lineDeleteChar(line, position, isVisible);
 	}
 

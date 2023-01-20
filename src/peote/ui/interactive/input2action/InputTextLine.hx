@@ -13,6 +13,7 @@ class InputTextLine
 	// static functions to call the focused elements actions for input2action
 	
 	public static var actionConfig:ActionConfig = [
+		{ action: "deleteChar" , keyboard: KeyCode.DELETE },		
 		{ action: "cursorLeft" , keyboard: KeyCode.LEFT  },
 		{ action: "cursorRight", keyboard: KeyCode.RIGHT },
 		
@@ -29,10 +30,9 @@ class InputTextLine
 	];
 	
 	public static var actionMap:ActionMap = [
+		"deleteChar"  => { action:deleteChar , repeatKeyboardDefault:true },
 		"cursorLeft"  => { action:cursorLeft , repeatKeyboardDefault:true },
 		"cursorRight" => { action:cursorRight, repeatKeyboardDefault:true },
-		
-		
 	];
 	
 	
@@ -45,7 +45,8 @@ class InputTextLine
 	public static var input2Action:Input2Action;	
 	public static var focusElement:ActionTextLine;
 		
-	static inline function cursorLeft(_,_)  focusElement.cursorLeft();
+	static inline function deleteChar (_,_) focusElement.deleteChar();
+	static inline function cursorLeft (_,_) focusElement.cursorLeft();
 	static inline function cursorRight(_,_) focusElement.cursorRight();
 
 	

@@ -769,6 +769,7 @@ implements peote.layout.ILayoutElement
 	
 	
 	// ----------- Cursor  -----------
+	
 	public function setCursorToPointer(e:peote.ui.event.PointerEvent):Void {
 		if (uiDisplay != null) {
 			cursorLine = getLineAtPosition(e.y);
@@ -777,38 +778,6 @@ implements peote.layout.ILayoutElement
 		}
 	}
 	
-	
-		
-	public inline function cursorLeft()
-	{
-//TODO:	if (hasSelection()) { cursor = selectFrom; removeSelection(); }
-		//else cursor--;
-		cursor--;
-		cursorWant = -1;
-	}
-
-	public inline function cursorRight()
-	{
-//TODO:	if (hasSelection()) { cursor = selectTo; removeSelection(); }
-		//else cursor++;
-		cursor++;
-		cursorWant = -1;
-	}
-
-	public inline function cursorUp()
-	{
-//TODO:	if (hasSelection()) { cursor = selectFrom; removeSelection(); }
-		//else cursorLine--;
-		cursorLine--;
-	}
-
-	public inline function cursorDown()
-	{
-//TODO:	if (hasSelection()) { cursor = selectTo; removeSelection(); }
-		//else cursorLine++;
-		cursorLine++;
-	}
-
 	// ----------- Selection Events -----------
 	
 	public function startSelection(e:peote.ui.event.PointerEvent):Void {
@@ -862,40 +831,96 @@ implements peote.layout.ILayoutElement
 */	}
 
 	
+	// --------------------------------
+	// ------------ ACTIONS -----------
+	// --------------------------------
+		
+	public inline function deleteChar()
+	{
+		if (hasSelection()) {
+			//deleteChars(select_from, select_to); 
+		}
+		else if (cursor < pageLine.length) {// TODO
+			deleteCharAt(cursor);
+			fontProgram.pageLineUpdate(pageLine);
+			
+			//if (cursor == line.length) cursorSet(line.length);
+		}
+		else { // last into line
+			fontProgram.pageRemoveLinefeed(page, pageLine, cursorLine, isVisible);
+			
+			//trace("page.updateLineFrom/To", page.updateLineFrom, page.updateLineTo);
+			//trace("page.visibleLineFrom/To", page.visibleLineFrom, page.visibleLineTo);
+			
+			fontProgram.pageUpdate(page);
+		}
+	}
+	
+	public inline function cursorLeft()
+	{
+//TODO:	if (hasSelection()) { cursor = selectFrom; removeSelection(); }
+		//else cursor--;
+		cursor--;
+		cursorWant = -1;
+	}
+
+	public inline function cursorRight()
+	{
+//TODO:	if (hasSelection()) { cursor = selectTo; removeSelection(); }
+		//else cursor++;
+		cursor++;
+		cursorWant = -1;
+	}
+
+	public inline function cursorUp()
+	{
+//TODO:	if (hasSelection()) { cursor = selectFrom; removeSelection(); }
+		//else cursorLine--;
+		cursorLine--;
+	}
+
+	public inline function cursorDown()
+	{
+//TODO:	if (hasSelection()) { cursor = selectTo; removeSelection(); }
+		//else cursorLine++;
+		cursorLine++;
+	}
 	
 	
 	
 	// ----------------------- delegated methods from FontProgram -----------------------
 
-/*	public inline function setStyle(glyphStyle:$styleType, from:Int = 0, to:Null<Int> = null) {
-		fontProgram.lineSetStyle(line, glyphStyle, from, to, isVisible);
+	public inline function setStyle(glyphStyle:$styleType, fromLine:Int = 0, fromPosition:Int = 0, ?toLine:Null<Int>, ?toPosition:Null<Int>) {
+		fontStyle = glyphStyle;
+		fontProgram.pageSetStyle(page, fontStyle, fromLine, fromPosition, toLine, toPosition, isVisible);
 	}
 	
-	public inline function setChar(charcode:Int, position:Int = 0, glyphStyle:$styleType = null) {
-		fontProgram.lineSetChar(line, charcode, position, glyphStyle, isVisible);
+/*	public inline function setChar(charcode:Int, position:Int = 0, glyphStyle:$styleType = null) {
+		fontProgram.pageSetChar(page, pageLine, charcode, position, glyphStyle, isVisible);
 	}
 	
 	public inline function setChars(chars:String, position:Int = 0, glyphStyle:$styleType = null) {
-		fontProgram.lineSetChars(line, chars, position, glyphStyle, isVisible);		
+		fontProgram.pageSetChars(page, chars, position, glyphStyle, isVisible);		
 	}
 	
-	public inline function insertChar(charcode:Int, position:Int = 0, glyphStyle:$styleType = null) {		
-		fontProgram.lineInsertChar(line, charcode, position, glyphStyle, isVisible);
-	}
 */	
+	inline function pageLineInsertChar(chars:String, position:Int = 0, glyphStyle:$styleType = null) {		
+		//fontProgram.pageInsertChar(page, pageLine, chars, lineNumber, position, glyphStyle, isVisible);
+	}
+	
 	public inline function insertChars(chars:String, lineNumber:Int = 0, position:Int = 0, glyphStyle:$styleType = null) {		
 		fontProgram.pageInsertChars(page, chars, lineNumber, position, glyphStyle, isVisible);
 	}
-/*	
-	public inline function appendChars(chars:String, glyphStyle:$styleType = null) {		
+	
+/*	public inline function appendChars(chars:String, glyphStyle:$styleType = null) {		
 		fontProgram.lineAppendChars(line, chars, glyphStyle, isVisible); 
 	}
-
-	public inline function deleteChar(position:Int = 0) {
-		fontProgram.lineDeleteChar(line, position, isVisible);
+*/
+	public inline function deleteCharAt(position:Int = 0) {
+		fontProgram.pageLineDeleteChar(pageLine, page.x, page.width, page.xOffset, position, isVisible);
 	}
 
-	public inline function deleteChars(from:Int = 0, to:Null<Int> = null) {
+/*	public inline function deleteChars(from:Int = 0, to:Null<Int> = null) {
 		fontProgram.lineDeleteChars(line, from, to, isVisible);
 	}
 	
