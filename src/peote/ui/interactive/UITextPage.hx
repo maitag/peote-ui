@@ -849,6 +849,48 @@ implements peote.layout.ILayoutElement
 		//fontProgram.pageUpdate(page);
 	}
 	
+	public inline function backspace()
+	{
+		if (hasSelection()) {
+			//deleteChars(select_from, select_to); 
+		}
+		else {
+			if (cursor == 0) {
+				if (cursorLine > 0) {
+					cursorLine--;
+					cursor = pageLine.length;
+					cursorWant = -1;
+					fontProgram.pageRemoveLinefeed(page, pageLine, cursorLine, isVisible);
+					if (pageLine.length == 0)
+						pageLine = page.getPageLine(cursorLine); // little FIX because the Fontprogram is deleting an empty pageline
+				}
+			}
+			else {
+				cursor--;
+				fontProgram.pageDeleteChar(page, pageLine, cursorLine, cursor, isVisible);
+				if (cursor == pageLine.length && pageLine.length == 0)
+					pageLine = page.getPageLine(cursorLine); // little FIX because the Fontprogram is deleting an empty pageline
+			}
+		}
+		updateVisibleLayout(); // TODO: at now it updates the line twice!
+		//fontProgram.pageUpdate(page);
+	}
+	
+	public inline function enter()
+	{
+		if (hasSelection()) {
+			//deleteChars(select_from, select_to); 
+		}
+		else {
+			fontProgram.pageAddLinefeedAt(page, pageLine, cursorLine, cursor, isVisible);
+			cursorLine++;
+			cursor = 0;
+			updateVisibleLayout(); // TODO: at now it updates the line twice!
+			//fontProgram.pageUpdate(page);
+		}
+		
+	}
+	
 	public inline function cursorLeft()
 	{
 		//TODO:	
