@@ -726,12 +726,28 @@ implements peote.layout.ILayoutElement
 	}
 	
 	public inline function textInput(chars:String):Void {
-		//trace("UITextPage - textInput:", s);
+		trace("UITextPage - textInput:", chars.length);
 		if (page != null) {
-			insertChars(chars, cursorLine, cursor, fontStyle);
+			
+			// TODO: selection !
+			
+			if (chars.length == 1 && chars != "\n") {
+				insertChars(chars, cursorLine, cursor, fontStyle);
+				cursor++;
+			}
+			else {
+				var restCharLength = pageLine.length - cursor;
+				var oldPageLength = page.length;
+				insertChars(chars, cursorLine, cursor, fontStyle);
+				trace("restCharLength",restCharLength);
+				if (page.length > oldPageLength) {
+					cursorLine += page.length - oldPageLength;
+					cursor = pageLine.length - restCharLength;
+				} 
+				else cursor += chars.length;
+				
+			}
 			fontProgram.pageUpdate(page);
-			// TODO: cursor also for more then one char
-			cursor++;
 		}
 		
 		// TODO:
@@ -894,6 +910,18 @@ implements peote.layout.ILayoutElement
 		}
 	}
 	
+	public function copyToClipboard() {
+		trace("copyToClipboard");
+		// TODO: Selection
+	}
+	
+	public function pasteFromClipboard() {
+		trace("pasteFromClipboard");
+		#if !html5
+			if (lime.system.Clipboard.text != null) textInput(lime.system.Clipboard.text);
+		#end		
+	}
+
 	public inline function cursorLeft()
 	{
 		if (hasSelection()) { cursor = selectFrom; removeSelection(); }

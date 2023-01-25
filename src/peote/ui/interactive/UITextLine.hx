@@ -682,10 +682,13 @@ implements peote.layout.ILayoutElement
 	public inline function textInput(chars:String):Void {
 		//trace("UITextLine - textInput:", s);
 		if (line != null) {
+			// TODO: Selection
+			
+			var oldLength = line.length;
 			insertChars(chars, cursor, fontStyle);
 			fontProgram.lineUpdate(line);
-			// TODO: cursor also for more then one char
-			cursor++;
+			
+			cursor += line.length - oldLength;
 		}
 		
 		// TODO:
@@ -816,6 +819,17 @@ implements peote.layout.ILayoutElement
 		//fontProgram.pageUpdate(page);
 	}
 	
+	public function copyToClipboard() {
+		
+	}
+	
+	public function pasteFromClipboard() {
+		trace("pasteFromClipboard");
+		#if !html5
+			if (lime.system.Clipboard.text != null) textInput(lime.system.Clipboard.text);
+		#end		
+	}
+
 	public inline function cursorLeft()
 	{
 		if (hasSelection()) { cursor = selectFrom; removeSelection(); }

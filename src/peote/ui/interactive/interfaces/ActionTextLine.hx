@@ -5,6 +5,9 @@ interface ActionTextLine
 	public function deleteChar():Void;
 	public function backspace():Void;
 	
+	public function copyToClipboard():Void;
+	public function pasteFromClipboard():Void;
+
 	public function cursorLeft():Void;
 	public function cursorRight():Void;
 }
