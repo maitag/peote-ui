@@ -1089,13 +1089,13 @@ implements peote.layout.ILayoutElement
 	{
 		//trace("key DOWN");
 		if (inputFocusElement != null) {
-/*			switch (keyCode) {
+			switch (keyCode) {
 				#if html5
-				case KeyCode.TAB: untyped __js__('event.preventDefault();');
+				case KeyCode.TAB: js.Syntax.code('event.preventDefault();');
 				#end
 				default:
 			}
-*/		
+		
 			inputFocusElement.keyDown(keyCode, modifier);
 		}
 	}

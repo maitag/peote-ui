@@ -819,6 +819,11 @@ implements peote.layout.ILayoutElement
 		//fontProgram.pageUpdate(page);
 	}
 	
+	public inline function tabulator()
+	{
+		textInput("\t");
+	}
+	
 	public function copyToClipboard() {
 		
 	}

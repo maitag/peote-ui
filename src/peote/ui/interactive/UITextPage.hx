@@ -726,7 +726,7 @@ implements peote.layout.ILayoutElement
 	}
 	
 	public inline function textInput(chars:String):Void {
-		trace("UITextPage - textInput:", chars.length);
+		//trace("UITextPage - textInput:", chars.length);
 		if (page != null) {
 			
 			// TODO: selection !
@@ -893,6 +893,11 @@ implements peote.layout.ILayoutElement
 		}
 		updateVisibleLayout(); // TODO: at now it updates the line twice!
 		//fontProgram.pageUpdate(page);
+	}
+	
+	public inline function tabulator()
+	{
+		textInput("\t");
 	}
 	
 	public inline function enter()

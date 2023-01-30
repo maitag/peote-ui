@@ -4,6 +4,7 @@ interface ActionTextLine
 {
 	public function deleteChar():Void;
 	public function backspace():Void;
+	public function tabulator():Void;
 	
 	public function copyToClipboard():Void;
 	public function pasteFromClipboard():Void;
