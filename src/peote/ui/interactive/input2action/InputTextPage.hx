@@ -26,15 +26,14 @@ class InputTextPage
 		{ action: "cursorDown" , keyboard: KeyCode.DOWN  },
 		
 		{ action: "enter"      , keyboard: [KeyCode.RETURN, KeyCode.RETURN2, KeyCode.NUMPAD_ENTER] },
-		//KeyCode.DELETE
-		//KeyCode.BACKSPACE
+		
+		// TODO
 		//KeyCode.HOME
 		//KeyCode.END
 		// SELECT ALL
 		// CUT
-		// COPY
-		// PASTE
-		// PAGE_UP...
+		// UNDO
+		// REDO
 	];
 	
 	public static var actionMap:ActionMap = [

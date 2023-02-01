@@ -121,8 +121,9 @@ class SimpleText extends Application
 			cursorStyle:BoxStyle.createById(2, Color.RED)       // new ID for new Layer
 		}
 		
-		var inputLine = new UITextLine<MyFontStyle>(300, 20, "input UITextLine", font, fontStyleInput, textStyle);
-		//var inputLine = new UITextLine<MyFontStyle>(300, 20, {width:200, hAlign:HAlign.CENTER}, "input", font, fontStyleInput, textStyle);
+		//var inputLine = new UITextLine<MyFontStyle>(300, 20, "input UITextLine", font, fontStyleInput, textStyle);
+		var inputLine = new UITextLine<MyFontStyle>(300, 20, {width:200}, "input UITextLine", font, fontStyleInput, textStyle);
+		//var inputLine = new UITextLine<MyFontStyle>(300, 20, {width:200, hAlign:HAlign.RIGHT}, "input UITextLine", font, fontStyleInput, textStyle);
 
 		// set events
 		inputLine.onPointerDown = function(t:UITextLine<MyFontStyle>, e:PointerEvent) {
@@ -180,7 +181,7 @@ class SimpleText extends Application
 			cursorStyle:BoxStyle.createById(2, Color.RED)       // new ID for new Layer
 		}
 		
-		var inputPage = new UITextPage<MyFontStyle>(300, 100, "input\ntext by\nUITextPage", font, fontStyleInput, textStyle);
+		var inputPage = new UITextPage<MyFontStyle>(300, 100, "input\ntext by\nUIText\tPage", font, fontStyleInput, textStyle);
 
 		// set events
 		inputPage.onPointerDown = function(t:UITextPage<MyFontStyle>, e:PointerEvent) {

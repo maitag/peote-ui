@@ -317,8 +317,10 @@ implements peote.layout.ILayoutElement
 	inline function getAlignedXOffset(_xOffset:Float):Float
 	{
 		return (autoWidth) ? _xOffset : switch (hAlign) {
-			case peote.ui.util.HAlign.CENTER: (width - leftSpace - rightSpace - Math.floor(line.textSize))/2 + _xOffset;
-			case peote.ui.util.HAlign.RIGHT: width - leftSpace - rightSpace - Math.floor(line.textSize) + _xOffset;
+			case peote.ui.util.HAlign.CENTER: (width - leftSpace - rightSpace - line.textSize)/2 + _xOffset;
+			case peote.ui.util.HAlign.RIGHT: width - leftSpace - rightSpace - line.textSize + _xOffset;
+			//case peote.ui.util.HAlign.CENTER: (width - leftSpace - rightSpace - Math.floor(line.textSize))/2 + _xOffset;
+			//case peote.ui.util.HAlign.RIGHT: width - leftSpace - rightSpace - Math.floor(line.textSize) + _xOffset;
 			default: _xOffset;
 		}
 	}
@@ -456,25 +458,34 @@ implements peote.layout.ILayoutElement
 		if (line != null) updateLineLayout(true);
 	}
 		
-	inline function updateLineLayout(updateStyle:Bool):Void
+	inline function updateLineLayout(updateStyle:Bool, updateBgMaskSelCursor:Bool = true,
+		lineUpdatePosition:Bool = true, lineUpdateSize:Bool = true, lineUpdateOffset:Bool = true):Void
 	{
 		if (updateStyle) fontProgram.lineSetStyle(line, fontStyle, isVisible);
 		
 		if (autoSize > 0) { // auto aligning width and height to textsize
-			if (autoHeight) height = Std.int(line.height) + topSpace + bottomSpace;
+			//if (autoWidth) width = Std.int(line.textSize) + leftSpace + rightSpace;
 			if (autoWidth) width = Std.int(line.textSize) + leftSpace + rightSpace;
+			if (autoHeight) height = Std.int(line.height) + topSpace + bottomSpace;
 			updatePickable(); // fit interactive pickables to new width and height
 		}
 			
 		var _x = x + leftSpace;
 		var _y = y + topSpace;
 		var _width  = width  - leftSpace - rightSpace;
-		var _height = height - topSpace - bottomSpace;
-		
+		var _height = height - topSpace - bottomSpace;		
 		var y_offset:Float = getAlignedYOffset();
 		
-		fontProgram.lineSetPositionSize(line, _x, _y + y_offset, _width, getAlignedXOffset(xOffset), isVisible);
-
+		//fontProgram.lineSetPositionSize(line, _x, _y + y_offset, _width, getAlignedXOffset(xOffset), isVisible);
+		if (lineUpdatePosition && lineUpdateSize)
+			fontProgram.lineSetPositionSize(line, _x, _y + y_offset, _width, (lineUpdateOffset) ? getAlignedXOffset(xOffset) : null, isVisible);
+		else if (lineUpdatePosition)
+			fontProgram.lineSetPosition(line, _x, _y + y_offset, (lineUpdateOffset) ? getAlignedXOffset(xOffset) : null, isVisible);
+		else if (lineUpdateSize) 
+			fontProgram.lineSetSize(line, _width, (lineUpdateOffset) ? getAlignedXOffset(xOffset) : null, isVisible);
+		else
+			fontProgram.lineSetOffset(line, (lineUpdateOffset) ? getAlignedXOffset(xOffset) : null, isVisible);
+		
 		if (isVisible) {
 			// TODO: optimize setting z-index in depend of styletyp and better allways adding fontprograms at end of uiDisplay (onAddVisibleToDisplay)
 			${switch (glyphStyleHasField.local_zIndex) {
@@ -487,30 +498,33 @@ implements peote.layout.ILayoutElement
 				default: macro {}
 			}}		
 			fontProgram.lineUpdate(line);
-		}
-				
-		#if (!peoteui_no_textmasking && !peoteui_no_masking)
-		if (masked) {
-			if (maskX > leftSpace) _x = x + maskX;
-			if (maskY > topSpace ) _y = y + maskY;
-			if (x + maskX + maskWidth  < _x + _width ) _width  = maskX + maskWidth  + x - _x;
-			if (y + maskY + maskHeight < _y + _height) _height = maskY + maskHeight + y - _y;
-		}
-		fontProgram.setMask(maskElement, _x, _y, _width, _height, isVisible);
-		#end
+		}					
 		
-		if (backgroundElement != null) {
-			if (updateStyle) backgroundElement.setStyle(backgroundStyle);
-			backgroundElement.setLayout(this);
-			if (isVisible && backgroundIsVisible) backgroundProgram.update(backgroundElement);
-		}
-		if (selectionElement != null) {
-			if (updateStyle) selectionElement.setStyle(selectionStyle);
-			setSelection(_x, _y, _width, _height, y_offset + topSpace, (isVisible && selectionIsVisible));
-		}
-		if (cursorElement != null) {
-			if (updateStyle) cursorElement.setStyle(cursorStyle);
-			setCursor(_x, _y, _width, _height, y_offset + topSpace, (isVisible && cursorIsVisible));
+		if (updateBgMaskSelCursor) 
+		{
+			#if (!peoteui_no_textmasking && !peoteui_no_masking)
+			if (masked) {
+				if (maskX > leftSpace) _x = x + maskX;
+				if (maskY > topSpace ) _y = y + maskY;
+				if (x + maskX + maskWidth  < _x + _width ) _width  = maskX + maskWidth  + x - _x;
+				if (y + maskY + maskHeight < _y + _height) _height = maskY + maskHeight + y - _y;
+			}
+			fontProgram.setMask(maskElement, _x, _y, _width, _height, isVisible);
+			#end
+			
+			if (backgroundElement != null) {
+				if (updateStyle) backgroundElement.setStyle(backgroundStyle);
+				backgroundElement.setLayout(this);
+				if (isVisible && backgroundIsVisible) backgroundProgram.update(backgroundElement);
+			}
+			if (selectionElement != null) {
+				if (updateStyle) selectionElement.setStyle(selectionStyle);
+				setSelection(_x, _y, _width, _height, y_offset + topSpace, (isVisible && selectionIsVisible));
+			}
+			if (cursorElement != null) {
+				if (updateStyle) cursorElement.setStyle(cursorStyle);
+				setCursor(_x, _y, _width, _height, y_offset + topSpace, (isVisible && cursorIsVisible));
+			}
 		}
 	}
 		
@@ -542,8 +556,8 @@ implements peote.layout.ILayoutElement
 			line = fontProgram.createLine(text, x, y, (autoWidth) ? null : width, xOffset, fontStyle);			
 			text = null; // let GC clear the string (can be get back by fontProgram)
 			if (autoSize > 0) { // auto aligning width and height to textsize
-				if (autoHeight) height = Std.int(line.height) + topSpace + bottomSpace;
 				if (autoWidth) width = Std.int(line.textSize) + leftSpace + rightSpace;
+				if (autoHeight) height = Std.int(line.height) + topSpace + bottomSpace;
 				if ( hasMoveEvent  != 0 ) pickableMove.update(this);
 				if ( hasClickEvent != 0 ) pickableClick.update(this);
 			}
@@ -640,33 +654,10 @@ implements peote.layout.ILayoutElement
 	}
 	
 	
-	// ----------------------- change the text  -----------------------	
-	public function setText(text:String, fontStyle:Null<$styleType> = null, forceAutoWidth:Null<Bool> = null, forceAutoHeight:Null<Bool> = null, autoUpdate = false)
-	{
-		if (fontStyle != null) this.fontStyle = fontStyle;
-		
-		if (forceAutoWidth != null) autoWidth = forceAutoWidth;
-		if (forceAutoHeight != null) autoHeight = forceAutoHeight;
-		
-		if (line != null) {
-			fontProgram.lineSet(line, text, x, y, (autoWidth) ? null : width, xOffset, this.fontStyle, null, isVisible);
-			if (cursor > line.length) cursor = line.length;
-			if (selectTo > line.length) selectTo = line.length;
-			if (autoSize > 0) {
-				// auto aligning width and height to new textsize
-				if (autoHeight) height = Std.int(line.height);
-				if (autoWidth) width = Std.int(line.textSize);
-				if (autoUpdate) updatePickable();
-			}
-			if (autoUpdate) updateVisibleLayout();
-		} 
-		else this.text = text;		
-	}
+	// -------------------------------------------------------
+	// ------------------- Input Focus -----------------------
+	// -------------------------------------------------------
 	
-	
-	// ---------------------------------------------------------------
-	// ------------------- Focus and TextInput -----------------------
-	// ---------------------------------------------------------------	
 	public inline function setInputFocus(e:peote.ui.event.PointerEvent = null, setCursor:Bool = false):Void {
 		peote.ui.interactive.input2action.InputTextLine.focusElement = this;
 		if (uiDisplay != null) uiDisplay.setInputFocus(this, e);
@@ -679,27 +670,6 @@ implements peote.layout.ILayoutElement
 		cursorHide();
 	}
 	
-	public inline function textInput(chars:String):Void {
-		//trace("UITextLine - textInput:", s);
-		if (line != null) {
-			// TODO: Selection
-			
-			var oldLength = line.length;
-			insertChars(chars, cursor, fontStyle);
-			fontProgram.lineUpdate(line);
-			
-			cursor += line.length - oldLength;
-		}
-		
-		// TODO:
-		if (autoSize & 2 > 0) {
-			width = Std.int(line.textSize);
-			updatePickable();
-		}
-		// TODO: only on halign etc.
-		updateVisibleLayout(); // TODO: at now it updates the line twice!
-	}
-
 	// ------- Keyboard Input -------
 	public var input2Action:input2action.Input2Action = null;
 
@@ -786,37 +756,85 @@ implements peote.layout.ILayoutElement
 	}
 
 		
+	// -----------------------------------------------------
+	// ------------------- TextInput -----------------------
+	// -----------------------------------------------------
+	
+	// ----------------------- change the text  -----------------------	
+	public function setText(text:String, fontStyle:Null<$styleType> = null, forceAutoWidth:Null<Bool> = null, forceAutoHeight:Null<Bool> = null, autoUpdate = false)
+	{
+		if (fontStyle != null) this.fontStyle = fontStyle;
+		
+		if (forceAutoWidth != null) autoWidth = forceAutoWidth;
+		if (forceAutoHeight != null) autoHeight = forceAutoHeight;
+		
+		if (line != null) {
+			fontProgram.lineSet(line, text, x, y, (autoWidth) ? null : width, xOffset, this.fontStyle, null, isVisible);
+			if (cursor > line.length) cursor = line.length;
+			if (selectTo > line.length) selectTo = line.length;
+			
+			if (autoUpdate) updateTextOnly();
+		} 
+		else this.text = text;
+	}
+	
+	public inline function textInput(chars:String):Void {
+		if (line == null) return;
+		var oldCursor = cursor;			
+		if (hasSelection()) {
+			fontProgram.lineDeleteChars(line, selectFrom, selectTo, isVisible);
+			oldCursor = selectFrom;
+			removeSelection();
+		}
+		var oldLength = line.length;
+		insertChars(chars, oldCursor, fontStyle); // TODO: extra "inputFontStyle" for textInput
+		updateTextOnly();
+		cursor = oldCursor + (line.length - oldLength);
+	}
+
+	inline function updateTextOnly()
+	{
+		// TODO: if extra inputFontStyle -> also for autoHeight!
+		if (autoWidth) updateLineLayout(false, true, false, true, false); // change bg, mask, selection and cursor and only line-size
+		else {
+			if (hAlign == peote.ui.util.HAlign.LEFT && isVisible) fontProgram.lineUpdate(line);
+			else updateLineLayout(false, false, false, false, true); // change only line-offset
+		}					
+	}
+	
 	// --------------------------------
 	// ------------ ACTIONS -----------
 	// --------------------------------	
 	
 	public inline function deleteChar()
 	{
+		if (line == null) return;
 		if (hasSelection()) {
 			fontProgram.lineDeleteChars(line, selectFrom, selectTo, isVisible);
 			cursor = selectFrom;
 			removeSelection();
+			updateTextOnly();
 		}
 		else if (cursor < line.length) {
 			fontProgram.lineDeleteChar(line, cursor, isVisible);
+			updateTextOnly();
 		}
-		updateVisibleLayout(); // TODO: at now it updates the line twice!
-		//fontProgram.pageUpdate(page);
 	}
 
 	public inline function backspace()
 	{
+		if (line == null) return;
 		if (hasSelection()) {
 			fontProgram.lineDeleteChars(line, selectFrom, selectTo, isVisible);
 			cursor = selectFrom;
 			removeSelection();
+			updateTextOnly();
 		}
 		else if (cursor > 0) {
 			cursor--;
 			fontProgram.lineDeleteChar(line, cursor, isVisible);
+			updateTextOnly();
 		}
-		updateVisibleLayout(); // TODO: at now it updates the line twice!
-		//fontProgram.pageUpdate(page);
 	}
 	
 	public inline function tabulator()
@@ -825,11 +843,21 @@ implements peote.layout.ILayoutElement
 	}
 	
 	public function copyToClipboard() {
-		
+		if (line != null && hasSelection()) {
+			lime.system.Clipboard.text = fontProgram.lineGetChars(line, selectFrom, selectTo);
+		}
+	}
+	
+	public function cutToClipboard() {
+		if (line != null && hasSelection()) {
+			lime.system.Clipboard.text = fontProgram.lineCutChars(line, selectFrom, selectTo);
+			cursor = selectFrom;
+			removeSelection();
+			updateTextOnly();			
+		}
 	}
 	
 	public function pasteFromClipboard() {
-		trace("pasteFromClipboard");
 		#if !html5
 			if (lime.system.Clipboard.text != null) textInput(lime.system.Clipboard.text);
 		#end		
