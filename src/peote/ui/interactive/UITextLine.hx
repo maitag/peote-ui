@@ -317,7 +317,7 @@ implements peote.layout.ILayoutElement
 	inline function getAlignedXOffset(_xOffset:Float):Float
 	{
 		return (autoWidth) ? _xOffset : switch (hAlign) {
-			case peote.ui.util.HAlign.CENTER: (width - leftSpace - rightSpace - line.textSize)/2 + _xOffset;
+			case peote.ui.util.HAlign.CENTER: (width - leftSpace - rightSpace - line.textSize) / 2 + _xOffset;
 			case peote.ui.util.HAlign.RIGHT: width - leftSpace - rightSpace - line.textSize + _xOffset;
 			//case peote.ui.util.HAlign.CENTER: (width - leftSpace - rightSpace - Math.floor(line.textSize))/2 + _xOffset;
 			//case peote.ui.util.HAlign.RIGHT: width - leftSpace - rightSpace - Math.floor(line.textSize) + _xOffset;
@@ -492,7 +492,7 @@ implements peote.layout.ILayoutElement
 				case true: macro {
 					if (fontStyle.zIndex != z) {
 						fontStyle.zIndex = z;
-						fontProgram.lineSetStyle(line, fontStyle);
+//TODO:					fontProgram.lineSetStyle(line, fontStyle);
 					}
 				}
 				default: macro {}
@@ -670,7 +670,10 @@ implements peote.layout.ILayoutElement
 		cursorHide();
 	}
 	
-	// ------- Keyboard Input -------
+	// -------------------------------------------------------
+	// -----------Keyboard Input and Input2Action ------------
+	// -------------------------------------------------------
+	
 	public var input2Action:input2action.Input2Action = null;
 
 	// for the interface InputFocus 
@@ -697,7 +700,9 @@ implements peote.layout.ILayoutElement
 	}
 	
 
-	// ----------- Cursor  -----------
+	// -------------------------------------------------------
+	// --------------- Cursor and Selection ------------------
+	// -------------------------------------------------------
 	
 	public function setCursorToPointer(e:peote.ui.event.PointerEvent):Void {
 		if (uiDisplay != null) cursor = getCharAtPosition(e.x);

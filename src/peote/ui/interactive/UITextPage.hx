@@ -351,8 +351,8 @@ implements peote.layout.ILayoutElement
 	inline function getAlignedXOffset(_xOffset:Float):Float
 	{
 		return (autoWidth) ? _xOffset : switch (hAlign) {
-			case peote.ui.util.HAlign.CENTER: (width - leftSpace - rightSpace - Math.floor(page.textWidth)) / 2 + _xOffset;
-			case peote.ui.util.HAlign.RIGHT: width - leftSpace - rightSpace - Math.floor(page.textWidth) + _xOffset;
+			case peote.ui.util.HAlign.CENTER: (width - leftSpace - rightSpace - page.textWidth) / 2 + _xOffset;
+			case peote.ui.util.HAlign.RIGHT: width - leftSpace - rightSpace - page.textWidth + _xOffset;
 			default: _xOffset;
 		}
 	}
@@ -360,8 +360,8 @@ implements peote.layout.ILayoutElement
 	inline function getAlignedYOffset(_yOffset:Float):Float
 	{
 		return (autoHeight) ? _yOffset : switch (vAlign) {
-			case peote.ui.util.VAlign.CENTER: (height - topSpace - bottomSpace - Math.floor(page.textHeight)) / 2 + _yOffset;
-			case peote.ui.util.VAlign.BOTTOM: height - topSpace - bottomSpace - Math.floor(page.textHeight) + _yOffset;
+			case peote.ui.util.VAlign.CENTER: (height - topSpace - bottomSpace - page.textHeight) / 2 + _yOffset;
+			case peote.ui.util.VAlign.BOTTOM: height - topSpace - bottomSpace - page.textHeight + _yOffset;
 			default: _yOffset;
 		}
 	}
@@ -483,32 +483,40 @@ implements peote.layout.ILayoutElement
 		
 	override inline function updateVisibleLayout():Void
 	{
-		if (page != null) updateLineLayout(false);
+		if (page != null) updatePageLayout(false);
 	}
 		
 	override inline function updateVisible():Void // updates style and layout
 	{
-		if (page != null) updateLineLayout(true);
+		if (page != null) updatePageLayout(true);
 	}
 		
-	inline function updateLineLayout(updateStyle:Bool):Void
+	inline function updatePageLayout(updateStyle:Bool, updateBgMaskSelCursor:Bool = true,
+		pageUpdatePosition:Bool = true, pageUpdateSize:Bool = true, pageUpdateXOffset:Bool = true, pageUpdateYOffset:Bool = true):Void
 	{
 		if (updateStyle) fontProgram.pageSetStyle(page, fontStyle, isVisible);
 		
 		if (autoSize > 0) { // auto aligning width and height to textsize
-			if (autoHeight) height = Std.int(page.textHeight) + topSpace  + bottomSpace;
 			if (autoWidth)  width  = Std.int(page.textWidth)  + leftSpace + rightSpace;
+			if (autoHeight) height = Std.int(page.textHeight) + topSpace  + bottomSpace;
 			updatePickable(); // fit interactive pickables to new width and height
 		}
 			
 		var _x = x + leftSpace;
 		var _y = y + topSpace;
 		var _width  = width  - leftSpace - rightSpace;
-		var _height = height - topSpace - bottomSpace;
-		
+		var _height = height - topSpace - bottomSpace;		
 		var y_offset:Float = getAlignedYOffset(yOffset);
 		
-		fontProgram.pageSetPositionSize(page, _x, _y, _width, _height, getAlignedXOffset(xOffset), y_offset, isVisible);		
+		//fontProgram.pageSetPositionSize(page, _x, _y, _width, _height, getAlignedXOffset(xOffset), y_offset, isVisible);
+		if (pageUpdatePosition && pageUpdateSize)
+			fontProgram.pageSetPositionSize(page, _x, _y, _width, _height, (pageUpdateXOffset) ? getAlignedXOffset(xOffset) : null, (pageUpdateYOffset) ? y_offset : null, isVisible);
+		else if (pageUpdatePosition)
+			fontProgram.pageSetPosition(page, _x, _y, (pageUpdateXOffset) ? getAlignedXOffset(xOffset) : null, (pageUpdateYOffset) ? y_offset : null, isVisible);
+		else if (pageUpdateSize) 
+			fontProgram.pageSetSize(page, _width, _height, (pageUpdateXOffset) ? getAlignedXOffset(xOffset) : null, (pageUpdateYOffset) ? y_offset : null, isVisible);
+		else
+			fontProgram.pageSetOffset(page, (pageUpdateXOffset) ? getAlignedXOffset(xOffset) : null, (pageUpdateYOffset) ? y_offset : null, isVisible);
 		
 		if (isVisible) {
 			// TODO: optimize setting z-index in depend of styletyp and better allways adding fontprograms at end of uiDisplay (onAddVisibleToDisplay)
@@ -524,29 +532,32 @@ implements peote.layout.ILayoutElement
 			fontProgram.pageUpdate(page);
 		}
 				
-		#if (!peoteui_no_textmasking && !peoteui_no_masking)
-		if (masked) {
-			if (maskX > leftSpace) _x = x + maskX;
-			if (maskY > topSpace ) _y = y + maskY;
-			if (x + maskX + maskWidth  < _x + _width ) _width  = maskX + maskWidth  + x - _x;
-			if (y + maskY + maskHeight < _y + _height) _height = maskY + maskHeight + y - _y;
-		}
-		fontProgram.setMask(maskElement, _x, _y, _width, _height, isVisible);
-		#end
-		
-		if (backgroundElement != null) {
-			if (updateStyle) backgroundElement.setStyle(backgroundStyle);
-			backgroundElement.setLayout(this);
-			if (isVisible && backgroundIsVisible) backgroundProgram.update(backgroundElement);
-		}
+		if (updateBgMaskSelCursor) 
+		{
+			#if (!peoteui_no_textmasking && !peoteui_no_masking)
+			if (masked) {
+				if (maskX > leftSpace) _x = x + maskX;
+				if (maskY > topSpace ) _y = y + maskY;
+				if (x + maskX + maskWidth  < _x + _width ) _width  = maskX + maskWidth  + x - _x;
+				if (y + maskY + maskHeight < _y + _height) _height = maskY + maskHeight + y - _y;
+			}
+			fontProgram.setMask(maskElement, _x, _y, _width, _height, isVisible);
+			#end
+			
+			if (backgroundElement != null) {
+				if (updateStyle) backgroundElement.setStyle(backgroundStyle);
+				backgroundElement.setLayout(this);
+				if (isVisible && backgroundIsVisible) backgroundProgram.update(backgroundElement);
+			}
 //TODO:		
-		//if (selectionElement != null) {
-			//if (updateStyle) selectionElement.setStyle(selectionStyle);
-			//setSelection(_x, _y, _width, _height, y_offset + topSpace, (isVisible && selectionIsVisible));
-		//}
-		if (cursorElement != null) {
-			if (updateStyle) cursorElement.setStyle(cursorStyle);
-			setCursor(_x, _y, _width, _height, y_offset + topSpace, (isVisible && cursorIsVisible));
+			//if (selectionElement != null) {
+				//if (updateStyle) selectionElement.setStyle(selectionStyle);
+				//setSelection(_x, _y, _width, _height, y_offset + topSpace, (isVisible && selectionIsVisible));
+			//}
+			if (cursorElement != null) {
+				if (updateStyle) cursorElement.setStyle(cursorStyle);
+				setCursor(_x, _y, _width, _height, y_offset + topSpace, (isVisible && cursorIsVisible));
+			}
 		}
 	}
 	
@@ -583,8 +594,8 @@ implements peote.layout.ILayoutElement
 			
 			text = null; // let GC clear the string (can be get back by fontProgram)
 			if (autoSize > 0) { // auto aligning width and height to textsize
-				if (autoHeight) height = Std.int(page.textHeight) + topSpace + bottomSpace;
 				if (autoWidth)  width  = Std.int(page.textWidth)  + leftSpace + rightSpace;
+				if (autoHeight) height = Std.int(page.textHeight) + topSpace + bottomSpace;
 				if ( hasMoveEvent  != 0 ) pickableMove.update(this);
 				if ( hasClickEvent != 0 ) pickableClick.update(this);
 			}
@@ -680,39 +691,11 @@ implements peote.layout.ILayoutElement
 		cursorElement = cursorProgram.createElementAt(this, x, y, w, h, mx, my, mw, mh, z, cursorStyle);
 	}
 
-
-	// ----------------------- change the text  -----------------------	
-	public function setText(text:String, fontStyle:Null<$styleType> = null, forceAutoWidth:Null<Bool> = null, forceAutoHeight:Null<Bool> = null, autoUpdate = false)
-	{
-		if (fontStyle != null) this.fontStyle = fontStyle;
-		
-		if (forceAutoWidth != null)  autoWidth  = forceAutoWidth;
-		if (forceAutoHeight != null) autoHeight = forceAutoHeight;
-		
-		if (page != null) {
-			fontProgram.pageSet(page, text, x, y, (autoWidth) ? null : width, (autoHeight) ? null : height, xOffset, yOffset, this.fontStyle, null, isVisible);
-			
-			if (cursorLine >= page.length) cursorLine = page.length - 1;
-			pageLine = page.getPageLine(cursorLine);
-			if (cursor > pageLine.length) cursor = pageLine.length;
-
-// TODO:
-			//if (selectTo > line.length) selectTo = line.length;
-			if (autoSize > 0) {
-				// auto aligning width and height to new textsize
-				if (autoHeight) height = Std.int(page.textHeight);
-				if (autoWidth)  width  = Std.int(page.textWidth);
-				if (autoUpdate) updatePickable();
-			}
-			if (autoUpdate) updateVisibleLayout();
-		} 
-		else this.text = text;		
-	}
 	
-	
-	// ---------------------------------------------------------------
-	// ------------------- Focus and TextInput -----------------------
-	// ---------------------------------------------------------------	
+	// -------------------------------------------------------
+	// ------------------- Input Focus -----------------------
+	// -------------------------------------------------------
+
 	public inline function setInputFocus(e:peote.ui.event.PointerEvent=null, setCursor:Bool = false):Void {
 		peote.ui.interactive.input2action.InputTextPage.focusElement = this;
 		if (uiDisplay != null) uiDisplay.setInputFocus(this, e);
@@ -725,41 +708,10 @@ implements peote.layout.ILayoutElement
 		cursorHide();
 	}
 	
-	public inline function textInput(chars:String):Void {
-		//trace("UITextPage - textInput:", chars.length);
-		if (page != null) {
-			
-			// TODO: selection !
-			
-			if (chars.length == 1 && chars != "\n") {
-				insertChars(chars, cursorLine, cursor, fontStyle);
-				cursor++;
-			}
-			else {
-				var restCharLength = pageLine.length - cursor;
-				var oldPageLength = page.length;
-				insertChars(chars, cursorLine, cursor, fontStyle);
-				trace("restCharLength",restCharLength);
-				if (page.length > oldPageLength) {
-					cursorLine += page.length - oldPageLength;
-					cursor = pageLine.length - restCharLength;
-				} 
-				else cursor += chars.length;
-				
-			}
-			fontProgram.pageUpdate(page);
-		}
-		
-		// TODO:
-		if (autoSize & 2 > 0) {
-			width = Std.int(page.textWidth);
-			updatePickable();
-		}
-		// TODO: only on halign etc.
-		updateVisibleLayout(); // TODO: at now it updates the line twice!
-	}
-
-	// ------- Keyboard Input -------
+	// -------------------------------------------------------
+	// -----------Keyboard Input and Input2Action ------------
+	// -------------------------------------------------------
+	
 	public var input2Action:input2action.Input2Action = null;
 
 	// for the interface InputFocus 
@@ -786,7 +738,9 @@ implements peote.layout.ILayoutElement
 	}
 	
 	
-	// ----------- Cursor  -----------
+	// -------------------------------------------------------
+	// --------------- Cursor and Selection ------------------
+	// -------------------------------------------------------
 	
 	public function setCursorToPointer(e:peote.ui.event.PointerEvent):Void {
 		if (uiDisplay != null) {
@@ -849,28 +803,101 @@ implements peote.layout.ILayoutElement
 */	}
 
 	
+	// -----------------------------------------------------
+	// ------------------- TextInput -----------------------
+	// -----------------------------------------------------
+
+	// ----------------------- change the text  -----------------------	
+	public function setText(text:String, fontStyle:Null<$styleType> = null, forceAutoWidth:Null<Bool> = null, forceAutoHeight:Null<Bool> = null, autoUpdate = false)
+	{
+		if (fontStyle != null) this.fontStyle = fontStyle;
+		
+		if (forceAutoWidth != null)  autoWidth  = forceAutoWidth;
+		if (forceAutoHeight != null) autoHeight = forceAutoHeight;
+		
+		if (page != null) {
+			fontProgram.pageSet(page, text, x, y, (autoWidth) ? null : width, (autoHeight) ? null : height, xOffset, yOffset, this.fontStyle, null, isVisible);			
+			if (cursorLine >= page.length) cursorLine = page.length - 1;
+			pageLine = page.getPageLine(cursorLine);
+			if (cursor > pageLine.length) cursor = pageLine.length;
+// TODO:
+			//if (selectTo > line.length) selectTo = line.length;
+			
+			if (autoUpdate) updateTextOnly();
+		} 
+		else this.text = text;
+	}
+	
+	public inline function textInput(chars:String):Void {
+		if (page == null) return;
+			
+		//var oldCursor = cursor;
+		
+		if (hasSelection()) {
+// TODO: selection !
+			//fontProgram.pageDeleteChars(line, selectFrom, selectTo, isVisible);
+			//oldCursor = selectFrom;
+			//oldLine = selectLineFrom;
+			//removeSelection();
+		}
+			
+// TODO:
+		if (chars.length == 1 && chars != "\n") {
+			insertChars(chars, cursorLine, cursor, fontStyle);
+			cursor++;
+		}
+		else {
+			var restCharLength = pageLine.length - cursor;
+			var oldPageLength = page.length;
+			
+			insertChars(chars, cursorLine, cursor, fontStyle);
+			
+			//trace("restCharLength",restCharLength);
+			if (page.length > oldPageLength) {
+				cursorLine += page.length - oldPageLength;
+				cursor = pageLine.length - restCharLength;
+			} 
+			else cursor += chars.length;
+			
+		}
+		
+		updateTextOnly();
+	}
+
+	inline function updateTextOnly()
+	{
+		if (autoWidth && autoHeight) updatePageLayout(false, true, false, true, false, false); // change bg, mask, selection and cursor and only line-size
+		else {
+			if (hAlign == peote.ui.util.HAlign.LEFT && vAlign == peote.ui.util.VAlign.TOP && isVisible) fontProgram.pageUpdate(page);
+			else updatePageLayout(false, false, false, false, !autoWidth, !autoHeight); // change only line-offset
+		}
+	}
+	
 	// --------------------------------
 	// ------------ ACTIONS -----------
 	// --------------------------------
 		
 	public inline function deleteChar()
 	{
+		if (page == null) return;
 		if (hasSelection()) {
-			//deleteChars(select_from, select_to); 
+// TODO
+			//fontProgram.pageDeleteChars(page, select_from, select_to, isVisible);
+			//updateTextOnly();
 		}
-		else {
+		else if (cursorLine < page.length || cursor < pageLine.length) {
 			fontProgram.pageDeleteChar(page, pageLine, cursorLine, cursor, isVisible);
-			if (cursor == pageLine.length && pageLine.length == 0)
-				pageLine = page.getPageLine(cursorLine); // little FIX because the Fontprogram is deleting an empty pageline
+			if (cursor == pageLine.length && pageLine.length == 0) pageLine = page.getPageLine(cursorLine); // after deleting an empty pageline
+			updateTextOnly();
 		}
-		updateVisibleLayout(); // TODO: at now it updates the line twice!
-		//fontProgram.pageUpdate(page);
 	}
 	
 	public inline function backspace()
 	{
+		if (page == null) return;
 		if (hasSelection()) {
-			//deleteChars(select_from, select_to); 
+			//fontProgram.pageDeleteChars(page, select_from, select_to, isVisible);
+			//updateTextOnly();
 		}
 		else {
 			if (cursor == 0) {
@@ -879,20 +906,18 @@ implements peote.layout.ILayoutElement
 					cursor = pageLine.length;
 					cursorWant = -1;
 					fontProgram.pageRemoveLinefeed(page, pageLine, cursorLine, isVisible);
-					if (pageLine.length == 0)
-						pageLine = page.getPageLine(cursorLine); // little FIX because the Fontprogram is deleting an empty pageline
+					if (pageLine.length == 0) pageLine = page.getPageLine(cursorLine); // after deleting an empty pageline
+					updateTextOnly();
 				}
 			}
 			else {
 				cursor--;
 				cursorWant = -1;
 				fontProgram.pageDeleteChar(page, pageLine, cursorLine, cursor, isVisible);
-				if (cursor == pageLine.length && pageLine.length == 0)
-					pageLine = page.getPageLine(cursorLine); // little FIX because the Fontprogram is deleting an empty pageline
+				if (cursor == pageLine.length && pageLine.length == 0) pageLine = page.getPageLine(cursorLine); // after deleting an empty pageline
+				updateTextOnly();
 			}
 		}
-		updateVisibleLayout(); // TODO: at now it updates the line twice!
-		//fontProgram.pageUpdate(page);
 	}
 	
 	public inline function tabulator()
@@ -910,9 +935,8 @@ implements peote.layout.ILayoutElement
 			cursorLine++;
 			cursor = 0;
 			cursorWant = -1;
-			updateVisibleLayout(); // TODO: at now it updates the line twice!
-			//fontProgram.pageUpdate(page);
 		}
+		updateTextOnly();
 	}
 	
 	public function copyToClipboard() {
@@ -921,7 +945,6 @@ implements peote.layout.ILayoutElement
 	}
 	
 	public function pasteFromClipboard() {
-		trace("pasteFromClipboard");
 		#if !html5
 			if (lime.system.Clipboard.text != null) textInput(lime.system.Clipboard.text);
 		#end		
