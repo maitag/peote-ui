@@ -110,53 +110,52 @@ implements peote.layout.ILayoutElement
 	
 	// -------- selection style ---------
 	var selectionProgram:peote.ui.style.interfaces.StyleProgram = null;
-	var selectionElement:peote.ui.style.interfaces.StyleElement = null;
+	var selectionElementArray:Array<peote.ui.style.interfaces.StyleElement> = null;
 	public var selectionStyle(default, set):Dynamic = null;
 	//inline function set_selectionStyle(style:Dynamic):Dynamic {
 	inline function set_selectionStyle(style:peote.ui.style.interfaces.Style):peote.ui.style.interfaces.Style {
-//TODO:
-/*		if (selectionElement == null) { // not added to Display yet
+		if (selectionElementArray == null) { // not added to Display yet
 			selectionStyle = style;
 			if (style != null && page != null) createSelectionMasked(isVisible && selectionIsVisible);
 		}
 		else { // already have styleprogram and element 
 			if (style != null) {
 				if (style.getUUID() != selectionStyle.getUUID()) { // if is need another styleprogram
-					if (isVisible && selectionIsVisible) selectionProgram.removeElement(selectionElement);
+					if (isVisible && selectionIsVisible) selectionElementsRemove();
 					selectionProgram = null;
 					selectionStyle = style;
 					createSelectionMasked(isVisible && selectionIsVisible);
 				} 
 				else { // styleprogram is of same type
 					selectionStyle = style;
-					selectionElement.setStyle(style);
-					if (isVisible && selectionIsVisible) selectionProgram.update(selectionElement);
+					selectionElementsSetStyle(style, isVisible && selectionIsVisible);
 				}
 			} 
 			else { // remove style
-				if (isVisible && selectionIsVisible) selectionProgram.removeElement(selectionElement);
-				selectionStyle = null; selectionProgram = null; selectionElement = null;
+				if (isVisible && selectionIsVisible) selectionElementsRemove();
+				selectionStyle = null; selectionProgram = null; selectionElementArray = null;
 			}
 		}		
-*/		return selectionStyle;
+		return selectionStyle;
 	}	
 	public var selectionIsVisible(default, set):Bool = false;
 	inline function set_selectionIsVisible(b:Bool):Bool {
-//TODO:
-/*		if (page != null && selectionStyle != null) {
+		if (page != null && selectionStyle != null) {
 			if (b && !selectionIsVisible) {
-				if (selectionElement == null) createSelectionMasked(isVisible); // create new selectElement
-				else if (isVisible) selectionProgram.addElement(selectionElement);
+				if (selectionElementArray == null) createSelectionMasked(isVisible); // create new selectElement
+				else if (isVisible) selectionElementsAdd();
 			}
-			else if (!b && selectionIsVisible && selectionElement != null && isVisible) selectionProgram.removeElement(selectionElement);
+			else if (!b && selectionIsVisible && selectionElementArray != null && isVisible) selectionElementsRemove();
 		}
-*/		return selectionIsVisible = b;
+		return selectionIsVisible = b;
 	}	
 	public inline function selectionShow():Void selectionIsVisible = true;
 	public inline function selectionHide():Void selectionIsVisible = false;
 	var selectFrom:Int = 0;
 	var selectTo:Int = 0;	
-	public function select(from:Int, to:Int):Void {
+	var selectLineFrom:Int = 0;
+	var selectLineTo:Int = 0;	
+	public function select(fromChar:Int, toChar:Int, fromLine:Null<Int>, toLine:Null<Int>):Void {
 //TODO:
 /*		if (from < 0) from = 0;
 		if (to < 0) to = 0;
@@ -165,7 +164,7 @@ implements peote.layout.ILayoutElement
 		else {
 			if (page != null && selectionStyle != null) {
 				if (selectTo > line.length) selectTo = line.length;
-				setCreateSelectionMasked( (isVisible && selectionIsVisible), (selectionElement == null) );
+				setCreateSelectionMasked( (isVisible && selectionIsVisible), (selectionElementArray == null) );
 			}
 			selectionShow();
 		}
@@ -366,7 +365,7 @@ implements peote.layout.ILayoutElement
 		}
 	}
 	
-/*	inline function createSelectionMasked(addUpdate:Bool) setCreateSelectionMasked(addUpdate, true);
+	inline function createSelectionMasked(addUpdate:Bool) setCreateSelectionMasked(addUpdate, true);
 	inline function setCreateSelectionMasked(addUpdate:Bool, create:Bool) 
 	{
 		var _x = x + leftSpace;
@@ -387,30 +386,61 @@ implements peote.layout.ILayoutElement
 	inline function setSelection(x:Int, y:Int, w:Int, h:Int, y_offset:Float, addUpdate:Bool) _setCreateSelection(x, y, w, h, y_offset, addUpdate, false);
 	inline function _setCreateSelection(_x:Int, _y:Int, _width:Int, _height:Int, y_offset:Float, addUpdate:Bool, create:Bool)
 	{		
-		var selectX = Math.round(getPositionAtChar(selectFrom));
-		var selectWidth = Math.round(getPositionAtChar(selectTo) - selectX);
-		var selectY = Math.round(y + y_offset);
-		var selectHeight = Math.round(line.height);
-		var mx = 0; var my = 0; var mw = selectWidth; var mh = selectHeight;
+	
+/*		// TODO
+		var from:Int = (page.visibleLineFrom > selectLineFrom) ? page.visibleLineFrom : selectLineFrom;
+		var to:Int = (page.visibleLineTo < selectLineTo) ? page.visibleLineTo : selectLineTo;
+		for (i in from...to) {
+			
+			_pageLine = page.getPageLine();
+			_pageLine.y;
+			_pageLine.textWidth;
 		
-		#if (!peoteui_no_textmasking && !peoteui_no_masking)
-		if (selectX < _x) { mw -= (_x - selectX); mx = _x - selectX; if (mw > _width) mw = _width; }
-		else if (selectX + selectWidth > _x + _width) mw = _x + _width - selectX;
-		if (mw < 0) mw = 0;
-		if (selectY < _y) { mh -= (_y - selectY); my = _y - selectY; if (mh > _height) mh = _height; }
-		else if (selectY + selectHeight > _y + _height) mh = _y + _height - selectY;
-		if (mh < 0) mh = 0;
-		#end
-		if (create)	{
-			createSelectionStyle(selectX, selectY, selectWidth, selectHeight, mx, my, mw, mh, z); // TODO zIndex
-			if (addUpdate) selectionProgram.addElement(selectionElement);
-		}
-		else {
-			selectionElement.setMasked(this, selectX, selectY, selectWidth, selectHeight, mx, my, mw, mh, z); // TODO zIndex
-			if (addUpdate) selectionProgram.update(selectionElement);
+	
+			var selectX = Math.round(getPositionAtChar(selectFrom));
+			var selectWidth = Math.round(getPositionAtChar(selectTo) - selectX);
+			var selectY = Math.round(y + y_offset);
+			var selectHeight = Math.round(line.height);
+			var mx = 0; var my = 0; var mw = selectWidth; var mh = selectHeight;
+			
+			#if (!peoteui_no_textmasking && !peoteui_no_masking)
+			if (selectX < _x) { mw -= (_x - selectX); mx = _x - selectX; if (mw > _width) mw = _width; }
+			else if (selectX + selectWidth > _x + _width) mw = _x + _width - selectX;
+			if (mw < 0) mw = 0;
+			if (selectY < _y) { mh -= (_y - selectY); my = _y - selectY; if (mh > _height) mh = _height; }
+			else if (selectY + selectHeight > _y + _height) mh = _y + _height - selectY;
+			if (mh < 0) mh = 0;
+			#end
+			if (create)	{
+				createSelectionStyle(selectX, selectY, selectWidth, selectHeight, mx, my, mw, mh, z); // TODO zIndex
+				
+				// TODO
+				//selectionElement = selectionProgram.createElementAt(this, x, y, w, h, mx, my, mw, mh, z, selectionStyle);
+				
+				if (addUpdate) selectionProgram.addElement(selectionElement);
+			}
+			else {
+				selectionElement.setMasked(this, selectX, selectY, selectWidth, selectHeight, mx, my, mw, mh, z); // TODO zIndex
+				if (addUpdate) selectionProgram.update(selectionElement);
+			}
+		
+		
+*/		
+	}
+	
+	inline function selectionElementsAdd() {
+		for (selectionElement in selectionElementArray) selectionProgram.addElement(selectionElement);
+	}
+	inline function selectionElementsRemove() {
+		for (selectionElement in selectionElementArray) selectionProgram.removeElement(selectionElement);
+	}
+	inline function selectionElementsSetStyle(style:peote.ui.style.interfaces.Style, updateAfter:Bool) {
+		for (selectionElement in selectionElementArray) {
+			selectionElement.setStyle(style);
+			selectionProgram.update(selectionElement);
 		}
 	}
-*/	
+
 	inline function createCursorMasked(addUpdate:Bool) setCreateCursorMasked(addUpdate, true);
 	inline function setCreateCursorMasked(addUpdate:Bool, create:Bool) 
 	{
@@ -436,7 +466,8 @@ implements peote.layout.ILayoutElement
 
 		var cx = Math.round(getPositionAtChar(cursor));
 		var cw = 2; // TODO: make customizable
-		var cy = Math.round(getPositionAtLine(cursorLine));
+		//var cy = Math.round(getPositionAtLine(cursorLine));
+		var cy = Math.round(pageLine.y);
 		var ch = Math.round(pageLine.height);
 		var mx = 0; var my = 0; var mw = cw; var mh = ch;
 		
@@ -469,12 +500,10 @@ implements peote.layout.ILayoutElement
 				backgroundElement.setStyle(backgroundStyle);
 				if (isVisible && backgroundIsVisible) backgroundProgram.update(backgroundElement);
 			}
-//TODO:		
-/*			if (selectionElement != null) {
-				selectionElement.setStyle(selectionStyle);		
-				if (isVisible && selectionIsVisible) selectionProgram.update(selectionElement);
+			if (selectionElementArray != null) {
+				selectionElementsSetStyle(selectionStyle, isVisible && selectionIsVisible);
 			}
-*/			if (cursorElement != null) {
+			if (cursorElement != null) {
 				cursorElement.setStyle(cursorStyle);		
 				if (isVisible && cursorIsVisible) cursorProgram.update(cursorElement);
 			}
@@ -508,7 +537,6 @@ implements peote.layout.ILayoutElement
 		var _height = height - topSpace - bottomSpace;		
 		var y_offset:Float = getAlignedYOffset(yOffset);
 		
-		//fontProgram.pageSetPositionSize(page, _x, _y, _width, _height, getAlignedXOffset(xOffset), y_offset, isVisible);
 		if (pageUpdatePosition && pageUpdateSize)
 			fontProgram.pageSetPositionSize(page, _x, _y, _width, _height, (pageUpdateXOffset) ? getAlignedXOffset(xOffset) : null, (pageUpdateYOffset) ? y_offset : null, isVisible);
 		else if (pageUpdatePosition)
@@ -549,11 +577,12 @@ implements peote.layout.ILayoutElement
 				backgroundElement.setLayout(this);
 				if (isVisible && backgroundIsVisible) backgroundProgram.update(backgroundElement);
 			}
-//TODO:		
-			//if (selectionElement != null) {
-				//if (updateStyle) selectionElement.setStyle(selectionStyle);
+		
+			if (selectionElementArray != null) {
+				if (updateStyle) selectionElementsSetStyle(selectionStyle, false);
+//TODO
 				//setSelection(_x, _y, _width, _height, y_offset + topSpace, (isVisible && selectionIsVisible));
-			//}
+			}
 			if (cursorElement != null) {
 				if (updateStyle) cursorElement.setStyle(cursorStyle);
 				setCursor(_x, _y, _width, _height, y_offset + topSpace, (isVisible && cursorIsVisible));
@@ -569,7 +598,7 @@ implements peote.layout.ILayoutElement
 			fontProgram.addMask(maskElement);
 			#end			
 			if (backgroundIsVisible && backgroundElement != null) backgroundProgram.addElement(backgroundElement);			
-//TODO:		if (selectionIsVisible && selectionElement != null) selectionProgram.addElement(selectionElement);			
+			if (selectionIsVisible && selectionElementArray != null) selectionElementsAdd();			
 			if (cursorIsVisible && cursorElement != null) cursorProgram.addElement(cursorElement);
 			fontProgram.pageAdd(page);
 		} 
@@ -634,7 +663,7 @@ implements peote.layout.ILayoutElement
 		fontProgram.removeMask(maskElement);
 		#end		
 		if (backgroundIsVisible && backgroundElement != null) backgroundProgram.removeElement(backgroundElement);
-//TODO:	if (selectionIsVisible && selectionElement != null) selectionProgram.removeElement(selectionElement);
+		if (selectionIsVisible && selectionElementArray != null) selectionElementsRemove();
 		if (cursorIsVisible && cursorElement != null) cursorProgram.removeElement(cursorElement);
 	}
 
@@ -675,9 +704,10 @@ implements peote.layout.ILayoutElement
 			selectionProgram = cast uiDisplay.usedStyleProgram[stylePos];
 			if (selectionProgram == null) uiDisplay.addProgramAtStylePos(cast selectionProgram = selectionStyle.createStyleProgram(), stylePos);				
 		}
-		selectionElement = selectionProgram.createElementAt(this, x, y, w, h, mx, my, mw, mh, z, selectionStyle);
+		selectionElementArray = new Array<peote.ui.style.interfaces.StyleElement>();
+		//selectionElement = selectionProgram.createElementAt(this, x, y, w, h, mx, my, mw, mh, z, selectionStyle);
 	}
-		
+			
 	inline function createCursorStyle(x:Int, y:Int, w:Int, h:Int, mx:Int, my:Int, mw:Int, mh:Int, z:Int)
 	{	//trace("createCursorStyle");
 		var stylePos = uiDisplay.usedStyleID.indexOf( cursorStyle.getUUID() );
@@ -767,11 +797,11 @@ implements peote.layout.ILayoutElement
 		
 	function onSelectStart(e:peote.ui.event.PointerEvent):Void {
 		trace("selectStart", xOffset);
-/*		removeSelection();
+		removeSelection();
 		selectStartFrom = cursor = getCharAtPosition(e.x);
 		xOffsetAtSelectStart = xOffset;
 		selectionHide();
-*/	}
+	}
 	
 	function onSelectStop(e:peote.ui.event.PointerEvent = null):Void {
 		trace("selectStop", (e != null) ? e.x : "", xOffset);
