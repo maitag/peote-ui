@@ -174,12 +174,15 @@ implements peote.layout.ILayoutElement
 		if (selectLineFrom == selectLineTo - 1 && fromChar > toChar) { selectFrom = toChar; selectTo = fromChar; }
 		else { selectFrom = fromChar; selectTo = toChar; }
 		
-		if (selectLineFrom >= page.length || (selectLineFrom == selectLineTo+1 && selectFrom == selectTo)) selectionHide();
+		if (selectLineFrom == selectLineTo-1 && selectFrom == selectTo) selectionHide();
 		else {
 			if (page != null && selectionStyle != null) {
-				if (selectLineTo > page.length) selectLineTo = page.length;
-				if (selectTo > page.getPageLine(selectLineTo-1).length) selectTo = page.getPageLine(selectLineTo-1).length;
-				setCreateSelectionMasked( (isVisible && selectionIsVisible), (selectionElementArray == null) );
+				if (selectLineFrom >= page.length) selectionHide();
+				else {
+					if (selectLineTo > page.length) selectLineTo = page.length;
+					if (selectTo > page.getPageLine(selectLineTo-1).length) selectTo = page.getPageLine(selectLineTo-1).length;
+					setCreateSelectionMasked( (isVisible && selectionIsVisible), (selectionElementArray == null) );
+				}
 			}
 			selectionShow();
 		}
@@ -395,20 +398,13 @@ implements peote.layout.ILayoutElement
 			if (y + maskY + maskHeight < _y + _height) _height = maskY + maskHeight + y - _y;
 		}
 		#end
-		_setCreateSelection(_x, _y, _width, _height, getAlignedYOffset(yOffset) + topSpace, addUpdate, create);
+		_setCreateSelection(_x, _y, _width, _height, getAlignedYOffset(yOffset) + topSpace, addUpdate, create, false);
 	}
-	inline function createSelection(x:Int, y:Int, w:Int, h:Int, y_offset:Float, addUpdate:Bool) _setCreateSelection(x, y, w, h, y_offset, addUpdate, true);
-	inline function setSelection(x:Int, y:Int, w:Int, h:Int, y_offset:Float, addUpdate:Bool) _setCreateSelection(x, y, w, h, y_offset, addUpdate, false);
-	inline function _setCreateSelection(_x:Int, _y:Int, _width:Int, _height:Int, y_offset:Float, addUpdate:Bool, create:Bool)
+	inline function createSelection(x:Int, y:Int, w:Int, h:Int, y_offset:Float, addUpdate:Bool) _setCreateSelection(x, y, w, h, y_offset, addUpdate, true, false);
+	inline function setSelection(x:Int, y:Int, w:Int, h:Int, y_offset:Float, addUpdate:Bool, updateStyle:Bool) _setCreateSelection(x, y, w, h, y_offset, addUpdate, false, updateStyle);
+	inline function _setCreateSelection(_x:Int, _y:Int, _width:Int, _height:Int, y_offset:Float, addUpdate:Bool, create:Bool, updateStyle:Bool)
 	{		
-		var selectX:Int;
-		var selectWidth:Int;
-		var selectY:Int;
-		var selectHeight:Int;
-		var mx:Int;
-		var my:Int;
-		var mw:Int;
-		var mh:Int;
+		var selectX:Int, selectWidth:Int, selectY:Int, selectHeight:Int, mx:Int, my:Int, mw:Int, mh:Int;
 	
 		var from:Int = (page.visibleLineFrom > selectLineFrom) ? page.visibleLineFrom : selectLineFrom;
 		var to:Int = (page.visibleLineTo < selectLineTo) ? page.visibleLineTo : selectLineTo;
@@ -420,14 +416,17 @@ implements peote.layout.ILayoutElement
 			createSelectionStyle();
 			selectionElementArray = new Array<peote.ui.style.interfaces.StyleElement>();
 		}
-		else {
-			// remove the ones what is outside now
-			for (i in to - from...selectionElementMax) selectionProgram.removeElement(selectionElementArray[i]);
+		else if (addUpdate) { // remove the ones what is outside now
+			//trace("remove old ones", from, to, to - from, selectionElementMax);
+			var fromOld:Int = to - from;
+			if (fromOld < 0) fromOld = 0;
+			for (i in fromOld...selectionElementMax) selectionProgram.removeElement(selectionElementArray[i]);
 		}
 		
+		var selectionElementMaxOld = selectionElementMax;
 		selectionElementMax = 0;
-		for (i in from...to) {
-			
+		for (i in from...to)
+		{			
 			_pageLine = page.getPageLine(i);
 		
 			if (i == selectLineFrom && i == selectLineTo-1) { // one line selection
@@ -447,7 +446,6 @@ implements peote.layout.ILayoutElement
 				selectWidth = Math.round(_pageLine.textSize);
 			}
 			
-			//var selectY = Math.round(y + y_offset);
 			selectY = Math.round(_pageLine.y);
 			selectHeight = Math.round(_pageLine.height);
 			
@@ -470,13 +468,21 @@ implements peote.layout.ILayoutElement
 			}
 			else {
 				selectionElement = selectionElementArray[selectionElementMax];
-				selectionElement.setMasked(this, selectX, selectY, selectWidth, selectHeight, mx, my, mw, mh, z); // TODO zIndex
-				if (addUpdate) selectionProgram.update(selectionElement);
+				selectionElement.setMasked(this, selectX, selectY, selectWidth, selectHeight, mx, my, mw, mh, z);
+				// TODO zIndex				
+				if (selectionElementMax >= selectionElementMaxOld) { // old element was outside of visible area
+					selectionElement.setStyle(selectionStyle);
+					if (addUpdate) selectionProgram.addElement(selectionElement);
+				}
+				else {
+					if (updateStyle) selectionElement.setStyle(selectionStyle);
+					if (addUpdate) selectionProgram.update(selectionElement);
+				}
 			}
 		
 			selectionElementMax++;
-		}
-		
+		}		
+		//trace("new selectionElementMax", selectionElementMax);		
 	}
 	
 	inline function selectionElementsAdd() {
@@ -490,7 +496,7 @@ implements peote.layout.ILayoutElement
 		for (i in 0...selectionElementMax) {
 			selectionElement = selectionElementArray[i];
 			selectionElement.setStyle(style);
-			selectionProgram.update(selectionElement);
+			if (updateAfter) selectionProgram.update(selectionElement);
 		}
 	}
 
@@ -631,9 +637,7 @@ implements peote.layout.ILayoutElement
 				if (isVisible && backgroundIsVisible) backgroundProgram.update(backgroundElement);
 			}
 			if (selectionElementArray != null) {
-				if (updateStyle) selectionElementsSetStyle(selectionStyle, false);
-				// TODO: -> change style here directly inside to avoid double looping:
-				setSelection(_x, _y, _width, _height, y_offset + topSpace, (isVisible && selectionIsVisible));
+				setSelection(_x, _y, _width, _height, y_offset + topSpace, (isVisible && selectionIsVisible), updateStyle);
 			}
 			if (cursorElement != null) {
 				if (updateStyle) cursorElement.setStyle(cursorStyle);
