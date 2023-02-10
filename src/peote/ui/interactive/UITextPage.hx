@@ -155,37 +155,35 @@ implements peote.layout.ILayoutElement
 	var selectFrom:Int = 0;
 	var selectTo:Int = 0;	
 	var selectLineFrom:Int = 0;
-	var selectLineTo:Int = 0;	
-	public function select(fromChar:Int, toChar:Int, fromLine:Int, toLine:Int):Void {
+	var selectLineTo:Int = 0;
+	
+	public function select(fromChar:Int, toChar:Int, fromLine:Int, toLine:Int):Void { // toLine inclusive
 		if (fromChar < 0) fromChar = 0;
 		if (toChar < 0) toChar = 0;
 		if (fromLine < 0) fromLine = 0;
 		if (toLine < 0) toLine = 0;
 		
-		if (fromLine > toLine) {
-			selectLineFrom = toLine; selectLineTo = fromLine; 
-		}
-		else {
-			selectLineFrom = fromLine;
-			if (fromLine == toLine) selectLineTo = toLine+1;
-			else selectLineTo = toLine;			
-		}
+		if (fromLine > toLine) { selectLineFrom = toLine; selectLineTo = fromLine; }
+		else { selectLineFrom = fromLine; selectLineTo = toLine; }
 		
-		if (selectLineFrom == selectLineTo - 1 && fromChar > toChar) { selectFrom = toChar; selectTo = fromChar; }
+		if (fromLine > toLine || (fromLine == toLine && fromChar > toChar)) { selectFrom = toChar; selectTo = fromChar; }
 		else { selectFrom = fromChar; selectTo = toChar; }
+		
+		selectLineTo++;
 		
 		if (selectLineFrom == selectLineTo-1 && selectFrom == selectTo) selectionHide();
 		else {
 			if (page != null && selectionStyle != null) {
 				if (selectLineFrom >= page.length) selectionHide();
 				else {
-					if (selectLineTo > page.length) selectLineTo = page.length;
-					if (selectTo > page.getPageLine(selectLineTo-1).length) selectTo = page.getPageLine(selectLineTo-1).length;
+					if (selectLineTo > page.length) selectLineTo = page.length;					
+					if (selectTo > page.getPageLine(selectLineTo - 1).length) selectTo = page.getPageLine(selectLineTo - 1).length;
 					setCreateSelectionMasked( (isVisible && selectionIsVisible), (selectionElementArray == null) );
 				}
 			}
 			selectionShow();
 		}
+		//trace("select from/to:", selectLineFrom, selectLineTo, selectFrom, selectTo);
 	}
 	public inline function hasSelection():Bool return (selectFrom != selectTo);
 	public inline function removeSelection() { selectFrom = selectTo; selectionHide(); }
@@ -409,6 +407,18 @@ implements peote.layout.ILayoutElement
 		var from:Int = (page.visibleLineFrom > selectLineFrom) ? page.visibleLineFrom : selectLineFrom;
 		var to:Int = (page.visibleLineTo < selectLineTo) ? page.visibleLineTo : selectLineTo;
 		
+		// TODO: better allways selecting the "newline" at the line-end ?
+		var _selectFrom = selectFrom;
+		var _selectTo = selectTo;
+		if ( selectFrom == page.getPageLine(from).length ) {
+			_selectFrom = 0; from++;
+		}
+		if ( _selectTo == 0 && to > from + 1) {
+			to--; 
+			_selectTo = page.getPageLine(to-1).length;
+		}
+		
+		
 		var _pageLine:peote.text.PageLine<$styleType>;
 		var selectionElement:peote.ui.style.interfaces.StyleElement;
 		
@@ -430,16 +440,16 @@ implements peote.layout.ILayoutElement
 			_pageLine = page.getPageLine(i);
 		
 			if (i == selectLineFrom && i == selectLineTo-1) { // one line selection
-				selectX = Math.round(getPositionAtChar(selectFrom));
-				selectWidth = Math.round(getPositionAtChar(selectTo) - selectX);
+				selectX = Math.round(fontProgram.pageGetPositionAtChar(page, _pageLine, _selectFrom));
+				selectWidth = Math.round(fontProgram.pageGetPositionAtChar(page, _pageLine, _selectTo) - selectX);
 			}
 			else if (i == selectLineFrom) { // first selection line
-				selectX = Math.round(getPositionAtChar(selectFrom));
+				selectX = Math.round(fontProgram.pageGetPositionAtChar(page, _pageLine, _selectFrom));
 				selectWidth = Math.round(page.x + page.xOffset + _pageLine.textSize - selectX);
 			}
 			else if (i == selectLineTo-1) { // last selection line
 				selectX = Math.round(page.x + page.xOffset);
-				selectWidth = Math.round(getPositionAtChar(selectTo) - selectX);
+				selectWidth = Math.round(fontProgram.pageGetPositionAtChar(page, _pageLine, _selectTo) - selectX);
 			} 
 			else { // fully selected lines
 				selectX = Math.round(page.x + page.xOffset);
@@ -847,44 +857,49 @@ implements peote.layout.ILayoutElement
 	// select-handler what is called by PeoteUIDisplay
 	
 	var selectStartFrom:Int = 0;
+	var selectStartFromLine:Int = 0;
 	var xOffsetAtSelectStart:Float = 0;
+	var yOffsetAtSelectStart:Float = 0;
 		
 	function onSelectStart(e:peote.ui.event.PointerEvent):Void {
-		trace("selectStart", xOffset);
+		//trace("selectStart", xOffset);
 		removeSelection();
+		selectStartFromLine = cursorLine = getLineAtPosition(e.y);
 		selectStartFrom = cursor = getCharAtPosition(e.x);
 		xOffsetAtSelectStart = xOffset;
+		yOffsetAtSelectStart = yOffset;
 		selectionHide();
 	}
 	
 	function onSelectStop(e:peote.ui.event.PointerEvent = null):Void {
-		trace("selectStop", (e != null) ? e.x : "", xOffset);
+		//trace("selectStop", (e != null) ? e.x : "", xOffset);
 	}
 	
 	function onSelect(e:peote.ui.event.PointerEvent):Void {
-/*		if (localX(e.x) < leftSpace) {
+		if (localX(e.x) < leftSpace) {
 			if (localX(e.x) < getAlignedXOffset(leftSpace) + xOffsetAtSelectStart) {
 				xOffset = Math.max(- getAlignedXOffset(0), xOffsetAtSelectStart);
 			}
 			else xOffset = leftSpace - localX(e.x) + xOffsetAtSelectStart;
-			updateLineLayout(false); // OPTIMIZING: not for the background!
+			updatePageLayout(false); // OPTIMIZING: not for the background!
 		}
 		else if (localX(e.x) > width - rightSpace) {
 			if ( localX(e.x) > getAlignedXOffset(page.textWidth + leftSpace  + xOffsetAtSelectStart ) ) {
 				xOffset = Math.min(-getAlignedXOffset(Math.floor(page.textWidth) - width + leftSpace + rightSpace), xOffsetAtSelectStart);
 			} 
 			else xOffset = width - localX(e.x) - rightSpace  + xOffsetAtSelectStart;
-			updateLineLayout(false); // OPTIMIZING: not for the background!
+			updatePageLayout(false); // OPTIMIZING: not for the background!
 		}
 		else if (xOffset != xOffsetAtSelectStart) {
 			xOffset = xOffsetAtSelectStart;
-			updateLineLayout(false); // OPTIMIZING: not for the background!
+			updatePageLayout(false); // OPTIMIZING: not for the background!
 		}
+		cursorLine = getLineAtPosition(e.y);
 		cursor = getCharAtPosition(e.x);
-		select( selectStartFrom, cursor );
+		select( selectStartFrom, cursor, selectStartFromLine, cursorLine );
 		// TODO: detect the char left right while xOffset changes at the border
 		//       OR allways change xScroll to make cursor fully visible!
-*/	}
+	}
 
 	
 	// -----------------------------------------------------
@@ -918,7 +933,6 @@ implements peote.layout.ILayoutElement
 		//var oldCursor = cursor;
 		
 		if (hasSelection()) {
-// TODO: selection !
 			//fontProgram.pageDeleteChars(line, selectFrom, selectTo, isVisible);
 			//oldCursor = selectFrom;
 			//oldLine = selectLineFrom;

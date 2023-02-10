@@ -185,16 +185,17 @@ class SimpleText extends Application
 
 		// set events
 		inputPage.onPointerDown = function(t:UITextPage<MyFontStyle>, e:PointerEvent) {
-			t.setInputFocus(e, true);			
-			//t.startSelection(e);
+			//t.setInputFocus(e, true);			
+			t.setInputFocus(e);			
+			t.startSelection(e);
 		}
 		inputPage.onPointerUp = function(t:UITextPage<MyFontStyle>, e:PointerEvent) {
-			//t.stopSelection(e);
+			t.stopSelection(e);
 		}
 		
 		uiDisplay.add(inputPage);
 		
-
+		
 		// use custom keyboard-control via input2action
 		
 /*		var actionConfig:ActionConfig = [

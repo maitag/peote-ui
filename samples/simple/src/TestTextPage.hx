@@ -135,7 +135,7 @@ class TestTextPage extends Application
 			cursorStyle:cursorSimpleStyle
 		}
 
-		var textPage = new UITextPage<FontStylePacked>(240, 5, "Hello World\nTesting UITextPage", fontPacked, fontStylePacked, textStyle);
+		var textPage = new UITextPage<FontStylePacked>(240, 5, "Hello World\nTesting UITextPage\nabcdefg", fontPacked, fontStylePacked, textStyle);
 		textPage.onPointerOver = (_, _)-> trace("textPage onPointerOver");
 		textPage.onPointerOut  = (_, _)-> trace("textPage onPointerOut");
 		textPage.onPointerClick  = (t, e:PointerEvent)-> {
@@ -144,11 +144,11 @@ class TestTextPage extends Application
 		textPage.onPointerDown = function(t, e:PointerEvent) {
 			trace("textPage onPointerDown");
 			t.setInputFocus(e, true); // alternatively: uiDisplay.setInputFocus(t);
-			//t.startSelection(e);
+			t.startSelection(e);
 		}
 		textPage.onPointerUp = function(t, e:PointerEvent) {
 			trace("textPage onPointerUp");
-			//t.stopSelection(e);
+			t.stopSelection(e);
 		}
 		textPage.maskWidth = 100;
 		textPage.maskHeight = 40;
@@ -194,10 +194,10 @@ class TestTextPage extends Application
 				
 		// ------------ selection Style ------------
 		buttonY += 12;
-/*		button(
-			"select 0-8",  ()-> textPage.select(0,8),
-		    "4-10", ()-> textPage.select(4,10),
-		    "5-2", ()-> textPage.select(5,2)
+		button(
+			"select 1", ()-> textPage.select(2, 5, 0, 1),
+		    "select 2", ()-> textPage.select(2, 5, 0, 2),
+		    "select 3", ()-> textPage.select(2, 5, 0, 3)
 		);
 		button(
 			"selectionShow/Hide", ()-> if (textPage.selectionIsVisible) textPage.selectionHide() else textPage.selectionShow(),
@@ -207,7 +207,7 @@ class TestTextPage extends Application
 		button("set roundStyle", ()-> textPage.selectionStyle = selectionRoundStyle);
 		button("remove style", ()-> textPage.selectionStyle = null);
 
-*/		// ------------- cursor Style -------------
+		// ------------- cursor Style -------------
 		buttonY += 12;
 		button(
 			"cursorShow/Hide", ()->if (textPage.cursorIsVisible) textPage.cursorHide() else textPage.cursorShow(),
