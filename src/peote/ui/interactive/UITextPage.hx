@@ -185,8 +185,8 @@ implements peote.layout.ILayoutElement
 		}
 		//trace("select from/to:", selectLineFrom, selectLineTo, selectFrom, selectTo);
 	}
-	public inline function hasSelection():Bool return (selectFrom != selectTo);
-	public inline function removeSelection() { selectFrom = selectTo; selectionHide(); }
+	public inline function hasSelection():Bool return ( (selectLineFrom < selectLineTo-1 || selectFrom != selectTo) );
+	public inline function removeSelection() { selectLineFrom = selectLineTo = selectFrom = selectTo = 0; selectionHide(); }
 	
 	// -------- cursor style ---------
 	var cursorProgram:peote.ui.style.interfaces.StyleProgram = null;
@@ -410,6 +410,8 @@ implements peote.layout.ILayoutElement
 		// TODO: better allways selecting the "newline" at the line-end ?
 		var _selectFrom = selectFrom;
 		var _selectTo = selectTo;
+		
+		//trace("KKKKKKKKKKKK",from, to); // TODO: bug here after deleting line and out of selection
 		if ( selectFrom == page.getPageLine(from).length ) {
 			_selectFrom = 0; from++;
 		}
@@ -852,6 +854,7 @@ implements peote.layout.ILayoutElement
 	
 	public function stopSelection(e:peote.ui.event.PointerEvent = null):Void {
 		if (uiDisplay != null) uiDisplay.stopSelection(this, e);
+		//trace("select from/to:", selectLineFrom, selectLineTo, selectFrom, selectTo);
 	}
 	
 	// select-handler what is called by PeoteUIDisplay
@@ -980,12 +983,17 @@ implements peote.layout.ILayoutElement
 		if (page == null) return;
 		if (hasSelection()) {
 // TODO
-			//fontProgram.pageDeleteChars(page, select_from, select_to, isVisible);
-			//updateTextOnly();
+			//trace("select from/to:", selectLineFrom, selectLineTo, selectFrom, selectTo);
+			fontProgram.pageDeleteChars(page, selectLineFrom, selectLineTo, selectFrom, selectTo, isVisible);
+			cursorLine = selectLineFrom;
+			cursor = selectFrom;
+			removeSelection();
+			updateTextOnly();
 		}
 		else if (cursorLine < page.length || cursor < pageLine.length) {
 			fontProgram.pageDeleteChar(page, pageLine, cursorLine, cursor, isVisible);
-			if (cursor == pageLine.length && pageLine.length == 0) pageLine = page.getPageLine(cursorLine); // after deleting an empty pageline
+			//if (cursor == pageLine.length && pageLine.length == 0) pageLine = page.getPageLine(cursorLine); // after deleting an empty pageline
+			if (cursor == 0 && pageLine.length == 0) pageLine = page.getPageLine(cursorLine); // after deleting an empty pageline
 			updateTextOnly();
 		}
 	}
@@ -994,8 +1002,13 @@ implements peote.layout.ILayoutElement
 	{
 		if (page == null) return;
 		if (hasSelection()) {
-			//fontProgram.pageDeleteChars(page, select_from, select_to, isVisible);
-			//updateTextOnly();
+// TODO
+			//trace("select from/to:", selectLineFrom, selectLineTo, selectFrom, selectTo);
+			fontProgram.pageDeleteChars(page, selectLineFrom, selectLineTo, selectFrom, selectTo, isVisible);
+			cursorLine = selectLineFrom;
+			cursor = selectFrom;
+			removeSelection();
+			updateTextOnly();
 		}
 		else {
 			if (cursor == 0) {
@@ -1005,6 +1018,10 @@ implements peote.layout.ILayoutElement
 					cursorWant = -1;
 					fontProgram.pageRemoveLinefeed(page, pageLine, cursorLine, isVisible);
 					if (pageLine.length == 0) pageLine = page.getPageLine(cursorLine); // after deleting an empty pageline
+					// check BUG here if out of selection
+					//trace("KKKselect from/to:",cursorLine, selectLineFrom, selectLineTo);
+					if (cursorLine < selectLineFrom) selectLineFrom--;
+					if (cursorLine < selectLineTo) selectLineTo--;
 					updateTextOnly();
 				}
 			}
@@ -1012,7 +1029,8 @@ implements peote.layout.ILayoutElement
 				cursor--;
 				cursorWant = -1;
 				fontProgram.pageDeleteChar(page, pageLine, cursorLine, cursor, isVisible);
-				if (cursor == pageLine.length && pageLine.length == 0) pageLine = page.getPageLine(cursorLine); // after deleting an empty pageline
+				// TODO: need here ?
+				//if (cursor == pageLine.length && pageLine.length == 0) pageLine = page.getPageLine(cursorLine); // after deleting an empty pageline
 				updateTextOnly();
 			}
 		}
