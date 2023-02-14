@@ -936,10 +936,14 @@ implements peote.layout.ILayoutElement
 		//var oldCursor = cursor;
 		
 		if (hasSelection()) {
-			//fontProgram.pageDeleteChars(line, selectFrom, selectTo, isVisible);
 			//oldCursor = selectFrom;
 			//oldLine = selectLineFrom;
-			//removeSelection();
+// TODO
+			//trace("select from/to:", selectLineFrom, selectLineTo, selectFrom, selectTo);
+			fontProgram.pageDeleteChars(page, selectLineFrom, selectLineTo, selectFrom, selectTo, isVisible);
+			cursorLine = selectLineFrom;
+			cursor = selectFrom;
+			removeSelection();
 		}
 			
 // TODO:
@@ -969,8 +973,11 @@ implements peote.layout.ILayoutElement
 	{
 		if (autoWidth && autoHeight) updatePageLayout(false, true, false, true, false, false); // change bg, mask, selection and cursor and only line-size
 		else {
-			if (hAlign == peote.ui.util.HAlign.LEFT && vAlign == peote.ui.util.VAlign.TOP && isVisible) fontProgram.pageUpdate(page);
-			else updatePageLayout(false, false, false, false, !autoWidth, !autoHeight); // change only line-offset
+			if ( !autoWidth  && !autoHeight &&
+				hAlign == peote.ui.util.HAlign.LEFT && vAlign == peote.ui.util.VAlign.TOP && isVisible) fontProgram.pageUpdate(page);
+			                                      //pos  //size
+			//else updatePageLayout(false, false, false, false, !autoWidth, !autoHeight); // change only line-offset
+			else updatePageLayout(false, (autoWidth || autoHeight), false, (autoWidth || autoHeight), !autoWidth, !autoHeight); // change only line-offset
 		}
 	}
 	

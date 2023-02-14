@@ -135,7 +135,7 @@ class TestTextPage extends Application
 			cursorStyle:cursorSimpleStyle
 		}
 
-		var textPage = new UITextPage<FontStylePacked>(240, 5, "Hello World\nTesting UITextPage\nabcdefg", fontPacked, fontStylePacked, textStyle);
+		var textPage = new UITextPage<FontStylePacked>(240, 5, "Hello World\nTesting UITextPage\nabdefg\n123456789", fontPacked, fontStylePacked, textStyle);
 		textPage.onPointerOver = (_, _)-> trace("textPage onPointerOver");
 		textPage.onPointerOut  = (_, _)-> trace("textPage onPointerOut");
 		textPage.onPointerClick  = (t, e:PointerEvent)-> {
@@ -176,7 +176,7 @@ class TestTextPage extends Application
 		// ----------------------------------------------------------
 		// -------------------- MIDDLE BUTTONS ROW ------------------
 		// ----------------------------------------------------------
-		buttonX = 240; buttonY = 72;
+		buttonX = 240; buttonY = 122;
 		button(
 			"add/remove", ()-> if (!textPage.isVisible) uiDisplay.add(textPage) else uiDisplay.remove(textPage),
 		    "show",       ()-> textPage.show(), "hide",       ()-> textPage.hide()
@@ -253,7 +253,7 @@ class TestTextPage extends Application
 		button(
 			"w+=5",      ()-> { textPage.autoWidth = false; textPage.width += 5; textPage.maskWidth += 5; textPage.updateLayout(); },
 			"w-=5",      ()-> { textPage.autoWidth = false; textPage.width -= 5; textPage.maskWidth -= 5; textPage.updateLayout(); },
-			"autoWidth", ()-> { textPage.autoWidth = true; textPage.updateLayout(); }
+			"autoWidth", ()-> { textPage.autoWidth = true; textPage.xOffset = 0; textPage.updateLayout(); }
 		);
 		button(
 			"left"  , ()-> { textPage.hAlign = HAlign.LEFT;   textPage.updateLayout(); },
@@ -274,7 +274,7 @@ class TestTextPage extends Application
 		button(
 			"h+=5",       ()-> { textPage.autoHeight = false; textPage.height += 5; textPage.maskHeight += 5; textPage.updateLayout(); },
 			"h-=5",       ()-> { textPage.autoHeight = false; textPage.height -= 5; textPage.maskHeight -= 5; textPage.updateLayout(); },
-			"autoHeight", ()-> { textPage.autoHeight = true; textPage.updateLayout(); }
+			"autoHeight", ()-> { textPage.autoHeight = true;  textPage.yOffset = 0; textPage.updateLayout(); }
 		);
 		button(
 			"top"  ,   ()-> { textPage.vAlign = VAlign.TOP;   textPage.updateLayout(); },
@@ -293,12 +293,12 @@ class TestTextPage extends Application
 		// -------- text offset ------------
 		buttonY += 12;
 		button(
-			"xOffset+=5", ()-> { textPage.xOffset += 5; textPage.updateLayout(); },
-			"xOffset-=5", ()-> { textPage.xOffset -= 5; textPage.updateLayout(); }
+			"xOffset+=5", ()-> { textPage.autoWidth = false; textPage.xOffset += 5; textPage.updateLayout(); },
+			"xOffset-=5", ()-> { textPage.autoWidth = false; textPage.xOffset -= 5; textPage.updateLayout(); }
 		);		
 		button(
-			"yOffset+=5", ()-> { textPage.yOffset += 5; textPage.updateLayout(); },
-			"yOffset-=5", ()-> { textPage.yOffset -= 5; textPage.updateLayout(); }
+			"yOffset+=5", ()-> { textPage.autoHeight = false; textPage.yOffset += 5; textPage.updateLayout(); },
+			"yOffset-=5", ()-> { textPage.autoHeight = false; textPage.yOffset -= 5; textPage.updateLayout(); }
 		);
 		
 		// -------- layout masking ------------

@@ -116,11 +116,12 @@ class LargeText extends Application
 				);
 				// set events
 				textPage.onPointerDown = function(t:UITextPage<MyFontStyle>, e:PointerEvent) {
-					t.setInputFocus(e, true);			
-					//t.startSelection(e);
+					//t.setInputFocus(e, true);			
+					t.setInputFocus(e);			
+					t.startSelection(e);
 				}
 				textPage.onPointerUp = function(t:UITextPage<MyFontStyle>, e:PointerEvent) {
-					//t.stopSelection(e);
+					t.stopSelection(e);
 				}
 				uiDisplay.add(textPage);
 				
