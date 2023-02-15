@@ -484,7 +484,8 @@ implements peote.layout.ILayoutElement
 		else if (lineUpdateSize) 
 			fontProgram.lineSetSize(line, _width, (lineUpdateOffset) ? getAlignedXOffset(xOffset) : null, isVisible);
 		else
-			fontProgram.lineSetOffset(line, (lineUpdateOffset) ? getAlignedXOffset(xOffset) : null, isVisible);
+			//fontProgram.lineSetOffset(line, (lineUpdateOffset) ? getAlignedXOffset(xOffset) : null, isVisible);
+			fontProgram.lineSetOffset(line, getAlignedXOffset(xOffset), isVisible);
 		
 		if (isVisible) {
 			// TODO: optimize setting z-index in depend of styletyp and better allways adding fontprograms at end of uiDisplay (onAddVisibleToDisplay)
@@ -553,7 +554,7 @@ implements peote.layout.ILayoutElement
 				default: macro {}
 			}}		
 */			
-			line = fontProgram.createLine(text, x, y, (autoWidth) ? null : width, xOffset, fontStyle);			
+			line = fontProgram.createLine(text, x, y, (autoWidth) ? null : width, xOffset, fontStyle);
 			text = null; // let GC clear the string (can be get back by fontProgram)
 			if (autoSize > 0) { // auto aligning width and height to textsize
 				if (autoWidth) width = Std.int(line.textSize) + leftSpace + rightSpace;

@@ -411,11 +411,12 @@ implements peote.layout.ILayoutElement
 		var _selectFrom = selectFrom;
 		var _selectTo = selectTo;
 		
-		//trace("KKKKKKKKKKKK",from, to); // TODO: bug here after deleting line and out of selection
+		if (from >= page.length) trace("bug into _setCreateSelection", from, "out of max page-line"); // TODO: bug here after deleting line and out of selection
 		if ( selectFrom == page.getPageLine(from).length ) {
 			_selectFrom = 0; from++;
 		}
 		if ( _selectTo == 0 && to > from + 1) {
+			if (to-1 >= page.length) trace("bug into _setCreateSelection", to, "out of max page-line"); // TODO: bug here after deleting line and out of selection
 			to--; 
 			_selectTo = page.getPageLine(to-1).length;
 		}
