@@ -725,7 +725,7 @@ implements peote.layout.ILayoutElement
 	var xOffsetAtSelectStart:Float = 0;
 		
 	function onSelectStart(e:peote.ui.event.PointerEvent):Void {
-		trace("selectStart", xOffset);
+		//trace("selectStart", xOffset);
 		removeSelection();
 		selectStartFrom = cursor = getCharAtPosition(e.x);
 		xOffsetAtSelectStart = xOffset;
@@ -733,7 +733,7 @@ implements peote.layout.ILayoutElement
 	}
 	
 	function onSelectStop(e:peote.ui.event.PointerEvent = null):Void {
-		trace("selectStop", (e != null) ? e.x : "", xOffset);
+		//trace("selectStop", (e != null) ? e.x : "", xOffset);
 	}
 	
 	function onSelect(e:peote.ui.event.PointerEvent):Void {
@@ -856,10 +856,10 @@ implements peote.layout.ILayoutElement
 	
 	public function cutToClipboard() {
 		if (line != null && hasSelection()) {
-			lime.system.Clipboard.text = fontProgram.lineCutChars(line, selectFrom, selectTo);
+			lime.system.Clipboard.text = fontProgram.lineCutChars(line, selectFrom, selectTo, isVisible);
 			cursor = selectFrom;
 			removeSelection();
-			updateTextOnly();			
+			updateTextOnly();
 		}
 	}
 	

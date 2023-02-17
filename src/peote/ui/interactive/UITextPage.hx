@@ -661,7 +661,7 @@ implements peote.layout.ILayoutElement
 	
 	override inline function onAddVisibleToDisplay()
 	{
-		trace("onAddVisibleToDisplay()", autoWidth, autoHeight);		
+		//trace("onAddVisibleToDisplay()", autoWidth, autoHeight);		
 		if (page != null) {
 			#if (!peoteui_no_textmasking && !peoteui_no_masking)
 			fontProgram.addMask(maskElement);
@@ -990,11 +990,10 @@ implements peote.layout.ILayoutElement
 	{
 		if (page == null) return;
 		if (hasSelection()) {
-// TODO
-			//trace("select from/to:", selectLineFrom, selectLineTo, selectFrom, selectTo);
 			fontProgram.pageDeleteChars(page, selectLineFrom, selectLineTo, selectFrom, selectTo, isVisible);
 			cursorLine = selectLineFrom;
 			cursor = selectFrom;
+			cursorWant = -1;
 			removeSelection();
 			updateTextOnly();
 		}
@@ -1010,11 +1009,10 @@ implements peote.layout.ILayoutElement
 	{
 		if (page == null) return;
 		if (hasSelection()) {
-// TODO
-			//trace("select from/to:", selectLineFrom, selectLineTo, selectFrom, selectTo);
 			fontProgram.pageDeleteChars(page, selectLineFrom, selectLineTo, selectFrom, selectTo, isVisible);
 			cursorLine = selectLineFrom;
 			cursor = selectFrom;
+			cursorWant = -1;
 			removeSelection();
 			updateTextOnly();
 		}
@@ -1051,8 +1049,15 @@ implements peote.layout.ILayoutElement
 	
 	public inline function enter()
 	{
+		if (page == null) return;
 		if (hasSelection()) {
-			//deleteChars(select_from, select_to); 
+			fontProgram.pageDeleteChars(page, selectLineFrom, selectLineTo, selectFrom, selectTo, isVisible);
+			cursorLine = selectLineFrom;
+			fontProgram.pageAddLinefeedAt(page, selectLineFrom, selectFrom, isVisible);
+			cursorLine = selectLineFrom+1;
+			cursor = 0;
+			cursorWant = -1;
+			removeSelection();
 		}
 		else {
 			fontProgram.pageAddLinefeedAt(page, pageLine, cursorLine, cursor, isVisible);
@@ -1064,8 +1069,20 @@ implements peote.layout.ILayoutElement
 	}
 	
 	public function copyToClipboard() {
-		trace("copyToClipboard");
-		// TODO: Selection
+		if (page != null && hasSelection()) {
+			lime.system.Clipboard.text = fontProgram.pageGetChars(page, selectLineFrom, selectLineTo, selectFrom, selectTo);
+		}
+	}
+	
+	public function cutToClipboard() {
+		if (page != null && hasSelection()) {
+			lime.system.Clipboard.text = fontProgram.pageCutChars(page, selectLineFrom, selectLineTo, selectFrom, selectTo, isVisible);
+			cursorLine = selectLineFrom;
+			cursor = selectFrom;
+			cursorWant = -1;
+			removeSelection();
+			updateTextOnly();
+		}
 	}
 	
 	public function pasteFromClipboard() {

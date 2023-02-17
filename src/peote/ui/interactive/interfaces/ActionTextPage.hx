@@ -7,6 +7,7 @@ interface ActionTextPage
 	public function tabulator():Void;
 	
 	public function copyToClipboard():Void;
+	public function cutToClipboard():Void;
 	public function pasteFromClipboard():Void;
 	
 	public function cursorLeft():Void;

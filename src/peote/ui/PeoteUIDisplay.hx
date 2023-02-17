@@ -84,7 +84,7 @@ implements peote.layout.ILayoutElement
 		
 	public function new(x:Int, y:Int, width:Int, height:Int, color:Color=0x00000000, maxTouchpoints:Int = 3, availableStyles:Array<StyleID> = null, autoAddStyles:Null<Bool> = null)
 	{
-		number = getFreeNumber();  trace('MAX_DISPLAYs: $MAX_DISPLAYS', 'UIDisplay NUMBER is $number');
+		number = getFreeNumber(); // trace('MAX_DISPLAYs: $MAX_DISPLAYS', 'UIDisplay NUMBER is $number');
 		
 		super(x, y, width, height, color);
 		
@@ -991,7 +991,7 @@ implements peote.layout.ILayoutElement
 	}
 
 	public inline function windowLeave():Void {
-		trace("----------windowLeave-----------");
+		//trace("----------windowLeave-----------");
 		
 		var lastElem:Interactive;
 		// mouse
@@ -1118,17 +1118,18 @@ implements peote.layout.ILayoutElement
 	
 	inline function setInputFocus(t:InputFocus, e:PointerEvent=null) {
 		if (inputFocusElement != t) {
-			trace("setInputFocus");
 
 			inputFocusUIDisplay = this;
 			
 			if (inputFocusElement != null) inputFocusElement.removeInputFocus();
+			
+			//trace("setInputFocus");
 			inputFocusElement = t;
 		}
 	}
 	
 	inline function removeInputFocus(t:InputFocus) {
-		trace("removeInputFocus");
+		//trace("removeInputFocus");
 		inputFocusElement = null;
 	}
 	

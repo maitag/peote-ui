@@ -18,6 +18,7 @@ class InputTextPage
 		{ action: "tabulator"  , keyboard: KeyCode.TAB },
 		
 		{ action: "copyToClipboard"   , keyboard: [ KeyCode.COPY,  [KeyCode.LEFT_CTRL, KeyCode.C], [KeyCode.RIGHT_CTRL, KeyCode.C] ] },
+		{ action: "cutToClipboard"    , keyboard: [ KeyCode.CUT,   [KeyCode.LEFT_CTRL, KeyCode.X], [KeyCode.RIGHT_CTRL, KeyCode.X] ] },
 		{ action: "pasteFromClipboard", keyboard: [ KeyCode.PASTE, [KeyCode.LEFT_CTRL, KeyCode.V], [KeyCode.RIGHT_CTRL, KeyCode.V] ] },
 		
 		{ action: "cursorLeft" , keyboard: KeyCode.LEFT  },
@@ -42,6 +43,7 @@ class InputTextPage
 		"tabulator"   => { action:tabulator  , repeatKeyboardDefault:true },
 		
 		"copyToClipboard"      => { action:copyToClipboard   , repeatKeyboardDefault:true },
+		"cutToClipboard"       => { action:cutToClipboard  },
 		"pasteFromClipboard"   => { action:pasteFromClipboard, repeatKeyboardDefault:true },
 		
 		"cursorLeft"  => { action:cursorLeft , repeatKeyboardDefault:true },
@@ -67,6 +69,7 @@ class InputTextPage
 	static inline function tabulator  (_,_) focusElement.tabulator();
 	
 	static inline function copyToClipboard   (_,_) focusElement.copyToClipboard();
+	static inline function cutToClipboard    (_,_) focusElement.cutToClipboard();
 	static inline function pasteFromClipboard(_,_) focusElement.pasteFromClipboard();
 	
 	static inline function cursorLeft (_,_) focusElement.cursorLeft();
