@@ -248,7 +248,7 @@ implements peote.layout.ILayoutElement
 	
 	var cursorWant = -1; // remember cursor if there is smaller lines by going up/down
 	public var cursorLine(default,set):Int = 0;
-	inline function set_cursorLine(pos:Int):Int {		
+	inline function set_cursorLine(pos:Int):Int {
 		if (pos != cursorLine) {
 			if (pos < 0) cursorLine = 0;
 			else if (page != null && pos >= page.length) cursorLine = page.length - 1;
@@ -1091,19 +1091,23 @@ implements peote.layout.ILayoutElement
 		#end		
 	}
 
-	inline function _updateCursorSelection(newCursorLine:Int, newCursor:Int, addSelection:Bool = false) {
+	inline function _updateCursorSelection(newCursorLine:Null<Int>, newCursor:Null<Int>, addSelection:Bool) {
+		var oldCursorLine = cursorLine;
+		var oldCursor = cursor;
+		
+		if (newCursorLine != null) cursorLine = newCursorLine;
+		if (newCursor != null)     cursor = newCursor;
+		
 		if (addSelection) {
 			if (hasSelection()) {
-				if (cursorLine == selectLineFrom && cursor == selectFrom) select(newCursor, selectTo, newCursorLine, selectLineTo - 1 );
-				else select(selectFrom, newCursor, selectLineFrom, newCursorLine);
+				if (oldCursorLine == selectLineFrom && oldCursor == selectFrom) select(cursor, selectTo, cursorLine, selectLineTo - 1 );
+				else select(selectFrom, cursor, selectLineFrom, cursorLine);
 			}
 			else {
-				if (newCursorLine < cursorLine) select(newCursor, cursor, newCursorLine, cursorLine );
-				else select( cursor, newCursor, cursorLine, newCursorLine );
+				if (cursorLine < oldCursorLine) select(cursor, oldCursor, cursorLine, oldCursorLine );
+				else select( oldCursor, cursor, oldCursorLine, cursorLine );
 			}
 		}
-		cursorLine = newCursorLine;
-		cursor = newCursor;
 	}
 	
 	public inline function cursorLeft(addSelection:Bool = false)
@@ -1112,7 +1116,7 @@ implements peote.layout.ILayoutElement
 		else if (cursor == 0) {
 			if (cursorLine > 0) _updateCursorSelection(cursorLine-1, page.getPageLine(cursorLine-1).length, addSelection);
 		}
-		else _updateCursorSelection(cursorLine, cursor - 1, addSelection);
+		else _updateCursorSelection(null, cursor - 1, addSelection);
 		cursorWant = -1;
 	}
 
@@ -1122,7 +1126,7 @@ implements peote.layout.ILayoutElement
 		else if (cursor == pageLine.length) {
 			if (cursorLine < page.length-1) _updateCursorSelection(cursorLine + 1, 0, addSelection);
 		}
-		else _updateCursorSelection(cursorLine, cursor + 1, addSelection);
+		else _updateCursorSelection(null, cursor + 1, addSelection);
 		cursorWant = -1;
 	}
 
@@ -1131,7 +1135,7 @@ implements peote.layout.ILayoutElement
 		if (cursor == 0) {
 			if (cursorLine > 0) _updateCursorSelection(cursorLine-1, page.getPageLine(cursorLine-1).length, addSelection);
 		}
-		else _updateCursorSelection(cursorLine, fontProgram.pageLineWordLeft(pageLine, cursor), addSelection);
+		else _updateCursorSelection(null, fontProgram.pageLineWordLeft(pageLine, cursor), addSelection);
 		cursorWant = -1;
 	}
 	
@@ -1140,20 +1144,20 @@ implements peote.layout.ILayoutElement
 		if (cursor == pageLine.length) {
 			if (cursorLine < page.length-1) _updateCursorSelection(cursorLine + 1, 0, addSelection);
 		}
-		else _updateCursorSelection(cursorLine, fontProgram.pageLineWordRight(pageLine, cursor), addSelection);
+		else _updateCursorSelection(null, fontProgram.pageLineWordRight(pageLine, cursor), addSelection);
 		cursorWant = -1;
 	}
 	
 	public inline function cursorUp(addSelection:Bool = false)
 	{
 		if (!addSelection && hasSelection()) removeSelection();
-		_updateCursorSelection(cursorLine - 1, cursor, addSelection);
+		_updateCursorSelection(cursorLine - 1, null, addSelection);
 	}
 
 	public inline function cursorDown(addSelection:Bool = false)
 	{
 		if (!addSelection && hasSelection()) removeSelection();
-		_updateCursorSelection(cursorLine + 1, cursor, addSelection);
+		_updateCursorSelection(cursorLine + 1, null, addSelection);
 	}
 	
 	
