@@ -1091,33 +1091,68 @@ implements peote.layout.ILayoutElement
 		#end		
 	}
 
-	public inline function cursorLeft()
+/*	inline function _updateSelection() {
+		if (page != null && selectionStyle != null) {	
+			setCreateSelectionMasked( (isVisible && selectionIsVisible), (selectionElementArray == null) );
+		}
+	}
+*/	
+	// TODO: better check if new cursor and cursorLine is INSIDE selection now -> then shrink it!
+	inline function _updateCursorSelection(newCursorLine:Int, newCursor:Int, addSelection:Bool = false) {
+		if (addSelection) {
+			if (hasSelection()) {
+				//trace("cursor", cursor, cursorLine, "select", selectFrom, selectTo, selectLineFrom, selectLineTo );
+				if (cursorLine == selectLineFrom && cursor == selectFrom) {
+					//if (newCursorLine < selectLineFrom || newCursor < selectFrom) {trace("A");
+						select(newCursor, selectTo, newCursorLine, selectLineTo - 1 );
+					//}
+					//else {trace("B");
+						////select(selectFrom, newCursor, selectLineFrom, newCursorLine);
+						//select(newCursor, selectTo, newCursorLine, selectLineTo - 1);
+					//}
+				} 
+				else //if (cursorLine == selectLineTo && cursor == selectTo)
+				{
+					//if (newCursorLine > selectLineTo || newCursor > selectTo) {trace("C");
+						select(selectFrom, newCursor, selectLineFrom, newCursorLine);
+					//}
+					//else {trace("D");
+						//select(selectFrom, newCursor, selectLineFrom, newCursorLine );
+					//}
+				}
+			//trace("after", selectFrom, selectTo, selectLineFrom, selectLineTo );	
+			}
+			else {
+				if (newCursorLine < cursorLine) select(newCursor, cursor, newCursorLine, cursorLine );
+				else select( cursor, newCursor, cursorLine, newCursorLine );
+			}
+		}
+		
+		cursorLine = newCursorLine;
+		cursor = newCursor;
+	}
+	
+	public inline function cursorLeft(addSelection:Bool = false)
 	{
-		if (hasSelection()) { cursor = selectFrom; removeSelection(); }
+		if (hasSelection() && !addSelection) { cursorLine = selectLineFrom; cursor = selectFrom; removeSelection(); }
 		else if (cursor == 0) {
-			if (cursorLine > 0) {
-				cursorLine--;
-				cursor = pageLine.length;
-			}
+			if (cursorLine > 0) _updateCursorSelection(cursorLine-1, page.getPageLine(cursorLine-1).length, addSelection);
 		}
-		else cursor--;
+		else _updateCursorSelection(cursorLine, cursor - 1, addSelection);
 		cursorWant = -1;
 	}
 
-	public inline function cursorRight()
+	public inline function cursorRight(addSelection:Bool = false)
 	{
-		if (hasSelection()) { cursor = selectTo; removeSelection(); }
+		if (hasSelection() && !addSelection) {cursorLine = selectLineTo-1; cursor = selectTo; removeSelection(); }
 		else if (cursor == pageLine.length) {
-			if (cursorLine < page.length-1) {
-				cursorLine++;
-				cursor = 0;
-			}
+			if (cursorLine < page.length-1) _updateCursorSelection(cursorLine + 1, 0, addSelection);
 		}
-		else cursor++;
+		else _updateCursorSelection(cursorLine, cursor + 1, addSelection);
 		cursorWant = -1;
 	}
 
-	public inline function cursorLeftWord() {
+	public inline function cursorLeftWord(addSelection:Bool = false) {
 		if (hasSelection()) removeSelection();
 		if (cursor == 0) {
 			if (cursorLine > 0) {
@@ -1129,7 +1164,7 @@ implements peote.layout.ILayoutElement
 		cursorWant = -1;
 	}
 	
-	public inline function cursorRightWord() {
+	public inline function cursorRightWord(addSelection:Bool = false) {
 		if (hasSelection()) removeSelection();
 		if (cursor == pageLine.length) {
 			if (cursorLine < page.length-1) {
@@ -1141,16 +1176,18 @@ implements peote.layout.ILayoutElement
 		cursorWant = -1;
 	}
 	
-	public inline function cursorUp()
+	public inline function cursorUp(addSelection:Bool = false)
 	{
-		if (hasSelection()) removeSelection();
-		cursorLine--;
+		if (hasSelection() && !addSelection) removeSelection();
+		//cursorLine--;
+		_updateCursorSelection(cursorLine - 1, cursor, addSelection);
 	}
 
-	public inline function cursorDown()
+	public inline function cursorDown(addSelection:Bool = false)
 	{
-		if (hasSelection()) removeSelection();
-		cursorLine++;
+		if (hasSelection() && !addSelection) removeSelection();
+		//cursorLine++;
+		_updateCursorSelection(cursorLine + 1, cursor, addSelection);
 	}
 	
 	
