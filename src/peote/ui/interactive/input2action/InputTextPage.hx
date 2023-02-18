@@ -25,18 +25,12 @@ class InputTextPage
 		
 		{ action: "cursorLeft" , keyboard: KeyCode.LEFT , single:true },
 		{ action: "cursorRight", keyboard: KeyCode.RIGHT, single:true },		
-		{ action: "cursorLeftWord" , keyboard: [ [KeyCode.LEFT_CTRL, KeyCode.LEFT ], [KeyCode.RIGHT_CTRL, KeyCode.LEFT ] ], single:true},
-		{ action: "cursorRightWord", keyboard: [ [KeyCode.LEFT_CTRL, KeyCode.RIGHT], [KeyCode.RIGHT_CTRL, KeyCode.RIGHT] ], single:true},
+		{ action: "cursorLeftWord" , keyboard: [ [KeyCode.LEFT_CTRL, KeyCode.LEFT ], [KeyCode.RIGHT_CTRL, KeyCode.LEFT ] ]},
+		{ action: "cursorRightWord", keyboard: [ [KeyCode.LEFT_CTRL, KeyCode.RIGHT], [KeyCode.RIGHT_CTRL, KeyCode.RIGHT] ]},
 		
-		//{ action: "selectLeft" , keyboard: [ [KeyCode.LEFT_SHIFT, KeyCode.LEFT ], [KeyCode.RIGHT_SHIFT, KeyCode.LEFT ] ] },
-		//{ action: "selectRight", keyboard: [ [KeyCode.LEFT_SHIFT, KeyCode.RIGHT ], [KeyCode.RIGHT_SHIFT, KeyCode.RIGHT ] ] },
-		
-		{ action: "cursorUp"   , keyboard: KeyCode.UP  , single:true },
-		{ action: "cursorDown" , keyboard: KeyCode.DOWN, single:true },
-		
-		//{ action: "selectUp"   , keyboard: [ [KeyCode.LEFT_SHIFT, KeyCode.UP   ], [KeyCode.RIGHT_SHIFT, KeyCode.UP   ] ] },
-		//{ action: "selectDown" , keyboard: [ [KeyCode.LEFT_SHIFT, KeyCode.DOWN ], [KeyCode.RIGHT_SHIFT, KeyCode.DOWN ] ] },
-		
+		{ action: "cursorUp"   , keyboard: KeyCode.UP  },
+		{ action: "cursorDown" , keyboard: KeyCode.DOWN},
+				
 		{ action: "enter"      , keyboard: [KeyCode.RETURN, KeyCode.RETURN2, KeyCode.NUMPAD_ENTER] },
 		
 		// TODO
@@ -63,14 +57,8 @@ class InputTextPage
 		"cursorLeftWord"  => { action:cursorLeftWord , repeatKeyboardDefault:true },
 		"cursorRightWord" => { action:cursorRightWord, repeatKeyboardDefault:true },		
 		
-		//"selectLeft"      => { action:selectLeft     , repeatKeyboardDefault:true },
-		//"selectRight"     => { action:selectRight    , repeatKeyboardDefault:true },
-
 		"cursorUp"    => { action:cursorUp   , repeatKeyboardDefault:true },
 		"cursorDown"  => { action:cursorDown , repeatKeyboardDefault:true },
-		
-		//"selectUp"    => { action:selectUp   , repeatKeyboardDefault:true },
-		//"selectDown"  => { action:selectDown , repeatKeyboardDefault:true },
 		
 		"enter"       => { action:enter      , repeatKeyboardDefault:true },
 	];
@@ -98,18 +86,12 @@ class InputTextPage
 	
 	static inline function cursorLeft     (_,_) focusElement.cursorLeft(addSelection);
 	static inline function cursorRight    (_,_) focusElement.cursorRight(addSelection);
-	static inline function cursorLeftWord (_,_) focusElement.cursorLeftWord();
-	static inline function cursorRightWord(_,_) focusElement.cursorRightWord();	
+	static inline function cursorLeftWord (_,_) focusElement.cursorLeftWord(addSelection);
+	static inline function cursorRightWord(_,_) focusElement.cursorRightWord(addSelection);	
 	
-	//static inline function selectLeft (_,_) focusElement.cursorLeft(true);
-	//static inline function selectRight(_,_) focusElement.cursorRight(true);
-
-	static inline function cursorUp   (_,_) focusElement.cursorUp();
-	static inline function cursorDown (_,_) focusElement.cursorDown();
+	static inline function cursorUp   (_,_) focusElement.cursorUp(addSelection);
+	static inline function cursorDown (_,_) focusElement.cursorDown(addSelection);
 	
-	//static inline function selectUp  (_,_) focusElement.cursorUp(true);
-	//static inline function selectDown(_,_) focusElement.cursorDown(true);
-
 	static inline function enter(_,_) focusElement.enter();
 
 	
