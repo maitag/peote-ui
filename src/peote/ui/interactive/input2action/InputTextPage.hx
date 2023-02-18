@@ -21,8 +21,12 @@ class InputTextPage
 		{ action: "cutToClipboard"    , keyboard: [ KeyCode.CUT,   [KeyCode.LEFT_CTRL, KeyCode.X], [KeyCode.RIGHT_CTRL, KeyCode.X] ] },
 		{ action: "pasteFromClipboard", keyboard: [ KeyCode.PASTE, [KeyCode.LEFT_CTRL, KeyCode.V], [KeyCode.RIGHT_CTRL, KeyCode.V] ] },
 		
-		{ action: "cursorLeft" , keyboard: KeyCode.LEFT  },
-		{ action: "cursorRight", keyboard: KeyCode.RIGHT },
+		{ action: "cursorLeft" , keyboard: KeyCode.LEFT , single:true },
+		{ action: "cursorRight", keyboard: KeyCode.RIGHT, single:true },		
+		{ action: "cursorLeftWord" , keyboard: [ [KeyCode.LEFT_CTRL, KeyCode.LEFT ], [KeyCode.RIGHT_CTRL, KeyCode.LEFT ] ]},
+		{ action: "cursorRightWord", keyboard: [ [KeyCode.LEFT_CTRL, KeyCode.RIGHT], [KeyCode.RIGHT_CTRL, KeyCode.RIGHT] ]},
+		
+		
 		{ action: "cursorUp"   , keyboard: KeyCode.UP    },
 		{ action: "cursorDown" , keyboard: KeyCode.DOWN  },
 		
@@ -32,7 +36,6 @@ class InputTextPage
 		//KeyCode.HOME
 		//KeyCode.END
 		// SELECT ALL
-		// CUT
 		// UNDO
 		// REDO
 	];
@@ -46,8 +49,11 @@ class InputTextPage
 		"cutToClipboard"       => { action:cutToClipboard  },
 		"pasteFromClipboard"   => { action:pasteFromClipboard, repeatKeyboardDefault:true },
 		
-		"cursorLeft"  => { action:cursorLeft , repeatKeyboardDefault:true },
-		"cursorRight" => { action:cursorRight, repeatKeyboardDefault:true },
+		"cursorLeft"      => { action:cursorLeft     , repeatKeyboardDefault:true },
+		"cursorRight"     => { action:cursorRight    , repeatKeyboardDefault:true },
+		"cursorLeftWord"  => { action:cursorLeftWord , repeatKeyboardDefault:true },
+		"cursorRightWord" => { action:cursorRightWord, repeatKeyboardDefault:true },		
+		
 		"cursorUp"    => { action:cursorUp   , repeatKeyboardDefault:true },
 		"cursorDown"  => { action:cursorDown , repeatKeyboardDefault:true },
 		
@@ -72,8 +78,11 @@ class InputTextPage
 	static inline function cutToClipboard    (_,_) focusElement.cutToClipboard();
 	static inline function pasteFromClipboard(_,_) focusElement.pasteFromClipboard();
 	
-	static inline function cursorLeft (_,_) focusElement.cursorLeft();
-	static inline function cursorRight(_,_) focusElement.cursorRight();
+	static inline function cursorLeft     (_,_) focusElement.cursorLeft();
+	static inline function cursorRight    (_,_) focusElement.cursorRight();
+	static inline function cursorLeftWord (_,_) focusElement.cursorLeftWord();
+	static inline function cursorRightWord(_,_) focusElement.cursorRightWord();	
+	
 	static inline function cursorUp   (_,_) focusElement.cursorUp();
 	static inline function cursorDown (_,_) focusElement.cursorDown();
 	

@@ -21,14 +21,15 @@ class InputTextLine
 		{ action: "cutToClipboard"    , keyboard: [ KeyCode.CUT,   [KeyCode.LEFT_CTRL, KeyCode.X], [KeyCode.RIGHT_CTRL, KeyCode.X] ] },
 		{ action: "pasteFromClipboard", keyboard: [ KeyCode.PASTE, [KeyCode.LEFT_CTRL, KeyCode.V], [KeyCode.RIGHT_CTRL, KeyCode.V] ] },
 		
-		{ action: "cursorLeft" , keyboard: KeyCode.LEFT  },
-		{ action: "cursorRight", keyboard: KeyCode.RIGHT },
+		{ action: "cursorLeft" , keyboard: KeyCode.LEFT , single:true },
+		{ action: "cursorRight", keyboard: KeyCode.RIGHT, single:true },
+		{ action: "cursorLeftWord" , keyboard: [ [KeyCode.LEFT_CTRL, KeyCode.LEFT ], [KeyCode.RIGHT_CTRL, KeyCode.LEFT ] ]},
+		{ action: "cursorRightWord", keyboard: [ [KeyCode.LEFT_CTRL, KeyCode.RIGHT], [KeyCode.RIGHT_CTRL, KeyCode.RIGHT] ]},
 		
 		// TODO
 		//KeyCode.HOME
 		//KeyCode.END
 		// SELECT ALL
-		// CUT
 		// UNDO
 		// REDO
 	];
@@ -44,6 +45,8 @@ class InputTextLine
 		
 		"cursorLeft"  => { action:cursorLeft , repeatKeyboardDefault:true },
 		"cursorRight" => { action:cursorRight, repeatKeyboardDefault:true },
+		"cursorLeftWord"  => { action:cursorLeftWord , repeatKeyboardDefault:true },
+		"cursorRightWord" => { action:cursorRightWord, repeatKeyboardDefault:true },
 	];
 	
 	
@@ -66,6 +69,8 @@ class InputTextLine
 	
 	static inline function cursorLeft (_,_) focusElement.cursorLeft();
 	static inline function cursorRight(_,_) focusElement.cursorRight();
+	static inline function cursorLeftWord (_,_) focusElement.cursorLeftWord();
+	static inline function cursorRightWord(_,_) focusElement.cursorRightWord();	
 
 	
 }

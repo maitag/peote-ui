@@ -1117,6 +1117,30 @@ implements peote.layout.ILayoutElement
 		cursorWant = -1;
 	}
 
+	public inline function cursorLeftWord() {
+		if (hasSelection()) removeSelection();
+		if (cursor == 0) {
+			if (cursorLine > 0) {
+				cursorLine--;
+				cursor = pageLine.length;
+			}
+		}
+		else cursor = fontProgram.pageLineWordLeft(pageLine, cursor);
+		cursorWant = -1;
+	}
+	
+	public inline function cursorRightWord() {
+		if (hasSelection()) removeSelection();
+		if (cursor == pageLine.length) {
+			if (cursorLine < page.length-1) {
+				cursorLine++;
+				cursor = 0;
+			}
+		}
+		else cursor = fontProgram.pageLineWordRight(pageLine, cursor);
+		cursorWant = -1;
+	}
+	
 	public inline function cursorUp()
 	{
 		if (hasSelection()) removeSelection();

@@ -12,4 +12,6 @@ interface ActionTextLine
 
 	public function cursorLeft():Void;
 	public function cursorRight():Void;
+	public function cursorLeftWord():Void;
+	public function cursorRightWord():Void;
 }

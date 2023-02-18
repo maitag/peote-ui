@@ -881,6 +881,17 @@ implements peote.layout.ILayoutElement
 		else cursor++;
 	}
 
+	public inline function cursorLeftWord() {
+		if (hasSelection()) removeSelection();
+		cursor = fontProgram.lineWordLeft(line, cursor);
+	}
+	
+	public inline function cursorRightWord()
+	{
+		if (hasSelection()) removeSelection();
+		cursor = fontProgram.lineWordRight(line, cursor);
+	}
+
 	
 	// ----------------------- delegated methods from FontProgram -----------------------
 
