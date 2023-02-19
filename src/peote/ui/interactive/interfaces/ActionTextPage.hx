@@ -10,6 +10,13 @@ interface ActionTextPage
 	public function cutToClipboard():Void;
 	public function pasteFromClipboard():Void;
 	
+	public function selectAll():Void;
+	
+	public function cursorPageStart(addSelection:Bool = false):Void;
+	public function cursorPageEnd(addSelection:Bool = false):Void;
+	public function cursorStart(addSelection:Bool = false):Void;
+	public function cursorEnd(addSelection:Bool = false):Void;
+	
 	public function cursorLeft(addSelection:Bool = false):Void;
 	public function cursorRight(addSelection:Bool = false):Void;
 	public function cursorLeftWord(addSelection:Bool = false):Void;

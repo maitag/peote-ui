@@ -1110,6 +1110,41 @@ implements peote.layout.ILayoutElement
 		}
 	}
 	
+	public function selectAll() {
+		select(0, page.getPageLine(page.length - 1).length, 0, page.length - 1);
+		cursorLine = 0;
+		cursor = 0;
+		cursorWant = -1;
+	}
+
+	public inline function cursorPageStart(addSelection:Bool = false)
+	{
+		if (!addSelection && hasSelection()) removeSelection();
+		_updateCursorSelection(0, 0, addSelection);
+		cursorWant = -1;
+	}
+	
+	public inline function cursorPageEnd(addSelection:Bool = false)
+	{
+		if (!addSelection && hasSelection()) removeSelection();
+		_updateCursorSelection(page.length-1, page.getPageLine(page.length-1).length, addSelection);
+		cursorWant = -1;
+	}
+	
+	public inline function cursorStart(addSelection:Bool = false)
+	{
+		if (!addSelection && hasSelection()) removeSelection();
+		_updateCursorSelection(null, 0, addSelection);
+		cursorWant = -1;
+	}
+	
+	public inline function cursorEnd(addSelection:Bool = false)
+	{
+		if (!addSelection && hasSelection()) removeSelection();
+		_updateCursorSelection(null, pageLine.length, addSelection);
+		cursorWant = -1;
+	}
+	
 	public inline function cursorLeft(addSelection:Bool = false)
 	{
 		if (!addSelection && hasSelection()) { cursorLine = selectLineFrom; cursor = selectFrom; removeSelection(); }
