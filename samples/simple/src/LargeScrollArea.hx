@@ -136,22 +136,12 @@ class LargeScrollArea extends Application
 		
 		// fill in sliders
 		
-		for (i in 0...2500) {
-			var sliderInside = new UISlider(0, 30+30*i, 200, 30, sliderInsideStyle);
-			setSliderEvents(sliderInside);
-			area.add(sliderInside);
-			
-			sliderInside = new UISlider(200, 30+30*i, 200, 30, sliderInsideStyle);
-			setSliderEvents(sliderInside);
-			area.add(sliderInside);
-			
-			sliderInside = new UISlider(400, 30+30*i, 200, 30, sliderInsideStyle);
-			setSliderEvents(sliderInside);
-			area.add(sliderInside);
-			
-			sliderInside = new UISlider(600, 30+30*i, 200, 30, sliderInsideStyle);
-			setSliderEvents(sliderInside);
-			area.add(sliderInside);
+		for (i in 0...1000) {
+			for (j in 0...10) {
+				var sliderInside = new UISlider(200*j, 30+30*i, 200, 30, sliderInsideStyle);
+				setSliderEvents(sliderInside);
+				area.add(sliderInside);
+			}
 		}
 	
 
@@ -167,7 +157,7 @@ class LargeScrollArea extends Application
 		hSlider.onChange = function(uiSlider:UISlider, percent:Float) {
 			//area.x = 60 + Std.int(250 * percent); area.update();
 			//uiElement.x =  Std.int(700 * percent-100); area.updateLayout();
-			area.xOffset =  -Std.int(300 * percent); area.update();
+			area.xOffset =  -Std.int(1500 * percent); area.update();
 		}
 		
 		
@@ -180,7 +170,7 @@ class LargeScrollArea extends Application
 			//uiElement.xLocal =  Std.int(500 * percent); uiElement.updateLayout();
 			//textLine.yLocal =  Std.int(500 * percent); textLine.updateLayout();
 			//sliderInside.xLocal =  Std.int(500 * percent); sliderInside.updateLayout();
-			area.yOffset = - Std.int(74600 * percent ) ; area.updateLayout();
+			area.yOffset = - Std.int(29600 * percent ); area.updateLayout();
 		}
 		
 		

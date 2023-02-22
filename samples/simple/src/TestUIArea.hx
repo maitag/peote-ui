@@ -121,14 +121,18 @@ class TestUIArea extends Application
 		// ---- creating an Area ------------
 		// -----------------------------------
 		
-		var area = new UIArea(0, 0, 500, 500, roundBorderStyle );
+		var area = new UIArea(50, 50, 500, 500, roundBorderStyle );
 		peoteUiDisplay.add(area);
+		
 		var textLine = new UITextLine<FontStyleTiled>(0, 0, {width:500, hAlign:HAlign.CENTER}, 1, "=== UIArea ===", font, fontStyle, roundBorderStyle.copy(Color.GREY3));
-		area.add(textLine);		
+		area.add(textLine);
+		
 		var hSlider = new UISlider(0, 480, 480, 20, sliderStyle);
 		area.add(hSlider);
+		
 		var vSlider = new UISlider(480, 20, 20, 460, sliderStyle);
 		area.add(vSlider);
+		
 		var content = new UIArea(3, 20, 477, 460, boxStyle);
 		area.add(content);
 		
@@ -147,20 +151,21 @@ class TestUIArea extends Application
 		resizerBottomRight.onPointerDown = (_, e:PointerEvent)-> resizerBottomRight.startDragging(e);
 		resizerBottomRight.onPointerUp = (_, e:PointerEvent)-> resizerBottomRight.stopDragging(e);
 		resizerBottomRight.onDrag = (_, x:Float, y:Float) -> {
-			area.width = resizerBottomRight.x + resizerBottomRight.width - area.x;
-			area.height = resizerBottomRight.y + resizerBottomRight.height - area.y;
-			area.updateLayout();
+			area.width = resizerBottomRight.right - area.x;
+			area.height = resizerBottomRight.bottom - area.y;
+			
 			textLine.width = area.width;
-			textLine.updateLayout();
+			
 			content.width = area.width - 23;
 			content.height = area.height - 40;
-			content.updateLayout();
+			
 			hSlider.width = area.width - 20;
 			hSlider.y = area.y + area.height - hSlider.height;
-			hSlider.updateLayout();
+			
 			vSlider.height = content.height;
 			vSlider.x = area.x + area.width - vSlider.width;
-			vSlider.updateLayout();
+			
+			area.updateLayout();
 		};
 		resizerBottomRight.onPointerOver = (_,_)-> window.cursor = MouseCursor.RESIZE_NWSE;
 		resizerBottomRight.onPointerOut  = (_,_)-> window.cursor = MouseCursor.DEFAULT;

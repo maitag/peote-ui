@@ -73,6 +73,8 @@ class Sliders extends Application
 		vSlider.onChange = function(uiSlider:UISlider, percent:Float) {
 			trace( 'vSlider at: ${percent*100}%' );
 			hSlider.value = percent;
+			//hSlider.x = 100 + Std.int(percent * 500);
+			//hSlider.updateLayout();
 		}
 		
 		

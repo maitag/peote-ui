@@ -42,9 +42,19 @@ implements peote.layout.ILayoutElement
 		if (dragger.isDragging) return;
 		
 		if (value < 0.0) value = 0.0 else if (value > 1.0) value = 1.0;
+		
+		#if (peoteui_no_parentmasking)
+ 		if (isVertical) dragger.yLocal = y + Std.int( (height - dragger.height) * value );
+		else dragger.xLocal = x + Std.int( (width - dragger.width) * value );
+ 		if (isVertical) dragger.yLocal = y + Std.int( (height - dragger.height) * value );
+		else dragger.xLocal = x + Std.int( (width - dragger.width) * value );
+		#else
+		if (isVertical) dragger.yLocal = Std.int( (height - dragger.height) * value );
+		else dragger.xLocal = Std.int( (width - dragger.width) * value );
  		if (isVertical) dragger.yLocal = Std.int( (height - dragger.height) * value );
 		else dragger.xLocal = Std.int( (width - dragger.width) * value );
-		
+		#end
+				
 		dragger.updateLayout();
 		
 		if (isVisible && triggerMouseMove) uiDisplay.triggerMouse(this);
@@ -82,8 +92,12 @@ implements peote.layout.ILayoutElement
 		this.sliderStyle = sliderStyle;
 		
 		if (sliderStyle.backgroundStyle != null) {
+			#if (peoteui_no_parentmasking)
+			background = new UIElement(xPosition, yPosition, width, height, zIndex+1, sliderStyle.backgroundStyle);
+			#else
 			background = new UIElement(0, 0, width, height, zIndex, sliderStyle.backgroundStyle);
 			background.parent = this; // updates positions by setting parent
+			#end
 		}
 		
 		var draggerWidth:Int; 
@@ -99,8 +113,12 @@ implements peote.layout.ILayoutElement
 		}
 		
 		if (sliderStyle.draggerStyle != null) {
+			#if (peoteui_no_parentmasking)
+			dragger = new UIElement(xPosition, yPosition, draggerWidth, draggerHeight, zIndex+2, sliderStyle.draggerStyle);
+			#else
 			dragger = new UIElement(0, 0, draggerWidth, draggerHeight, zIndex+1, sliderStyle.draggerStyle);
 			dragger.parent = this; // updates positions by setting parent
+			#end
 		}
 		
 		// set the drag-area to same size as the slider
@@ -112,7 +130,9 @@ implements peote.layout.ILayoutElement
 		// start/stop dragging
 		dragger.onPointerDown = function(uiElement:UIElement, e:PointerEvent) {
 			if (onDraggerPointerDown != null) onDraggerPointerDown(this, e);
+			#if (!peoteui_no_masking)
 			dragger.masked = false; // <-- dragg allways the fully dragger (unmask it before)
+			#end
 			dragger.startDragging(e); // <----- start dragging
 		}
 		

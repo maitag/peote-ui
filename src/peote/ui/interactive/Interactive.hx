@@ -2,12 +2,19 @@ package peote.ui.interactive;
 
 import peote.view.Element;
 
+#if (!peoteui_no_align)
+import peote.ui.util.Align;
+import peote.ui.util.HAlign;
+import peote.ui.util.VAlign;
+#end
+
 import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
 
 import peote.ui.PeoteUIDisplay;
 
 import peote.ui.interactive.interfaces.ParentElement;
+
 
 class Pickable implements Element
 {
@@ -128,34 +135,32 @@ implements peote.layout.ILayoutElement
 	}
 */	
 	
-	public var xLocal(get, set):Int;
-	public var yLocal(get, set):Int;
-
-	#if (peoteui_no_parent)
+	public inline function setParentPosOffset(p:ParentElement) {
+		x += p.x + p.xOffset;
+		y += p.y + p.yOffset;
+		z += p.z + 1;
+	}
 	
-	public static inline var parent:Interactive = null;
+	public inline function removeParentPosOffset(p:ParentElement) {
+		x -= p.x + p.xOffset;
+		y -= p.y + p.yOffset;
+		z -= p.z + 1;
+	}
 	
-	inline function get_xLocal():Int return x;
-	inline function set_xLocal(_xLocal:Int):Int return x = _xLocal;
-	inline function get_yLocal():Int return y;
-	inline function set_yLocal(_yLocal:Int):Int return y = _yLocal;
+	#if (peoteui_no_parentmasking)	
+	
+	static inline var parent:ParentElement = null;
 	
 	#else
 	
-	public var parent(default, set):ParentElement = null;
+	var parent(default, set):ParentElement = null;	
 	inline function set_parent(p:ParentElement):ParentElement {
 		if (p == null) {
-			if (parent != null) {
-				x -= parent.x + parent.xOffset;
-				y -= parent.y + parent.yOffset;
-				z -= parent.z + 1;
-			}
+			if (parent != null) removeParentPosOffset(parent);
 			parent = null;
 		}
 		else if (parent == null) {
-			x += p.x + p.xOffset;
-			y += p.y + p.yOffset;
-			z += p.z + 1;
+			setParentPosOffset(p);
 			parent = p;
 		}
 		else if (parent != p) {
@@ -165,19 +170,31 @@ implements peote.layout.ILayoutElement
 			parent = p;
 		}
 		return p;
-	}
+	}	
+	#end
 	
+	public var xAlign(default, default):HAlign = HAlign.LEFT;
+	public var yAlign(default, default):VAlign = VAlign.TOP;
+
+
+	public var xLocal(get, set):Int;
 	inline function get_xLocal():Int return if (parent == null) x else x - parent.x - parent.xOffset;
 	inline function set_xLocal(_xLocal:Int):Int return if (parent == null) x = _xLocal else x = parent.x + parent.xOffset + _xLocal;
+
+	public var yLocal(get, set):Int;
 	inline function get_yLocal():Int return if (parent == null) y else y - parent.y - parent.yOffset;
 	inline function set_yLocal(_yLocal:Int):Int return if (parent == null) y = _yLocal else y = parent.y + parent.yOffset + _yLocal;
-	#end
+
 		
 	public var x:Int;
 	public var y:Int;
 	public var width:Int;
 	public var height:Int;
 	public var z:Int;
+	
+	// TODO:
+	public var left:Int;
+	public var top:Int;
 	
 	public var right(get, set):Int;
 	inline function get_right():Int return x + width;
@@ -186,6 +203,14 @@ implements peote.layout.ILayoutElement
 	public var bottom(get, set):Int;
 	inline function get_bottom():Int return y + height;
 	inline function set_bottom(v:Int):Int { y = v - height; return v; }
+	
+	// TODO: all here will also changing the size to keep the opposite sideposition
+	public var leftResize:Int;
+	public var topResize:Int;
+	public var rightResize:Int;
+	public var bottomResize:Int;
+	
+	
 	
 	#if (!peoteui_no_masking)
 	public var masked:Bool = false;
@@ -260,7 +285,7 @@ implements peote.layout.ILayoutElement
 	
 	public function updateLayout():Void
 	{
-		#if (!peoteui_no_parent)
+		#if (!peoteui_no_parentmasking)
 		if (parent != null && !isDragging) maskByElement(cast parent);
 		#end
 		updateVisibleLayout(); // hook to childclass
@@ -269,7 +294,7 @@ implements peote.layout.ILayoutElement
 	
 	public function update():Void
 	{
-		#if (!peoteui_no_parent)
+		#if (!peoteui_no_parentmasking)
 		if (parent != null && !isDragging) maskByElement(cast parent);
 		#end
 		updateVisible(); // hook to childclass
