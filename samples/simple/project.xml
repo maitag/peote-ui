@@ -7,7 +7,7 @@
 	<!-- <meta build-number="714" /> --> <!-- let set the buildnumber manual (android) -->
 	<!-- check this for GG-Playstore: <setenv name="ANDROID_GRADLE_TASK" value=":app:bundleRelease" /> -->
 	
-	<app main="TestTextPage" path="bin" file="Main" />
+	<app main="TestStyles" path="bin" file="Main" />
 	<!--
 		SimpleElements,
 		SimpleText,
@@ -21,6 +21,7 @@
 		TestStyles,
 		TestTextPage,
 		TestUIArea,
+		TextEditArea,
 		...
 	-->
 	
@@ -55,6 +56,9 @@
 	<!-- to disable masking of InteractiveTextlines for more performance -->
 	<!--<haxedef name="peoteui_no_textmasking" />-->
 	
+	<!-- to disable parenting of ui-elements (if not used) for more performance -->
+	<!--<haxedef name="peoteui_no_parentmasking" />-->
+	
 	<haxedef name="peoteui_debug_macro" />
 	<haxedef name="peotetext_debug_macro" />
 	
@@ -82,6 +86,7 @@
 	<!-- <haxedef name="source-map-content" /> --> <!-- to debug with chrome id needs also "-debug" -->
 	<haxeflag name="-dce" value="full" />
 	<!-- <haxedef name="dump=pretty output" /> -->
+	<haxedef name="keep_inline_positions" />
 	
 	<!-- <haxedef name="HXCPP_CHECK_POINTER"/> -->
 	<!-- <haxedef name="HXCPP_M32" if="cpp" /> --> <!-- on windows 64 is default -->
@@ -89,6 +94,8 @@
 	<!-- <haxedef name="HXCPP_MSVC_VER=120" if="cpp" /> -->
 	<!-- <haxedef name="HXCPP_MSVC_VER=140" if="cpp" /> -->
 	
+	<!-- <haxedef name="js-es" value="6" /> -->
+		
 	<!-- <setenv name="SHOW_CONSOLE" /> --> <!-- on windows it shows console if start by clicking on .exe -->
 	
 	<!-- for html5 and loading inside onPreloadComplete-event the assets need to be embed=true --> 

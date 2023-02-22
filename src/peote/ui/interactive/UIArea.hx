@@ -39,14 +39,11 @@ implements peote.layout.ILayoutElement
 		uiElement.upDownEventsBubbleTo = this;
 		uiElement.wheelEventsBubbleTo = this;
 		
-		#if (peoteui_no_parentmasking)
 		uiElement.setParentPosOffset(this);
-		#else
-		uiElement.parent = this; // updates positions by setting parent
-		#end
 		
 		if (isVisible) {
 			uiDisplay.add(uiElement);
+			uiElement.maskByElement(this);
 			uiElement.updateLayout(); // need if the child is a parent itself
 		}
 	}
@@ -55,11 +52,7 @@ implements peote.layout.ILayoutElement
 	{
 		if (isVisible) uiDisplay.remove(uiElement);
 		uiElements.remove(uiElement);
-		#if (peoteui_no_parentmasking)
 		uiElement.removeParentPosOffset(this);
-		#else
-		uiElement.parent = null;
-		#end
 	}
 	
 	
@@ -75,8 +68,9 @@ implements peote.layout.ILayoutElement
 		last_y = y + yOffset;
 		
 		for (uiElement in uiElements) {
-			uiElement.xLocal += deltaX;
-			uiElement.yLocal += deltaY;
+			uiElement.x += deltaX;
+			uiElement.y += deltaY;
+			uiElement.maskByElement(this);
 			uiElement.updateLayout();
 		}
 	}
@@ -92,7 +86,7 @@ implements peote.layout.ILayoutElement
 	{
 		for (uiElement in uiElements) {
 			uiDisplay.add(uiElement);
-			uiElement.updateLayout(); // need if the child is a parent itself
+			//uiElement.updateLayout(); // need if the child is a parent itself
 		}
 	}
 	

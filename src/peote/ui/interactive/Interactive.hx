@@ -147,32 +147,7 @@ implements peote.layout.ILayoutElement
 		z -= p.z + 1;
 	}
 	
-	#if (peoteui_no_parentmasking)	
-	
-	static inline var parent:ParentElement = null;
-	
-	#else
-	
-	var parent(default, set):ParentElement = null;	
-	inline function set_parent(p:ParentElement):ParentElement {
-		if (p == null) {
-			if (parent != null) removeParentPosOffset(parent);
-			parent = null;
-		}
-		else if (parent == null) {
-			setParentPosOffset(p);
-			parent = p;
-		}
-		else if (parent != p) {
-			x -= parent.x + parent.xOffset - p.x - p.xOffset;
-			y -= parent.y + parent.yOffset - p.y - p.yOffset;
-			z -= parent.z - p.z;
-			parent = p;
-		}
-		return p;
-	}	
-	#end
-	
+/*	
 	public var xAlign(default, default):HAlign = HAlign.LEFT;
 	public var yAlign(default, default):VAlign = VAlign.TOP;
 
@@ -184,7 +159,7 @@ implements peote.layout.ILayoutElement
 	public var yLocal(get, set):Int;
 	inline function get_yLocal():Int return if (parent == null) y else y - parent.y - parent.yOffset;
 	inline function set_yLocal(_yLocal:Int):Int return if (parent == null) y = _yLocal else y = parent.y + parent.yOffset + _yLocal;
-
+*/
 		
 	public var x:Int;
 	public var y:Int;
@@ -193,8 +168,8 @@ implements peote.layout.ILayoutElement
 	public var z:Int;
 	
 	// TODO:
-	public var left:Int;
-	public var top:Int;
+	//public var left:Int;
+	//public var top:Int;
 	
 	public var right(get, set):Int;
 	inline function get_right():Int return x + width;
@@ -205,10 +180,10 @@ implements peote.layout.ILayoutElement
 	inline function set_bottom(v:Int):Int { y = v - height; return v; }
 	
 	// TODO: all here will also changing the size to keep the opposite sideposition
-	public var leftResize:Int;
-	public var topResize:Int;
-	public var rightResize:Int;
-	public var bottomResize:Int;
+	//public var leftResize:Int;
+	//public var topResize:Int;
+	//public var rightResize:Int;
+	//public var bottomResize:Int;
 	
 	
 	
@@ -285,18 +260,12 @@ implements peote.layout.ILayoutElement
 	
 	public function updateLayout():Void
 	{
-		#if (!peoteui_no_parentmasking)
-		if (parent != null && !isDragging) maskByElement(cast parent);
-		#end
 		updateVisibleLayout(); // hook to childclass
 		updatePickable();
 	}
 	
 	public function update():Void
 	{
-		#if (!peoteui_no_parentmasking)
-		if (parent != null && !isDragging) maskByElement(cast parent);
-		#end
 		updateVisible(); // hook to childclass
 		updatePickable();
 	}
@@ -633,7 +602,14 @@ implements peote.layout.ILayoutElement
 	
 	// -----------------------------------------------------------------
 	
-	inline function maskByElement(uiElement:Interactive)
+	public inline function maskByElement(uiElement:Interactive, maskOnDrag:Bool = false)
+	{
+		#if (!peoteui_no_parentmasking)
+		if (maskOnDrag || !isDragging) _maskByElement(uiElement);
+		#end
+	}
+	
+	inline function _maskByElement(uiElement:Interactive)
 	{
 		#if (!peoteui_no_masking)
 		masked = if (uiElement.masked) 

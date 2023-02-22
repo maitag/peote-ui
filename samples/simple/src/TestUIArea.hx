@@ -24,29 +24,19 @@ import peote.view.Buffer;
 import peote.view.Element;
 
 class Elem implements Element {
-    @posX
-    @anim("Position", "pingpong")
-    public var x:Int;
-    
-    @posY
-    public var y:Int;
+	@posX @anim("Position", "pingpong") public var x:Int;
+	@posY public var y:Int;
+	@sizeX public var w = 50;
+	@sizeY public var h:Int = 50;
+	@color public var color:Color = 0xffffffff;
 
-    @sizeX
-    public var w = 50;
-
-    @sizeY
-    public var h:Int = 50;
-
-    @color
-    public var color:Color = 0xffffffff;
-
-    public function new(x:Int, y:Int, color:Color, timeStart:Float, timeDuration:Float = 3.0) {
-        this.x = x;
-        this.y = y;
-        this.color = color;
-        animPosition(x, x + 150);
-        timePosition(timeStart, timeDuration);
-    }
+	public function new(x:Int, y:Int, color:Color, timeStart:Float, timeDuration:Float = 3.0) {
+		this.x = x;
+		this.y = y;
+		this.color = color;
+		animPosition(x, x + 150);
+		timePosition(timeStart, timeDuration);
+	}
 	
 	// -------------------
 	
@@ -58,8 +48,7 @@ class Elem implements Element {
 		program = new peote.view.Program(buffer);
 		display.addProgram(program);
 		for (i in 0...4) buffer.addElement(new Elem(0, 50 * i, Color.random(), i));
-	}
-	
+	}	
 }
 
 class TestUIArea extends Application
@@ -88,18 +77,29 @@ class TestUIArea extends Application
 		peoteView.start();
 
 		// ---- setting up some styles -----
-		
-		var boxStyle  = new BoxStyle(0x041144ff);
 
-		var roundBorderStyle:RoundBorderStyle = {
+		var boxStyle  = new BoxStyle(0x041144ff);
+		
+		var roundBorderStyle = RoundBorderStyle.createById(0, {
 			color: Color.GREY2,
 			borderColor: Color.GREY4,
 			borderSize: 3.0,
 			borderRadius: 20.0
+		});		
+		
+		var cursorStyle = BoxStyle.createById(1, Color.RED);
+		var selectionStyle = BoxStyle.createById(2, Color.GREY3);
+		
+		var fontStyleHeader = FontStyleTiled.createById(0);
+		var fontStyleInput = FontStyleTiled.createById(1);
+		
+		
+		var textStyleInput:TextStyle = {
+			backgroundStyle:boxStyle.copy(Color.GREY5),
+			selectionStyle: selectionStyle,
+			cursorStyle: cursorStyle
 		}
 		
-		var fontStyle = new FontStyleTiled();
-
 		var sliderStyle:SliderStyle = {
 			backgroundStyle: roundBorderStyle.copy(),
 			draggerStyle: roundBorderStyle.copy(Color.YELLOW),
@@ -109,7 +109,9 @@ class TestUIArea extends Application
 		// --- creating PeoteUIDisplay with some styles in Order ---
 		// ---------------------------------------------------------
 		
-		peoteUiDisplay = new PeoteUIDisplay(10, 10, window.width-20, window.height-20, Color.GREY1, [roundBorderStyle, boxStyle, fontStyle]);
+		peoteUiDisplay = new PeoteUIDisplay(10, 10, window.width - 20, window.height - 20, Color.GREY1,
+			[roundBorderStyle, boxStyle, selectionStyle, fontStyleInput, fontStyleHeader, cursorStyle]
+		);
 		peoteView.addDisplay(peoteUiDisplay);
 		//peoteUiDisplay.zoom = 0.75;
 		//peoteUiDisplay.xOffset = 30;
@@ -117,59 +119,12 @@ class TestUIArea extends Application
 		//peoteView.xOffset = 20;
 
 		
-		// -----------------------------------
-		// ---- creating an Area ------------
-		// -----------------------------------
+		// -----------------------------------------------------------
+		// ---- creating an Area, header and Content-Area ------------
+		// -----------------------------------------------------------
 		
 		var area = new UIArea(50, 50, 500, 500, roundBorderStyle );
 		peoteUiDisplay.add(area);
-		
-		var textLine = new UITextLine<FontStyleTiled>(0, 0, {width:500, hAlign:HAlign.CENTER}, 1, "=== UIArea ===", font, fontStyle, roundBorderStyle.copy(Color.GREY3));
-		area.add(textLine);
-		
-		var hSlider = new UISlider(0, 480, 480, 20, sliderStyle);
-		area.add(hSlider);
-		
-		var vSlider = new UISlider(480, 20, 20, 460, sliderStyle);
-		area.add(vSlider);
-		
-		var content = new UIArea(3, 20, 477, 460, boxStyle);
-		area.add(content);
-		
-		// ---- uiElement button to change the size ----		
-		var resizerBottomRight:UIElement = new UIElement(area.x + area.width - 20, area.x + area.height - 20, 20, 20, 2, roundBorderStyle);	
-		peoteUiDisplay.add(resizerBottomRight);
-		var resizerBottomRightSetDragArea = () -> {
-			resizerBottomRight.setDragArea(
-				Std.int(area.x + 240),
-				Std.int(area.y + 140),
-				Std.int((peoteUiDisplay.width  - peoteUiDisplay.xOffset) / peoteUiDisplay.xz  - area.x - 240),
-				Std.int((peoteUiDisplay.height - peoteUiDisplay.yOffset) / peoteUiDisplay.yz  - area.y - 140)
-			);
-		};
-		resizerBottomRightSetDragArea();
-		resizerBottomRight.onPointerDown = (_, e:PointerEvent)-> resizerBottomRight.startDragging(e);
-		resizerBottomRight.onPointerUp = (_, e:PointerEvent)-> resizerBottomRight.stopDragging(e);
-		resizerBottomRight.onDrag = (_, x:Float, y:Float) -> {
-			area.width = resizerBottomRight.right - area.x;
-			area.height = resizerBottomRight.bottom - area.y;
-			
-			textLine.width = area.width;
-			
-			content.width = area.width - 23;
-			content.height = area.height - 40;
-			
-			hSlider.width = area.width - 20;
-			hSlider.y = area.y + area.height - hSlider.height;
-			
-			vSlider.height = content.height;
-			vSlider.x = area.x + area.width - vSlider.width;
-			
-			area.updateLayout();
-		};
-		resizerBottomRight.onPointerOver = (_,_)-> window.cursor = MouseCursor.RESIZE_NWSE;
-		resizerBottomRight.onPointerOut  = (_,_)-> window.cursor = MouseCursor.DEFAULT;
-		
 		// to let the area drag
 		area.setDragArea(
 			Std.int(-peoteUiDisplay.xOffset / peoteUiDisplay.xz),
@@ -177,47 +132,120 @@ class TestUIArea extends Application
 			Std.int(peoteUiDisplay.width    / peoteUiDisplay.xz),
 			Std.int(peoteUiDisplay.height   / peoteUiDisplay.yz)
 		);
-		// update the resizers if area is dragging
-		area.onDrag = (_, x:Float, y:Float) -> {
-			resizerBottomRight.x = area.x + area.width - resizerBottomRight.width;
-			resizerBottomRight.y = area.y + area.height - resizerBottomRight.height;
-			resizerBottomRight.updateLayout();
-		};
 		
 		// ---- header textline what starts dragging ----		
-		textLine.onPointerDown = (_, e:PointerEvent)-> area.startDragging(e);
-		textLine.onPointerUp = (_, e:PointerEvent)-> {
-			area.stopDragging(e);
-			resizerBottomRightSetDragArea();
+		var header = new UITextLine<FontStyleTiled>(0, 0, {width:500, hAlign:HAlign.CENTER}, 1, "=== UIArea ===", font, fontStyleHeader, roundBorderStyle);
+		area.add(header);				
+		header.onPointerDown = (_, e:PointerEvent)-> area.startDragging(e);
+		header.onPointerUp = (_, e:PointerEvent)-> area.stopDragging(e);
+		
+		// inner UIArea for scrolling content
+		var content = new UIArea(3, 20, 477, 460, boxStyle);
+		area.add(content);
+		
+		// ---------------------------------------------------------
+		// ---- Sliders to scroll the innerArea ----		
+		// ---------------------------------------------------------
+		
+		var hSlider = new UISlider(0, 480, 480, 20, sliderStyle);
+		area.add(hSlider);
+		
+		hSlider.onMouseWheel = (_, e:WheelEvent) -> hSlider.setDelta( ((e.deltaY > 0) ? 1 : -1 )* 0.05 );
+		hSlider.onChange = (_, percent:Float) -> {
+			content.xOffset =  -Std.int(420 * percent);
+			content.updateLayout();
 		}
+		
+		var vSlider = new UISlider(480, 20, 20, 460, sliderStyle);
+		area.add(vSlider);
+		
+		vSlider.onMouseWheel = (_, e:WheelEvent) -> vSlider.setDelta( ((e.deltaY > 0) ? 1 : -1 )* 0.05 );
+		vSlider.onChange = (_, percent:Float) -> {
+			content.yOffset = - Std.int(420 * percent );
+			content.updateLayout();
+		}
+		
+		
+		// ---------------------------------------------
+		// -------- button to change the size ----------		
+		// ---------------------------------------------
+		
+		var resizerBottomRight:UIElement = new UIElement(area.width - 20, area.height - 20, 20, 20, 2, roundBorderStyle);	
+		area.add(resizerBottomRight);
+		
+		resizerBottomRight.onPointerDown = (_, e:PointerEvent)-> {
+			resizerBottomRight.setDragArea(
+				Std.int(area.x + 240),
+				Std.int(area.y + 140),
+				Std.int((peoteUiDisplay.width  - peoteUiDisplay.xOffset) / peoteUiDisplay.xz  - area.x - 240),
+				Std.int((peoteUiDisplay.height - peoteUiDisplay.yOffset) / peoteUiDisplay.yz  - area.y - 140)
+			);
+			resizerBottomRight.startDragging(e);
+		}
+		resizerBottomRight.onPointerUp = (_, e:PointerEvent)-> resizerBottomRight.stopDragging(e);
+		
+		resizerBottomRight.onDrag = (_, x:Float, y:Float) -> {
+			area.width = resizerBottomRight.right - area.x;
+			area.height = resizerBottomRight.bottom - area.y;
+			
+			header.width = area.width;
+			
+			content.width = area.width - 23;
+			content.height = area.height - 40;
+			
+			hSlider.width = area.width - 20;
+			hSlider.bottom = area.bottom;
+			
+			vSlider.height = content.height;
+			vSlider.right = area.right;
+			
+			area.updateLayout();
+		};
+		resizerBottomRight.onPointerOver = (_,_)-> window.cursor = MouseCursor.RESIZE_NWSE;
+		resizerBottomRight.onPointerOut  = (_,_)-> window.cursor = MouseCursor.DEFAULT;
+		
 		
 		
 		// ---------------------------------------------------------
 		// -----  inner UIArea for some scrollable content ---------
 		// ---------------------------------------------------------
 		
-
 		// put things into content:
-		var uiDisplay = new UIDisplay(20, 20, 200, 200, Color.BLUE);
+		var uiDisplay = new UIDisplay(20, 20, 200, 200, 1, Color.BLUE);
 		uiDisplay.onPointerOver = (_,_)-> uiDisplay.display.color = Color.RED;
 		uiDisplay.onPointerOut  = (_,_)-> uiDisplay.display.color = Color.BLUE;
+		uiDisplay.onPointerDown = (_, e:PointerEvent)-> {
+			uiDisplay.setDragArea(Std.int(content.x), Std.int(content.y), Std.int(content.width), Std.int(content.height));
+			uiDisplay.startDragging(e);
+		}
+		uiDisplay.onPointerUp = (_, e:PointerEvent)-> uiDisplay.stopDragging(e);
+		uiDisplay.onDrag = (_, x:Float, y:Float) -> uiDisplay.maskByElement(content, true);
 		content.add(uiDisplay);
 		Elem.playIntoDisplay(uiDisplay.display);
 
 		
-		var uiElement = new UIElement(220, 20, 200, 200, roundBorderStyle);
+		var uiElement = new UIElement(220, 20, 200, 200, 0, roundBorderStyle);
+		uiElement.onPointerDown = (_, e:PointerEvent)-> {
+			uiElement.setDragArea(Std.int(content.x), Std.int(content.y), Std.int(content.width), Std.int(content.height));
+			uiElement.startDragging(e);
+		}
+		uiElement.onPointerUp = (_, e:PointerEvent)-> uiElement.stopDragging(e);
+		uiElement.onDrag = (_, x:Float, y:Float) -> uiElement.maskByElement(content, true);
 		content.add(uiElement);
 		
+
+		var inputPage = new UITextPage<FontStyleTiled>(300, 100, 1, "input\ntext by\nUIText\tPage", font, fontStyleInput, textStyleInput);
+		inputPage.onPointerDown = function(t:UITextPage<FontStyleTiled>, e:PointerEvent) {
+			//t.setInputFocus(e, true);			
+			t.setInputFocus(e);			
+			t.startSelection(e);
+		}
+		inputPage.onPointerUp = function(t:UITextPage<FontStyleTiled>, e:PointerEvent) {
+			t.stopSelection(e);
+		}		
+		content.add(inputPage);
 		
-		
-		// ---------------------------------------------------------
-		
-		// ---- Sliders to scroll the innerArea ----		
-		hSlider.onMouseWheel = (_, e:WheelEvent) -> hSlider.setDelta( ((e.deltaY > 0) ? 1 : -1 )* 0.05 );
-		hSlider.onChange = (_, percent:Float) -> {content.xOffset =  -Std.int(420 * percent); content.updateLayout(); }
-		
-		vSlider.onMouseWheel = (_, e:WheelEvent) -> vSlider.setDelta( ((e.deltaY > 0) ? 1 : -1 )* 0.05 );
-		vSlider.onChange = (_, percent:Float) -> {content.yOffset = - Std.int(420 * percent ); content.updateLayout();}
+
 		
 		
 		// ---------------------------------------------------------
@@ -225,9 +253,7 @@ class TestUIArea extends Application
 		// TODO: make uiElement to switch between
 		//uiDisplay.mouseEnabled = false;
 		//uiDisplay.touchEnabled = false;
-		
-		//peoteUiDisplay.zoom = 0.5;
-		
+				
 		#if android
 		uiDisplay.mouseEnabled = false;
 		peoteView.zoom = 3;
