@@ -54,6 +54,9 @@ class Sliders extends Application
 		var sliderStyle:SliderStyle = {
 			backgroundStyle: roundBorderStyle,
 			draggerStyle: roundBorderStyle.copy(Color.YELLOW),
+			//vertical:true,
+			draggerSize:50,
+			draggerLength:100,
 		};
 		
 		var hSlider = new UISlider(80, 10, 500, 60, sliderStyle);
@@ -127,7 +130,9 @@ class Sliders extends Application
 		}
 		
 		slider.onMouseWheel = function(uiSlider:UISlider, e:WheelEvent) {
-			uiSlider.value += e.deltaY * 0.1;
+			//uiSlider.value += e.deltaY * 0.1;
+			//uiSlider.setValue (uiSlider.value - e.deltaY * 0.05);
+			uiSlider.setWheelDelta(e.deltaY);
 		}
 		
 	}

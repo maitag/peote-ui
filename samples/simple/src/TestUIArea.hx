@@ -80,12 +80,7 @@ class TestUIArea extends Application
 
 		var boxStyle  = new BoxStyle(0x041144ff);
 		
-		var roundBorderStyle = RoundBorderStyle.createById(0, {
-			color: Color.GREY2,
-			borderColor: Color.GREY4,
-			borderSize: 3.0,
-			borderRadius: 20.0
-		});		
+		var roundBorderStyle = RoundBorderStyle.createById(0);		
 		
 		var cursorStyle = BoxStyle.createById(1, Color.RED);
 		var selectionStyle = BoxStyle.createById(2, Color.GREY3);
@@ -101,8 +96,10 @@ class TestUIArea extends Application
 		}
 		
 		var sliderStyle:SliderStyle = {
-			backgroundStyle: roundBorderStyle.copy(),
-			draggerStyle: roundBorderStyle.copy(Color.YELLOW),
+			backgroundStyle: roundBorderStyle.copy(Color.GREY2),
+			draggerStyle: roundBorderStyle.copy(Color.GREY4, Color.GREY3),
+			draggerSize:18,
+			draggerLength:30,
 		};
 		
 		// ---------------------------------------------------------
@@ -140,7 +137,7 @@ class TestUIArea extends Application
 		header.onPointerUp = (_, e:PointerEvent)-> area.stopDragging(e);
 		
 		// inner UIArea for scrolling content
-		var content = new UIArea(3, 20, 477, 460, boxStyle);
+		var content = new UIArea(2, 18, 478, 462, boxStyle);
 		area.add(content);
 		
 		// ---------------------------------------------------------
@@ -150,16 +147,16 @@ class TestUIArea extends Application
 		var hSlider = new UISlider(0, 480, 480, 20, sliderStyle);
 		area.add(hSlider);
 		
-		hSlider.onMouseWheel = (_, e:WheelEvent) -> hSlider.setDelta( ((e.deltaY > 0) ? 1 : -1 )* 0.05 );
+		hSlider.onMouseWheel = (_, e:WheelEvent) -> hSlider.setWheelDelta( e.deltaY );
 		hSlider.onChange = (_, percent:Float) -> {
 			content.xOffset =  -Std.int(420 * percent);
 			content.updateLayout();
 		}
 		
-		var vSlider = new UISlider(480, 20, 20, 460, sliderStyle);
+		var vSlider = new UISlider(480, 18, 20, 462, sliderStyle);
 		area.add(vSlider);
 		
-		vSlider.onMouseWheel = (_, e:WheelEvent) -> vSlider.setDelta( ((e.deltaY > 0) ? 1 : -1 )* 0.05 );
+		vSlider.onMouseWheel = (_, e:WheelEvent) -> vSlider.setWheelDelta( e.deltaY );
 		vSlider.onChange = (_, percent:Float) -> {
 			content.yOffset = - Std.int(420 * percent );
 			content.updateLayout();
@@ -170,7 +167,7 @@ class TestUIArea extends Application
 		// -------- button to change the size ----------		
 		// ---------------------------------------------
 		
-		var resizerBottomRight:UIElement = new UIElement(area.width - 20, area.height - 20, 20, 20, 2, roundBorderStyle);	
+		var resizerBottomRight:UIElement = new UIElement(area.width - 19, area.height - 19, 18, 18, 2, roundBorderStyle.copy(Color.GREY3, Color.GREY1));	
 		area.add(resizerBottomRight);
 		
 		resizerBottomRight.onPointerDown = (_, e:PointerEvent)-> {
@@ -185,13 +182,13 @@ class TestUIArea extends Application
 		resizerBottomRight.onPointerUp = (_, e:PointerEvent)-> resizerBottomRight.stopDragging(e);
 		
 		resizerBottomRight.onDrag = (_, x:Float, y:Float) -> {
-			area.width = resizerBottomRight.right - area.x;
-			area.height = resizerBottomRight.bottom - area.y;
+			area.width = resizerBottomRight.right + 1 - area.x;
+			area.height = resizerBottomRight.bottom + 1 - area.y;
 			
 			header.width = area.width;
 			
-			content.width = area.width - 23;
-			content.height = area.height - 40;
+			content.width = area.width - 22;
+			content.height = area.height - 38;
 			
 			hSlider.width = area.width - 20;
 			hSlider.bottom = area.bottom;

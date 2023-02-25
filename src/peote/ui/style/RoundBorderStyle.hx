@@ -14,10 +14,10 @@ import peote.ui.style.interfaces.StyleElement;
 class RoundBorderStyle implements Style
 {	
 	// style
-	public var color       :Color = Color.GREY2;
-	public var borderColor :Color = Color.GREY6;
-	public var borderSize  :Float =  2.0;
-	public var borderRadius:Float = 20.0;
+	public var color       :Color = Color.GREY3;
+	public var borderColor :Color = Color.GREY4;
+	public var borderSize  :Float = 1.0;
+	public var borderRadius:Float = 6.0;
 	
 	// -----------------------------------------	
 	//@:keep inline function createStyleProgram():RoundBorderStyleProgram return new RoundBorderStyleProgram();

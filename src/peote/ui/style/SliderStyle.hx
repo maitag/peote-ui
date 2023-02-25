@@ -39,7 +39,7 @@ class SliderStyleImpl
 	// pixel-size for the draggersize into dragg-direction, 
 	// also to clamp values of slider.setDraggerSize(0.2)
 	// at default it is same as draggerSize
-	public var draggerLength:Null<Int> = null; // enough pixels to pick ;)
+	public var draggerLength:Null<Int> = null;
 }
 
 @:structInit

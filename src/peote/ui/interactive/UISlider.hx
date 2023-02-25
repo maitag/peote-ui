@@ -43,17 +43,10 @@ implements peote.layout.ILayoutElement
 		
 		if (value < 0.0) value = 0.0 else if (value > 1.0) value = 1.0;
 		
-		//#if (peoteui_no_parentmasking)
  		if (isVertical) dragger.y = y + Std.int( (height - dragger.height) * value );
 		else dragger.x = x + Std.int( (width - dragger.width) * value );
  		if (isVertical) dragger.y = y + Std.int( (height - dragger.height) * value );
 		else dragger.x = x + Std.int( (width - dragger.width) * value );
-		//#else
-		//if (isVertical) dragger.yLocal = Std.int( (height - dragger.height) * value );
-		//else dragger.xLocal = Std.int( (width - dragger.width) * value );
- 		//if (isVertical) dragger.yLocal = Std.int( (height - dragger.height) * value );
-		//else dragger.xLocal = Std.int( (width - dragger.width) * value );
-		//#end
 				
 		dragger.maskByElement(this);
 		dragger.updateLayout();
@@ -66,6 +59,12 @@ implements peote.layout.ILayoutElement
 	public inline function setDelta(delta:Float, triggerOnChange:Bool = true, triggerMouseMove:Bool = true) 
 	{
 		setValue(value + delta, triggerOnChange, triggerMouseMove);
+	}
+
+	public inline function setWheelDelta(delta:Float, triggerOnChange:Bool = true, triggerMouseMove:Bool = true) 
+	{
+		// TODO: make 0.05 here customizable (e.g. pixels per wheelclick)
+		setValue(value - ((delta > 0) ? 1 : -1 ) * 0.05, triggerOnChange, triggerMouseMove);
 	}
 
 	var dragger:UIElement = null;
@@ -102,18 +101,21 @@ implements peote.layout.ILayoutElement
 		if (isVertical) {
 			if (sliderStyle.draggerSize != null) draggerWidth = sliderStyle.draggerSize else draggerWidth = width;
 			if (sliderStyle.draggerLength != null) draggerHeight = sliderStyle.draggerLength else draggerHeight = width;
+			if (sliderStyle.draggerStyle != null) {
+				dragger = new UIElement(xPosition+Std.int((width - draggerWidth)/2), yPosition, draggerWidth, draggerHeight, zIndex+2, sliderStyle.draggerStyle);
+			}
 		}
 		else {
 			if (sliderStyle.draggerSize != null) draggerHeight = sliderStyle.draggerSize else draggerHeight = height;
 			if (sliderStyle.draggerLength != null) draggerWidth = sliderStyle.draggerLength else draggerWidth = height;
+			if (sliderStyle.draggerStyle != null) {
+				dragger = new UIElement(xPosition, yPosition+Std.int((height - draggerHeight)/2), draggerWidth, draggerHeight, zIndex+2, sliderStyle.draggerStyle);
+			}
 		}
 		
-		if (sliderStyle.draggerStyle != null) {
-			dragger = new UIElement(xPosition, yPosition, draggerWidth, draggerHeight, zIndex+2, sliderStyle.draggerStyle);
-		}
 		
 		// set the drag-area to same size as the slider
-		//dragger.setDragArea(xPosition, yPosition, width, height);
+		//setDragArea();
 
 		dragger.onPointerOver = function(uiElement:UIElement, e:PointerEvent) if (onDraggerPointerOver != null) onDraggerPointerOver(this, e);
 		dragger.onPointerOut = function(uiElement:UIElement, e:PointerEvent) if (onDraggerPointerOut != null) onDraggerPointerOut(this, e);
@@ -143,6 +145,11 @@ implements peote.layout.ILayoutElement
 		dragger.overOutEventsBubbleTo = this;
 		dragger.upDownEventsBubbleTo = this;
 		dragger.wheelEventsBubbleTo = this;
+	}
+	
+	inline function updateDragArea() {
+		if (isVertical) dragger.setDragArea(x+Std.int((width - dragger.width)/2), y, dragger.width, height);
+		else dragger.setDragArea(x, y+Std.int((height - dragger.height)/2), width, dragger.height);
 	}
 	
 	public inline function updateBackgroundStyle() if (background != null) background.updateVisibleStyle();
@@ -182,7 +189,7 @@ implements peote.layout.ILayoutElement
 				if (sliderStyle.draggerSize == null) dragger.height = height;
 				if (sliderStyle.draggerLength == null) dragger.width = height;
 			}
-			dragger.setDragArea(x, y, width, height);
+			updateDragArea();
 			dragger.maskByElement(this);
 			dragger.updateLayout();
 		}
@@ -202,7 +209,7 @@ implements peote.layout.ILayoutElement
 		if (dragger != null) {
 			uiDisplay.add(dragger);
 			// set the drag-area to same size as the slider
-			dragger.setDragArea(x, y, width, height);
+			updateDragArea();
 		}
 	}
 	

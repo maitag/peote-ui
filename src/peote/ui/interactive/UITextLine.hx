@@ -476,6 +476,7 @@ implements peote.layout.ILayoutElement
 		var _height = height - topSpace - bottomSpace;		
 		var y_offset:Float = getAlignedYOffset();
 		
+		// TODO: if (masked) also here!
 		//fontProgram.lineSetPositionSize(line, _x, _y + y_offset, _width, getAlignedXOffset(xOffset), isVisible);
 		if (lineUpdatePosition && lineUpdateSize)
 			fontProgram.lineSetPositionSize(line, _x, _y + y_offset, _width, (lineUpdateOffset) ? getAlignedXOffset(xOffset) : null, isVisible);
