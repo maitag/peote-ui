@@ -216,7 +216,10 @@ class TestUIArea extends Application
 			uiDisplay.startDragging(e);
 		}
 		uiDisplay.onPointerUp = (_, e:PointerEvent)-> uiDisplay.stopDragging(e);
-		uiDisplay.onDrag = (_, x:Float, y:Float) -> uiDisplay.maskByElement(content, true);
+		uiDisplay.onDrag = (_, x:Float, y:Float) -> {
+			uiDisplay.maskByElement(content, true);
+			content.updateInnerSize();
+		}
 		content.add(uiDisplay);
 		Elem.playIntoDisplay(uiDisplay.display);
 
@@ -227,7 +230,10 @@ class TestUIArea extends Application
 			uiElement.startDragging(e);
 		}
 		uiElement.onPointerUp = (_, e:PointerEvent)-> uiElement.stopDragging(e);
-		uiElement.onDrag = (_, x:Float, y:Float) -> uiElement.maskByElement(content, true);
+		uiElement.onDrag = (_, x:Float, y:Float) -> {
+			uiElement.maskByElement(content, true);
+			content.updateInnerSize();
+		}
 		content.add(uiElement);
 		
 

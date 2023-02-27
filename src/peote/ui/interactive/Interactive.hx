@@ -170,7 +170,14 @@ implements peote.layout.ILayoutElement
 	// TODO:
 	//public var left:Int;
 	//public var top:Int;
+	public var left(get, set):Int;
+	inline function get_left():Int return x;
+	inline function set_left(v:Int):Int return x = v;
 	
+	public var top(get, set):Int;
+	inline function get_top():Int return y;
+	inline function set_top(v:Int):Int return y = v;
+		
 	public var right(get, set):Int;
 	inline function get_right():Int return x + width;
 	inline function set_right(v:Int):Int { x = v - width; return v; }

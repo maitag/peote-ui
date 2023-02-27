@@ -14,13 +14,23 @@ class UIArea extends UIElement implements ParentElement
 implements peote.layout.ILayoutElement
 #end
 {
-	var uiElements = new Array<Interactive>();
+	var childs = new Array<Interactive>();
 
 	public var xOffset:Int = 0;
 	public var yOffset:Int = 0;
 	
 	var last_x:Int;
 	var last_y:Int;
+	
+	public var innerLeft(default, null):Int = 0;
+	public var innerRight(default, null):Int = 0;
+	public var innerWidth(get, never):Int;
+	inline function get_innerWidth():Int return innerRight - innerLeft;
+			
+	public var innerTop(default, null):Int = 0;
+	public var innerBottom(default, null):Int = 0;
+	public var innerHeight(get, never):Int;
+	inline function get_innerHeight():Int return innerBottom - innerTop;
 			
 	public function new(xPosition:Int=0, yPosition:Int=0, width:Int=100, height:Int=100, zIndex:Int=0, backgroundStyle:Style=null) 
 	{
@@ -30,31 +40,72 @@ implements peote.layout.ILayoutElement
 		last_y = yPosition;
 	}
 	
-	public function add(uiElement:Interactive)
+	public function add(child:Interactive)
 	{
-		uiElements.push(uiElement);
+		if (childs.length == 0) {
+			innerLeft = child.left;
+			innerRight = child.right;
+			innerTop = child.top;
+			innerBottom = child.bottom;
+		} else {
+			if (child.left < innerLeft) innerLeft = child.left;
+			if (child.right > innerRight) innerRight = child.right;
+			if (child.top < innerTop) innerTop = child.top;
+			if (child.bottom > innerBottom) innerBottom = child.bottom;
+		}
+		
+		childs.push(child);
 		
 		// to bubble events down to the elements
-		uiElement.overOutEventsBubbleTo = this;
-		uiElement.upDownEventsBubbleTo = this;
-		uiElement.wheelEventsBubbleTo = this;
+		child.overOutEventsBubbleTo = this;
+		child.upDownEventsBubbleTo = this;
+		child.wheelEventsBubbleTo = this;
 		
-		uiElement.setParentPosOffset(this);
+		child.setParentPosOffset(this);
 		
 		if (isVisible) {
-			uiDisplay.add(uiElement);
-			uiElement.maskByElement(this);
-			uiElement.updateLayout(); // need if the child is a parent itself
+			uiDisplay.add(child);
+			child.maskByElement(this);
+			child.updateLayout(); // need if the child is a parent itself
 		}
+		
 	}
 	
-	public function remove(uiElement:Interactive) 
+	public function remove(child:Interactive) 
 	{
-		if (isVisible) uiDisplay.remove(uiElement);
-		uiElements.remove(uiElement);
-		uiElement.removeParentPosOffset(this);
+		if (isVisible) uiDisplay.remove(child);
+		childs.remove(child);
+		
+		if (child.left >= innerLeft || child.right >= innerRight || child.top >= innerTop || child.bottom >= innerBottom) updateInnerSize();
+		
+		child.removeParentPosOffset(this);
 	}
 	
+	// ---------------------------------------
+	public function updateInnerSize() 
+	{
+		if (childs.length == 0) {
+			innerLeft = 0;
+			innerRight = 0;
+			innerTop = 0;
+			innerBottom = 0;
+		}
+		else {
+			innerLeft = childs[0].left;
+			innerRight = childs[0].right;
+			innerTop = childs[0].top;
+			innerBottom = childs[0].bottom;
+			var child:Interactive;
+			for (i in 1...childs.length) {
+				child = childs[i];
+				if (child.left < innerLeft) innerLeft = child.left;
+				if (child.right > innerRight) innerRight = child.right;
+				if (child.top < innerTop) innerTop = child.top;
+				if (child.bottom > innerBottom) innerBottom = child.bottom;
+			}
+		}
+		
+	}
 	
 	// ---------------------------------------
 	
@@ -67,11 +118,11 @@ implements peote.layout.ILayoutElement
 		last_x = x + xOffset;
 		last_y = y + yOffset;
 		
-		for (uiElement in uiElements) {
-			uiElement.x += deltaX;
-			uiElement.y += deltaY;
-			uiElement.maskByElement(this);
-			uiElement.updateLayout();
+		for (child in childs) {
+			child.x += deltaX;
+			child.y += deltaY;
+			child.maskByElement(this);
+			child.updateLayout();
 		}
 	}
 
@@ -84,16 +135,16 @@ implements peote.layout.ILayoutElement
 	
 	override inline function onAddUIElementToDisplay()
 	{
-		for (uiElement in uiElements) {
-			uiDisplay.add(uiElement);
-			//uiElement.updateLayout(); // need if the child is a parent itself
+		for (child in childs) {
+			uiDisplay.add(child);
+			//child.updateLayout(); // need if the child is a parent itself
 		}
 	}
 	
 	override inline function onRemoveUIElementFromDisplay()
 	{	
-		for (uiElement in uiElements) 
-			if (uiElement.isVisible) uiDisplay.remove(uiElement);
+		for (child in childs) 
+			if (child.isVisible) uiDisplay.remove(child);
 	}	
 	
 	// ------- UIArea Events ----------------
