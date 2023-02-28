@@ -154,7 +154,7 @@ class LargeScrollArea extends Application
 		var hSlider = new UISlider(60, 15, 500, 40, sliderStyle);
 		setSliderEvents(hSlider);
 		uiDisplay.add(hSlider);
-		hSlider.onChange = function(uiSlider:UISlider, percent:Float) {
+		hSlider.onChange = function(uiSlider:UISlider, value:Float, percent:Float) {
 			//area.x = 60 + Std.int(250 * percent); area.update();
 			//uiElement.x =  Std.int(700 * percent-100); area.updateLayout();
 			area.xOffset =  -Std.int(1500 * percent); area.update();
@@ -166,7 +166,7 @@ class LargeScrollArea extends Application
 		uiDisplay.add(vSlider);
 		
 		
-		vSlider.onChange = function(uiSlider:UISlider, percent:Float) {
+		vSlider.onChange = function(uiSlider:UISlider, value:Float, percent:Float) {
 			//uiElement.xLocal =  Std.int(500 * percent); uiElement.updateLayout();
 			//textLine.yLocal =  Std.int(500 * percent); textLine.updateLayout();
 			//sliderInside.xLocal =  Std.int(500 * percent); sliderInside.updateLayout();

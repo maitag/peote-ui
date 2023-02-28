@@ -136,86 +136,15 @@ class TestUIArea extends Application
 		header.onPointerDown = (_, e:PointerEvent)-> area.startDragging(e);
 		header.onPointerUp = (_, e:PointerEvent)-> area.stopDragging(e);
 		
+		// ---------------------------------------------------------
+		// ------- inner UIArea for some scrollable content --------
+		// ---------------------------------------------------------
+		
 		// inner UIArea for scrolling content
 		var content = new UIArea(2, header.height, area.width-20-2, area.height-header.height-20, boxStyle);
 		area.add(content);
 		
-		// ---------------------------------------------------------
-		// ---- Sliders to scroll the innerArea ----		
-		// ---------------------------------------------------------
-		
-		var hSlider = new UISlider(0, area.height-20, area.width-20, 20, sliderStyle);
-		area.add(hSlider);
-		
-		hSlider.onMouseWheel = (_, e:WheelEvent) -> hSlider.setWheelDelta( e.deltaY );
-		hSlider.onChange = (_, percent:Float) -> {
-			content.xOffset =  -Std.int(420 * percent);
-			content.updateLayout();
-		}
-		
-		var vSlider = new UISlider(area.width-20, header.height, 20, area.height-header.height-20, sliderStyle);
-		area.add(vSlider);
-		
-		vSlider.onMouseWheel = (_, e:WheelEvent) -> vSlider.setWheelDelta( e.deltaY );
-		vSlider.onChange = (_, percent:Float) -> {
-			content.yOffset = - Std.int(420 * percent );
-			content.updateLayout();
-		}
-		
-		// update Sliders if content size is changed:
-		content.onResizeWidth = (_, width:Int, deltaWidth:Int) -> {
-			trace("content.onResizeWidth", width, deltaWidth);
-		}
-		content.onResizeInnerWidth = (_, width:Int, deltaWidth:Int) -> {
-			trace("content.onResizeInnerWidth", width, deltaWidth);
-			
-		}
-		
-
-		
-		
-		// ---------------------------------------------
-		// -------- button to change the size ----------		
-		// ---------------------------------------------
-		
-		var resizerBottomRight:UIElement = new UIElement(area.width - 19, area.height - 19, 18, 18, 2, roundBorderStyle.copy(Color.GREY3, Color.GREY1));	
-		area.add(resizerBottomRight);
-		
-		resizerBottomRight.onPointerDown = (_, e:PointerEvent)-> {
-			resizerBottomRight.setDragArea(
-				Std.int(area.x + 240),
-				Std.int(area.y + 140),
-				Std.int((peoteUiDisplay.width  - peoteUiDisplay.xOffset) / peoteUiDisplay.xz  - area.x - 240),
-				Std.int((peoteUiDisplay.height - peoteUiDisplay.yOffset) / peoteUiDisplay.yz  - area.y - 140)
-			);
-			resizerBottomRight.startDragging(e);
-		}
-		resizerBottomRight.onPointerUp = (_, e:PointerEvent)-> resizerBottomRight.stopDragging(e);
-		
-		resizerBottomRight.onDrag = (_, x:Float, y:Float) -> {
-			area.rightSize  = resizerBottomRight.right + 1;
-			area.bottomSize = resizerBottomRight.bottom + 1;
-			
-			header.width = area.width;
-						
-			hSlider.bottom = area.bottom;
-			vSlider.right = area.right;
-			
-			hSlider.rightSize = content.rightSize = vSlider.left;
-			vSlider.bottomSize = content.bottomSize = hSlider.top;
-						
-			area.updateLayout();
-		};
-		resizerBottomRight.onPointerOver = (_,_)-> window.cursor = MouseCursor.RESIZE_NWSE;
-		resizerBottomRight.onPointerOut  = (_,_)-> window.cursor = MouseCursor.DEFAULT;
-		
-		
-		
-		// ---------------------------------------------------------
-		// -----  inner UIArea for some scrollable content ---------
-		// ---------------------------------------------------------
-		
-		// put things into content:
+		// add to content:
 		var uiDisplay = new UIDisplay(20, 20, 200, 200, 1, Color.BLUE);
 		uiDisplay.onPointerOver = (_,_)-> uiDisplay.display.color = Color.RED;
 		uiDisplay.onPointerOut  = (_,_)-> uiDisplay.display.color = Color.BLUE;
@@ -259,6 +188,90 @@ class TestUIArea extends Application
 			content.updateInnerSize();
 		}
 		content.add(inputPage);
+		
+		
+		
+		// ---------------------------------------------------------
+		// ---- Sliders to scroll the innerArea ----		
+		// ---------------------------------------------------------
+		
+		var hSlider = new UISlider(0, area.height-20, area.width-20, 20, sliderStyle);
+		area.add(hSlider);
+		
+		hSlider.onMouseWheel = (_, e:WheelEvent) -> hSlider.setWheelDelta( e.deltaY );
+		hSlider.onChange = (_, value:Float, percent:Float) -> {
+			content.xOffset = Std.int(value);
+			content.updateLayout();
+		}
+// TODO		
+		hSlider.valueStart = 0;// -content.innerLeft;
+		hSlider.valueEnd = - ( content.innerRight - content.width);
+		
+		var vSlider = new UISlider(area.width-20, header.height, 20, area.height-header.height-20, sliderStyle);
+		area.add(vSlider);
+		
+		vSlider.onMouseWheel = (_, e:WheelEvent) -> vSlider.setWheelDelta( e.deltaY );
+		vSlider.onChange = (_, value:Float, percent:Float) -> {
+// TODO			
+			content.yOffset = - Std.int(420 * percent );
+			content.updateLayout();
+		}
+		
+		// update Sliders if content size is changed:
+		content.onResizeWidth = (_, width:Int, deltaWidth:Int) -> {
+			//trace("content.onResizeWidth", width, deltaWidth);
+// TODO		
+			hSlider.valueStart = 0;// -content.innerLeft;
+			hSlider.valueEnd = - ( content.innerRight - content.width);
+			//hSlider.setValue();
+//			--> hSlider.startValue = content.xOffsetStart;
+//			--> hSlider.endValue   = content.xOffsetEnd;
+			 trace("hSlider.value from to:", hSlider.valueStart, hSlider.valueEnd);
+		}
+/*		content.onResizeInnerWidth = (_, width:Int, deltaWidth:Int) -> {
+			trace("content.onResizeInnerWidth", width, deltaWidth);
+			
+		}
+*/		
+
+		
+		
+		// ---------------------------------------------
+		// -------- button to change the size ----------		
+		// ---------------------------------------------
+		
+		var resizerBottomRight:UIElement = new UIElement(area.width - 19, area.height - 19, 18, 18, 2, roundBorderStyle.copy(Color.GREY3, Color.GREY1));	
+		area.add(resizerBottomRight);
+		
+		resizerBottomRight.onPointerDown = (_, e:PointerEvent)-> {
+			resizerBottomRight.setDragArea(
+				Std.int(area.x + 240),
+				Std.int(area.y + 140),
+				Std.int((peoteUiDisplay.width  - peoteUiDisplay.xOffset) / peoteUiDisplay.xz  - area.x - 240),
+				Std.int((peoteUiDisplay.height - peoteUiDisplay.yOffset) / peoteUiDisplay.yz  - area.y - 140)
+			);
+			resizerBottomRight.startDragging(e);
+		}
+		resizerBottomRight.onPointerUp = (_, e:PointerEvent)-> resizerBottomRight.stopDragging(e);
+		
+		resizerBottomRight.onDrag = (_, x:Float, y:Float) -> {
+			area.rightSize  = resizerBottomRight.right + 1;
+			area.bottomSize = resizerBottomRight.bottom + 1;
+			
+			header.width = area.width;
+						
+			hSlider.bottom = area.bottom;
+			vSlider.right = area.right;
+			
+			hSlider.rightSize = content.rightSize = vSlider.left;
+			vSlider.bottomSize = content.bottomSize = hSlider.top;
+						
+			area.updateLayout();
+		};
+		resizerBottomRight.onPointerOver = (_,_)-> window.cursor = MouseCursor.RESIZE_NWSE;
+		resizerBottomRight.onPointerOut  = (_,_)-> window.cursor = MouseCursor.DEFAULT;
+		
+		
 		
 
 		

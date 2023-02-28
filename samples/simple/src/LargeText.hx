@@ -141,13 +141,13 @@ class LargeText extends Application
 				//setSliderEvents(vSlider);
 				uiDisplay.add(vSlider);
 				
-				hSlider.onChange = function(uiSlider:UISlider, percent:Float) {
+				hSlider.onChange = function(uiSlider:UISlider, value:Float, percent:Float) {
 					//trace( 'hSlider at: ${percent*100}%' );
 					textPage.xOffset = - (textPage.textWidth - 760) * percent;
 					textPage.updateLayout();
 				}
 				
-				vSlider.onChange = function(uiSlider:UISlider, percent:Float) {
+				vSlider.onChange = function(uiSlider:UISlider, value:Float, percent:Float) {
 					//trace( 'vSlider at: ${percent*100}%' );
 					textPage.yOffset = - (textPage.textHeight - 560) * percent;
 					textPage.updateLayout();

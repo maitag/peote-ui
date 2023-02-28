@@ -60,6 +60,8 @@ class Sliders extends Application
 		};
 		
 		var hSlider = new UISlider(80, 10, 500, 60, sliderStyle);
+		hSlider.valueStart = -5;
+		hSlider.valueEnd = 10;
 		setSliderEvents(hSlider);
 		uiDisplay.add(hSlider);
 		
@@ -68,14 +70,16 @@ class Sliders extends Application
 		setSliderEvents(vSlider);
 		uiDisplay.add(vSlider);
 		
-		hSlider.onChange = function(uiSlider:UISlider, percent:Float) {
-			trace( 'hSlider at: ${percent*100}%' );
-			vSlider.value = percent;
+		hSlider.onChange = function(uiSlider:UISlider, value:Float, percent:Float) {
+			trace( 'hSlider percent: ${percent*100}%' );
+			trace( 'hSlider value  :$value' );
+			vSlider.percent = percent;
 		}
 		
-		vSlider.onChange = function(uiSlider:UISlider, percent:Float) {
-			trace( 'vSlider at: ${percent*100}%' );
-			hSlider.value = percent;
+		vSlider.onChange = function(uiSlider:UISlider, value:Float, percent:Float) {
+			//trace( 'vSlider percent: ${percent*100}%' );
+			//trace( 'vSlider value  :$value' );
+			hSlider.percent = percent;
 			//hSlider.x = 100 + Std.int(percent * 500);
 			//hSlider.updateLayout();
 		}

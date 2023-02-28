@@ -29,43 +29,67 @@ implements peote.layout.ILayoutElement
 
 	public var isVertical(default, null):Bool = false;
 	
-	public var _value:Float = 0.0;
+	public var valueStart:Float = 0.0;
+	public var valueEnd:Float = 1.0;
+	
+	var _percent:Float = 0.0; // allways from 0.0 to 1.0
+	
+	public var percent(get, set):Float;
+	inline function get_percent():Float return _percent;
+	inline function set_percent(v:Float):Float {
+		setPercent(v, false, false);
+		return v;
+	}
 	
 	public var value(get, set):Float;
-	inline function get_value():Float return _value;
+	inline function get_value():Float return valueStart + _percent * (valueEnd - valueStart);
 	inline function set_value(v:Float):Float {
 		setValue(v, false, false);
 		return v;
 	}
 	
+	inline function normalizeValue(v:Float):Float {
+		return v / (valueEnd - valueStart);
+	}
+	
+	public inline function setPercent(percent:Float, triggerOnChange:Bool = true, triggerMouseMove:Bool = true) 
+	{
+		if (percent < 0.0) percent = 0.0 else if (percent > 1.0) percent = 1.0;
+		_percent = percent;		
+		updateDragger(triggerOnChange, triggerMouseMove);
+	}
+	
 	public inline function setValue(value:Float, triggerOnChange:Bool = true, triggerMouseMove:Bool = true) 
+	{
+		setPercent(normalizeValue(value), triggerOnChange, triggerMouseMove);
+	}
+		
+ 	public inline function updateDragger(triggerOnChange:Bool = true, triggerMouseMove:Bool = true) 
 	{
 		if (dragger.isDragging) return;
 		
-		if (value < 0.0) value = 0.0 else if (value > 1.0) value = 1.0;
-		
- 		if (isVertical) dragger.y = y + Std.int( (height - dragger.height) * value );
-		else dragger.x = x + Std.int( (width - dragger.width) * value );
- 		if (isVertical) dragger.y = y + Std.int( (height - dragger.height) * value );
-		else dragger.x = x + Std.int( (width - dragger.width) * value );
+		if (isVertical) dragger.y = y + Std.int( (height - dragger.height) * _percent );
+		else dragger.x = x + Std.int( (width - dragger.width) * _percent );
+ 		if (isVertical) dragger.y = y + Std.int( (height - dragger.height) * _percent );
+		else dragger.x = x + Std.int( (width - dragger.width) * _percent );
 				
 		dragger.maskByElement(this);
 		dragger.updateLayout();
 		
 		if (isVisible && triggerMouseMove) uiDisplay.triggerMouse(this);
-		if (triggerOnChange && onChange != null) onChange(this, value);
-		_value = value;
+		if (triggerOnChange && onChange != null) onChange(this, value, percent);
 	}
 	
 	public inline function setDelta(delta:Float, triggerOnChange:Bool = true, triggerMouseMove:Bool = true) 
 	{
+		// TODO: value/percent
 		setValue(value + delta, triggerOnChange, triggerMouseMove);
 	}
 
 	public inline function setWheelDelta(delta:Float, triggerOnChange:Bool = true, triggerMouseMove:Bool = true) 
 	{
 		// TODO: make 0.05 here customizable (e.g. pixels per wheelclick)
-		setValue(value - ((delta > 0) ? 1 : -1 ) * 0.05, triggerOnChange, triggerMouseMove);
+		setPercent(percent - ((delta > 0) ? 1 : -1 ) * 0.05, triggerOnChange, triggerMouseMove);
 	}
 
 	var dragger:UIElement = null;
@@ -138,8 +162,8 @@ implements peote.layout.ILayoutElement
 		
 		// onDrag event
 		dragger.onDrag = function(uiElement:UIElement, percentX:Float, percentY:Float) {
-			_value = (isVertical) ? percentY : percentX;
-			if (onChange != null) onChange(this, (isVertical) ? percentY : percentX);
+			_percent = (isVertical) ? percentY : percentX;
+			if (onChange != null) onChange(this, value, (isVertical) ? percentY : percentX);
 		}
 		
 		// to bubble events down to the dragger
@@ -231,7 +255,7 @@ implements peote.layout.ILayoutElement
 	public var onDraggerPointerDown(null, default):UISliderEventParams = null;
 	public var onDraggerPointerUp(null, default):UISliderEventParams = null;
 	
-	public var onChange(null, default):UISlider->Float->Void = null;
+	public var onChange(null, default):UISlider->Float->Float->Void = null;
 	
 	// ---------- Events --------------------
 	

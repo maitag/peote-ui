@@ -50,16 +50,17 @@ implements peote.layout.ILayoutElement
 		var resizeHeight = false;
 		var old_innerWidth = innerWidth;
 		var old_innerHeight = innerHeight;
+		
 		if (childs.length == 0) {
-			if (innerLeft != child.left)     { innerLeft = child.left;     resizeWidth  = true; }
-			if (innerRight != child.right)   { innerRight = child.right;   resizeWidth  = true; }
-			if (innerTop != child.top)       { innerTop = child.top;       resizeHeight = true; }
+			if (innerLeft   != child.left  ) { innerLeft   = child.left;   resizeWidth  = true; }
+			if (innerRight  != child.right ) { innerRight  = child.right;  resizeWidth  = true; }
+			if (innerTop    != child.top   ) { innerTop    = child.top;    resizeHeight = true; }
 			if (innerBottom != child.bottom) { innerBottom = child.bottom; resizeHeight = true; }
 		} else {
-			if (child.left < innerLeft)     { innerLeft = child.left;     resizeWidth  = true; }
-			if (child.right > innerRight)   { innerRight = child.right;   resizeWidth  = true; }
-			if (child.top < innerTop)       { innerTop = child.top;       resizeHeight = true; }
-			if (child.bottom > innerBottom) { innerBottom = child.bottom; resizeHeight = true; }
+			if (child.left   < innerLeft  )  { innerLeft   = child.left;   resizeWidth  = true; }
+			if (child.right  > innerRight )  { innerRight  = child.right;  resizeWidth  = true; }
+			if (child.top    < innerTop   )  { innerTop    = child.top;    resizeHeight = true; }
+			if (child.bottom > innerBottom)  { innerBottom = child.bottom; resizeHeight = true; }
 		}
 		
 		if (resizeWidth  && onResizeInnerWidth  != null) onResizeInnerWidth (this, innerWidth, innerWidth - old_innerWidth);
@@ -87,7 +88,8 @@ implements peote.layout.ILayoutElement
 		if (isVisible) uiDisplay.remove(child);
 		childs.remove(child);
 		
-		if (child.left >= innerLeft || child.right >= innerRight || child.top >= innerTop || child.bottom >= innerBottom) updateInnerSize();
+		if (child.left - x >= innerLeft || child.right - x >= innerRight || 
+			child.top - y >= innerTop || child.bottom - y >= innerBottom) updateInnerSize();
 		
 		child.removeParentPosOffset(this);
 	}
@@ -106,17 +108,17 @@ implements peote.layout.ILayoutElement
 			innerBottom = 0;
 		}
 		else {
-			innerLeft = childs[0].left;
-			innerRight = childs[0].right;
-			innerTop = childs[0].top;
-			innerBottom = childs[0].bottom;
+			innerLeft = childs[0].left - x;
+			innerRight = childs[0].right - x;
+			innerTop = childs[0].top - y;
+			innerBottom = childs[0].bottom - y;
 			var child:Interactive;
 			for (i in 1...childs.length) {
 				child = childs[i];
-				if (child.left < innerLeft) innerLeft = child.left;
-				if (child.right > innerRight) innerRight = child.right;
-				if (child.top < innerTop) innerTop = child.top;
-				if (child.bottom > innerBottom) innerBottom = child.bottom;
+				if (child.left - x < innerLeft) innerLeft = child.left - x;
+				if (child.right - x > innerRight) innerRight = child.right - x;
+				if (child.top - y < innerTop) innerTop = child.top - y;
+				if (child.bottom - y > innerBottom) innerBottom = child.bottom - y;
 			}
 		}
 		if (onResizeInnerWidth  != null && (old_innerLeft != innerLeft || old_innerRight  != innerRight )) onResizeInnerWidth (this, innerWidth,  innerWidth  - old_innerRight  + old_innerLeft);
