@@ -12,6 +12,7 @@ private typedef UIElementEventParams = UIElement->PointerEvent->Void;
 private typedef UIElementWheelEventParams = UIElement->WheelEvent->Void;
 private typedef UIElementDragEventParams = UIElement->Float->Float->Void;
 private typedef UIElementFocusEventParams = UIElement->Void;
+private typedef UIElementResizeEventParams = UIElement->Int->Int->Void;
 
 class UIElement extends Interactive
 #if peote_layout
@@ -161,5 +162,11 @@ implements peote.layout.ILayoutElement
 	
 	public var onFocus(never, set):UIElementFocusEventParams;
 	inline function set_onFocus(f:UIElementFocusEventParams):UIElementFocusEventParams return setOnFocus(this, f);
+	
+	public var onResizeWidth(never, set):UIElementResizeEventParams;
+	inline function set_onResizeWidth(f:UIElementResizeEventParams):UIElementResizeEventParams return setOnResizeWidth(this, f);
+	
+	public var onResizeHeight(never, set):UIElementResizeEventParams;
+	inline function set_onResizeHeight(f:UIElementResizeEventParams):UIElementResizeEventParams return setOnResizeHeight(this, f);
 	
 }

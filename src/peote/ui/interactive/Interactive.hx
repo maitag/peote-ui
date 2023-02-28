@@ -160,16 +160,23 @@ implements peote.layout.ILayoutElement
 	inline function get_yLocal():Int return if (parent == null) y else y - parent.y - parent.yOffset;
 	inline function set_yLocal(_yLocal:Int):Int return if (parent == null) y = _yLocal else y = parent.y + parent.yOffset + _yLocal;
 */
-		
+	
 	public var x:Int;
 	public var y:Int;
-	public var width:Int;
+	public var width(default, set):Int;
+	inline function set_width(w:Int):Int {
+		if (w != width) {
+			if (resizeWidth != null) {
+				var oldWidth = width;
+				resizeWidth(width = w, w - oldWidth);
+			} else width = w;
+		}
+		return w;
+	}
 	public var height:Int;
 	public var z:Int;
 	
-	// TODO:
-	//public var left:Int;
-	//public var top:Int;
+	// get position by side
 	public var left(get, set):Int;
 	inline function get_left():Int return x;
 	inline function set_left(v:Int):Int return x = v;
@@ -186,11 +193,22 @@ implements peote.layout.ILayoutElement
 	inline function get_bottom():Int return y + height;
 	inline function set_bottom(v:Int):Int { y = v - height; return v; }
 	
-	// TODO: all here will also changing the size to keep the opposite sideposition
-	//public var leftResize:Int;
-	//public var topResize:Int;
-	//public var rightResize:Int;
-	//public var bottomResize:Int;
+	// all setters here will also changing the size to keep the opposite sideposition
+	public var leftSize(never, set):Int;
+	//inline function get_leftSize():Int return x;
+	inline function set_leftSize(v:Int):Int { width = right - v; return v; }
+	
+	public var topSize(never, set):Int;
+	//inline function get_topSize():Int return y;
+	inline function set_topSize(v:Int):Int { height = bottom - v; return v; }
+		
+	public var rightSize(never, set):Int;
+	//inline function get_rightSize():Int return x + width;
+	inline function set_rightSize(v:Int):Int { width = v - x; return v; }
+	
+	public var bottomSize(never, set):Int;
+	//inline function get_bottomSize():Int return y + height;
+	inline function set_bottomSize(v:Int):Int { height = v - y; return v; }
 	
 	
 	
@@ -234,7 +252,11 @@ implements peote.layout.ILayoutElement
 	// drag and focus events
 	var drag:Float->Float->Void = null;
 	var focus:Void->Void = null;
-	
+
+	// resize events
+	var resizeWidth:Int->Int->Void = null;
+	var resizeHeight:Int->Int->Void = null;
+
 	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int) 
 	{
 		x = xPosition;
@@ -547,6 +569,16 @@ implements peote.layout.ILayoutElement
 		return f;
 	}
 		
+	private inline function setOnResizeWidth<T>(object:T, f:T->Int->Int->Void):T->Int->Int->Void {
+		if (f == null) resizeWidth = null else resizeWidth = f.bind(object);
+		return f;
+	}
+	
+	private inline function setOnResizeHeight<T>(object:T, f:T->Int->Int->Void):T->Int->Int->Void {
+		if (f == null) resizeHeight = null else resizeHeight = f.bind(object);
+		return f;
+	}
+	
 	// -----------------
 		
 	private function addPickableMove()

@@ -11,6 +11,7 @@ private typedef UIDisplayEventParams = UIDisplay->PointerEvent->Void;
 private typedef UIDisplayWheelEventParams = UIDisplay->WheelEvent->Void;
 private typedef UIDisplayDragEventParams = UIDisplay->Float->Float->Void;
 private typedef UIDisplayFocusEventParams = UIDisplay->Void;
+private typedef UIDisplayResizeEventParams = UIDisplay->Int->Int->Void;
 
 @:allow(peote.ui)
 class UIDisplay extends Interactive
@@ -140,4 +141,9 @@ implements peote.layout.ILayoutElement
 	public var onFocus(never, set):UIDisplayFocusEventParams;
 	inline function set_onFocus(f:UIDisplayFocusEventParams):UIDisplayFocusEventParams return setOnFocus(this, f);
 	
+	public var onResizeWidth(never, set):UIDisplayResizeEventParams;
+	inline function set_onResizeWidth(f:UIDisplayResizeEventParams):UIDisplayResizeEventParams return setOnResizeWidth(this, f);
+	
+	public var onResizeHeight(never, set):UIDisplayResizeEventParams;
+	inline function set_onResizeHeight(f:UIDisplayResizeEventParams):UIDisplayResizeEventParams return setOnResizeHeight(this, f);
 }

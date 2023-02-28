@@ -1293,6 +1293,14 @@ implements peote.layout.ILayoutElement
 	public var onFocus(never, set):UITextPage<$styleType>->Void;
 	inline function set_onFocus(f:UITextPage<$styleType>->Void):UITextPage<$styleType>->Void
 		return setOnFocus(this, f);
+
+	public var onResizeWidth(never, set):UITextPage<$styleType>->Int->Int->Void;
+	inline function set_onResizeWidth(f:UITextPage<$styleType>->Int->Int->Void):UITextPage<$styleType>->Int->Int->Void
+		return setOnResizeWidth(this, f);
+	
+	public var onResizeHeight(never, set):UITextPage<$styleType>->Int->Int->Void;
+	inline function set_onResizeHeight(f:UITextPage<$styleType>->Int->Int->Void):UITextPage<$styleType>->Int->Int->Void
+		return setOnResizeHeight(this, f);
 	
 }
 

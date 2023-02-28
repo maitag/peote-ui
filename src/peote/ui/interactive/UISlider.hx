@@ -12,6 +12,7 @@ private typedef UISliderEventParams = UISlider->PointerEvent->Void;
 private typedef UISliderWheelEventParams = UISlider->WheelEvent->Void;
 private typedef UISliderDragEventParams = UISlider->Float->Float->Void;
 private typedef UISliderFocusEventParams = UISlider->Void;
+private typedef UISliderResizeEventParams = UISlider->Int->Int->Void;
 
 @:allow(peote.ui)
 class UISlider extends Interactive implements ParentElement
@@ -261,4 +262,9 @@ implements peote.layout.ILayoutElement
 	public var onFocus(never, set):UISliderFocusEventParams;
 	inline function set_onFocus(f:UISliderFocusEventParams):UISliderFocusEventParams return setOnFocus(this, f);
 	
+	public var onResizeWidth(never, set):UISliderResizeEventParams;
+	inline function set_onResizeWidth(f:UISliderResizeEventParams):UISliderResizeEventParams return setOnResizeWidth(this, f);
+	
+	public var onResizeHeight(never, set):UISliderResizeEventParams;
+	inline function set_onResizeHeight(f:UISliderResizeEventParams):UISliderResizeEventParams return setOnResizeHeight(this, f);
 }

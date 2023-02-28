@@ -975,8 +975,16 @@ implements peote.layout.ILayoutElement
 		return setOnDrag(this, f);
 	
 	public var onFocus(never, set):UITextLine<$styleType>->Void;
-	inline function set_onFocus(f:UITextLine<$styleType>->Void):UITextLine<$styleType>->Void
+	inline function set_onFocus(f:UITextLine < $styleType >->Void):UITextLine < $styleType >->Void 
 		return setOnFocus(this, f);
+		
+	public var onResizeWidth(never, set):UITextLine<$styleType>->Int->Int->Void;
+	inline function set_onResizeWidth(f:UITextLine<$styleType>->Int->Int->Void):UITextLine<$styleType>->Int->Int->Void
+		return setOnResizeWidth(this, f);
+		
+	public var onResizeHeight(never, set):UITextLine<$styleType>->Int->Int->Void;
+	inline function set_onResizeHeight(f:UITextLine<$styleType>->Int->Int->Void):UITextLine<$styleType>->Int->Int->Void
+		return setOnResizeHeight(this, f);
 	
 }
 

@@ -137,14 +137,14 @@ class TestUIArea extends Application
 		header.onPointerUp = (_, e:PointerEvent)-> area.stopDragging(e);
 		
 		// inner UIArea for scrolling content
-		var content = new UIArea(2, 18, 478, 462, boxStyle);
+		var content = new UIArea(2, header.height, area.width-20-2, area.height-header.height-20, boxStyle);
 		area.add(content);
 		
 		// ---------------------------------------------------------
 		// ---- Sliders to scroll the innerArea ----		
 		// ---------------------------------------------------------
 		
-		var hSlider = new UISlider(0, 480, 480, 20, sliderStyle);
+		var hSlider = new UISlider(0, area.height-20, area.width-20, 20, sliderStyle);
 		area.add(hSlider);
 		
 		hSlider.onMouseWheel = (_, e:WheelEvent) -> hSlider.setWheelDelta( e.deltaY );
@@ -153,7 +153,7 @@ class TestUIArea extends Application
 			content.updateLayout();
 		}
 		
-		var vSlider = new UISlider(480, 18, 20, 462, sliderStyle);
+		var vSlider = new UISlider(area.width-20, header.height, 20, area.height-header.height-20, sliderStyle);
 		area.add(vSlider);
 		
 		vSlider.onMouseWheel = (_, e:WheelEvent) -> vSlider.setWheelDelta( e.deltaY );
@@ -161,6 +161,17 @@ class TestUIArea extends Application
 			content.yOffset = - Std.int(420 * percent );
 			content.updateLayout();
 		}
+		
+		// update Sliders if content size is changed:
+		content.onResizeWidth = (_, width:Int, deltaWidth:Int) -> {
+			trace("content.onResizeWidth", width, deltaWidth);
+		}
+		content.onResizeInnerWidth = (_, width:Int, deltaWidth:Int) -> {
+			trace("content.onResizeInnerWidth", width, deltaWidth);
+			
+		}
+		
+
 		
 		
 		// ---------------------------------------------
@@ -182,20 +193,17 @@ class TestUIArea extends Application
 		resizerBottomRight.onPointerUp = (_, e:PointerEvent)-> resizerBottomRight.stopDragging(e);
 		
 		resizerBottomRight.onDrag = (_, x:Float, y:Float) -> {
-			area.width = resizerBottomRight.right + 1 - area.x;
-			area.height = resizerBottomRight.bottom + 1 - area.y;
+			area.rightSize  = resizerBottomRight.right + 1;
+			area.bottomSize = resizerBottomRight.bottom + 1;
 			
 			header.width = area.width;
-			
-			content.width = area.width - 22;
-			content.height = area.height - 38;
-			
-			hSlider.width = area.width - 20;
+						
 			hSlider.bottom = area.bottom;
-			
-			vSlider.height = content.height;
 			vSlider.right = area.right;
 			
+			hSlider.rightSize = content.rightSize = vSlider.left;
+			vSlider.bottomSize = content.bottomSize = hSlider.top;
+						
 			area.updateLayout();
 		};
 		resizerBottomRight.onPointerOver = (_,_)-> window.cursor = MouseCursor.RESIZE_NWSE;
@@ -245,7 +253,11 @@ class TestUIArea extends Application
 		}
 		inputPage.onPointerUp = function(t:UITextPage<FontStyleTiled>, e:PointerEvent) {
 			t.stopSelection(e);
-		}		
+		}
+		inputPage.onResizeWidth = (_, width:Int, deltaWidth:Int) -> {
+			trace("inputPage.onResize", width, deltaWidth);
+			content.updateInnerSize();
+		}
 		content.add(inputPage);
 		
 
