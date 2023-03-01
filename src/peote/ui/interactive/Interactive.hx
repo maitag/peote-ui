@@ -2,17 +2,9 @@ package peote.ui.interactive;
 
 import peote.view.Element;
 
-#if (!peoteui_no_align)
-import peote.ui.util.Align;
-import peote.ui.util.HAlign;
-import peote.ui.util.VAlign;
-#end
-
 import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
-
 import peote.ui.PeoteUIDisplay;
-
 import peote.ui.interactive.interfaces.ParentElement;
 
 
@@ -147,19 +139,6 @@ implements peote.layout.ILayoutElement
 		z -= p.z + 1;
 	}
 	
-/*	
-	public var xAlign(default, default):HAlign = HAlign.LEFT;
-	public var yAlign(default, default):VAlign = VAlign.TOP;
-
-
-	public var xLocal(get, set):Int;
-	inline function get_xLocal():Int return if (parent == null) x else x - parent.x - parent.xOffset;
-	inline function set_xLocal(_xLocal:Int):Int return if (parent == null) x = _xLocal else x = parent.x + parent.xOffset + _xLocal;
-
-	public var yLocal(get, set):Int;
-	inline function get_yLocal():Int return if (parent == null) y else y - parent.y - parent.yOffset;
-	inline function set_yLocal(_yLocal:Int):Int return if (parent == null) y = _yLocal else y = parent.y + parent.yOffset + _yLocal;
-*/
 	
 	public var x:Int;
 	public var y:Int;
@@ -207,19 +186,15 @@ implements peote.layout.ILayoutElement
 	
 	// all setters here will also changing the size to keep the opposite sideposition
 	public var leftSize(never, set):Int;
-	//inline function get_leftSize():Int return x;
 	inline function set_leftSize(v:Int):Int { width = right - v; return v; }
 	
 	public var topSize(never, set):Int;
-	//inline function get_topSize():Int return y;
 	inline function set_topSize(v:Int):Int { height = bottom - v; return v; }
 		
 	public var rightSize(never, set):Int;
-	//inline function get_rightSize():Int return x + width;
 	inline function set_rightSize(v:Int):Int { width = v - x; return v; }
 	
 	public var bottomSize(never, set):Int;
-	//inline function get_bottomSize():Int return y + height;
 	inline function set_bottomSize(v:Int):Int { height = v - y; return v; }
 	
 	

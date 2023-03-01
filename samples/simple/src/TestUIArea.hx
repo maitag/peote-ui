@@ -97,8 +97,8 @@ class TestUIArea extends Application
 		
 		var sliderStyle:SliderStyle = {
 			backgroundStyle: roundBorderStyle.copy(Color.GREY2),
-			draggerStyle: roundBorderStyle.copy(Color.GREY4, Color.GREY3),
-			draggerSize:18,
+			draggerStyle: roundBorderStyle.copy(Color.GREY3, Color.GREY2, 0.5),
+			draggerSize:16,
 			draggerLength:30,
 		};
 		
@@ -154,26 +154,26 @@ class TestUIArea extends Application
 		uiDisplay.onPointerOver = (_,_)-> uiDisplay.display.color = Color.RED;
 		uiDisplay.onPointerOut  = (_,_)-> uiDisplay.display.color = Color.BLUE;
 		uiDisplay.onPointerDown = (_, e:PointerEvent)-> {
-			uiDisplay.setDragArea(Std.int(content.x), Std.int(content.y), Std.int(content.width), Std.int(content.height));
+			uiDisplay.setDragArea(Std.int(content.x), Std.int(content.y), Std.int(content.width + uiDisplay.width - 10), Std.int(content.height + uiDisplay.height - 10));
 			uiDisplay.startDragging(e);
 		}
 		uiDisplay.onPointerUp = (_, e:PointerEvent)-> uiDisplay.stopDragging(e);
 		uiDisplay.onDrag = (_, x:Float, y:Float) -> {
-			uiDisplay.maskByElement(content, true);
 			content.updateInnerSize();
+			uiDisplay.maskByElement(content, true);
 		}
 		content.add(uiDisplay);
 		Elem.playIntoDisplay(uiDisplay.display);
 		
 		var uiElement = new UIElement(220, 20, 200, 200, 0, roundBorderStyle);
 		uiElement.onPointerDown = (_, e:PointerEvent)-> {
-			uiElement.setDragArea(Std.int(content.x), Std.int(content.y), Std.int(content.width), Std.int(content.height));
+			uiElement.setDragArea(Std.int(content.x), Std.int(content.y), Std.int(content.width + uiElement.width - 10), Std.int(content.height + uiElement.height - 10));
 			uiElement.startDragging(e);
 		}
 		uiElement.onPointerUp = (_, e:PointerEvent)-> uiElement.stopDragging(e);
 		uiElement.onDrag = (_, x:Float, y:Float) -> {
-			uiElement.maskByElement(content, true);
 			content.updateInnerSize();
+			uiElement.maskByElement(content, true);
 		}
 		content.add(uiElement);		
 
@@ -187,12 +187,14 @@ class TestUIArea extends Application
 			t.stopSelection(e);
 		}
 		inputPage.onResizeWidth = (_, width:Int, deltaWidth:Int) -> {
-			trace("inputPage.onResizeWidth", width, deltaWidth);
+			//trace("inputPage.onResizeWidth", width, deltaWidth);
 			content.updateInnerSize();
+			inputPage.maskByElement(content, true); // CHECK: need here ?
 		}
 		inputPage.onResizeHeight = (_, height:Int, deltaHeight:Int) -> {
-			trace("inputPage.onResizeHeight", height, deltaHeight);
+			//trace("inputPage.onResizeHeight", height, deltaHeight);
 			content.updateInnerSize();
+			inputPage.maskByElement(content, true); // CHECK: need here ?
 		}
 		content.add(inputPage);
 		
@@ -215,32 +217,24 @@ class TestUIArea extends Application
 			content.yOffset = Std.int(value);
 			content.updateLayout();
 		}
-		area.add(vSlider);		
+		area.add(vSlider);
 		
 		
 		// ----- initial ranges for sliders ------
 		
-		hSlider.setRange( 0, Math.min(0, content.width - content.innerRight) );
-		vSlider.setRange( 0, Math.min(0, content.height - content.innerBottom) );		
-/*		hSlider.setRange( content.xOffsetStart, content.xOffsetEnd );
-		vSlider.setRange( content.yOffsetStart, content.yOffsetEnd );		
-		// TODO -> inside setRange
-		hSlider.setValue(content.xOffsetStart);
-		vSlider.setValue(content.xOffsetEnd);
-*/		
+		hSlider.setRange( 0, Math.min(0, content.width - content.innerRight), content.width/content.innerRight, false, false );
+		vSlider.setRange( 0, Math.min(0, content.height - content.innerBottom), content.height/content.innerBottom , false, false);		
+	
 		// ----- update Sliders if content size is changed -----
 		
 		content.onResizeInnerWidth = content.onResizeWidth = (_, width:Int, deltaWidth:Int) -> {
-			//trace("content.onResizeWidth", width, deltaWidth);			
-			// TODO		
-			hSlider.setRange( 0, Math.min(0, content.width - content.innerRight), false, false );
+			hSlider.setRange( 0, Math.min(0, content.width - content.innerRight), content.width/content.innerRight, true, false );
+			//hSlider.setRange( 0, content.width - content.innerRight, content.width/content.innerRight, true, false );
 			//hSlider.setRange( content.xOffsetStart, content.xOffsetEnd, false, false );
 		}
 
 		content.onResizeInnerHeight = content.onResizeHeight = (_, height:Int, deltaHeight:Int) -> {
-			//trace("content.onResizeWidth", width, deltaWidth);			
-			// TODO		
-			vSlider.setRange( 0, Math.min(0, content.height - content.innerBottom), false, false );
+			vSlider.setRange( 0, Math.min(0, content.height - content.innerBottom), content.height/content.innerBottom, true, false );
 			//vSlider.setRange( content.yOffsetStart, content.yOffsetEnd, false, false );
 		}
 
@@ -269,7 +263,7 @@ class TestUIArea extends Application
 			area.updateLayout();
 		};
 		resizerBottomRight.onPointerOver = (_,_)-> window.cursor = MouseCursor.RESIZE_NWSE;
-		resizerBottomRight.onPointerOut  = (_, _)-> window.cursor = MouseCursor.DEFAULT;
+		resizerBottomRight.onPointerOut  = (_,_)-> window.cursor = MouseCursor.DEFAULT;
 		
 		area.add(resizerBottomRight);
 		
@@ -279,12 +273,12 @@ class TestUIArea extends Application
 		area.onResizeWidth = (_, width:Int, deltaWidth:Int) -> {
 			header.width = width;
 			vSlider.right = area.right;
-			hSlider.rightSize = content.rightSize = vSlider.left;
+			content.rightSize = hSlider.rightSize = vSlider.left; // CHECK: if order is reversed !
 		}
 
 		area.onResizeHeight = (_, height:Int, deltaHeight:Int) -> {
 			hSlider.bottom = area.bottom;
-			vSlider.bottomSize = content.bottomSize = hSlider.top;
+			content.bottomSize = vSlider.bottomSize = hSlider.top;
 		}
 
 		

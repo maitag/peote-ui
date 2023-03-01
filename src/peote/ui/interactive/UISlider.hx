@@ -49,7 +49,8 @@ implements peote.layout.ILayoutElement
 	}
 	
 	inline function normalizeValue(v:Float):Float {
-		return v / (valueEnd - valueStart);
+		if (valueStart != valueEnd) return v / (valueEnd - valueStart);
+		else return 0.0;
 	}
 	
 	public inline function setPercent(percent:Float, triggerOnChange:Bool = true, triggerMouseMove:Bool = true) 
@@ -64,13 +65,30 @@ implements peote.layout.ILayoutElement
 		setPercent(normalizeValue(value), triggerOnChange, triggerMouseMove);
 	}
 		
-	public inline function setRange(start:Float, end:Float, triggerOnChange:Bool = true, triggerMouseMove:Bool = true) {
+	public inline function setRange(start:Float, end:Float, ?sizePercent:Null<Float>, triggerOnChange:Bool = true, triggerMouseMove:Bool = true) 
+	{
+		var newValue:Float = valueStart;
+		if (valueStart != valueEnd) newValue = start + (value - valueStart) * (end - start) / (valueEnd - valueStart);
+		
 		valueStart = start;
 		valueEnd = end;
 		
-		// TODO:
+		if (sizePercent != null) {
+			if (sizePercent > 1.0) sizePercent = 1.0;
+			if (isVertical) {
+				var minSize:Float = (sliderStyle.draggerLength != null) ? sliderStyle.draggerLength : width;
+				dragger.height = Std.int(Math.max(minSize, height * sizePercent));
+				
+			}
+			else {
+				var minSize:Float = (sliderStyle.draggerLength != null) ? sliderStyle.draggerLength : height;
+				dragger.width = Std.int(Math.max(minSize, width * sizePercent));				
+			}			
+		}
 		
-		if (valueStart != valueEnd) updateDragger(triggerOnChange, triggerMouseMove);
+		setValue(newValue, triggerOnChange, triggerMouseMove);
+		//trace(newValue, _percent);
+		//if (valueStart != valueEnd) updateDragger(triggerOnChange, triggerMouseMove);
 		// TODO: else -> disable dragging
 		
 		
@@ -160,7 +178,8 @@ implements peote.layout.ILayoutElement
 			#if (!peoteui_no_masking)
 			dragger.masked = false; // <-- dragg allways the fully dragger (unmask it before)
 			#end
-			dragger.startDragging(e); // <----- start dragging
+			// TODO: better let disable dragging
+			if (valueStart != valueEnd) dragger.startDragging(e); // <----- start dragging
 		}
 		
 		dragger.onPointerUp = function(uiElement:UIElement, e:PointerEvent) {

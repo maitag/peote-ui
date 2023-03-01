@@ -35,7 +35,6 @@ implements peote.layout.ILayoutElement
 	inline function get_yOffsetEnd():Int {
 		return (innerBottom - height < innerTop) ? -innerTop : height - innerBottom;
 	}
-
 	
 	public var innerLeft(default, null):Int = 0;
 	public var innerRight(default, null):Int = 0;
@@ -103,8 +102,8 @@ implements peote.layout.ILayoutElement
 		if (isVisible) uiDisplay.remove(child);
 		childs.remove(child);
 		
-		if (child.left - x >= innerLeft || child.right - x >= innerRight || 
-			child.top - y >= innerTop || child.bottom - y >= innerBottom) updateInnerSize();
+		if (child.left - x - xOffset >= innerLeft || child.right - x - xOffset >= innerRight || 
+			child.top - y - yOffset >= innerTop || child.bottom - y - yOffset >= innerBottom) updateInnerSize();
 		
 		child.removeParentPosOffset(this);
 	}
@@ -123,19 +122,20 @@ implements peote.layout.ILayoutElement
 			innerBottom = 0;
 		}
 		else {
-			innerLeft = childs[0].left - x;
-			innerRight = childs[0].right - x;
-			innerTop = childs[0].top - y;
-			innerBottom = childs[0].bottom - y;
+			innerLeft = childs[0].left - x - xOffset;
+			innerRight = childs[0].right - x - xOffset;
+			innerTop = childs[0].top - y - yOffset;
+			innerBottom = childs[0].bottom - y - yOffset;
 			var child:Interactive;
 			for (i in 1...childs.length) {
 				child = childs[i];
-				if (child.left - x < innerLeft) innerLeft = child.left - x;
-				if (child.right - x > innerRight) innerRight = child.right - x;
-				if (child.top - y < innerTop) innerTop = child.top - y;
-				if (child.bottom - y > innerBottom) innerBottom = child.bottom - y;
+				if (child.left   - x - xOffset < innerLeft  ) innerLeft   = child.left   - x - xOffset;
+				if (child.right  - x - xOffset > innerRight ) innerRight  = child.right  - x - xOffset;
+				if (child.top    - y - yOffset < innerTop   ) innerTop    = child.top    - y - yOffset;
+				if (child.bottom - y - yOffset > innerBottom) innerBottom = child.bottom - y - yOffset;
 			}
 		}
+		
 		if (onResizeInnerWidth  != null && (old_innerLeft != innerLeft || old_innerRight  != innerRight )) onResizeInnerWidth (this, innerWidth,  innerWidth  - old_innerRight  + old_innerLeft);
 		if (onResizeInnerHeight != null && (old_innerTop  != innerTop  || old_innerBottom != innerBottom)) onResizeInnerHeight(this, innerHeight, innerHeight - old_innerBottom + old_innerTop);
 	}
