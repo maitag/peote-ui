@@ -1087,6 +1087,9 @@ implements peote.layout.ILayoutElement
 	@:access(input2action.Input2Action)
 	inline function keyDown (keyCode:KeyCode, modifier:KeyModifier):Void
 	{
+		#if html5
+		if (modifier.altKey && modifier.ctrlKey) js.Syntax.code('event.preventDefault();');
+		#end
 		//trace("key DOWN");
 		if (inputFocusElement != null) {
 			switch (keyCode) {
