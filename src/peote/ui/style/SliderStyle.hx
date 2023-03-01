@@ -29,6 +29,7 @@ class SliderStyleImpl
 	
 	// dragger pixel-size, is automatic set to slider size by default
 	public var draggerSize:Null<Int> = null;
+	public var draggerSizePercent:Null<Float> = null;
     
 	// dragger pixel-offset, is centered by default
 	public var draggerOffset:Int = 0;
@@ -40,6 +41,7 @@ class SliderStyleImpl
 	// also to clamp values of slider.setDraggerSize(0.2)
 	// at default it is same as draggerSize
 	public var draggerLength:Null<Int> = null;
+	public var draggerLengthPercent:Null<Float> = null;
 }
 
 @:structInit

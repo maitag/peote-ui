@@ -163,6 +163,7 @@ implements peote.layout.ILayoutElement
 	
 	public var x:Int;
 	public var y:Int;
+	
 	public var width(default, set):Int;
 	inline function set_width(w:Int):Int {
 		if (w != width) {
@@ -173,7 +174,18 @@ implements peote.layout.ILayoutElement
 		}
 		return w;
 	}
-	public var height:Int;
+	
+	public var height(default, set):Int;
+	inline function set_height(h:Int):Int {
+		if (h != height) {
+			if (resizeHeight != null) {
+				var oldHeight = height;
+				resizeHeight(height = h, h - oldHeight);
+			} else height = h;
+		}
+		return h;
+	}
+	
 	public var z:Int;
 	
 	// get position by side

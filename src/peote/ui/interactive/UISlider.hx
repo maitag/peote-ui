@@ -29,9 +29,6 @@ implements peote.layout.ILayoutElement
 
 	public var isVertical(default, null):Bool = false;
 	
-	public var valueStart:Float = 0.0;
-	public var valueEnd:Float = 1.0;
-	
 	var _percent:Float = 0.0; // allways from 0.0 to 1.0
 	
 	public var percent(get, set):Float;
@@ -40,6 +37,9 @@ implements peote.layout.ILayoutElement
 		setPercent(v, false, false);
 		return v;
 	}
+	
+	public var valueStart:Float = 0.0;
+	public var valueEnd:Float = 1.0;
 	
 	public var value(get, set):Float;
 	inline function get_value():Float return valueStart + _percent * (valueEnd - valueStart);
@@ -55,7 +55,7 @@ implements peote.layout.ILayoutElement
 	public inline function setPercent(percent:Float, triggerOnChange:Bool = true, triggerMouseMove:Bool = true) 
 	{
 		if (percent < 0.0) percent = 0.0 else if (percent > 1.0) percent = 1.0;
-		_percent = percent;		
+		_percent = percent;
 		updateDragger(triggerOnChange, triggerMouseMove);
 	}
 	
@@ -64,6 +64,18 @@ implements peote.layout.ILayoutElement
 		setPercent(normalizeValue(value), triggerOnChange, triggerMouseMove);
 	}
 		
+	public inline function setRange(start:Float, end:Float, triggerOnChange:Bool = true, triggerMouseMove:Bool = true) {
+		valueStart = start;
+		valueEnd = end;
+		
+		// TODO:
+		
+		if (valueStart != valueEnd) updateDragger(triggerOnChange, triggerMouseMove);
+		// TODO: else -> disable dragging
+		
+		
+	}
+	
  	public inline function updateDragger(triggerOnChange:Bool = true, triggerMouseMove:Bool = true) 
 	{
 		if (dragger.isDragging) return;
@@ -120,7 +132,7 @@ implements peote.layout.ILayoutElement
 			background = new UIElement(xPosition, yPosition, width, height, zIndex+1, sliderStyle.backgroundStyle);
 		}
 		
-		var draggerWidth:Int; 
+		var draggerWidth:Int;
 		var draggerHeight:Int;
 		
 		if (isVertical) {
@@ -137,11 +149,8 @@ implements peote.layout.ILayoutElement
 				dragger = new UIElement(xPosition, yPosition+Std.int((height - draggerHeight)/2), draggerWidth, draggerHeight, zIndex+2, sliderStyle.draggerStyle);
 			}
 		}
-		
-		
-		// set the drag-area to same size as the slider
-		//setDragArea();
-
+				
+		// set dragger events
 		dragger.onPointerOver = function(uiElement:UIElement, e:PointerEvent) if (onDraggerPointerOver != null) onDraggerPointerOver(this, e);
 		dragger.onPointerOut = function(uiElement:UIElement, e:PointerEvent) if (onDraggerPointerOut != null) onDraggerPointerOut(this, e);
 

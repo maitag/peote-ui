@@ -16,11 +16,26 @@ implements peote.layout.ILayoutElement
 {
 	var childs = new Array<Interactive>();
 
+	var last_x:Int;
+	var last_y:Int;
+	
 	public var xOffset:Int = 0;
 	public var yOffset:Int = 0;
 	
-	var last_x:Int;
-	var last_y:Int;
+	public var xOffsetStart(get, never):Int;
+	inline function get_xOffsetStart():Int return -innerLeft;
+	public var xOffsetEnd(get, never):Int;
+	inline function get_xOffsetEnd():Int {
+		return (innerRight - width < innerLeft) ? -innerLeft : width - innerRight;
+	}
+
+	public var yOffsetStart(get, never):Int;
+	inline function get_yOffsetStart():Int return -innerTop;
+	public var yOffsetEnd(get, never):Int;
+	inline function get_yOffsetEnd():Int {
+		return (innerBottom - height < innerTop) ? -innerTop : height - innerBottom;
+	}
+
 	
 	public var innerLeft(default, null):Int = 0;
 	public var innerRight(default, null):Int = 0;
