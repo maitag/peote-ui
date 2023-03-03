@@ -80,8 +80,8 @@ class LargeText extends Application
 	{					
 		peoteView = new PeoteView(window);
 		uiDisplay = new PeoteUIDisplay(0, 0, window.width, window.height, 0x1f1f1fff);
-		peoteView.addDisplay(uiDisplay);		
-						
+		peoteView.addDisplay(uiDisplay);
+		
 		var fontStyle = new MyFontStyle();		
 		var boxStyle = new BoxStyle(0x0e1306ff);
 		var textStyle:TextStyle = {
@@ -108,7 +108,7 @@ class LargeText extends Application
 				
 				var textPage = new UITextPage<MyFontStyle>(
 					0, 0,
-					{width:760, height:560, leftSpace:8, topSpace:6},
+					{width:uiDisplay.width - 30, height:uiDisplay.height-30, leftSpace:8, rightSpace:8, topSpace:6, bottomSpace:6},
 					text,
 					font,
 					fontStyle,
@@ -129,30 +129,54 @@ class LargeText extends Application
 				// ------ sliders --------
 				
 				var sliderStyle:SliderStyle = {
-					backgroundStyle: boxStyle,
+					backgroundStyle: boxStyle.copy(Color.GREY1),
 					draggerStyle: boxStyle.copy(Color.GREEN),
+					draggerLength: 30,
 				};
 				
-				var hSlider = new UISlider(0, 562, 760, 40, sliderStyle);
-				//setSliderEvents(hSlider);
+				var hSlider = new UISlider(0, uiDisplay.height-30, uiDisplay.width - 30, 30, sliderStyle);
 				uiDisplay.add(hSlider);
 				
-				var vSlider = new UISlider(762, 0, 40, 560, sliderStyle);
-				//setSliderEvents(vSlider);
+				var vSlider = new UISlider(uiDisplay.width - 30, 0, 30, uiDisplay.height - 30, sliderStyle);
 				uiDisplay.add(vSlider);
 				
+				hSlider.setRange( 0, Math.min(0, - textPage.textWidth  + textPage.width  - textPage.leftSpace - textPage.rightSpace ), textPage.width  / textPage.textWidth  , false, false );
+				vSlider.setRange( 0, Math.min(0, - textPage.textHeight + textPage.height - textPage.topSpace  - textPage.bottomSpace), textPage.height / textPage.textHeight , false, false);
+		
 				hSlider.onChange = function(uiSlider:UISlider, value:Float, percent:Float) {
-					//trace( 'hSlider at: ${percent*100}%' );
-					textPage.xOffset = - (textPage.textWidth - 760) * percent;
+					textPage.xOffset = Std.int(value);
 					textPage.updateLayout();
 				}
 				
 				vSlider.onChange = function(uiSlider:UISlider, value:Float, percent:Float) {
-					//trace( 'vSlider at: ${percent*100}%' );
-					textPage.yOffset = - (textPage.textHeight - 560) * percent;
+					textPage.yOffset = Std.int(value);
 					textPage.updateLayout();
 				}
 				
+				// resize handler
+				peoteView.onResize = (width:Int, height:Int) -> {
+					uiDisplay.width = width;
+					uiDisplay.height = height;
+					
+					textPage.height = uiDisplay.height - 30;
+					textPage.width  = uiDisplay.width  - 30;
+					textPage.updateLayout();
+					
+					hSlider.top = textPage.bottom;
+					hSlider.width = textPage.width;
+					hSlider.updateLayout();
+					
+					vSlider.left = textPage.right;
+					vSlider.height = textPage.height;
+					vSlider.updateLayout();
+					
+					hSlider.setRange( 0, Math.min(0, - textPage.textWidth  + textPage.width  - textPage.leftSpace - textPage.rightSpace ), textPage.width  / textPage.textWidth  , true, false );
+					vSlider.setRange( 0, Math.min(0, - textPage.textHeight + textPage.height - textPage.topSpace  - textPage.bottomSpace), textPage.height / textPage.textHeight , true, false);
+				};
+				
+				// TODO:
+				//textPage.onResizeTextWidth = (_, width:Int, deltaWidth:Int) -> {
+				//}
 				
 			}
 		);				
