@@ -410,13 +410,23 @@ implements peote.layout.ILayoutElement
 		// TODO: better allways selecting the "newline" at the line-end ?
 		var _selectFrom = selectFrom;
 		var _selectTo = selectTo;
+
+// TODO		
+		if (from >= page.length) {
+			from = page.length - 1; // only dirty FIX here
+			trace("bug into _setCreateSelection", from, "out of max page-line"); // TODO: bug here after deleting line and out of selection
+		}
 		
-		if (from >= page.length) trace("bug into _setCreateSelection", from, "out of max page-line"); // TODO: bug here after deleting line and out of selection
 		if ( selectFrom == page.getPageLine(from).length ) {
 			_selectFrom = 0; from++;
 		}
 		if ( _selectTo == 0 && to > from + 1) {
-			if (to-1 >= page.length) trace("bug into _setCreateSelection", to, "out of max page-line"); // TODO: bug here after deleting line and out of selection
+// TODO		
+			if (to - 1 >= page.length) {
+				to = page.length; // only dirty FIX here
+				trace("bug into _setCreateSelection", to, "out of max page-line"); // TODO: bug here after deleting line and out of selection
+			}
+						
 			to--; 
 			_selectTo = page.getPageLine(to-1).length;
 		}
@@ -592,7 +602,8 @@ implements peote.layout.ILayoutElement
 		if (page != null) updatePageLayout(true);
 	}
 		
-	inline function updatePageLayout(updateStyle:Bool, updateBgMaskSelCursor:Bool = true,
+	inline function updatePageLayout(updateStyle:Bool,
+		updateBgMask:Bool = true, updateSelection:Bool = true, updateCursor:Bool = true,
 		pageUpdatePosition:Bool = true, pageUpdateSize:Bool = true, pageUpdateXOffset:Bool = true, pageUpdateYOffset:Bool = true):Void
 	{
 		if (updateStyle) fontProgram.pageSetStyle(page, fontStyle, isVisible);
@@ -633,7 +644,7 @@ implements peote.layout.ILayoutElement
 			fontProgram.pageUpdate(page);
 		}
 				
-		if (updateBgMaskSelCursor) 
+		if (updateBgMask) 
 		{
 			#if (!peoteui_no_textmasking && !peoteui_no_masking)
 			if (masked) {
@@ -644,19 +655,20 @@ implements peote.layout.ILayoutElement
 			}
 			fontProgram.setMask(maskElement, _x, _y, _width, _height, isVisible);
 			#end
-			
 			if (backgroundElement != null) {
 				if (updateStyle) backgroundElement.setStyle(backgroundStyle);
 				backgroundElement.setLayout(this);
 				if (isVisible && backgroundIsVisible) backgroundProgram.update(backgroundElement);
 			}
-			if (selectionElementArray != null) {
-				setSelection(_x, _y, _width, _height, y_offset + topSpace, (isVisible && selectionIsVisible), updateStyle);
-			}
-			if (cursorElement != null) {
-				if (updateStyle) cursorElement.setStyle(cursorStyle);
-				setCursor(_x, _y, _width, _height, y_offset + topSpace, (isVisible && cursorIsVisible));
-			}
+		}
+		
+		if (updateSelection && selectionElementArray != null) {
+			setSelection(_x, _y, _width, _height, y_offset + topSpace, (isVisible && selectionIsVisible), updateStyle);
+		}
+		
+		if (updateCursor && cursorElement != null) {
+			if (updateStyle) cursorElement.setStyle(cursorStyle);
+			setCursor(_x, _y, _width, _height, y_offset + topSpace, (isVisible && cursorIsVisible));
 		}
 	}
 	
@@ -971,16 +983,31 @@ implements peote.layout.ILayoutElement
 		updateTextOnly();
 	}
 
+	
+// TODO: 
+	// only dirty HACK at now:
+	var oldTextWidth:Float = 0.0;
+	var oldTextHeight:Float = 0.0;
+
 	inline function updateTextOnly()
 	{
-		if (autoWidth && autoHeight) updatePageLayout(false, true, false, true, false, false); // change bg, mask, selection and cursor and only line-size
+		// updateStyle, updateBgMask, updateSelection, updateCursor, pageUpdatePosition, pageUpdateSize, pageUpdateXOffset, pageUpdateYOffset
+		if (autoWidth && autoHeight) updatePageLayout( false, // updateStyle
+			true, false, false, // updateBgMask, updateSelection, updateCursor
+			false, true, false, false); // pageUpdatePosition, pageUpdateSize, pageUpdateXOffset, pageUpdateYOffset
 		else {
 			if ( !autoWidth  && !autoHeight &&
-				hAlign == peote.ui.util.HAlign.LEFT && vAlign == peote.ui.util.VAlign.TOP && isVisible) fontProgram.pageUpdate(page);
-			                                      //pos  //size
-			//else updatePageLayout(false, false, false, false, !autoWidth, !autoHeight); // change only line-offset
-			else updatePageLayout(false, (autoWidth || autoHeight), false, (autoWidth || autoHeight), !autoWidth, !autoHeight); // change only line-offset
+				hAlign == peote.ui.util.HAlign.LEFT && vAlign == peote.ui.util.VAlign.TOP && isVisible) fontProgram.pageUpdate(page);			                                     
+			else updatePageLayout(false, // updateStyle
+				// updateBgMask, updateSelection, updateCursor
+				(autoWidth || autoHeight), false, !(hAlign == peote.ui.util.HAlign.LEFT && vAlign == peote.ui.util.VAlign.TOP),
+				// pageUpdatePosition, pageUpdateSize, pageUpdateXOffset, pageUpdateYOffset
+				false, (autoWidth || autoHeight), !autoWidth, !autoHeight);
 		}
+		
+// TODO: only dirty HACK at now:
+		if (onResizeTextWidth != null && oldTextWidth != page.textWidth) onResizeTextWidth(this, page.textWidth, page.textWidth - oldTextWidth);
+		if (onResizeTextHeight != null && oldTextHeight != page.textHeight) onResizeTextHeight(this, page.textHeight, page.textHeight - oldTextHeight);
 	}
 	
 	// --------------------------------
@@ -990,6 +1017,10 @@ implements peote.layout.ILayoutElement
 	public inline function deleteChar()
 	{
 		if (page == null) return;
+		
+		oldTextWidth = page.textWidth;
+		oldTextHeight = page.textHeight;
+		
 		if (hasSelection()) {
 			fontProgram.pageDeleteChars(page, selectLineFrom, selectLineTo, selectFrom, selectTo, isVisible);
 			cursorLine = selectLineFrom;
@@ -1301,7 +1332,11 @@ implements peote.layout.ILayoutElement
 	public var onResizeHeight(never, set):UITextPage<$styleType>->Int->Int->Void;
 	inline function set_onResizeHeight(f:UITextPage<$styleType>->Int->Int->Void):UITextPage<$styleType>->Int->Int->Void
 		return setOnResizeHeight(this, f);
-	
+
+	// text-size (inner) resize events
+	public var onResizeTextWidth:UITextPage<$styleType>->Float->Float->Void = null;
+	public var onResizeTextHeight:UITextPage<$styleType>->Float->Float->Void = null;
+
 }
 
 // -------------------------------------------------------------------------------------------

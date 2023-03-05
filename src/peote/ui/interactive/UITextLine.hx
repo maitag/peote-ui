@@ -458,7 +458,8 @@ implements peote.layout.ILayoutElement
 		if (line != null) updateLineLayout(true);
 	}
 		
-	inline function updateLineLayout(updateStyle:Bool, updateBgMaskSelCursor:Bool = true,
+	inline function updateLineLayout(updateStyle:Bool,
+		updateBgMask:Bool = true, updateSelection:Bool = true, updateCursor:Bool = true,
 		lineUpdatePosition:Bool = true, lineUpdateSize:Bool = true, lineUpdateOffset:Bool = true):Void
 	{
 		if (updateStyle) fontProgram.lineSetStyle(line, fontStyle, isVisible);
@@ -485,7 +486,6 @@ implements peote.layout.ILayoutElement
 		else if (lineUpdateSize) 
 			fontProgram.lineSetSize(line, _width, (lineUpdateOffset) ? getAlignedXOffset(xOffset) : null, isVisible);
 		else
-			//fontProgram.lineSetOffset(line, (lineUpdateOffset) ? getAlignedXOffset(xOffset) : null, isVisible);
 			fontProgram.lineSetOffset(line, getAlignedXOffset(xOffset), isVisible);
 		
 		if (isVisible) {
@@ -502,7 +502,7 @@ implements peote.layout.ILayoutElement
 			fontProgram.lineUpdate(line);
 		}					
 		
-		if (updateBgMaskSelCursor) 
+		if (updateBgMask) 
 		{
 			#if (!peoteui_no_textmasking && !peoteui_no_masking)
 			if (masked) {
@@ -512,21 +512,22 @@ implements peote.layout.ILayoutElement
 				if (y + maskY + maskHeight < _y + _height) _height = maskY + maskHeight + y - _y;
 			}
 			fontProgram.setMask(maskElement, _x, _y, _width, _height, isVisible);
-			#end
-			
+			#end			
 			if (backgroundElement != null) {
 				if (updateStyle) backgroundElement.setStyle(backgroundStyle);
 				backgroundElement.setLayout(this);
 				if (isVisible && backgroundIsVisible) backgroundProgram.update(backgroundElement);
 			}
-			if (selectionElement != null) {
-				if (updateStyle) selectionElement.setStyle(selectionStyle);
-				setSelection(_x, _y, _width, _height, y_offset + topSpace, (isVisible && selectionIsVisible));
-			}
-			if (cursorElement != null) {
-				if (updateStyle) cursorElement.setStyle(cursorStyle);
-				setCursor(_x, _y, _width, _height, y_offset + topSpace, (isVisible && cursorIsVisible));
-			}
+		}
+		
+		if (updateSelection && selectionElement != null) {
+			if (updateStyle) selectionElement.setStyle(selectionStyle);
+			setSelection(_x, _y, _width, _height, y_offset + topSpace, (isVisible && selectionIsVisible));
+		}
+		
+		if (updateCursor && cursorElement != null) {
+			if (updateStyle) cursorElement.setStyle(cursorStyle);
+			setCursor(_x, _y, _width, _height, y_offset + topSpace, (isVisible && cursorIsVisible));
 		}
 	}
 		
@@ -801,11 +802,19 @@ implements peote.layout.ILayoutElement
 
 	inline function updateTextOnly()
 	{
-		// TODO: if extra inputFontStyle -> also for autoHeight!
-		if (autoWidth) updateLineLayout(false, true, false, true, false); // change bg, mask, selection and cursor and only line-size
+		// TODO: if FontStyle changed -> also for autoHeight!
+		
+		// updateStyle, updateBgMask, updateSelection, updateCursor, lineUpdatePosition, lineUpdateSize, lineUpdateOffset
+		if (autoWidth) updateLineLayout(false, // updateStyle
+			true, false, false, // updateBgMask, updateSelection, updateCursor
+			false, true, false); // lineUpdatePosition, lineUpdateSize, lineUpdateOffset
 		else {
-			if (hAlign == peote.ui.util.HAlign.LEFT && isVisible) fontProgram.lineUpdate(line);
-			else updateLineLayout(false, false, false, false, true); // change only line-offset
+			if ( !autoWidth && hAlign == peote.ui.util.HAlign.LEFT && isVisible) fontProgram.lineUpdate(line);
+			else updateLineLayout(false,  // updateStyle
+				// updateBgMask, updateSelection, updateCursor
+				autoWidth, false, (hAlign != peote.ui.util.HAlign.LEFT),
+				// lineUpdatePosition, lineUpdateSize, lineUpdateOffset
+				false, autoWidth, !autoWidth); // change only line-offset
 		}					
 	}
 	
