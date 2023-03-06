@@ -14,6 +14,7 @@ import peote.ui.PeoteUIDisplay;
 import peote.ui.interactive.UITextPage;
 import peote.ui.interactive.UISlider;
 import peote.ui.event.PointerEvent;
+import peote.ui.event.WheelEvent;
 import peote.ui.style.BoxStyle;
 import peote.ui.style.SliderStyle;
 import peote.ui.style.TextStyle;
@@ -95,7 +96,8 @@ class LargeText extends Application
 		// -------------------------------		
 		
 		var assetPath = AssetMacro.wget(
-			"https://www.gutenberg.org/cache/epub/919/pg919.txt", "assets/testdata/spinoza-ethic-I.txt"
+			"https://www.gutenberg.org/files/55108/55108-0.txt", "assets/testdata/hegel-scienceOfLogic.txt"
+			//"https://www.gutenberg.org/cache/epub/919/pg919.txt", "assets/testdata/spinoza-ethic-I.txt"
 			//"https://ia800308.us.archive.org/10/items/SartreLaNause1974/Sartre%20-%20La%20naus%C3%A9e%20-%201974_djvu.txt", "assets/testdata/satre-la-nausee.txt"
 		);
 		
@@ -147,11 +149,14 @@ class LargeText extends Application
 					textPage.xOffset = Std.int(value);
 					textPage.updateLayout();
 				}
+				hSlider.onMouseWheel = (_, e:WheelEvent) -> hSlider.setWheelDelta( e.deltaY );
 				
 				vSlider.onChange = function(uiSlider:UISlider, value:Float, percent:Float) {
 					textPage.yOffset = Std.int(value);
 					textPage.updateLayout();
 				}
+				vSlider.onMouseWheel = (_, e:WheelEvent) -> vSlider.setWheelDelta( e.deltaY );
+				textPage.onMouseWheel = (_, e:WheelEvent) -> vSlider.setDelta( ((e.deltaY > 0) ? 1 : -1 ) * 80.0 );
 				
 				// resize handler
 				peoteView.onResize = (width:Int, height:Int) -> {
@@ -175,8 +180,12 @@ class LargeText extends Application
 				};
 				
 				// TODO:
-				//textPage.onResizeTextWidth = (_, width:Int, deltaWidth:Int) -> {
-				//}
+				textPage.onResizeTextWidth = (_, width:Float, deltaWidth:Float) -> {
+					hSlider.setRange( 0, Math.min(0, - textPage.textWidth  + textPage.width  - textPage.leftSpace - textPage.rightSpace ), textPage.width  / textPage.textWidth  , true, false );
+				}
+				textPage.onResizeTextHeight = (_, height:Float, deltaHeight:Float) -> {
+					vSlider.setRange( 0, Math.min(0, - textPage.textHeight + textPage.height - textPage.topSpace  - textPage.bottomSpace), textPage.height / textPage.textHeight , true, false);
+				}
 				
 			}
 		);				
