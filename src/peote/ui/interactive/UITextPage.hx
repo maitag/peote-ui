@@ -264,7 +264,13 @@ implements peote.layout.ILayoutElement
 				
 				if (cursorStyle != null) setCreateCursorMasked( (isVisible && cursorIsVisible), (cursorElement == null) );
 			}
-		}
+		} 
+		// if pageline was changed while cursorLine number keeps the same:
+		//else if (page!=null && (pageLine != page.getPageLine(cursorLine))) {
+			//pageLine = page.getPageLine(cursorLine);
+		//}
+		
+		
 		return cursorLine;
 	}
 	
@@ -629,7 +635,7 @@ implements peote.layout.ILayoutElement
 			fontProgram.pageSetSize(page, _width, _height, (pageUpdateXOffset) ? getAlignedXOffset(xOffset) : null, (pageUpdateYOffset) ? y_offset : null, isVisible);
 		else
 			fontProgram.pageSetOffset(page, (pageUpdateXOffset) ? getAlignedXOffset(xOffset) : null, (pageUpdateYOffset) ? y_offset : null, isVisible);
-		
+	
 		if (isVisible) {
 			// TODO: optimize setting z-index in depend of styletyp and better allways adding fontprograms at end of uiDisplay (onAddVisibleToDisplay)
 			${switch (glyphStyleHasField.local_zIndex) {
@@ -985,7 +991,7 @@ implements peote.layout.ILayoutElement
 
 	
 // TODO: 
-	// only dirty HACK at now:
+	// only dirty HACK at now: (have to put into all fonprogram-functions what doing undo/redo later!)
 	var oldTextWidth:Float = 0.0;
 	var oldTextHeight:Float = 0.0;
 
@@ -1023,7 +1029,12 @@ implements peote.layout.ILayoutElement
 		
 		if (hasSelection()) {
 			fontProgram.pageDeleteChars(page, selectLineFrom, selectLineTo, selectFrom, selectTo, isVisible);
-			cursorLine = selectLineFrom;
+			
+			if (selectFrom==0 && cursorLine == selectLineFrom) {
+				pageLine = page.getPageLine(cursorLine); // FIX for selecting upwards and old pageLine was deleted
+			}
+			else cursorLine = selectLineFrom;
+			
 			cursor = selectFrom;
 			cursorWant = -1;
 			removeSelection();
@@ -1042,7 +1053,12 @@ implements peote.layout.ILayoutElement
 		if (page == null) return;
 		if (hasSelection()) {
 			fontProgram.pageDeleteChars(page, selectLineFrom, selectLineTo, selectFrom, selectTo, isVisible);
-			cursorLine = selectLineFrom;
+			
+			if (selectFrom==0 && cursorLine == selectLineFrom) {
+				pageLine = page.getPageLine(cursorLine); // FIX for selecting upwards and old pageLine was deleted
+			}
+			else cursorLine = selectLineFrom;
+			
 			cursor = selectFrom;
 			cursorWant = -1;
 			removeSelection();

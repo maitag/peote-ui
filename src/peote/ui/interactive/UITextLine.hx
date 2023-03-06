@@ -814,7 +814,7 @@ implements peote.layout.ILayoutElement
 				// updateBgMask, updateSelection, updateCursor
 				autoWidth, false, (hAlign != peote.ui.util.HAlign.LEFT),
 				// lineUpdatePosition, lineUpdateSize, lineUpdateOffset
-				false, autoWidth, !autoWidth); // change only line-offset
+				false, autoWidth, !autoWidth);
 		}					
 	}
 	
