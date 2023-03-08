@@ -413,7 +413,6 @@ implements peote.layout.ILayoutElement
 		var from:Int = (page.visibleLineFrom > selectLineFrom) ? page.visibleLineFrom : selectLineFrom;
 		var to:Int = (page.visibleLineTo < selectLineTo) ? page.visibleLineTo : selectLineTo;
 		
-		// TODO: better allways selecting the "newline" at the line-end ?
 		var _selectFrom = selectFrom;
 		var _selectTo = selectTo;
 
@@ -423,9 +422,9 @@ implements peote.layout.ILayoutElement
 			trace("bug into _setCreateSelection", from, "out of max page-line"); // TODO: bug here after deleting line and out of selection
 		}
 		
-		if ( selectFrom == page.getPageLine(from).length ) {
-			_selectFrom = 0; from++;
-		}
+		//if ( selectFrom == page.getPageLine(from).length ) {
+			//_selectFrom = 0; from++;
+		//}
 		if ( _selectTo == 0 && to > from + 1) {
 // TODO		
 			if (to - 1 >= page.length) {
@@ -454,6 +453,10 @@ implements peote.layout.ILayoutElement
 		
 		var selectionElementMaxOld = selectionElementMax;
 		selectionElementMax = 0;
+		
+// TODO: optimize (set allways at start and if fontStyle is changing)
+		var nlSize = fontProgram.getCharSize(32, fontStyle); // size of space-char top mark newlines
+		
 		for (i in from...to)
 		{			
 			_pageLine = page.getPageLine(i);
@@ -464,7 +467,7 @@ implements peote.layout.ILayoutElement
 			}
 			else if (i == selectLineFrom) { // first selection line
 				selectX = Math.round(fontProgram.pageGetPositionAtChar(page, _pageLine, _selectFrom));
-				selectWidth = Math.round(page.x + page.xOffset + _pageLine.textSize - selectX);
+				selectWidth = Math.round(page.x + page.xOffset + _pageLine.textSize - selectX + nlSize);
 			}
 			else if (i == selectLineTo-1) { // last selection line
 				selectX = Math.round(page.x + page.xOffset);
@@ -472,7 +475,7 @@ implements peote.layout.ILayoutElement
 			} 
 			else { // fully selected lines
 				selectX = Math.round(page.x + page.xOffset);
-				selectWidth = Math.round(_pageLine.textSize);
+				selectWidth = Math.round(_pageLine.textSize + nlSize);
 			}
 			
 			selectY = Math.round(_pageLine.y);

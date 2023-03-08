@@ -248,14 +248,14 @@ implements peote.layout.ILayoutElement
 		var stylePos = usedStyleID.indexOf( style.getUUID() );
 		if (stylePos < 0) {
 			if (font == null) throw('Error by addFontStyleProgram(). The style "${Type.getClassName(Type.getClass(style))}(${style.id})" needs a corresponding font parameter.');
-			program = font.createFontProgram(style, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end, 1024, 1024, true);
+			program = font.createFontProgram(style, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end, 4*1024, 4*1024, true);
 			autoAddStyleProgram(cast program, style.getUUID(), addOnTop);
 		}
 		else {
 			program = cast usedStyleProgram[stylePos];
 			if (program == null) {
 				if (font == null) throw('Error by getProgram(). The style "${Type.getClassName(Type.getClass(style))}(${style.id})" is a FontStyle so it needs a corresponding font parameter.');
-				program = font.createFontProgram(style, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end, 1024, 1024, true);				
+				program = font.createFontProgram(style, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end, 4*1024, 4*1024, true);				
 				addProgramAtStylePos(program, stylePos);
 			}
 		}
@@ -280,7 +280,7 @@ implements peote.layout.ILayoutElement
 		var program:Program = cast usedStyleProgram[stylePos];
 		if (program == null) {
 			if (font == null) throw('Error by getProgram(). The style "${Type.getClassName(Type.getClass(style))}(${style.id})" is a FontStyle so it needs a corresponding font parameter.');
-			program = font.createFontProgram(style, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end, 1024, 1024, true);
+			program = font.createFontProgram(style, #if (peoteui_no_textmasking || peoteui_no_masking) false #else true #end, 4*1024, 4*1024, true);
 			addProgramAtStylePos(program, stylePos);
 		} 
 		return program;
