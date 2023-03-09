@@ -32,11 +32,11 @@ class BoxStyleElement implements StyleElement implements Element
 	@color var color:Color;
 		
 	// layout
-	@posX var x:Int=0;
-	@posY var y:Int=0;	
-	@sizeX @varying var w:Int=100;
-	@sizeY @varying var h:Int = 100;
-	@zIndex var z:Int = 0;
+	@posX public var x:Int=0;
+	@posY public var y:Int=0;	
+	@sizeX @varying public var w:Int=100;
+	@sizeY @varying public var h:Int = 100;
+	@zIndex public var z:Int = 0;
 	
 	//var OPTIONS = {  };
 		

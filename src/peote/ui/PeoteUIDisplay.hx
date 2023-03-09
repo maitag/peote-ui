@@ -991,7 +991,7 @@ implements peote.layout.ILayoutElement
 	}
 
 	public inline function windowLeave():Void {
-		//trace("----------windowLeave-----------");
+		trace("----------windowLeave-----------");
 		
 		var lastElem:Interactive;
 		// mouse

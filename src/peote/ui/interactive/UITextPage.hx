@@ -242,6 +242,17 @@ implements peote.layout.ILayoutElement
 			if (page != null && cursorStyle != null) {	
 				setCreateCursorMasked( (isVisible && cursorIsVisible), (cursorElement == null) );
 			}
+			
+// TODO: updating xOffset on need -> maybe better inside of setCreateCursorMasked()
+			//var cx = ((cursorElement == null || !cursorIsVisible) ? Math.round(getPositionAtChar(cursor)) : cursorElement.x);
+			var cx = Math.round(getPositionAtChar(cursor));
+			var cw = 2; // TODO: make cursorwidth customizable
+			//trace(cx , x + leftSpace);			
+			if (cx + cw > x + width - rightSpace) setXOffset(xOffset - cx - cw + x + width - rightSpace);
+			else if (cx < x + leftSpace) setXOffset(xOffset - cx + x + leftSpace);
+			
+			
+			
 		}
 		return cursor;
 	}
@@ -264,6 +275,15 @@ implements peote.layout.ILayoutElement
 				
 				if (cursorStyle != null) setCreateCursorMasked( (isVisible && cursorIsVisible), (cursorElement == null) );
 			}
+			
+// TODO: updating yOffset on need
+			var cy = Math.round(pageLine.y);
+			var ch = Math.round(pageLine.height);
+			//trace(cx , x + leftSpace);
+			// TODO: make width customizable
+			if (cy + ch > y + height - bottomSpace) setYOffset(yOffset - cy - ch + y + height - bottomSpace);
+			else if (cy < y + topSpace) setYOffset(yOffset - cy + y + topSpace);
+			
 		} 
 		// if pageline was changed while cursorLine number keeps the same:
 		//else if (page!=null && (pageLine != page.getPageLine(cursorLine))) {
@@ -1305,6 +1325,24 @@ implements peote.layout.ILayoutElement
 	}
 	
 
+	// --------------------
+	public inline function setOffset(xOffset:Float, yOffset:Float) {
+		this.xOffset = xOffset;
+		this.yOffset = yOffset;
+		updatePageLayout( false, false, false, true, //  updateStyle, updateBgMask, updateSelection, updateCursor
+			false, false, true, true); // pageUpdatePosition, pageUpdateSize, pageUpdateXOffset, pageUpdateYOffset
+	}
+	public inline function setXOffset(xOffset:Float) {
+		this.xOffset = xOffset;
+		updatePageLayout( false, false, false, true, //  updateStyle, updateBgMask, updateSelection, updateCursor
+			false, false, true, false); // pageUpdatePosition, pageUpdateSize, pageUpdateXOffset, pageUpdateYOffset
+	}
+	public inline function setYOffset(yOffset:Float) {
+		this.yOffset = yOffset;
+		updatePageLayout( false, false, false, true, //  updateStyle, updateBgMask, updateSelection, updateCursor
+			false, false, false, true); // pageUpdatePosition, pageUpdateSize, pageUpdateXOffset, pageUpdateYOffset
+	}
+	
 	
 	// ----------- events ------------------
 	
@@ -1355,6 +1393,10 @@ implements peote.layout.ILayoutElement
 	// text-size (inner) resize events
 	public var onResizeTextWidth:UITextPage<$styleType>->Float->Float->Void = null;
 	public var onResizeTextHeight:UITextPage<$styleType>->Float->Float->Void = null;
+
+	// events if text page is changing offset
+	public var onChangeXOffset:UITextPage<$styleType>->Float->Float->Void = null;
+	public var onChangeYOffset:UITextPage<$styleType>->Float->Float->Void = null;
 
 }
 
