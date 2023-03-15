@@ -233,80 +233,76 @@ implements peote.layout.ILayoutElement
 	public inline function cursorShow():Void cursorIsVisible = true;
 	public inline function cursorHide():Void cursorIsVisible = false;
 	
+	var cursorWant = -1; // remember cursor if there is smaller lines by going up/down
+	
 	public var cursor(default,null):Int = 0;
 	public inline function setCursor(cursor:Int, update:Bool = true, changeOffset:Bool = true) 
 	{
 		//trace("setCursor", cursor);
-		if (cursor < 0) this.cursor = 0;
-		else if (page != null && cursor > pageLine.length) this.cursor = pageLine.length;
-		else this.cursor = cursor;	
+		if (cursor < 0) this.cursor = 0 else this.cursor = cursor;	
 		
 		if (page != null) {
-			if (changeOffset && xOffsetToCursor()) {
-				if (update && cursorStyle != null) updatePageLayout( false, // updateStyle
-					false, false, true, // updateBgMask, updateSelection, updateCursor
-					false, false, true, false); // pageUpdatePosition, pageUpdateSize, pageUpdateXOffset, pageUpdateYOffset
-			}
-			else if (update && cursorStyle != null) _setCreateCursorMasked( (isVisible && cursorIsVisible), (cursorElement == null) );
+			if (cursor > pageLine.length) this.cursor = pageLine.length;
+			_updateCursorOrOffset(update, changeOffset);
 		}
 	}
 	
-	var cursorWant = -1; // remember cursor if there is smaller lines by going up/down
 	public var cursorLine(default,null):Int = 0;
 	public inline function setCursorLine(cursorLine:Int, update:Bool = true, changeOffset:Bool = true)
 	{
 		//trace("setCursorLine", cursorLine);
-		if (cursorLine < 0) this.cursorLine = 0;
-		else if (page != null && cursorLine >= page.length) this.cursorLine = page.length - 1;
-		else this.cursorLine = cursorLine;
+		if (cursorLine < 0) this.cursorLine = 0 else this.cursorLine = cursorLine;
 		
 		if (page != null) {
-			var xOffsetChanged = false;
-			var yOffsetChanged = false;
-			
+			if (cursorLine >= page.length) this.cursorLine = page.length - 1;
 			pageLine = page.getPageLine(this.cursorLine);
-			
-			if (cursor > pageLine.length) {
-				cursor = pageLine.length;
-				if (changeOffset) xOffsetChanged = xOffsetToCursor();
-			}
-			
-			if (changeOffset) yOffsetChanged = yOffsetToCursor();
-			
-			if (xOffsetChanged || yOffsetChanged)
-			{
-				if (update && cursorStyle != null) updatePageLayout( false, // updateStyle
-					false, false, true, // updateBgMask, updateSelection, updateCursor
-					false, false, xOffsetChanged, yOffsetChanged); // pageUpdatePosition, pageUpdateSize, pageUpdateXOffset, pageUpdateYOffset
-			}
-			else if (update && cursorStyle != null) _setCreateCursorMasked( (isVisible && cursorIsVisible), (cursorElement == null) );
+			if (cursor > pageLine.length) this.cursor = pageLine.length;
+			_updateCursorOrOffset(update, changeOffset);
 		}		
 	}
 	
 	public inline function setCursorAndLine(cursor:Int, cursorLine:Int, update:Bool = true, changeOffset:Bool = true)
 	{
-		setCursorLine(cursorLine, false, false);
-		setCursor(cursor, false, false);
-		
+		//trace("setCursorAndLine", cursor, cursorLine);
+		if (cursor < 0) this.cursor = 0 else this.cursor = cursor;	
+		if (cursorLine < 0) this.cursorLine = 0 else this.cursorLine = cursorLine;
+
 		if (page != null) {
-			if (changeOffset) {
-				var xOffsetChanged = xOffsetToCursor();
-				var yOffsetChanged = yOffsetToCursor();
-				if (update && cursorStyle != null) {
-					if (xOffsetChanged || yOffsetChanged) {
-						updatePageLayout( false, // updateStyle
-						false, false, true, // updateBgMask, updateSelection, updateCursor
-						false, false, xOffsetChanged, yOffsetChanged); // pageUpdatePosition, pageUpdateSize, pageUpdateXOffset, pageUpdateYOffset
-					}
-					else _setCreateCursorMasked( (isVisible && cursorIsVisible), (cursorElement == null) );
+			if (cursorLine >= page.length) this.cursorLine = page.length - 1;
+			pageLine = page.getPageLine(this.cursorLine);
+			if (cursor > pageLine.length) this.cursor = pageLine.length;			
+			_updateCursorOrOffset(update, changeOffset);
+		}
+	}	
+
+	inline function _updateCursorOrOffset(update:Bool, changeOffset:Bool) {
+		if (changeOffset) {
+			var xOffsetChanged = xOffsetToCursor();
+			var yOffsetChanged = yOffsetToCursor();
+			if (update) {
+				if (xOffsetChanged || yOffsetChanged) {
+					updatePageLayout( false, // updateStyle
+					false, false, true, // updateBgMask, updateSelection, updateCursor
+					false, false, xOffsetChanged, yOffsetChanged); // pageUpdatePosition, pageUpdateSize, pageUpdateXOffset, pageUpdateYOffset
 				}
-			}
-			else if (update && cursorStyle != null) {
-				_setCreateCursorMasked( (isVisible && cursorIsVisible), (cursorElement == null) );
+				else if (cursorStyle != null) _setCreateCursorMasked( (isVisible && cursorIsVisible), (cursorElement == null) );
 			}
 		}
+		else if (update && cursorStyle != null) {
+			_setCreateCursorMasked( (isVisible && cursorIsVisible), (cursorElement == null) );
+		}		
 	}
-
+	
+	public inline function offsetToCursor(update:Bool = true)
+	{
+		var xOffsetChanged = xOffsetToCursor();
+		var yOffsetChanged = yOffsetToCursor();
+		if (update && page != null && (xOffsetChanged || yOffsetChanged)) {
+			updatePageLayout( false, false, false, true, //  updateStyle, updateBgMask, updateSelection, updateCursor
+				false, false, xOffsetChanged, yOffsetChanged // pageUpdatePosition, pageUpdateSize, pageUpdateXOffset, pageUpdateYOffset
+			);
+		}
+	}
 	
 	// ---------- text ---------------	
 	@:isVar public var text(get, set):String = null;
@@ -341,18 +337,8 @@ implements peote.layout.ILayoutElement
 	public var vAlign:peote.ui.util.VAlign = peote.ui.util.VAlign.TOP;
 	
 	public var xOffset:Float = 0;
-/*	@:isVar public var xOffset(get, set):Float = 0;
-	inline function get_xOffset():Float return xOffset + xCursorOffset;
-	inline function set_xOffset(xOff:Float):Float {
-		xCursorOffset = 0;
-		return xOffset = xOff;
-	}
-*/	
 	public var yOffset:Float = 0;
 	
-	//var xCursorOffset:Float = 0;
-	//var yCursorOffset:Float = 0;
-
 	public var leftSpace:Int = 0;
 	public var rightSpace:Int = 0;
 	public var topSpace:Int = 0;
@@ -885,10 +871,10 @@ implements peote.layout.ILayoutElement
 	// ------------------- Input Focus -----------------------
 	// -------------------------------------------------------
 
-	public inline function setInputFocus(e:peote.ui.event.PointerEvent = null, setCursor:Bool = false):Void {
+	public inline function setInputFocus(e:peote.ui.event.PointerEvent = null, cursorToPointer:Bool = false):Void {
 		peote.ui.interactive.input2action.InputTextPage.focusElement = this;
 		if (uiDisplay != null) uiDisplay.setInputFocus(this, e);
-		if (setCursor) setCursorToPointer(e);
+		if (cursorToPointer) setCursorToPointer(e);
 		cursorShow();
 	}
 	
@@ -935,7 +921,7 @@ implements peote.layout.ILayoutElement
 		if (uiDisplay != null) {
 			//cursorLine = getLineAtPosition(e.y);
 			//cursor = getCharAtPosition(e.x);
-			setCursorLine(getLineAtPosition(e.y)); 
+			setCursorLine(getLineAtPosition(e.y), false, false);
 			setCursor(getCharAtPosition(e.x)); 
 			// BAD BUG HERE:
 			//setCursorAndLine(getCharAtPosition(e.x), getLineAtPosition(e.y));
@@ -967,7 +953,7 @@ implements peote.layout.ILayoutElement
 		
 		selectStartFromLine = getLineAtPosition(e.y);
 		
-		setCursorLine(selectStartFromLine); 
+		setCursorLine(selectStartFromLine, false, false); 
 		
 		selectStartFrom = getCharAtPosition(e.x);
 		
@@ -989,7 +975,7 @@ implements peote.layout.ILayoutElement
 	
 	function onSelect(e:peote.ui.event.PointerEvent):Void {
 		//trace("onSelect");
-		if (localX(e.x) < leftSpace) {
+/*		if (localX(e.x) < leftSpace) {
 			if (localX(e.x) < getAlignedXOffset(leftSpace) + xOffsetAtSelectStart) {
 				xOffset = Math.max(- getAlignedXOffset(0), xOffsetAtSelectStart);
 			}
@@ -1007,8 +993,8 @@ implements peote.layout.ILayoutElement
 			xOffset = xOffsetAtSelectStart;
 			updatePageLayout(false); // OPTIMIZING: not for the background!
 		}
-		
-		setCursorLine(getLineAtPosition(e.y));
+*/		
+		setCursorLine(getLineAtPosition(e.y), false, false);
 		setCursor(getCharAtPosition(e.x));
 		// BAD BUG HERE:
 		//setCursorAndLine(getCharAtPosition(e.x), getLineAtPosition(e.y));
@@ -1073,7 +1059,7 @@ implements peote.layout.ILayoutElement
 			
 			//trace("restCharLength",restCharLength);
 			if (page.length > oldPageLength) {
-				setCursorLine(cursorLine + page.length - oldPageLength, false);
+				setCursorLine(cursorLine + page.length - oldPageLength, false, false);
 				setCursor(pageLine.length - restCharLength, false);
 			} 
 			else setCursor(cursor + chars.length, false);
@@ -1146,7 +1132,7 @@ implements peote.layout.ILayoutElement
 		else {
 			if (cursor == 0) {
 				if (cursorLine > 0) {
-					setCursorLine(cursorLine-1, false);
+					setCursorLine(cursorLine-1, false, false);
 					setCursor(pageLine.length, false);
 					fontProgram.pageRemoveLinefeed(page, pageLine, cursorLine, isVisible);
 					if (pageLine.length == 0) pageLine = page.getPageLine(cursorLine); // Fix after deleting an empty pageline
