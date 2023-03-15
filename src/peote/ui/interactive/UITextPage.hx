@@ -236,7 +236,7 @@ implements peote.layout.ILayoutElement
 	public var cursor(default,null):Int = 0;
 	public inline function setCursor(cursor:Int, update:Bool = true, changeOffset:Bool = true) 
 	{
-		trace("setCursor", cursor);
+		//trace("setCursor", cursor);
 		if (cursor < 0) this.cursor = 0;
 		else if (page != null && cursor > pageLine.length) this.cursor = pageLine.length;
 		else this.cursor = cursor;	
@@ -255,7 +255,7 @@ implements peote.layout.ILayoutElement
 	public var cursorLine(default,null):Int = 0;
 	public inline function setCursorLine(cursorLine:Int, update:Bool = true, changeOffset:Bool = true)
 	{
-		trace("setCursorLine", cursorLine);
+		//trace("setCursorLine", cursorLine);
 		if (cursorLine < 0) this.cursorLine = 0;
 		else if (page != null && cursorLine >= page.length) this.cursorLine = page.length - 1;
 		else this.cursorLine = cursorLine;
@@ -938,7 +938,8 @@ implements peote.layout.ILayoutElement
 			setCursorLine(getLineAtPosition(e.y)); 
 			setCursor(getCharAtPosition(e.x)); 
 			// BAD BUG HERE:
-			//setCursorAndLine(getCharAtPosition(e.x), getLineAtPosition(e.y)); 
+			//setCursorAndLine(getCharAtPosition(e.x), getLineAtPosition(e.y));
+			cursorWant = -1;
 		}
 	}
 	
@@ -975,6 +976,7 @@ implements peote.layout.ILayoutElement
 		//TODO
 		// MAYBE BAD BUG HERE:
 		//setCursorAndLine(selectStartFrom, selectStartFromLine);
+		cursorWant = -1;
 		
 		xOffsetAtSelectStart = xOffset;
 		yOffsetAtSelectStart = yOffset;
@@ -986,7 +988,7 @@ implements peote.layout.ILayoutElement
 	}
 	
 	function onSelect(e:peote.ui.event.PointerEvent):Void {
-		trace("onSelect");
+		//trace("onSelect");
 		if (localX(e.x) < leftSpace) {
 			if (localX(e.x) < getAlignedXOffset(leftSpace) + xOffsetAtSelectStart) {
 				xOffset = Math.max(- getAlignedXOffset(0), xOffsetAtSelectStart);
@@ -1010,6 +1012,7 @@ implements peote.layout.ILayoutElement
 		setCursor(getCharAtPosition(e.x));
 		// BAD BUG HERE:
 		//setCursorAndLine(getCharAtPosition(e.x), getLineAtPosition(e.y));
+		cursorWant = -1;
 		
 		select( selectStartFrom, cursor, selectStartFromLine, cursorLine );
 		// TODO: detect the char left right while xOffset changes at the border
@@ -1035,6 +1038,7 @@ implements peote.layout.ILayoutElement
 			//if (selectTo > line.length) selectTo = line.length;
 			setCursorAndLine(cursor, cursorLine, autoUpdate);
 			if (autoUpdate) updateTextOnly(true);
+			cursorWant = -1;
 		} 
 		else this.text = text;
 	}
@@ -1093,6 +1097,8 @@ implements peote.layout.ILayoutElement
 			// pageUpdatePosition, pageUpdateSize, pageUpdateXOffset, pageUpdateYOffset
 			false, (autoWidth || autoHeight), !autoWidth, !autoHeight
 		);
+		
+		cursorWant = -1;
 		
 // TODO: only dirty HACK at now:
 		if (onResizeTextWidth != null && oldTextWidth != page.textWidth) onResizeTextWidth(this, page.textWidth, page.textWidth - oldTextWidth);
@@ -1202,13 +1208,23 @@ implements peote.layout.ILayoutElement
 		#end		
 	}
 
+	public function selectAll() {
+		select(0, page.getPageLine(page.length - 1).length, 0, page.length - 1);
+		setCursorAndLine(0, 0, false, false);
+	}
+
 	inline function _updateCursorSelection(newCursor:Null<Int>, newCursorLine:Null<Int>, addSelection:Bool) {
 		var oldCursorLine = cursorLine;
 		var oldCursor = cursor;
 		
+		if (newCursor != null) cursorWant = -1;
+		else if (cursorWant > 0) newCursor = cursorWant;
+		
 		if (newCursor != null && newCursorLine != null) setCursorAndLine(newCursor, newCursorLine);
 		else if (newCursor != null) setCursor(newCursor);
 		else setCursorLine(newCursorLine);
+		
+		if (newCursor == null && cursorWant == -1 && cursor != oldCursor) cursorWant = oldCursor;
 				
 		if (addSelection) {
 			if (hasSelection()) {
@@ -1222,11 +1238,6 @@ implements peote.layout.ILayoutElement
 		}
 	}
 	
-	public function selectAll() {
-		select(0, page.getPageLine(page.length - 1).length, 0, page.length - 1);
-		setCursorAndLine(0, 0, false, false);
-	}
-
 	public inline function cursorPageStart(addSelection:Bool = false)
 	{
 		if (!addSelection && hasSelection()) removeSelection();
@@ -1242,63 +1253,59 @@ implements peote.layout.ILayoutElement
 	public inline function cursorStart(addSelection:Bool = false)
 	{
 		if (!addSelection && hasSelection()) removeSelection();
-		_updateCursorSelection(0, cursorLine, addSelection);
+		//_updateCursorSelection(0, cursorLine, addSelection);
+		_updateCursorSelection(0, null, addSelection);
 	}
 	
 	public inline function cursorEnd(addSelection:Bool = false)
 	{
 		if (!addSelection && hasSelection()) removeSelection();
-		_updateCursorSelection(pageLine.length, cursorLine, addSelection);
+		//_updateCursorSelection(pageLine.length, cursorLine, addSelection);
+		_updateCursorSelection(pageLine.length, null, addSelection);
 	}
 	
 	public inline function cursorLeft(addSelection:Bool = false)
 	{
 		if (!addSelection && hasSelection()) { setCursorAndLine(selectFrom, selectLineFrom); removeSelection(); }
 		else if (cursor == 0 && cursorLine > 0) _updateCursorSelection(page.getPageLine(cursorLine-1).length, cursorLine-1, addSelection);
-		else _updateCursorSelection(cursor - 1, cursorLine, addSelection);
+		//else _updateCursorSelection(cursor - 1, cursorLine, addSelection);
+		else _updateCursorSelection(cursor - 1, null, addSelection);
 	}
 
 	public inline function cursorRight(addSelection:Bool = false)
 	{
 		if (!addSelection && hasSelection()) { setCursorAndLine(selectTo, selectLineTo - 1); removeSelection(); }
 		else if (cursor == pageLine.length && cursorLine < page.length-1) _updateCursorSelection(0, cursorLine + 1, addSelection);
-		else _updateCursorSelection(cursor + 1, cursorLine, addSelection);
+		//else _updateCursorSelection(cursor + 1, cursorLine, addSelection);
+		else _updateCursorSelection(cursor + 1, null, addSelection);
 	}
 
 	public inline function cursorLeftWord(addSelection:Bool = false) {
 		if (!addSelection && hasSelection()) removeSelection();
 		if (cursor == 0 && cursorLine > 0) _updateCursorSelection(page.getPageLine(cursorLine-1).length, cursorLine-1,addSelection);
-		else _updateCursorSelection(fontProgram.pageLineWordLeft(pageLine, cursor), cursorLine, addSelection);
+		//else _updateCursorSelection(fontProgram.pageLineWordLeft(pageLine, cursor), cursorLine, addSelection);
+		else _updateCursorSelection(fontProgram.pageLineWordLeft(pageLine, cursor), null, addSelection);
 	}
 	
 	public inline function cursorRightWord(addSelection:Bool = false) {
 		if (!addSelection && hasSelection()) removeSelection();
 		if (cursor == pageLine.length && cursorLine < page.length-1) _updateCursorSelection(0, cursorLine + 1, addSelection);
-		else _updateCursorSelection(fontProgram.pageLineWordRight(pageLine, cursor), cursorLine, addSelection);
+		//else _updateCursorSelection(fontProgram.pageLineWordRight(pageLine, cursor), cursorLine, addSelection);
+		else _updateCursorSelection(fontProgram.pageLineWordRight(pageLine, cursor), null, addSelection);
 	}
 	
 	public inline function cursorUp(addSelection:Bool = false)
 	{
 		if (!addSelection && hasSelection()) removeSelection();
-		_updateCursorSelection(cursor, cursorLine - 1, addSelection);
-		
-		// TODO:
-/*				if (cursor > pageLine.length) {
-					if (cursorWant == -1) cursorWant = cursor;
-					cursor = pageLine.length;
-					if (changeOffset) xOffsetChanged = xOffsetToCursor();
-				}
-				else if (cursorWant > 0) {
-					cursor = cursorWant;
-					if (changeOffset) xOffsetChanged = xOffsetToCursor();
-				}
-*/
+		//_updateCursorSelection(cursor, cursorLine - 1, addSelection);
+		_updateCursorSelection(null, cursorLine - 1, addSelection);
 	}
 
 	public inline function cursorDown(addSelection:Bool = false)
 	{
 		if (!addSelection && hasSelection()) removeSelection();
-		_updateCursorSelection(cursor, cursorLine + 1, addSelection);
+		//_updateCursorSelection(cursor, cursorLine + 1, addSelection);
+		_updateCursorSelection(null, cursorLine + 1, addSelection);
 	}
 	
 	
