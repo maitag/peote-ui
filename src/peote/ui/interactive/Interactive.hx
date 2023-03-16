@@ -382,7 +382,12 @@ implements peote.layout.ILayoutElement
 		} else y = dragMinY;
 		
 		// call the drag-event
-		if (drag != null) drag((x - dragMinX) / (dragMaxX - dragMinX - width), (y - dragMinY) / (dragMaxY - dragMinY - height));
+		if (drag != null) {
+			//drag((x - dragMinX) / (dragMaxX - dragMinX - width), (y - dragMinY) / (dragMaxY - dragMinY - height));
+			var _dx = (dragMaxX - dragMinX - width);
+			var _dy = (dragMaxY - dragMinY - height);
+			drag( ( _dx != 0) ? (x - dragMinX) / _dx : 0.0,  ( _dy != 0) ? (y - dragMinY) / _dy : 0.0);
+		}
 	}
 
 	public function startDragging(e:PointerEvent)
