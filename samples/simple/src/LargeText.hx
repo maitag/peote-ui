@@ -87,7 +87,7 @@ class LargeText extends Application
 		var boxStyle = new BoxStyle(0x0e1306ff);
 		var textStyle:TextStyle = {
 			backgroundStyle:boxStyle,
-			selectionStyle:BoxStyle.createById(1, Color.GREY3), // new ID for new Layer
+			selectionStyle:BoxStyle.createById(1, 0x226c11ff), // new ID for new Layer
 			cursorStyle:BoxStyle.createById(2, Color.RED)       // new ID for new Layer
 		}
 		
@@ -96,8 +96,8 @@ class LargeText extends Application
 		// -------------------------------		
 		
 		var assetPath = AssetMacro.wget(
-			"https://www.gutenberg.org/files/55108/55108-0.txt", "assets/testdata/hegel-scienceOfLogic.txt"
-			//"https://www.gutenberg.org/cache/epub/919/pg919.txt", "assets/testdata/spinoza-ethic-I.txt"
+			//"https://www.gutenberg.org/files/55108/55108-0.txt", "assets/testdata/hegel-scienceOfLogic.txt"
+			"https://www.gutenberg.org/cache/epub/919/pg919.txt", "assets/testdata/spinoza-ethic-I.txt"
 			//"https://ia800308.us.archive.org/10/items/SartreLaNause1974/Sartre%20-%20La%20naus%C3%A9e%20-%201974_djvu.txt", "assets/testdata/satre-la-nausee.txt"
 		);
 		
@@ -131,8 +131,8 @@ class LargeText extends Application
 				// ------ sliders --------
 				
 				var sliderStyle:SliderStyle = {
-					backgroundStyle: boxStyle.copy(Color.GREY1),
-					draggerStyle: boxStyle.copy(Color.GREEN),
+					backgroundStyle: boxStyle.copy(0x123107ff),
+					draggerStyle: boxStyle.copy(0x227111ff),
 					draggerLength: 30,
 				};
 				
@@ -142,18 +142,17 @@ class LargeText extends Application
 				var vSlider = new UISlider(uiDisplay.width - 30, 0, 30, uiDisplay.height - 30, sliderStyle);
 				uiDisplay.add(vSlider);
 				
-				hSlider.setRange( 0, Math.min(0, - textPage.textWidth  + textPage.width  - textPage.leftSpace - textPage.rightSpace ), textPage.width  / textPage.textWidth  , false, false );
-				vSlider.setRange( 0, Math.min(0, - textPage.textHeight + textPage.height - textPage.topSpace  - textPage.bottomSpace), textPage.height / textPage.textHeight , false, false);
+				hSlider.setRange( 0, Math.min(0, - textPage.textWidth  + textPage.width  - textPage.leftSpace - textPage.rightSpace ), (textPage.width  - textPage.leftSpace - textPage.rightSpace )  / textPage.textWidth  , false, false );
+				vSlider.setRange( 0, Math.min(0, - textPage.textHeight + textPage.height - textPage.topSpace  - textPage.bottomSpace), (textPage.height - textPage.topSpace  - textPage.bottomSpace)  / textPage.textHeight , false, false);
 		
 				hSlider.onChange = function(uiSlider:UISlider, value:Float, percent:Float) {
-					textPage.xOffset = Std.int(value);
-					textPage.updateLayout();
+					trace(value, percent);
+					textPage.setXOffset(value);
 				}
 				hSlider.onMouseWheel = (_, e:WheelEvent) -> hSlider.setWheelDelta( e.deltaY );
 				
 				vSlider.onChange = function(uiSlider:UISlider, value:Float, percent:Float) {
-					textPage.yOffset = Std.int(value);
-					textPage.updateLayout();
+					textPage.setYOffset(value);
 				}
 				vSlider.onMouseWheel = (_, e:WheelEvent) -> vSlider.setWheelDelta( e.deltaY );
 				textPage.onMouseWheel = (_, e:WheelEvent) -> vSlider.setDelta( ((e.deltaY > 0) ? 1 : -1 ) * 80.0 );
@@ -175,16 +174,22 @@ class LargeText extends Application
 					vSlider.height = textPage.height;
 					vSlider.updateLayout();
 					
-					hSlider.setRange( 0, Math.min(0, - textPage.textWidth  + textPage.width  - textPage.leftSpace - textPage.rightSpace ), textPage.width  / textPage.textWidth  , true, false );
-					vSlider.setRange( 0, Math.min(0, - textPage.textHeight + textPage.height - textPage.topSpace  - textPage.bottomSpace), textPage.height / textPage.textHeight , true, false);
+					hSlider.setRange( 0, Math.min(0, - textPage.textWidth  + textPage.width  - textPage.leftSpace - textPage.rightSpace ), (textPage.width  - textPage.leftSpace - textPage.rightSpace )  / textPage.textWidth  , true, false );
+					vSlider.setRange( 0, Math.min(0, - textPage.textHeight + textPage.height - textPage.topSpace  - textPage.bottomSpace), (textPage.height - textPage.topSpace  - textPage.bottomSpace)  / textPage.textHeight , true, false);
 				};
-				
-				// TODO:
+								
 				textPage.onResizeTextWidth = (_, width:Float, deltaWidth:Float) -> {
-					hSlider.setRange( 0, Math.min(0, - textPage.textWidth  + textPage.width  - textPage.leftSpace - textPage.rightSpace ), textPage.width  / textPage.textWidth  , true, false );
+					hSlider.setRange( 0, Math.min(0, - textPage.textWidth  + textPage.width  - textPage.leftSpace - textPage.rightSpace ), (textPage.width  - textPage.leftSpace - textPage.rightSpace )  / textPage.textWidth  , true, false );
 				}
 				textPage.onResizeTextHeight = (_, height:Float, deltaHeight:Float) -> {
-					vSlider.setRange( 0, Math.min(0, - textPage.textHeight + textPage.height - textPage.topSpace  - textPage.bottomSpace), textPage.height / textPage.textHeight , true, false);
+					vSlider.setRange( 0, Math.min(0, - textPage.textHeight + textPage.height - textPage.topSpace  - textPage.bottomSpace), (textPage.height - textPage.topSpace  - textPage.bottomSpace)  / textPage.textHeight , true, false);
+				}
+				
+				textPage.onChangeXOffset = (_, xOffset:Float, deltaXOffset:Float) -> {
+					hSlider.setValue( xOffset);
+				}
+				textPage.onChangeYOffset = (_, yOffset:Float, deltaYOffset:Float) -> {
+					vSlider.setValue( yOffset);
 				}
 				
 			}

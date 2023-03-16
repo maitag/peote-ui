@@ -256,9 +256,9 @@ class TestTextPage extends Application
 			"autoWidth", ()-> { textPage.autoWidth = true; textPage.xOffset = 0; textPage.updateLayout(); }
 		);
 		button(
-			"left"  , ()-> { textPage.hAlign = HAlign.LEFT;   textPage.updateLayout(); },
-			"center", ()-> { textPage.hAlign = HAlign.CENTER; textPage.updateLayout(); },
-			"right" , ()-> { textPage.hAlign = HAlign.RIGHT;  textPage.updateLayout(); }
+			"left"  , ()-> { textPage.hAlign = HAlign.LEFT;   textPage.setXOffset(0); textPage.updateLayout(); },
+			"center", ()-> { textPage.hAlign = HAlign.CENTER; textPage.setXOffset(0); textPage.updateLayout(); },
+			"right" , ()-> { textPage.hAlign = HAlign.RIGHT;  textPage.setXOffset(0); textPage.updateLayout(); }
 		);		
 		button(
 			"leftSpace++", ()-> { textPage.leftSpace++; textPage.updateLayout(); },
@@ -277,9 +277,9 @@ class TestTextPage extends Application
 			"autoHeight", ()-> { textPage.autoHeight = true;  textPage.yOffset = 0; textPage.updateLayout(); }
 		);
 		button(
-			"top"  ,   ()-> { textPage.vAlign = VAlign.TOP;   textPage.updateLayout(); },
-			"center",  ()-> { textPage.vAlign = VAlign.CENTER; textPage.updateLayout(); },
-			"bottom" , ()-> { textPage.vAlign = VAlign.BOTTOM;  textPage.updateLayout(); }
+			"top"  ,   ()-> { textPage.vAlign = VAlign.TOP;    textPage.setYOffset(0); textPage.updateLayout(); },
+			"center",  ()-> { textPage.vAlign = VAlign.CENTER; textPage.setYOffset(0); textPage.updateLayout(); },
+			"bottom" , ()-> { textPage.vAlign = VAlign.BOTTOM; textPage.setYOffset(0); textPage.updateLayout(); }
 		);		
 		button(
 			"topSpace++", ()-> { textPage.topSpace++; textPage.updateLayout(); },
@@ -293,7 +293,8 @@ class TestTextPage extends Application
 		// -------- text offset ------------
 		buttonY += 12;
 		button(
-			"xOffset+=5", ()-> { textPage.autoWidth = false; textPage.xOffset += 5; textPage.updateLayout(); },
+			"xOffset+=5", ()-> { textPage.autoWidth = false; textPage.setXOffset(textPage.xOffset + 5); },
+			//"xOffset+=5", ()-> { textPage.autoWidth = false; textPage.xOffset += 5; textPage.updateLayout(); },
 			"xOffset-=5", ()-> { textPage.autoWidth = false; textPage.xOffset -= 5; textPage.updateLayout(); }
 		);		
 		button(
