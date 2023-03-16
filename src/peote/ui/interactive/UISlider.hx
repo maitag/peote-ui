@@ -67,6 +67,10 @@ implements peote.layout.ILayoutElement
 		
 	public inline function setRange(start:Float, end:Float, ?sizePercent:Null<Float>, triggerOnChange:Bool = true, triggerMouseMove:Bool = true) 
 	{
+		// TODO
+		// bug here sometimes inside text-edit-sample and full slider-length
+		// -> disable dragging then and send event !
+		
 		var newValue:Float = valueStart;
 		if (valueStart != valueEnd) newValue = start + (value - valueStart) * (end - start) / (valueEnd - valueStart);
 		

@@ -919,14 +919,14 @@ implements peote.layout.ILayoutElement
 	
 	public function setCursorToPointer(e:peote.ui.event.PointerEvent):Void {
 		if (uiDisplay != null) {
-			//cursorLine = getLineAtPosition(e.y);
-			//cursor = getCharAtPosition(e.x);
-			setCursorLine(getLineAtPosition(e.y), false, false);
-			setCursor(getCharAtPosition(e.x)); 
-			// BAD BUG HERE:
-			//setCursorAndLine(getCharAtPosition(e.x), getLineAtPosition(e.y));
-			cursorWant = -1;
+			setCursorToPosition(e.x, e.y);
 		}
+	}
+	
+	public function setCursorToPosition(x:Int, y:Int):Void {
+		setCursorLine(getLineAtPosition(y), false, false);
+		setCursor(getCharAtPosition(x)); 
+		cursorWant = -1;
 	}
 	
 	// ----------- Selection Events -----------
@@ -944,67 +944,93 @@ implements peote.layout.ILayoutElement
 	
 	var selectStartFrom:Int = 0;
 	var selectStartFromLine:Int = 0;
-	var xOffsetAtSelectStart:Float = 0;
-	var yOffsetAtSelectStart:Float = 0;
 		
 	function onSelectStart(e:peote.ui.event.PointerEvent):Void {
 		//trace("selectStart", xOffset);
 		removeSelection();
-		
-		selectStartFromLine = getLineAtPosition(e.y);
-		
-		setCursorLine(selectStartFromLine, false, false); 
-		
-		selectStartFrom = getCharAtPosition(e.x);
-		
-		setCursor(selectStartFrom); 
-		
-		//TODO
-		// MAYBE BAD BUG HERE:
-		//setCursorAndLine(selectStartFrom, selectStartFromLine);
-		cursorWant = -1;
-		
-		xOffsetAtSelectStart = xOffset;
-		yOffsetAtSelectStart = yOffset;
+		setCursorToPosition(e.x, e.y);
+		selectStartFromLine = cursorLine;
+		selectStartFrom = cursor;
 		selectionHide();
 	}
 	
 	function onSelectStop(e:peote.ui.event.PointerEvent = null):Void {
-		//trace("selectStop", (e != null) ? e.x : "", xOffset);
+		trace("selectStop", (e != null) ? e.x : "", xOffset);
+		stopSelectOutsideTimer();
+		selectNextX = 0;
+		selectNextY = 0;
 	}
 	
 	function onSelect(e:peote.ui.event.PointerEvent):Void {
 		//trace("onSelect");
-/*		if (localX(e.x) < leftSpace) {
-			if (localX(e.x) < getAlignedXOffset(leftSpace) + xOffsetAtSelectStart) {
-				xOffset = Math.max(- getAlignedXOffset(0), xOffsetAtSelectStart);
-			}
-			else xOffset = leftSpace - localX(e.x) + xOffsetAtSelectStart;
-			updatePageLayout(false); // OPTIMIZING: not for the background!
+		if (localX(e.x) < leftSpace) {
+			if (selectNextX != -1) { selectNextX = - 1; startSelectOutsideTimer(); }
 		}
 		else if (localX(e.x) > width - rightSpace) {
-			if ( localX(e.x) > getAlignedXOffset(page.textWidth + leftSpace  + xOffsetAtSelectStart ) ) {
-				xOffset = Math.min(-getAlignedXOffset(Math.floor(page.textWidth) - width + leftSpace + rightSpace), xOffsetAtSelectStart);
-			} 
-			else xOffset = width - localX(e.x) - rightSpace  + xOffsetAtSelectStart;
-			updatePageLayout(false); // OPTIMIZING: not for the background!
+			if (selectNextX != 1) { selectNextX = 1; startSelectOutsideTimer();	}
 		}
-		else if (xOffset != xOffsetAtSelectStart) {
-			xOffset = xOffsetAtSelectStart;
-			updatePageLayout(false); // OPTIMIZING: not for the background!
+		else selectNextX = 0;
+				
+		if (localY(e.y) < topSpace) {
+			if (selectNextY != -1) { selectNextY = - 1; startSelectOutsideTimer(); }
 		}
-*/		
-		setCursorLine(getLineAtPosition(e.y), false, false);
-		setCursor(getCharAtPosition(e.x));
-		// BAD BUG HERE:
-		//setCursorAndLine(getCharAtPosition(e.x), getLineAtPosition(e.y));
-		cursorWant = -1;
+		else if (localY(e.y) > height - bottomSpace) {
+			if (selectNextY != 1) { selectNextY = 1; startSelectOutsideTimer(); }
+		}
+		else selectNextY = 0;
 		
-		select( selectStartFrom, cursor, selectStartFromLine, cursorLine );
-		// TODO: detect the char left right while xOffset changes at the border
-		//       OR allways change xScroll to make cursor fully visible!
+		if (selectNextX == 0 && selectNextY == 0) {
+			stopSelectOutsideTimer();
+			setCursorToPosition(e.x, e.y);
+			select( selectStartFrom, cursor, selectStartFromLine, cursorLine );
+		}
+		else if (selectNextX == 0) {
+			setCursor(getCharAtPosition(e.x)); 
+			cursorWant = -1;
+			select( selectStartFrom, cursor, selectStartFromLine, cursorLine );
+		}
+		else if (selectNextY == 0) {
+			setCursorLine(getLineAtPosition(e.y));
+			cursorWant = -1;
+			select( selectStartFrom, cursor, selectStartFromLine, cursorLine );
+		}
 	}
-
+	
+	var seletionOutsideTimer = new haxe.Timer(50);
+	var seletionOutsideTimerIsRun = false;
+	var selectNextX:Int = 0;
+	var selectNextY:Int = 0;
+	function startSelectOutsideTimer() {
+		if (! seletionOutsideTimerIsRun) {
+			seletionOutsideTimer = new haxe.Timer(50);
+			seletionOutsideTimer.run = selectNextOutside;
+			seletionOutsideTimerIsRun = true;
+		}
+	}
+	function stopSelectOutsideTimer() {
+		seletionOutsideTimer.stop();
+		seletionOutsideTimerIsRun = false;
+	}
+	function selectNextOutside() {
+		if ((selectNextX < 0 && cursor == 0) || (selectNextX > 0 && cursor == pageLine.length)) selectNextX = 0;
+		if ((selectNextY < 0 && cursorLine == 0) || (selectNextY > 0 && cursorLine == page.length -1)) selectNextY = 0;
+		if (selectNextX == 0 && selectNextY == 0) {
+			stopSelectOutsideTimer();
+		}
+		else {
+			if (selectNextX < 0 && cursor > pageLine.visibleFrom) cursor = pageLine.visibleFrom;
+			if (selectNextX > 0 && cursor < pageLine.visibleTo) cursor = pageLine.visibleTo;
+			if (selectNextY < 0 && cursorLine > page.visibleLineFrom) cursorLine = page.visibleLineFrom;
+			if (selectNextY > 0 && cursorLine < page.visibleLineTo) cursorLine = page.visibleLineTo;
+			
+			if (selectNextY != 0 && selectNextX != 0) setCursorAndLine(cursor + selectNextX, cursorLine + selectNextY);
+			else if (selectNextX != 0) setCursor(cursor + selectNextX);
+			else if (selectNextY != 0) setCursorLine(cursorLine + selectNextY);
+			
+			cursorWant = -1;
+			select( selectStartFrom, cursor, selectStartFromLine, cursorLine );
+		}
+	}
 	
 	// -----------------------------------------------------
 	// ------------------- TextInput -----------------------
