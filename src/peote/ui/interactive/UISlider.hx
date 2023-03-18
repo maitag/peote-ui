@@ -67,10 +67,6 @@ implements peote.layout.ILayoutElement
 		
 	public inline function setRange(start:Float, end:Float, ?sizePercent:Null<Float>, triggerOnChange:Bool = true, triggerMouseMove:Bool = true) 
 	{
-		// TODO
-		// bug here sometimes inside text-edit-sample and full slider-length
-		// -> disable dragging then and send event !
-		
 		var newValue:Float = valueStart;
 		if (valueStart != valueEnd) newValue = start + (value - valueStart) * (end - start) / (valueEnd - valueStart);
 		
@@ -90,12 +86,10 @@ implements peote.layout.ILayoutElement
 			}			
 		}
 		
+		// TODO disable dragging: if (valueStart == valueEnd)
+		
 		setValue(newValue, triggerOnChange, triggerMouseMove);
 		//trace(newValue, _percent);
-		//if (valueStart != valueEnd) updateDragger(triggerOnChange, triggerMouseMove);
-		// TODO: else -> disable dragging
-		
-		
 	}
 	
  	public inline function updateDragger(triggerOnChange:Bool = true, triggerMouseMove:Bool = true) 
@@ -289,6 +283,20 @@ implements peote.layout.ILayoutElement
 	
 	public var onChange(null, default):UISlider->Float->Float->Void = null;
 	
+	// TODO: hook to bind UITextPage or UIArea update range/sizePercent for scrolling:
+/*	var resizeBindings:Array<UISlider->Void> = null;
+	override inline function _onResizeWidth():Void {
+		//trace("_onResizeWidth");
+		if (resizeBindings != null) {
+			for (f in resizeBindings) {
+				// a: textPage.width  - textPage.leftSpace - textPage.rightSpace
+				// b: textPage.textWidth
+				//setRange( 0, Math.min(0,  b - a ), a / b  , true, false );
+				f(this);
+			}
+		}
+	}
+*/	
 	// ---------- Events --------------------
 	
 	public var onPointerOver(never, set):UISliderEventParams;

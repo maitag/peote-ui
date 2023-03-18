@@ -146,6 +146,7 @@ implements peote.layout.ILayoutElement
 	public var width(default, set):Int;
 	inline function set_width(w:Int):Int {
 		if (w != width) {
+			//_onResizeWidth();
 			if (resizeWidth != null) {
 				var oldWidth = width;
 				resizeWidth(width = w, w - oldWidth);
@@ -153,6 +154,8 @@ implements peote.layout.ILayoutElement
 		}
 		return w;
 	}
+	//function _onResizeWidth():Void {} // to override by childclasses
+
 	
 	public var height(default, set):Int;
 	inline function set_height(h:Int):Int {
