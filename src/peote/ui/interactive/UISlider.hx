@@ -15,20 +15,18 @@ private typedef UISliderFocusEventParams = UISlider->Void;
 private typedef UISliderResizeEventParams = UISlider->Int->Int->Void;
 
 @:allow(peote.ui)
-class UISlider extends Interactive implements ParentElement
+class UISlider extends Interactive //implements ParentElement
 #if peote_layout
 implements peote.layout.ILayoutElement
 #end
 {
-	public var xOffset:Int = 0;
-	public var yOffset:Int = 0;
+	//public var xOffset:Int = 0;
+	//public var yOffset:Int = 0;
 	
 	var last_x:Int;
 	var last_y:Int;
 			
 
-	public var isVertical(default, null):Bool = false;
-	
 	var _percent:Float = 0.0; // allways from 0.0 to 1.0
 	
 	public var percent(get, set):Float;
@@ -65,7 +63,7 @@ implements peote.layout.ILayoutElement
 		setPercent(normalizeValue(value), triggerOnChange, triggerMouseMove);
 	}
 		
-	public inline function setRange(start:Float, end:Float, ?sizePercent:Null<Float>, triggerOnChange:Bool = true, triggerMouseMove:Bool = true) 
+	public inline function setRange(start:Float, end:Float, ?draggerLengthPercent:Null<Float>, triggerOnChange:Bool = true, triggerMouseMove:Bool = true) 
 	{
 		var newValue:Float = valueStart;
 		if (valueStart != valueEnd) newValue = start + (value - valueStart) * (end - start) / (valueEnd - valueStart);
@@ -73,34 +71,31 @@ implements peote.layout.ILayoutElement
 		valueStart = start;
 		valueEnd = end;
 		
-		if (sizePercent != null) {
-			if (sizePercent > 1.0) sizePercent = 1.0;
-			if (isVertical) {
-				var minSize:Float = (sliderStyle.draggerLength != null) ? sliderStyle.draggerLength : width;
-				dragger.height = Std.int(Math.max(minSize, height * sizePercent));
-				
-			}
-			else {
-				var minSize:Float = (sliderStyle.draggerLength != null) ? sliderStyle.draggerLength : height;
-				dragger.width = Std.int(Math.max(minSize, width * sizePercent));				
-			}			
-		}
-		
+		if (draggerLengthPercent != null) this.draggerLengthPercent = draggerLengthPercent;		
 		// TODO disable dragging: if (valueStart == valueEnd)
 		
 		setValue(newValue, triggerOnChange, triggerMouseMove);
 		//trace(newValue, _percent);
 	}
 	
+	public inline function setDraggerSize(sizePercent:Null<Float>, triggerMouseMove:Bool = true) 
+	{
+		trace("TODO");
+		draggerLengthPercent = sizePercent;
+		updateDragger(false, triggerMouseMove);
+	}
+		
  	public inline function updateDragger(triggerOnChange:Bool = true, triggerMouseMove:Bool = true) 
 	{
 		if (dragger.isDragging) return;
 		
+		trace(draggerWidth);
+		dragger.width = draggerWidth;
+		dragger.height = draggerHeight;
+		
 		if (isVertical) dragger.y = y + Std.int( (height - dragger.height) * _percent );
 		else dragger.x = x + Std.int( (width - dragger.width) * _percent );
- 		if (isVertical) dragger.y = y + Std.int( (height - dragger.height) * _percent );
-		else dragger.x = x + Std.int( (width - dragger.width) * _percent );
-				
+		
 		dragger.maskByElement(this);
 		dragger.updateLayout();
 		
@@ -131,7 +126,36 @@ implements peote.layout.ILayoutElement
 	inline function get_draggerStyle():Dynamic return dragger.style;
 	inline function set_draggerStyle(style:Dynamic):Dynamic return dragger.style = style;
 	
-	var sliderStyle:SliderStyle;
+	public var isVertical(default, null):Bool = false;
+	public var reverse:Bool = false;
+	
+	// TODO:
+	public var draggerSize:Null<Int> = null;
+	public var draggerSizePercent:Null<Float> = null;
+	public var draggerOffset:Int = 0; // dragger pixel-offset, is centered by default
+	
+	public var draggerLength:Null<Int> = null;
+	var _sizePercent:Null<Float> = null;
+	public var draggerLengthPercent(default, set):Null<Float> = null;
+	inline function set_draggerLengthPercent(p:Null<Float>):Null<Float> {
+		return draggerLengthPercent = (p != null && p > 1.0) ? 1.0 : p;
+	}
+	
+	var draggerWidth(get, never):Int;
+	inline function get_draggerWidth():Int return get_draggerWidthHeight(isVertical, width, height);	
+	var draggerHeight(get, never):Int;
+	inline function get_draggerHeight():Int return get_draggerWidthHeight(!isVertical, height, width);
+	
+	inline function get_draggerWidthHeight(_isVertical:Bool, w:Int, h:Int):Int {
+		if (_isVertical) {
+			if (draggerSizePercent == null) return (draggerSize != null) ? draggerSize : w;
+			else return Std.int( (draggerSize == null) ? w * draggerSizePercent : Math.max(draggerSize, w * draggerSizePercent) );
+		} 
+		else {
+			if (draggerLengthPercent == null) return (draggerLength != null) ? draggerLength : h;
+			else return Std.int( (draggerLength == null) ? w * draggerLengthPercent : Math.max(draggerLength, w * draggerLengthPercent) );
+		}
+	}
 	
 	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int=0, sliderStyle:SliderStyle=null) 
 	{
@@ -140,32 +164,27 @@ implements peote.layout.ILayoutElement
 		last_x = xPosition;
 		last_y = yPosition;
 		
-		if (width < height) isVertical = true;
-		
-		this.sliderStyle = sliderStyle;
-		
-		if (sliderStyle.backgroundStyle != null) {
-			background = new UIElement(xPosition, yPosition, width, height, zIndex+1, sliderStyle.backgroundStyle);
-		}
-		
-		var draggerWidth:Int;
-		var draggerHeight:Int;
-		
-		if (isVertical) {
-			if (sliderStyle.draggerSize != null) draggerWidth = sliderStyle.draggerSize else draggerWidth = width;
-			if (sliderStyle.draggerLength != null) draggerHeight = sliderStyle.draggerLength else draggerHeight = width;
+		if (sliderStyle != null) 
+		{
+			
+			if (sliderStyle.backgroundStyle != null) {
+				background = new UIElement(xPosition, yPosition, width, height, zIndex+1, sliderStyle.backgroundStyle);
+			}
+					
+			isVertical = (sliderStyle.vertical == null) ? (width < height) : sliderStyle.vertical;
+			draggerSize = sliderStyle.draggerSize;
+			draggerSizePercent = sliderStyle.draggerSizePercent;
+			draggerOffset = sliderStyle.draggerOffset;
+			draggerLength = sliderStyle.draggerLength;
+			draggerLengthPercent = sliderStyle.draggerLengthPercent;
+			
 			if (sliderStyle.draggerStyle != null) {
-				dragger = new UIElement(xPosition+Std.int((width - draggerWidth)/2), yPosition, draggerWidth, draggerHeight, zIndex+2, sliderStyle.draggerStyle);
+				if (isVertical) dragger = new UIElement(x+Std.int((width - draggerWidth)/2), y, draggerWidth, draggerHeight, zIndex+2, sliderStyle.draggerStyle);
+				else dragger = new UIElement(x, y+Std.int((height - draggerHeight)/2), draggerWidth, draggerHeight, zIndex+2, sliderStyle.draggerStyle);
 			}
 		}
-		else {
-			if (sliderStyle.draggerSize != null) draggerHeight = sliderStyle.draggerSize else draggerHeight = height;
-			if (sliderStyle.draggerLength != null) draggerWidth = sliderStyle.draggerLength else draggerWidth = height;
-			if (sliderStyle.draggerStyle != null) {
-				dragger = new UIElement(xPosition, yPosition+Std.int((height - draggerHeight)/2), draggerWidth, draggerHeight, zIndex+2, sliderStyle.draggerStyle);
-			}
-		}
-				
+		// TODO: if (dragger == null) -> at least one hidden then
+		
 		// set dragger events
 		dragger.onPointerOver = function(uiElement:UIElement, e:PointerEvent) if (onDraggerPointerOver != null) onDraggerPointerOver(this, e);
 		dragger.onPointerOut = function(uiElement:UIElement, e:PointerEvent) if (onDraggerPointerOut != null) onDraggerPointerOut(this, e);
@@ -199,8 +218,10 @@ implements peote.layout.ILayoutElement
 	}
 	
 	inline function updateDragArea() {
-		if (isVertical) dragger.setDragArea(x+Std.int((width - dragger.width)/2), y, dragger.width, height);
-		else dragger.setDragArea(x, y+Std.int((height - dragger.height)/2), width, dragger.height);
+		if (isVertical) dragger.setDragArea(dragger.x, y, dragger.width, height);
+		else dragger.setDragArea(x, dragger.y, width, dragger.height);
+		//if (isVertical) dragger.setDragArea(x+Std.int((width - dragger.width)/2), y, dragger.width, height);
+		//else dragger.setDragArea(x, y+Std.int((height - dragger.height)/2), width, dragger.height);
 	}
 	
 	public inline function updateBackgroundStyle() if (background != null) background.updateVisibleStyle();
@@ -232,14 +253,8 @@ implements peote.layout.ILayoutElement
 		if (dragger != null) {
 			dragger.x += deltaX;
 			dragger.y += deltaY;
-			if (isVertical) {
-				if (sliderStyle.draggerSize == null) dragger.width = width;
-				if (sliderStyle.draggerLength == null) dragger.height = width;
-			}
-			else {
-				if (sliderStyle.draggerSize == null) dragger.height = height;
-				if (sliderStyle.draggerLength == null) dragger.width = height;
-			}
+			dragger.width = draggerWidth;
+			dragger.height = draggerHeight;
 			updateDragArea();
 			dragger.maskByElement(this);
 			dragger.updateLayout();

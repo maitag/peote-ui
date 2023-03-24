@@ -98,8 +98,7 @@ class TestUIArea extends Application
 		var sliderStyle:SliderStyle = {
 			backgroundStyle: roundBorderStyle.copy(Color.GREY2),
 			draggerStyle: roundBorderStyle.copy(Color.GREY3, Color.GREY2, 0.5),
-			draggerSize:16,
-			draggerLength:30,
+			draggerSize:16
 		};
 		
 		// ---------------------------------------------------------

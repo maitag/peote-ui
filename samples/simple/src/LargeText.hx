@@ -168,6 +168,11 @@ class LargeText extends Application
 				hSlider.onResizeWidth = (_, width:Float, deltaWidth:Float) -> {
 				//textPage.onResizeWidth = (_, width:Float, deltaWidth:Float) -> {
 					//hSlider.width = textPage.width;
+					//hSlider.setRange( 0, Math.min(0, textPage.width  - textPage.leftSpace - textPage.rightSpace  - textPage.textWidth ), (textPage.width  - textPage.leftSpace - textPage.rightSpace )  / textPage.textWidth  , true, false );
+				
+					hSlider.setDraggerSize((textPage.width  - textPage.leftSpace - textPage.rightSpace )  / textPage.textWidth, false );
+				}		
+				textPage.onResizeWidth = (_, width:Float, deltaWidth:Float) -> {
 					hSlider.setRange( 0, Math.min(0, textPage.width  - textPage.leftSpace - textPage.rightSpace  - textPage.textWidth ), (textPage.width  - textPage.leftSpace - textPage.rightSpace )  / textPage.textWidth  , true, false );
 				}		
 				vSlider.onResizeHeight = (_, height:Float, deltaHeight:Float) -> {

@@ -42,6 +42,14 @@ class SliderStyleImpl
 	// at default it is same as draggerSize
 	public var draggerLength:Null<Int> = null;
 	public var draggerLengthPercent:Null<Float> = null;
+	
+	// TODO: spacing into drag-direction
+	
+	
+	// background pixel-size, is automatic set to slider size by default
+	//public var backgroundSize:Null<Int> = null;
+	//public var backgroundSizePercent:Null<Float> = null;	
+	
 }
 
 @:structInit

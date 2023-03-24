@@ -55,11 +55,13 @@ class Sliders extends Application
 			backgroundStyle: roundBorderStyle,
 			draggerStyle: roundBorderStyle.copy(Color.YELLOW),
 			//vertical:true,
-			draggerSize:50,
+			//draggerSize:20,
+			draggerSizePercent:0.75,
 			draggerLength:100,
+			draggerLengthPercent:0.3,
 		};
 		
-		var hSlider = new UISlider(80, 10, 500, 60, sliderStyle);
+		var hSlider = new UISlider(80, 10, 500, 40, sliderStyle);
 		hSlider.valueStart = -5;
 		hSlider.valueEnd = 10;
 		setSliderEvents(hSlider);
