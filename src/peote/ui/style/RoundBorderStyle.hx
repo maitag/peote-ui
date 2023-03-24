@@ -9,6 +9,7 @@ import peote.ui.interactive.Interactive;
 import peote.ui.style.interfaces.Style;
 import peote.ui.style.interfaces.StyleProgram;
 import peote.ui.style.interfaces.StyleElement;
+import peote.ui.util.Space;
 
 @:structInit
 class RoundBorderStyle implements Style
@@ -53,10 +54,10 @@ class RoundBorderStyleElement implements StyleElement implements Element
 	
 	//var OPTIONS = {  };
 		
-	public inline function new(style:Dynamic, uiElement:Interactive = null)
+	public inline function new(style:Dynamic, uiElement:Interactive = null, space:Space = null)
 	{
 		setStyle(style);
-		if (uiElement != null) setLayout(uiElement);
+		if (uiElement != null) setLayout(uiElement, space);
 	}
 	
 	public inline function setStyle(style:Dynamic)
@@ -67,13 +68,21 @@ class RoundBorderStyleElement implements StyleElement implements Element
 		borderRadius = style.borderRadius;
 	}
 	
-	public inline function setLayout(uiElement:Interactive)
+	public inline function setLayout(uiElement:Interactive, space:Space = null)
 	{
-		x = uiElement.x;
-		y = uiElement.y;
-		w = uiElement.width;
-		h = uiElement.height;
 		z = uiElement.z;
+		
+		if (space != null) {
+			x = uiElement.x + space.left;
+			y = uiElement.y + space.top;
+			w = uiElement.width - space.left -space.right;
+			h = uiElement.height - space.top -space.bottom;
+		} else {
+			x = uiElement.x;
+			y = uiElement.y;
+			w = uiElement.width;
+			h = uiElement.height;
+		}
 		
 		#if (!peoteui_no_masking)
 		if (uiElement.masked) { // if some of the edges is cut by mask for scroll-area
@@ -90,13 +99,22 @@ class RoundBorderStyleElement implements StyleElement implements Element
 		#end
 	}
 	
-	public inline function setMasked(uiElement:Interactive, _x:Int, _y:Int, _w:Int, _h:Int, _mx:Int, _my:Int, _mw:Int, _mh:Int, _z:Int)
+	public inline function setMasked(uiElement:Interactive, _x:Int, _y:Int, _w:Int, _h:Int, _mx:Int, _my:Int, _mw:Int, _mh:Int, _z:Int, space:Space = null)
 	{
 		z = _z;
-		x = _x;
-		y = _y;
-		w = _w;
-		h = _h;
+		
+		if (space != null) {
+			x = _x + space.left;
+			y = _y + space.top;
+			w = _w - space.left -space.right;
+			h = _h - space.top -space.bottom;
+		} else {
+			x = _x;
+			y = _y;
+			w = _w;
+			h = _h;
+		}
+		
 		#if (!peoteui_no_masking)
 		mx = _mx;
 		my = _my;
@@ -191,15 +209,15 @@ class RoundBorderStyleProgram extends Program implements StyleProgram
 		alphaEnabled = true;
 	}
 
-	public inline function createElement(uiElement:Interactive, style:Dynamic):StyleElement
+	public inline function createElement(uiElement:Interactive, style:Dynamic, space:Space = null):StyleElement
 	{
-		return new RoundBorderStyleElement(style, uiElement);
+		return new RoundBorderStyleElement(style, uiElement, space);
 	}
 	
-	public inline function createElementAt(uiElement:Interactive, x:Int, y:Int, w:Int, h:Int, mx:Int, my:Int, mw:Int, mh:Int, z:Int, style:Dynamic):StyleElement
+	public inline function createElementAt(uiElement:Interactive, x:Int, y:Int, w:Int, h:Int, mx:Int, my:Int, mw:Int, mh:Int, z:Int, style:Dynamic, space:Space = null):StyleElement
 	{
 		var e = new RoundBorderStyleElement(style);
-		e.setMasked(uiElement, x, y, w, h, mx, my, mw, mh, z);
+		e.setMasked(uiElement, x, y, w, h, mx, my, mw, mh, z, space);
 		return e;
 	}
 	

@@ -32,7 +32,8 @@ class SliderStyleImpl
 	public var draggerSizePercent:Null<Float> = null;
     
 	// dragger pixel-offset, is centered by default
-	public var draggerOffset:Int = 0;
+	public var draggerOffset:Int = 0; // no pixel offset by default
+	public var draggerOffsetPercent:Float = 0.5; // center by default
 	
 	
 	// ------- into slider length and dragg direction ---------

@@ -9,6 +9,7 @@ import peote.ui.interactive.Interactive;
 import peote.ui.style.interfaces.Style;
 import peote.ui.style.interfaces.StyleProgram;
 import peote.ui.style.interfaces.StyleElement;
+import peote.ui.util.Space;
 
 @:structInit
 class BoxStyle implements Style
@@ -40,10 +41,10 @@ class BoxStyleElement implements StyleElement implements Element
 	
 	//var OPTIONS = {  };
 		
-	public inline function new(style:Dynamic, uiElement:Interactive = null)
+	public inline function new(style:Dynamic, uiElement:Interactive = null, space:Space = null)
 	{
 		setStyle(style);
-		if (uiElement != null) setLayout(uiElement);
+		if (uiElement != null) setLayout(uiElement, space);
 	}
 	
 	public inline function setStyle(style:Dynamic)
@@ -51,41 +52,63 @@ class BoxStyleElement implements StyleElement implements Element
 		color = style.color;
 	}
 	
-	public inline function setLayout(uiElement:Interactive)
+	public inline function setLayout(uiElement:Interactive, space:Space = null)
 	{
-		z = uiElement.z;
-		
-		#if (peoteui_no_masking)
-		x = uiElement.x;
-		y = uiElement.y;
-		w = uiElement.width;
-		h = uiElement.height;
-		#else
-		if (uiElement.masked) { // if some of the edges is cut by mask for scroll-area
-			x = uiElement.x + uiElement.maskX;
-			y = uiElement.y + uiElement.maskY;
+		z = uiElement.z;		
+		if ( 
+			#if (peoteui_no_masking)
+			false
+			#else 
+			uiElement.masked
+			#end	
+		) { // if some of the edges is cut by mask for scroll-area
+			if (space != null) {
+				x = uiElement.x + space.left + uiElement.maskX;
+				y = uiElement.y + space.top + uiElement.maskY;
+			} else {
+				x = uiElement.x + uiElement.maskX;
+				y = uiElement.y + uiElement.maskY;
+			}
 			w = uiElement.maskWidth;
 			h = uiElement.maskHeight;
 		} else {
-			x = uiElement.x;
-			y = uiElement.y;
-			w = uiElement.width;
-			h = uiElement.height;
+			if (space != null) {
+				x = uiElement.x + space.left;
+				y = uiElement.y + space.top;
+				w = uiElement.width - space.left -space.right;
+				h = uiElement.height - space.top -space.bottom;
+			} else {
+				x = uiElement.x;
+				y = uiElement.y;
+				w = uiElement.width;
+				h = uiElement.height;
+			}
 		}
-		#end		
 	}
 	
-	public inline function setMasked(uiElement:Interactive, _x:Int, _y:Int, _w:Int, _h:Int, _mx:Int, _my:Int, _mw:Int, _mh:Int, _z:Int)
+	public inline function setMasked(uiElement:Interactive, _x:Int, _y:Int, _w:Int, _h:Int, _mx:Int, _my:Int, _mw:Int, _mh:Int, _z:Int, space:Space = null)
 	{
 		z = _z;
 		#if (peoteui_no_masking)
-		x = _x;
-		y = _y;
-		w = _w;
-		h = _h;
+		if (space != null) {
+			x = _x + space.left;
+			y = _y + space.top;
+			w = _w - space.left -space.right;
+			h = _h - space.top -space.bottom;
+		} else {
+			x = _x;
+			y = _y;
+			w = _w;
+			h = _h;
+		}
 		#else
-		x = _x + _mx;
-		y = _y + _my;
+		if (space != null) {
+			x = _x + space.left + _mx;
+			y = _y + space.top + _my;
+		} else {
+			x = _x + _mx;
+			y = _y + _my;
+		}
 		w = _mw;
 		h = _mh;
 		#end		
@@ -101,15 +124,15 @@ class BoxStyleProgram extends Program implements StyleProgram
 		super(new Buffer<BoxStyleElement>(1024, 1024));
 	}
 
-	public inline function createElement(uiElement:Interactive, style:Dynamic):StyleElement
+	public inline function createElement(uiElement:Interactive, style:Dynamic, space:Space = null):StyleElement
 	{
-		return new BoxStyleElement(style, uiElement);
+		return new BoxStyleElement(style, uiElement, space);
 	}
 	
-	public inline function createElementAt(uiElement:Interactive, x:Int, y:Int, w:Int, h:Int, mx:Int, my:Int, mw:Int, mh:Int, z:Int, style:Dynamic):StyleElement
+	public inline function createElementAt(uiElement:Interactive, x:Int, y:Int, w:Int, h:Int, mx:Int, my:Int, mw:Int, mh:Int, z:Int, style:Dynamic, space:Space = null):StyleElement
 	{
 		var e = new BoxStyleElement(style);
-		e.setMasked(uiElement, x, y, w, h, mx, my, mw, mh, z);
+		e.setMasked(uiElement, x, y, w, h, mx, my, mw, mh, z, space);
 		return e;
 	}
 	
