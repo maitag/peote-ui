@@ -1,6 +1,7 @@
 package peote.ui.style;
 
 import peote.ui.style.interfaces.Style;
+import peote.ui.util.Space;
 
 @:structInit
 class SliderStyleImpl
@@ -24,6 +25,8 @@ class SliderStyleImpl
 	// to change this -> feel free to reverse
 	public var reverse:Bool = false;
    
+	public var draggerSpace:Space = null;
+	public var backgroundSpace:Space = null;
 	
 	// ------------- into slider waist sizing -----------------
 	
@@ -31,10 +34,17 @@ class SliderStyleImpl
 	public var draggerSize:Null<Int> = null;
 	public var draggerSizePercent:Null<Float> = null;
     
-	// dragger pixel-offset, is centered by default
-	public var draggerOffset:Int = 0; // no pixel offset by default
-	public var draggerOffsetPercent:Float = 0.5; // center by default
+	// dragger pixel-offset
+	public var draggerOffset:Null<Int> = null; // pixel offset
+	public var draggerOffsetPercent:Null<Float> = null;  // 0.5 is for center
 	
+	// background pixel-size, is automatic set to slider size by default
+	public var backgroundSize:Null<Int> = null;
+	public var backgroundSizePercent:Null<Float> = null;
+	
+	// background pixel-offset
+	public var backgroundOffset:Null<Int> = null; // pixel offset
+	public var backgroundOffsetPercent:Null<Float> = null;  // 0.5 is for center
 	
 	// ------- into slider length and dragg direction ---------
 	
@@ -44,13 +54,14 @@ class SliderStyleImpl
 	public var draggerLength:Null<Int> = null;
 	public var draggerLengthPercent:Null<Float> = null;
 	
-	// TODO: spacing into drag-direction
+	public var backgroundLength:Null<Int> = null;
+	public var backgroundLengthPercent:Null<Float> = null;
 	
 	
-	// background pixel-size, is automatic set to slider size by default
-	//public var backgroundSize:Null<Int> = null;
-	//public var backgroundSizePercent:Null<Float> = null;	
-	
+	// extra spaces for dragarea start/end
+	public var draggSpace:Null<Int> = null;
+	public var draggSpaceStart:Null<Int> = null;
+	public var draggSpaceEnd:Null<Int> = null;
 }
 
 @:structInit

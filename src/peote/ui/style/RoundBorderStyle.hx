@@ -75,8 +75,8 @@ class RoundBorderStyleElement implements StyleElement implements Element
 		if (space != null) {
 			x = uiElement.x + space.left;
 			y = uiElement.y + space.top;
-			w = uiElement.width - space.left -space.right;
-			h = uiElement.height - space.top -space.bottom;
+			w = uiElement.width - space.left - space.right;
+			h = uiElement.height - space.top - space.bottom;
 		} else {
 			x = uiElement.x;
 			y = uiElement.y;
@@ -106,8 +106,8 @@ class RoundBorderStyleElement implements StyleElement implements Element
 		if (space != null) {
 			x = _x + space.left;
 			y = _y + space.top;
-			w = _w - space.left -space.right;
-			h = _h - space.top -space.bottom;
+			w = _w - space.left - space.right;
+			h = _h - space.top - space.bottom;
 		} else {
 			x = _x;
 			y = _y;

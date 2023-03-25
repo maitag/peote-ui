@@ -54,11 +54,26 @@ class Sliders extends Application
 		var sliderStyle:SliderStyle = {
 			backgroundStyle: roundBorderStyle,
 			draggerStyle: roundBorderStyle.copy(Color.YELLOW),
+			
 			//vertical:true,
-			//draggerSize:20,
+			
+			//draggerSpace:{left:15, right:15},
+			//backgroundSpace:{left:50},
+
+			//backgroundLengthPercent:0.9,
+			backgroundSizePercent:0.3,
+
+			
+			draggerLength:50,
+			draggerLengthPercent:0.1,
+			
+			draggerSize:20,
 			draggerSizePercent:0.75,
-			draggerLength:100,
-			draggerLengthPercent:0.3,
+			//draggerOffset:0,
+			draggerOffsetPercent:0.5,
+			
+			draggSpaceStart:40,
+			draggSpaceEnd:20,
 		};
 		
 		var hSlider = new UISlider(80, 10, 500, 40, sliderStyle);
@@ -73,8 +88,8 @@ class Sliders extends Application
 		uiDisplay.add(vSlider);
 		
 		hSlider.onChange = function(uiSlider:UISlider, value:Float, percent:Float) {
-			trace( 'hSlider percent: ${percent*100}%' );
-			trace( 'hSlider value  :$value' );
+			//trace( 'hSlider percent: ${percent*100}%' );
+			//trace( 'hSlider value  :$value' );
 			vSlider.percent = percent;
 		}
 		
