@@ -2,7 +2,6 @@ package peote.ui.interactive;
 
 import peote.ui.interactive.Interactive;
 import peote.ui.interactive.UIElement;
-import peote.ui.interactive.interfaces.ParentElement;
 import peote.ui.style.SliderStyle;
 import peote.ui.util.Space;
 
@@ -16,19 +15,16 @@ private typedef UISliderFocusEventParams = UISlider->Void;
 private typedef UISliderResizeEventParams = UISlider->Int->Int->Void;
 
 @:allow(peote.ui)
-class UISlider extends Interactive //implements ParentElement
+class UISlider extends Interactive
 #if peote_layout
 implements peote.layout.ILayoutElement
 #end
 {
-	//public var xOffset:Int = 0;
-	//public var yOffset:Int = 0;
-	
 	var last_x:Int;
 	var last_y:Int;
-			
-
-	var _percent:Float = 0.0; // allways from 0.0 to 1.0
+	
+	var _percent(get, default):Float = 0.0; // allways from 0.0 to 1.0
+	inline function get__percent():Float return (reverse) ? 1.0 - _percent : _percent;
 	
 	public var percent(get, set):Float;
 	inline function get_percent():Float return _percent;
@@ -76,7 +72,6 @@ implements peote.layout.ILayoutElement
 		// TODO disable dragging: if (valueStart == valueEnd)
 		
 		setValue(newValue, triggerOnChange, triggerMouseMove);
-		//trace(newValue, _percent);
 	}
 	
 	public inline function setDraggerSize(sizePercent:Null<Float>, triggerMouseMove:Bool = true) 
@@ -90,11 +85,18 @@ implements peote.layout.ILayoutElement
 	{
 		if (dragger.isDragging) return;
 		
-		dragger.width = draggerWidth;
-		dragger.height = draggerHeight;
-		
-		if (isVertical) dragger.y = y + draggSpaceStart + Std.int( (height - dragger.height - draggSpaceStart - draggSpaceEnd) * _percent );
-		else dragger.x = x + draggSpaceStart + Std.int( (width - dragger.width - draggSpaceStart - draggSpaceEnd) * _percent );
+		//dragger.width = draggerWidth;
+		//dragger.height = draggerHeight;		
+		//if (isVertical) dragger.y = y + draggSpaceStart + Std.int( (height - dragger.height - draggSpaceStart - draggSpaceEnd) * _percent );
+		//else dragger.x = x + draggSpaceStart + Std.int( (width - dragger.width - draggSpaceStart - draggSpaceEnd) * _percent );
+		if (isVertical) {
+			dragger.height = draggerHeight;
+			dragger.y = getDraggerPos(!isVertical, y, height, dragger.height);
+		}
+		else {
+			dragger.width = draggerWidth;
+			dragger.x = getDraggerPos(isVertical, x, width, dragger.width);
+		}
 		
 		dragger.maskByElement(this);
 		dragger.updateLayout();
@@ -126,9 +128,7 @@ implements peote.layout.ILayoutElement
 	inline function get_draggerStyle():Dynamic return dragger.style;
 	inline function set_draggerStyle(style:Dynamic):Dynamic return dragger.style = style;
 	
-	public var isVertical(default, null):Bool = false;
-	
-	// TODO:
+	public var isVertical(default, null):Bool = false;	
 	public var reverse:Bool = false;
 	
 	public var draggerLength:Null<Int> = null;
@@ -151,6 +151,11 @@ implements peote.layout.ILayoutElement
 		}
 	}
 	
+	inline function getDraggerPos(_isVertical:Bool, pos:Int, size:Int, draggerSize:Int):Int {
+		if (_isVertical) return pos;
+		else return pos + draggSpaceStart + Std.int( (size - draggerSize - draggSpaceStart - draggSpaceEnd) * _percent );
+	}
+	
 	public var draggSpaceStart:Int = 0;
 	public var draggSpaceEnd:Int = 0;
 
@@ -162,9 +167,9 @@ implements peote.layout.ILayoutElement
 		last_y = yPosition;
 		
 		if (sliderStyle != null) 
-		{
-			
+		{			
 			isVertical = (sliderStyle.vertical == null) ? (width < height) : sliderStyle.vertical;
+			reverse = sliderStyle.reverse;
 			
 			if (sliderStyle.backgroundStyle != null) {
 				backgroundSpace = (sliderStyle.backgroundSpace != null) ? sliderStyle.backgroundSpace.copy() : new Space();
@@ -183,9 +188,9 @@ implements peote.layout.ILayoutElement
 			if (sliderStyle.draggerStyle != null) {
 				draggerSpace = (sliderStyle.draggerSpace != null) ? sliderStyle.draggerSpace.copy() : new Space();
 				draggerSpace.setRelativeWidthOrHeight(isVertical, width, height, sliderStyle.draggerSize, sliderStyle.draggerSizePercent, sliderStyle.draggerOffset, sliderStyle.draggerOffsetPercent);
-				dragger = new UIElement(x + ((!isVertical) ? draggSpaceStart : 0), y + ((isVertical) ? draggSpaceStart : 0), draggerWidth, draggerHeight, zIndex + 2, sliderStyle.draggerStyle, draggerSpace);
+				dragger = new UIElement(getDraggerPos(isVertical, x, width, draggerWidth), getDraggerPos(!isVertical, y, height, draggerHeight), draggerWidth, draggerHeight, zIndex + 2, sliderStyle.draggerStyle, draggerSpace);
 			}
-			else dragger = new UIElement(x + ((!isVertical) ? draggSpaceStart : 0), y + ((isVertical) ? draggSpaceStart : 0), draggerWidth, draggerHeight, zIndex + 2);
+			else dragger = new UIElement(getDraggerPos(isVertical, x, width, draggerWidth), getDraggerPos(!isVertical, y, height, draggerHeight), draggerWidth, draggerHeight, zIndex + 2);
 		}
 		
 		// set dragger events
@@ -211,7 +216,7 @@ implements peote.layout.ILayoutElement
 		// onDrag event
 		dragger.onDrag = function(uiElement:UIElement, percentX:Float, percentY:Float) {
 			_percent = (isVertical) ? percentY : percentX;
-			if (onChange != null) onChange(this, value, (isVertical) ? percentY : percentX);
+			if (onChange != null) onChange(this, value, _percent);
 		}
 		
 		// to bubble events down to the dragger
@@ -267,8 +272,6 @@ implements peote.layout.ILayoutElement
 		updateVisibleStyle();
 		updateVisibleLayout();
 	}
-	
-	// -----------------
 	
 	override inline function onAddVisibleToDisplay()
 	{

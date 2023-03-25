@@ -56,19 +56,20 @@ class Sliders extends Application
 			draggerStyle: roundBorderStyle.copy(Color.YELLOW),
 			
 			//vertical:true,
+			//reverse:true,
 			
 			//draggerSpace:{left:15, right:15},
 			//backgroundSpace:{left:50},
 
 			//backgroundLengthPercent:0.9,
 			backgroundSizePercent:0.3,
-
 			
 			draggerLength:50,
 			draggerLengthPercent:0.1,
 			
 			draggerSize:20,
 			draggerSizePercent:0.75,
+			
 			//draggerOffset:0,
 			draggerOffsetPercent:0.5,
 			
@@ -82,22 +83,23 @@ class Sliders extends Application
 		setSliderEvents(hSlider);
 		uiDisplay.add(hSlider);
 		
+		//hSlider.reverse = true; hSlider.updateDragger();
+		
 		
 		var vSlider = new UISlider(10, 10, 60, 500, sliderStyle);
 		setSliderEvents(vSlider);
 		uiDisplay.add(vSlider);
 		
 		hSlider.onChange = function(uiSlider:UISlider, value:Float, percent:Float) {
-			//trace( 'hSlider percent: ${percent*100}%' );
-			//trace( 'hSlider value  :$value' );
+			//trace( 'hSlider value:$value, percent:$percent' );
 			vSlider.percent = percent;
 		}
 		
 		vSlider.onChange = function(uiSlider:UISlider, value:Float, percent:Float) {
-			//trace( 'vSlider percent: ${percent*100}%' );
-			//trace( 'vSlider value  :$value' );
+			//trace( 'vSlider value:$value, percent:$percent' );
 			hSlider.percent = percent;
 			//hSlider.x = 100 + Std.int(percent * 500);
+			//hSlider.height = 40 + Std.int(percent * 100);
 			//hSlider.updateLayout();
 		}
 		
