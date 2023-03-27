@@ -74,9 +74,9 @@ implements peote.layout.ILayoutElement
 		setValue(newValue, triggerOnChange, triggerMouseMove);
 	}
 	
-	public inline function setDraggerSize(sizePercent:Null<Float>, triggerMouseMove:Bool = true) 
+	public inline function setDraggerLength(sizePercent:Null<Float>, triggerMouseMove:Bool = true) 
 	{
-		trace("TODO");
+		// TODO
 		draggerLengthPercent = sizePercent;
 		updateDragger(false, triggerMouseMove);
 	}
@@ -102,7 +102,10 @@ implements peote.layout.ILayoutElement
 		dragger.updateLayout();
 		
 		if (isVisible && triggerMouseMove) uiDisplay.triggerMouse(this);
-		if (triggerOnChange && onChange != null) onChange(this, value, percent);
+		if (triggerOnChange) {
+			if (_onChange != null) _onChange(this, value, percent);
+			if (onChange != null) onChange(this, value, percent);
+		}
 	}
 	
 	public inline function setDelta(delta:Float, triggerOnChange:Bool = true, triggerMouseMove:Bool = true) 
@@ -216,6 +219,7 @@ implements peote.layout.ILayoutElement
 		// onDrag event
 		dragger.onDrag = function(uiElement:UIElement, percentX:Float, percentY:Float) {
 			_percent = (isVertical) ? percentY : percentX;
+			if (_onChange != null) _onChange(this, value, _percent);
 			if (onChange != null) onChange(this, value, _percent);
 		}
 		
@@ -257,10 +261,14 @@ implements peote.layout.ILayoutElement
 			background.updateLayout();
 		}
 		if (dragger != null) {
-			dragger.x += deltaX;
-			dragger.y += deltaY;
 			dragger.width = draggerWidth;
 			dragger.height = draggerHeight;
+			
+			//dragger.x += deltaX;
+			//dragger.y += deltaY;
+			dragger.x = getDraggerPos(isVertical, x, width, dragger.width);
+			dragger.y = getDraggerPos(!isVertical, y, height, dragger.height);
+
 			updateDragArea();
 			dragger.maskByElement(this);
 			dragger.updateLayout();
@@ -293,6 +301,9 @@ implements peote.layout.ILayoutElement
 		}
 		
 	}
+	
+	// ------ internal Events ---------------
+	var _onChange(null, default):UISlider->Float->Float->Void = null;
 
 	// ------- DraggerEvents ----------------
 	public var onDraggerPointerOver(null, default):UISliderEventParams = null;
@@ -301,21 +312,7 @@ implements peote.layout.ILayoutElement
 	public var onDraggerPointerUp(null, default):UISliderEventParams = null;
 	
 	public var onChange(null, default):UISlider->Float->Float->Void = null;
-	
-	// TODO: hook to bind UITextPage or UIArea update range/sizePercent for scrolling:
-/*	var resizeBindings:Array<UISlider->Void> = null;
-	override inline function _onResizeWidth():Void {
-		//trace("_onResizeWidth");
-		if (resizeBindings != null) {
-			for (f in resizeBindings) {
-				// a: textPage.width  - textPage.leftSpace - textPage.rightSpace
-				// b: textPage.textWidth
-				//setRange( 0, Math.min(0,  b - a ), a / b  , true, false );
-				f(this);
-			}
-		}
-	}
-*/	
+		
 	// ---------- Events --------------------
 	
 	public var onPointerOver(never, set):UISliderEventParams;
@@ -336,7 +333,7 @@ implements peote.layout.ILayoutElement
 	public var onPointerClick(never, set):UISliderEventParams;
 	inline function set_onPointerClick(f:UISliderEventParams):UISliderEventParams return setOnPointerClick(this, f);
 	
-	public var onMouseWheel(default, set):UISliderWheelEventParams;
+	public var onMouseWheel(never, set):UISliderWheelEventParams;
 	inline function set_onMouseWheel(f:UISliderWheelEventParams):UISliderWheelEventParams  return setOnMouseWheel(this, f);
 	
 	public var onDrag(never, set):UISliderDragEventParams;

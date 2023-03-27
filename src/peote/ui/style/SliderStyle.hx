@@ -14,14 +14,14 @@ class SliderStyleImpl
 	public var vertical:Null<Bool> = null;    		
 	
 	// to en/disable dragging at start
-	public var draggable:Bool = true;
+	// TODO: public var draggable:Bool = true;
 
 	// default slider behavior is:
-    // 0.0 < -- > 1.0
-    //  ^
-    //  |
-    //  v
-    // 1.0	
+	// 0.0 < -- > 1.0
+	//  ^
+	//  |
+	//  v
+	// 1.0	
 	// to change this -> feel free to reverse
 	public var reverse:Bool = false;
    
@@ -70,11 +70,13 @@ abstract SliderStyle(SliderStyleImpl) from SliderStyleImpl to SliderStyleImpl
 {
 	@:from
 	static public inline function fromStyle(s:Style):SliderStyle {
-		return {backgroundStyle:s};
+		return {backgroundStyle:s, draggerStyle:s};
+		// TODO: gemeinsames interface (ohne alle speziellen argumente!) was den style kopiert
+		//return {backgroundStyle:s.copyAll(), draggerStyle:s.copyAll()};
 	}
 
-	@:to
-	public inline function toStyle():Style {
-		return this.backgroundStyle;
-	}	
+	//@:to
+	//public inline function toStyle():Style {
+		//return this.backgroundStyle;
+	//}
 }

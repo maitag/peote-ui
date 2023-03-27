@@ -205,26 +205,31 @@ class TestUIArea extends Application
 		
 		var hSlider = new UISlider(0, area.height-20, area.width-20, 20, sliderStyle);
 		hSlider.onMouseWheel = (_, e:WheelEvent) -> hSlider.setWheelDelta( e.deltaY );
-		hSlider.onChange = (_, value:Float, percent:Float) -> {
-			content.xOffset = Std.int(value);
-			content.updateLayout();
-		}
 		area.add(hSlider);		
 		
 		var vSlider = new UISlider(area.width-20, header.height, 20, area.height-header.height-20, sliderStyle);
 		vSlider.onMouseWheel = (_, e:WheelEvent) -> vSlider.setWheelDelta( e.deltaY );
+		area.add(vSlider);
+		
+		// TODO: bindings for sliders onChange and content.onResize(Inner)Width/Height, content.onChangeXOffset
+		// content.bindHSlider(hSlider)
+		// content.bindVSlider(vSlider)
+
+		// TODO: all here automatic after binding content to sliders 
+
+		// ----- initial ranges for sliders ------
+		hSlider.setRange( 0, Math.min(0, content.width - content.innerRight), content.width/content.innerRight, false, false );
+		vSlider.setRange( 0, Math.min(0, content.height - content.innerBottom), content.height/content.innerBottom , false, false);		
+	
+		hSlider.onChange = (_, value:Float, percent:Float) -> {
+			content.xOffset = Std.int(value);
+			content.updateLayout();
+		}
 		vSlider.onChange = (_, value:Float, percent:Float) -> {
 			content.yOffset = Std.int(value);
 			content.updateLayout();
 		}
-		area.add(vSlider);
 		
-		
-		// ----- initial ranges for sliders ------
-		
-		hSlider.setRange( 0, Math.min(0, content.width - content.innerRight), content.width/content.innerRight, false, false );
-		vSlider.setRange( 0, Math.min(0, content.height - content.innerBottom), content.height/content.innerBottom , false, false);		
-	
 		// ----- update Sliders if content size is changed -----
 		
 		content.onResizeInnerWidth = content.onResizeWidth = (_, width:Int, deltaWidth:Int) -> {
@@ -232,13 +237,20 @@ class TestUIArea extends Application
 			//hSlider.setRange( 0, content.width - content.innerRight, content.width/content.innerRight, true, false );
 			//hSlider.setRange( content.xOffsetStart, content.xOffsetEnd, false, false );
 		}
-
+		
 		content.onResizeInnerHeight = content.onResizeHeight = (_, height:Int, deltaHeight:Int) -> {
 			vSlider.setRange( 0, Math.min(0, content.height - content.innerBottom), content.height/content.innerBottom, true, false );
 			//vSlider.setRange( content.yOffsetStart, content.yOffsetEnd, false, false );
 		}
 
-		
+		// TODO:
+/*		content.onChangeXOffset = (_, xOffset:Float, deltaXOffset:Float) -> {
+			hSlider.setValue( xOffset);
+		}
+		content.onChangeYOffset = (_, yOffset:Float, deltaYOffset:Float) -> {
+			vSlider.setValue( yOffset);
+		}				
+*/		
 		
 		// ---------------------------------------------
 		// -------- button to change the size ----------		
