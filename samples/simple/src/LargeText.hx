@@ -111,12 +111,13 @@ class LargeText extends Application
 				
 				var textPage = new UITextPage<MyFontStyle>(
 					0, 0,
-					{width:uiDisplay.width - 30, height:uiDisplay.height-30, leftSpace:8, rightSpace:8, topSpace:6, bottomSpace:6},
+					{ width:uiDisplay.width - 30, height:uiDisplay.height-30, leftSpace:8, rightSpace:8, topSpace:6, bottomSpace:6 },
 					text,
 					font,
 					fontStyle,
-					textStyle //boxStyle
+					textStyle
 				);
+				
 				// set events
 				textPage.onPointerDown = function(t:UITextPage<MyFontStyle>, e:PointerEvent) {
 					//t.setInputFocus(e, true);			
@@ -126,6 +127,7 @@ class LargeText extends Application
 				textPage.onPointerUp = function(t:UITextPage<MyFontStyle>, e:PointerEvent) {
 					t.stopSelection(e);
 				}
+				
 				uiDisplay.add(textPage);
 				
 				
@@ -143,57 +145,11 @@ class LargeText extends Application
 				var vSlider = new UISlider(uiDisplay.width - 30, 0, 30, uiDisplay.height - 30, sliderStyle);
 				uiDisplay.add(vSlider);
 				
-				// events for mousewheel
+				// mousewheel events
 				hSlider.onMouseWheel = (_, e:WheelEvent) -> hSlider.setWheelDelta( e.deltaY );
 				vSlider.onMouseWheel = (_, e:WheelEvent) -> vSlider.setWheelDelta( e.deltaY );
 				textPage.onMouseWheel = (_, e:WheelEvent) -> vSlider.setDelta( ((e.deltaY > 0) ? 1 : -1 ) * 80.0 );
 				
-				// --------------------------------------------------------
-				// TODO: bindings for sliders onChange, onResizeWidth/Height, textPage.onResizeTextWidth/Height, textPage.onChangeXOffset
-				// textPage.bindHSlider(hSlider)
-				// textPage.bindVSlider(vSlider)
-				
-				// TODO: all here automatic after binding textpage to sliders 
-
-				hSlider.setRange( 0, Math.min(0, textPage.width  - textPage.leftSpace - textPage.rightSpace  - textPage.textWidth ), (textPage.width  - textPage.leftSpace - textPage.rightSpace )  / textPage.textWidth  , false, false );
-				vSlider.setRange( 0, Math.min(0, textPage.height - textPage.topSpace  - textPage.bottomSpace - textPage.textHeight), (textPage.height - textPage.topSpace  - textPage.bottomSpace)  / textPage.textHeight , false, false);
-		
-				hSlider.onChange = function(uiSlider:UISlider, value:Float, percent:Float) {
-					textPage.setXOffset(value);
-				}				
-				vSlider.onChange = function(uiSlider:UISlider, value:Float, percent:Float) {
-					textPage.setYOffset(value);
-				}
-				
-				hSlider.onResizeWidth = (_, width:Float, deltaWidth:Float) -> {
-				//textPage.onResizeWidth = (_, width:Float, deltaWidth:Float) -> {
-					//hSlider.width = textPage.width;
-					//hSlider.setRange( 0, Math.min(0, textPage.width  - textPage.leftSpace - textPage.rightSpace  - textPage.textWidth ), (textPage.width  - textPage.leftSpace - textPage.rightSpace )  / textPage.textWidth  , true, false );
-				
-					hSlider.setDraggerSize((textPage.width  - textPage.leftSpace - textPage.rightSpace )  / textPage.textWidth, false );
-				}		
-				textPage.onResizeWidth = (_, width:Float, deltaWidth:Float) -> {
-					hSlider.setRange( 0, Math.min(0, textPage.width  - textPage.leftSpace - textPage.rightSpace  - textPage.textWidth ), (textPage.width  - textPage.leftSpace - textPage.rightSpace )  / textPage.textWidth  , true, false );
-				}		
-				vSlider.onResizeHeight = (_, height:Float, deltaHeight:Float) -> {
-				//textPage.onResizeHeight = (_, height:Float, deltaHeight:Float) -> {
-					//vSlider.height = textPage.height;
-					vSlider.setRange( 0, Math.min(0, textPage.height - textPage.topSpace  - textPage.bottomSpace - textPage.textHeight), (textPage.height - textPage.topSpace  - textPage.bottomSpace)  / textPage.textHeight , true, false);
-				}
-				
-				textPage.onResizeTextWidth = (_, width:Float, deltaWidth:Float) -> {
-					hSlider.setRange( 0, Math.min(0, textPage.width  - textPage.leftSpace - textPage.rightSpace - textPage.textWidth ), (textPage.width  - textPage.leftSpace - textPage.rightSpace )  / textPage.textWidth  , true, false );
-				}
-				textPage.onResizeTextHeight = (_, height:Float, deltaHeight:Float) -> {
-					vSlider.setRange( 0, Math.min(0, textPage.height - textPage.topSpace  - textPage.bottomSpace - textPage.textHeight), (textPage.height - textPage.topSpace  - textPage.bottomSpace)  / textPage.textHeight , true, false);
-				}
-				
-				textPage.onChangeXOffset = (_, xOffset:Float, deltaXOffset:Float) -> {
-					hSlider.setValue( xOffset);
-				}
-				textPage.onChangeYOffset = (_, yOffset:Float, deltaYOffset:Float) -> {
-					vSlider.setValue( yOffset);
-				}				
 				// -----------------------------------------------------------------------
 				
 				// resize handler
@@ -212,11 +168,41 @@ class LargeText extends Application
 					vSlider.left = textPage.right;
 					vSlider.height = textPage.height;
 					vSlider.updateLayout();
-					
-					//hSlider.setRange( 0, Math.min(0, textPage.width  - textPage.leftSpace - textPage.rightSpace  - textPage.textWidth ), (textPage.width  - textPage.leftSpace - textPage.rightSpace )  / textPage.textWidth  , true, false );
-					//vSlider.setRange( 0, Math.min(0, textPage.height - textPage.topSpace  - textPage.bottomSpace - textPage.textHeight), (textPage.height - textPage.topSpace  - textPage.bottomSpace)  / textPage.textHeight , true, false);
 				};
-								
+				
+				// --------------------------------------------------------
+				
+				// bindings for sliders _onChange and textPage-events
+				
+				textPage.bindHSlider(hSlider); // _onResizeWidth, _onResizeTextWidth, _onChangeXOffset
+				textPage.bindVSlider(vSlider); // _onResizeHeight, _onResizeTextHeight, _onChangeYOffset
+												
+/*				// all here automatic after binding textpage to sliders
+				
+				hSlider.setRange( 0, Math.min(0, textPage.width  - textPage.leftSpace - textPage.rightSpace  - textPage.textWidth ), (textPage.width  - textPage.leftSpace - textPage.rightSpace )  / textPage.textWidth  , false, false );
+				vSlider.setRange( 0, Math.min(0, textPage.height - textPage.topSpace  - textPage.bottomSpace - textPage.textHeight), (textPage.height - textPage.topSpace  - textPage.bottomSpace)  / textPage.textHeight , false, false);
+				
+				hSlider.onChange = function(uiSlider:UISlider, value:Float, percent:Float) {
+					textPage.setXOffset(value);
+				}
+				vSlider.onChange = function(uiSlider:UISlider, value:Float, percent:Float) {
+					textPage.setYOffset(value);
+				}
+				
+				textPage.onResizeWidth = textPage.onResizeTextWidth = (_, width:Float, deltaWidth:Float) -> {
+					hSlider.setRange( 0, Math.min(0, textPage.width  - textPage.leftSpace - textPage.rightSpace - textPage.textWidth ), (textPage.width  - textPage.leftSpace - textPage.rightSpace )  / textPage.textWidth  , true, false );
+				}
+				textPage.onResizeHeight = textPage.onResizeTextHeight = (_, height:Float, deltaHeight:Float) -> {
+					vSlider.setRange( 0, Math.min(0, textPage.height - textPage.topSpace  - textPage.bottomSpace - textPage.textHeight), (textPage.height - textPage.topSpace  - textPage.bottomSpace)  / textPage.textHeight , true, false);
+				}
+				
+				textPage.onChangeXOffset = (_, xOffset:Float, deltaXOffset:Float) -> {
+					hSlider.setValue( xOffset);
+				}
+				textPage.onChangeYOffset = (_, yOffset:Float, deltaYOffset:Float) -> {
+					vSlider.setValue( yOffset);
+				}
+*/				
 				
 			}
 		);				
