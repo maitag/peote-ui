@@ -156,6 +156,22 @@ implements peote.layout.ILayoutElement
 	}
 	function onRemoveUIElementFromDisplay():Void {} // to override by childclasses
 
+	// ------ internal Events ---------------
+	var _onResizeWidth(default, set):UIElementResizeEventParams = null;
+	inline function set__onResizeWidth(f:UIElementResizeEventParams):UIElementResizeEventParams {
+		if (onResizeWidth == null) setOnResizeWidth(this, f);
+		else if (f == null)	setOnResizeWidth(this, onResizeWidth); 
+		else setOnResizeWidth(this, function(e:UIElement, w:Int, h:Int) { f(e, w, h); onResizeWidth(e, w, h); } );
+		return _onResizeWidth = f;
+	}
+	
+	var _onResizeHeight(default, set):UIElementResizeEventParams = null;
+	inline function set__onResizeHeight(f:UIElementResizeEventParams):UIElementResizeEventParams {
+		if (onResizeHeight == null) setOnResizeHeight(this, f);
+		else if (f == null)	setOnResizeHeight(this, onResizeHeight); 
+		else setOnResizeHeight(this, function(e:UIElement, w:Int, h:Int) { f(e, w, h); onResizeHeight(e, w, h); } );
+		return _onResizeHeight = f;
+	}
 	
 	// ---------- Events --------------------
 	
@@ -186,10 +202,18 @@ implements peote.layout.ILayoutElement
 	public var onFocus(never, set):UIElementFocusEventParams;
 	inline function set_onFocus(f:UIElementFocusEventParams):UIElementFocusEventParams return setOnFocus(this, f);
 	
-	public var onResizeWidth(never, set):UIElementResizeEventParams;
-	inline function set_onResizeWidth(f:UIElementResizeEventParams):UIElementResizeEventParams return setOnResizeWidth(this, f);
+	//public var onResizeWidth(never, set):UIElementResizeEventParams;
+	//inline function set_onResizeWidth(f:UIElementResizeEventParams):UIElementResizeEventParams return setOnResizeWidth(this, f);
+	public var onResizeWidth(default, set):UIElementResizeEventParams = null;
+	inline function set_onResizeWidth(f:UIElementResizeEventParams):UIElementResizeEventParams {
+		onResizeWidth = f; set__onResizeWidth(_onResizeWidth); return f;
+	}
 	
-	public var onResizeHeight(never, set):UIElementResizeEventParams;
-	inline function set_onResizeHeight(f:UIElementResizeEventParams):UIElementResizeEventParams return setOnResizeHeight(this, f);
+	//public var onResizeHeight(never, set):UIElementResizeEventParams;
+	//inline function set_onResizeHeight(f:UIElementResizeEventParams):UIElementResizeEventParams return setOnResizeHeight(this, f);
+	public var onResizeHeight(default, set):UIElementResizeEventParams = null;
+	inline function set_onResizeHeight(f:UIElementResizeEventParams):UIElementResizeEventParams {
+		onResizeHeight = f; set__onResizeHeight(_onResizeHeight); return f;
+	}
 	
 }

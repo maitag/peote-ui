@@ -1116,14 +1116,10 @@ implements peote.layout.ILayoutElement
 		cursorWant = -1;
 		
 // TODO: only dirty HACK at now:
-		if (oldTextWidth != page.textWidth) {
-			if (_onResizeTextWidth != null) _onResizeTextWidth(this, page.textWidth, page.textWidth - oldTextWidth);
-			if (onResizeTextWidth != null) onResizeTextWidth(this, page.textWidth, page.textWidth - oldTextWidth);
-		}
-		if (oldTextHeight != page.textHeight) {
-			if (_onResizeTextHeight != null) _onResizeTextHeight(this, page.textHeight, page.textHeight - oldTextHeight);
-			if (onResizeTextHeight != null) onResizeTextHeight(this, page.textHeight, page.textHeight - oldTextHeight);
-		}
+		if (_onResizeTextWidth != null && oldTextWidth != page.textWidth) _onResizeTextWidth(this, page.textWidth, page.textWidth - oldTextWidth);
+		if (_onResizeTextHeight != null && oldTextHeight != page.textHeight) _onResizeTextHeight(this, page.textHeight, page.textHeight - oldTextHeight);
+		if (onResizeTextWidth != null && oldTextWidth != page.textWidth) onResizeTextWidth(this, page.textWidth, page.textWidth - oldTextWidth);
+		if (onResizeTextHeight != null && oldTextHeight != page.textHeight) onResizeTextHeight(this, page.textHeight, page.textHeight - oldTextHeight);
 	}
 	
 	// --------------------------------
@@ -1423,22 +1419,18 @@ implements peote.layout.ILayoutElement
 	// more parameters: offsetBySlider, sliderByOffset, sliderByResize, sliderByTextResize
 	
 	public function bindHSlider(slider:peote.ui.interactive.UISlider) {
-		slider.setRange(0, Math.min(0, width - leftSpace - rightSpace - textWidth), (width  - leftSpace - rightSpace ) / textWidth, false, false );
-		
+		slider.setRange(0, Math.min(0, width - leftSpace - rightSpace - textWidth), (width  - leftSpace - rightSpace ) / textWidth, false, false );		
 		slider._onChange = function(_, value:Float, _) _setXOffset(value, true, false, true); // don't trigger internal _onChangeXOffset again!
-		_onChangeXOffset = function (_,xOffset:Float,_) slider.setValue(xOffset, true, false); // trigger sliders _onChange and onChange
-						
+		_onChangeXOffset = function (_,xOffset:Float,_) slider.setValue(xOffset, true, false); // trigger sliders _onChange and onChange						
 		_onResizeWidth = _onResizeTextWidth = function(_,_,_) {
 			slider.setRange(0, Math.min(0, width - leftSpace - rightSpace - textWidth), (width - leftSpace - rightSpace ) / textWidth, true, false );
 		}
 	}
 	
 	public function bindVSlider(slider:peote.ui.interactive.UISlider) {
-		slider.setRange(0, Math.min(0, height - topSpace - bottomSpace - textHeight), (height - topSpace - bottomSpace) / textHeight , false, false);
-				
+		slider.setRange(0, Math.min(0, height - topSpace - bottomSpace - textHeight), (height - topSpace - bottomSpace) / textHeight , false, false);				
 		slider._onChange = function(_, value:Float, _) _setYOffset(value, true, false, true); // don't trigger internal _onChangeYOffset again!
-		_onChangeYOffset = function (_,yOffset:Float,_) slider.setValue(yOffset, true, false); // trigger sliders _onChange and onChange
-						
+		_onChangeYOffset = function (_,yOffset:Float,_) slider.setValue(yOffset, true, false); // trigger sliders _onChange and onChange					
 		_onResizeHeight = _onResizeTextHeight = function(_,_,_) {
 			slider.setRange(0, Math.min(0, height - topSpace - bottomSpace - textHeight), (height - topSpace - bottomSpace) / textHeight , true, false);
 		}
@@ -1458,7 +1450,7 @@ implements peote.layout.ILayoutElement
 	inline function set__onResizeWidth(f:UITextPage<$styleType>->Int->Int->Void):UITextPage<$styleType>->Int->Int->Void {
 		if (onResizeWidth == null) setOnResizeWidth(this, f);
 		else if (f == null)	setOnResizeWidth(this, onResizeWidth); 
-		else setOnResizeWidth(this, function(s:UITextPage<$styleType>, w:Int, h:Int) { f(s, w, h); onResizeWidth(s, w, h); } );
+		else setOnResizeWidth(this, function(t:UITextPage<$styleType>, w:Int, h:Int) { f(t, w, h); onResizeWidth(t, w, h); } );
 		return _onResizeWidth = f;
 	}
 	
@@ -1466,7 +1458,7 @@ implements peote.layout.ILayoutElement
 	inline function set__onResizeHeight(f:UITextPage<$styleType>->Int->Int->Void):UITextPage<$styleType>->Int->Int->Void {
 		if (onResizeHeight == null) setOnResizeHeight(this, f);
 		else if (f == null)	setOnResizeHeight(this, onResizeHeight); 
-		else setOnResizeHeight(this, function(s:UITextPage<$styleType>, w:Int, h:Int) { f(s, w, h); onResizeHeight(s, w, h); } );
+		else setOnResizeHeight(this, function(t:UITextPage<$styleType>, w:Int, h:Int) { f(t, w, h); onResizeHeight(t, w, h); } );
 		return _onResizeHeight = f;
 	}
 	
@@ -1476,6 +1468,14 @@ implements peote.layout.ILayoutElement
 	var _onChangeYOffset:UITextPage<$styleType>->Float->Float->Void = null;
 	
 	// ----------- events ------------------
+	// text-size (inner) resize events
+	public var onResizeTextWidth:UITextPage<$styleType>->Float->Float->Void = null;
+	public var onResizeTextHeight:UITextPage<$styleType>->Float->Float->Void = null;
+
+	// events if text page is changing offset
+	public var onChangeXOffset:UITextPage<$styleType>->Float->Float->Void = null;
+	public var onChangeYOffset:UITextPage<$styleType>->Float->Float->Void = null;
+
 	
 	public var onPointerOver(never, set):UITextPage<$styleType>->peote.ui.event.PointerEvent->Void;
 	inline function set_onPointerOver(f:UITextPage<$styleType>->peote.ui.event.PointerEvent->Void):UITextPage<$styleType>->peote.ui.event.PointerEvent->Void
@@ -1526,14 +1526,6 @@ implements peote.layout.ILayoutElement
 	inline function set_onResizeHeight(f:UITextPage<$styleType>->Int->Int->Void):UITextPage<$styleType>->Int->Int->Void {
 		onResizeHeight = f; set__onResizeHeight(_onResizeHeight); return f;
 	}
-
-	// text-size (inner) resize events
-	public var onResizeTextWidth:UITextPage<$styleType>->Float->Float->Void = null;
-	public var onResizeTextHeight:UITextPage<$styleType>->Float->Float->Void = null;
-
-	// events if text page is changing offset
-	public var onChangeXOffset:UITextPage<$styleType>->Float->Float->Void = null;
-	public var onChangeYOffset:UITextPage<$styleType>->Float->Float->Void = null;
 
 }
 

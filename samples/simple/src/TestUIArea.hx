@@ -188,6 +188,8 @@ class TestUIArea extends Application
 		}
 		inputPage.onResizeWidth = (_, width:Int, deltaWidth:Int) -> {
 			//trace("inputPage.onResizeWidth", width, deltaWidth);
+			
+// TODO: problem here with text-size afterwards:
 			content.updateInnerSize();
 			inputPage.maskByElement(content, true); // CHECK: need here ?
 		}
@@ -211,12 +213,12 @@ class TestUIArea extends Application
 		vSlider.onMouseWheel = (_, e:WheelEvent) -> vSlider.setWheelDelta( e.deltaY );
 		area.add(vSlider);
 		
-		// TODO: bindings for sliders onChange and content.onResize(Inner)Width/Height, content.onChangeXOffset
-		// content.bindHSlider(hSlider)
-		// content.bindVSlider(vSlider)
+		// bindings for sliders
+		content.bindHSlider(hSlider);
+		content.bindVSlider(vSlider);
 
-		// TODO: all here automatic after binding content to sliders 
-
+		// all here automatic after binding content to sliders 
+/*
 		// ----- initial ranges for sliders ------
 		hSlider.setRange( 0, Math.min(0, content.width - content.innerRight), content.width/content.innerRight, false, false );
 		vSlider.setRange( 0, Math.min(0, content.height - content.innerBottom), content.height/content.innerBottom , false, false);		
@@ -243,8 +245,7 @@ class TestUIArea extends Application
 			//vSlider.setRange( content.yOffsetStart, content.yOffsetEnd, false, false );
 		}
 
-		// TODO:
-/*		content.onChangeXOffset = (_, xOffset:Float, deltaXOffset:Float) -> {
+		content.onChangeXOffset = (_, xOffset:Float, deltaXOffset:Float) -> {
 			hSlider.setValue( xOffset);
 		}
 		content.onChangeYOffset = (_, yOffset:Float, deltaYOffset:Float) -> {

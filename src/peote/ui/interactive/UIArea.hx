@@ -46,10 +46,6 @@ implements peote.layout.ILayoutElement
 	public var innerHeight(get, never):Int;
 	inline function get_innerHeight():Int return innerBottom - innerTop;
 			
-	// inner resize events
-	public var onResizeInnerWidth:UIArea->Int->Int->Void = null;
-	public var onResizeInnerHeight:UIArea->Int->Int->Void = null;
-	
 	public function new(xPosition:Int=0, yPosition:Int=0, width:Int=100, height:Int=100, zIndex:Int=0, backgroundStyle:Style=null) 
 	{
 		super(xPosition, yPosition, width, height, zIndex, backgroundStyle);
@@ -77,8 +73,10 @@ implements peote.layout.ILayoutElement
 			if (child.bottom > innerBottom)  { innerBottom = child.bottom; resizeHeight = true; }
 		}
 		
-		if (resizeWidth  && onResizeInnerWidth  != null) onResizeInnerWidth (this, innerWidth, innerWidth - old_innerWidth);
-		if (resizeHeight && onResizeInnerHeight != null) onResizeInnerHeight(this, innerHeight, innerHeight - old_innerHeight);
+			if (resizeWidth && _onResizeInnerWidth != null) _onResizeInnerWidth (this, innerWidth, innerWidth - old_innerWidth);
+			if (resizeHeight && _onResizeInnerHeight != null) _onResizeInnerHeight(this, innerHeight, innerHeight - old_innerHeight);
+			if (resizeWidth && onResizeInnerWidth != null) onResizeInnerWidth (this, innerWidth, innerWidth - old_innerWidth);
+			if (resizeHeight && onResizeInnerHeight != null) onResizeInnerHeight(this, innerHeight, innerHeight - old_innerHeight);
 		
 		childs.push(child);
 		
@@ -135,7 +133,9 @@ implements peote.layout.ILayoutElement
 				if (child.bottom - y - yOffset > innerBottom) innerBottom = child.bottom - y - yOffset;
 			}
 		}
-		
+
+		if (_onResizeInnerWidth  != null && (old_innerLeft != innerLeft || old_innerRight  != innerRight )) _onResizeInnerWidth (this, innerWidth,  innerWidth  - old_innerRight  + old_innerLeft);
+		if (_onResizeInnerHeight != null && (old_innerTop  != innerTop  || old_innerBottom != innerBottom)) _onResizeInnerHeight(this, innerHeight, innerHeight - old_innerBottom + old_innerTop);
 		if (onResizeInnerWidth  != null && (old_innerLeft != innerLeft || old_innerRight  != innerRight )) onResizeInnerWidth (this, innerWidth,  innerWidth  - old_innerRight  + old_innerLeft);
 		if (onResizeInnerHeight != null && (old_innerTop  != innerTop  || old_innerBottom != innerBottom)) onResizeInnerHeight(this, innerHeight, innerHeight - old_innerBottom + old_innerTop);
 	}
@@ -180,8 +180,75 @@ implements peote.layout.ILayoutElement
 			if (child.isVisible) uiDisplay.remove(child);
 	}	
 	
+	// --------------------
+	public inline function setOffset(xOffset:Int, yOffset:Int, update:Bool = true, triggerEvent:Bool = false) {
+		if (triggerEvent) {
+			if (_onChangeXOffset != null) _onChangeXOffset(this, xOffset , xOffset-this.xOffset);
+			if (_onChangeYOffset != null) _onChangeYOffset(this, yOffset , yOffset-this.yOffset);
+			if (onChangeXOffset != null) onChangeXOffset(this, xOffset , xOffset-this.xOffset);
+			if (onChangeYOffset != null) onChangeYOffset(this, yOffset , yOffset-this.yOffset);
+		}
+		this.xOffset = xOffset;
+		this.yOffset = yOffset;
+		if (update) updateLayout();
+	}
+	public inline function setXOffset(xOffset:Int, update:Bool = true, triggerEvent:Bool = false) _setXOffset(xOffset, update, triggerEvent, triggerEvent);
+	inline function _setXOffset(xOffset:Int, update:Bool, triggerInternalEvent:Bool, triggerEvent:Bool) {
+		if (triggerInternalEvent && _onChangeXOffset != null) _onChangeXOffset(this, xOffset , xOffset-this.xOffset);
+		if (triggerEvent && onChangeXOffset != null) onChangeXOffset(this, xOffset , xOffset-this.xOffset);
+		this.xOffset = xOffset;
+		if (update) updateLayout();
+	}
+	public inline function setYOffset(yOffset:Int, update:Bool = true, triggerEvent:Bool = false) _setYOffset(yOffset, update, triggerEvent, triggerEvent);
+	inline function _setYOffset(yOffset:Int, update:Bool, triggerInternalEvent:Bool, triggerEvent:Bool) {
+		if (triggerInternalEvent && _onChangeYOffset != null) _onChangeYOffset(this, yOffset , yOffset-this.yOffset);
+		if (triggerEvent && onChangeYOffset != null) onChangeYOffset(this, yOffset , yOffset-this.yOffset);
+		this.yOffset = yOffset;
+		if (update) updateLayout();
+	}
+
+	// ------- bind automatic to UISliders ------
+	// TODO: check that the internal events not already used, 
+	// more parameters: offsetBySlider, sliderByOffset, sliderByResize, sliderByTextResize
+	
+	public function bindHSlider(slider:peote.ui.interactive.UISlider) {
+		slider.setRange(0, Math.min(0, width - innerRight), width / innerRight, false, false );		
+		slider._onChange = function(_, value:Float, _) _setXOffset(Std.int(value), true, false, true); // don't trigger internal _onChangeXOffset again!
+		_onChangeXOffset = function (_,xOffset:Float,_) slider.setValue(xOffset, true, false); // trigger sliders _onChange and onChange						
+		_onResizeWidth = function(_,_,_) slider.setRange(0, Math.min(0, width - innerRight), width / innerRight, true, false );
+		_onResizeInnerWidth = function(_,_,_) slider.setRange(0, Math.min(0, width - innerRight), width / innerRight, true, false );
+	}
+	
+	public function bindVSlider(slider:peote.ui.interactive.UISlider) {
+		slider.setRange(0, Math.min(0, height - innerBottom), height / innerBottom , false, false);				
+		slider._onChange = function(_, value:Float, _) _setYOffset(Std.int(value), true, false, true); // don't trigger internal _onChangeYOffset again!
+		_onChangeYOffset = function (_,yOffset:Float,_) slider.setValue(yOffset, true, false); // trigger sliders _onChange and onChange						
+		_onResizeHeight = function(_,_,_) slider.setRange(0, Math.min(0, height - innerBottom), height / innerBottom , true, false);
+		_onResizeInnerHeight = function(_,_,_) slider.setRange(0, Math.min(0, height - innerBottom), height / innerBottom , true, false);
+	}
+	
+	public function unbindHSlider(slider:peote.ui.interactive.UISlider) {
+		slider._onChange = null; _onChangeXOffset = null; _onResizeWidth = null; _onResizeInnerWidth = null;
+	}
+	
+	public function unbindVSlider(slider:peote.ui.interactive.UISlider) {
+		slider._onChange = null; _onChangeYOffset = null; _onResizeHeight = null; _onResizeInnerHeight = null;
+	}
+	
+	
+	// ------ internal Events ---------------
+
+	var _onChangeXOffset:UIArea->Int->Int->Void = null;
+	var _onChangeYOffset:UIArea->Int->Int->Void = null;
+	var _onResizeInnerWidth:UIArea->Int->Int->Void = null;
+	var _onResizeInnerHeight:UIArea->Int->Int->Void = null;
+	
 	// ------- UIArea Events ----------------
+	public var onChangeXOffset:UIArea->Int->Int->Void = null;
+	public var onChangeYOffset:UIArea->Int->Int->Void = null;
+	public var onResizeInnerWidth:UIArea->Int->Int->Void = null;
+	public var onResizeInnerHeight:UIArea->Int->Int->Void = null;
 	
-	
+
 
 }
