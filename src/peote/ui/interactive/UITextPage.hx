@@ -1401,33 +1401,32 @@ implements peote.layout.ILayoutElement
 		if (update) updatePageLayout( false, false, true, true, //  updateStyle, updateBgMask, updateSelection, updateCursor
 			false, false, true, true); // pageUpdatePosition, pageUpdateSize, pageUpdateXOffset, pageUpdateYOffset
 	}
-	public inline function setXOffset(xOffset:Float, update:Bool = true, triggerEvent:Bool = false) {
-		if (triggerEvent) {
-			if (_onChangeXOffset != null) _onChangeXOffset(this, xOffset , xOffset-this.xOffset);
-			if (onChangeXOffset != null) onChangeXOffset(this, xOffset , xOffset-this.xOffset);
-		}
+	public inline function setXOffset(xOffset:Float, update:Bool = true, triggerEvent:Bool = false) _setXOffset(xOffset, update, triggerEvent, triggerEvent);
+	inline function _setXOffset(xOffset:Float, update:Bool, triggerInternalEvent:Bool, triggerEvent:Bool) {
+		if (triggerInternalEvent && _onChangeXOffset != null) _onChangeXOffset(this, xOffset , xOffset-this.xOffset);
+		if (triggerEvent && onChangeXOffset != null) onChangeXOffset(this, xOffset , xOffset-this.xOffset);
 		this.xOffset = xOffset;
 		if (update) updatePageLayout( false, false, true, true, //  updateStyle, updateBgMask, updateSelection, updateCursor
 			false, false, true, false); // pageUpdatePosition, pageUpdateSize, pageUpdateXOffset, pageUpdateYOffset
 	}
-	public inline function setYOffset(yOffset:Float, update:Bool = true, triggerEvent:Bool = false) {
-		if (triggerEvent) {
-			if (_onChangeYOffset != null) _onChangeYOffset(this, yOffset , yOffset-this.yOffset);
-			if (onChangeYOffset != null) onChangeYOffset(this, yOffset , yOffset-this.yOffset);
-		}
+	public inline function setYOffset(yOffset:Float, update:Bool = true, triggerEvent:Bool = false) _setYOffset(yOffset, update, triggerEvent, triggerEvent);
+	inline function _setYOffset(yOffset:Float, update:Bool, triggerInternalEvent:Bool, triggerEvent:Bool) {
+		if (triggerInternalEvent && _onChangeYOffset != null) _onChangeYOffset(this, yOffset , yOffset-this.yOffset);
+		if (triggerEvent && onChangeYOffset != null) onChangeYOffset(this, yOffset , yOffset-this.yOffset);
 		this.yOffset = yOffset;
 		if (update) updatePageLayout( false, false, true, true, //  updateStyle, updateBgMask, updateSelection, updateCursor
 			false, false, false, true); // pageUpdatePosition, pageUpdateSize, pageUpdateXOffset, pageUpdateYOffset
 	}
 	
 	// ------- bind automatic to UISliders ------
-	// TODO: check that the internal events not already used
+	// TODO: check that the internal events not already used, 
+	// more parameters: offsetBySlider, sliderByOffset, sliderByResize, sliderByTextResize
 	
 	public function bindHSlider(slider:peote.ui.interactive.UISlider) {
 		slider.setRange(0, Math.min(0, width - leftSpace - rightSpace - textWidth), (width  - leftSpace - rightSpace ) / textWidth, false, false );
 		
-		slider._onChange = function(_, value:Float, _) setXOffset(value);
-		_onChangeXOffset = function (_,xOffset:Float,_) slider.setValue(xOffset);
+		slider._onChange = function(_, value:Float, _) _setXOffset(value, true, false, true); // don't trigger internal _onChangeXOffset again!
+		_onChangeXOffset = function (_,xOffset:Float,_) slider.setValue(xOffset, true, false); // trigger sliders _onChange and onChange
 						
 		_onResizeWidth = _onResizeTextWidth = function(_,_,_) {
 			slider.setRange(0, Math.min(0, width - leftSpace - rightSpace - textWidth), (width - leftSpace - rightSpace ) / textWidth, true, false );
@@ -1437,13 +1436,22 @@ implements peote.layout.ILayoutElement
 	public function bindVSlider(slider:peote.ui.interactive.UISlider) {
 		slider.setRange(0, Math.min(0, height - topSpace - bottomSpace - textHeight), (height - topSpace - bottomSpace) / textHeight , false, false);
 				
-		slider._onChange = function(_, value:Float, _) setYOffset(value);
-		_onChangeYOffset = function (_,yOffset:Float,_) slider.setValue(yOffset);
+		slider._onChange = function(_, value:Float, _) _setYOffset(value, true, false, true); // don't trigger internal _onChangeYOffset again!
+		_onChangeYOffset = function (_,yOffset:Float,_) slider.setValue(yOffset, true, false); // trigger sliders _onChange and onChange
 						
 		_onResizeHeight = _onResizeTextHeight = function(_,_,_) {
 			slider.setRange(0, Math.min(0, height - topSpace - bottomSpace - textHeight), (height - topSpace - bottomSpace) / textHeight , true, false);
 		}
 	}
+	
+	public function unbindHSlider(slider:peote.ui.interactive.UISlider) {
+		slider._onChange = null; _onChangeXOffset = null; _onResizeWidth = null; _onResizeTextWidth = null;
+	}
+	
+	public function unbindVSlider(slider:peote.ui.interactive.UISlider) {
+		slider._onChange = null; _onChangeYOffset = null; _onResizeHeight = null; _onResizeTextHeight = null;
+	}
+	
 	
 	// ------ internal Events ---------------
 	var _onResizeWidth(default, set):UITextPage<$styleType>->Int->Int->Void = null;
