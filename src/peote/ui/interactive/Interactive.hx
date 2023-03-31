@@ -189,10 +189,10 @@ implements peote.layout.ILayoutElement
 	
 	// all setters here will also changing the size to keep the opposite sideposition
 	public var leftSize(never, set):Int;
-	inline function set_leftSize(v:Int):Int { width = right - v; return v; }
+	inline function set_leftSize(v:Int):Int { width = right - v; return x = v; }
 	
 	public var topSize(never, set):Int;
-	inline function set_topSize(v:Int):Int { height = bottom - v; return v; }
+	inline function set_topSize(v:Int):Int { height = bottom - v; return y = v; }
 		
 	public var rightSize(never, set):Int;
 	inline function set_rightSize(v:Int):Int { width = v - x; return v; }
@@ -212,7 +212,7 @@ implements peote.layout.ILayoutElement
 	
 	
 	// Pointer and MouseWheel events
-	var pointerOver :PointerEvent->Void;
+	public var pointerOver :PointerEvent->Void;
 	var pointerOut  :PointerEvent->Void;
 	var pointerMove :PointerEvent->Void;
 	var mouseWheel  :WheelEvent->Void;

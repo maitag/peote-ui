@@ -412,37 +412,43 @@ implements peote.layout.ILayoutElement
 	
 	inline function xOffsetToCursor():Bool
 	{
-		var cx = Math.round(getPositionAtChar(cursor));
-		var cw = 2; // TODO: make customizable		
-		if (cx + cw > x + width - rightSpace) {
-			setXOffset(getAlignedXOffset(xOffset) - cx - cw + x + width - rightSpace, false, true);
-			hAlign = peote.ui.util.HAlign.LEFT;
-			return true;
+		if (autoWidth) return false;
+		else {
+			var cx = Math.round(getPositionAtChar(cursor));
+			var cw = 2; // TODO: make customizable		
+			if (cx + cw > x + width - rightSpace) { //trace("xOffsetToCursor right");
+				setXOffset(getAlignedXOffset(xOffset) - cx - cw + x + width - rightSpace, false, true);
+				hAlign = peote.ui.util.HAlign.LEFT;
+				return true;
+			}
+			else if (cx < x + leftSpace) { //trace("xOffsetToCursor left");
+				setXOffset(getAlignedXOffset(xOffset) - cx + x + leftSpace, false, true);
+				hAlign = peote.ui.util.HAlign.LEFT;
+				return true; 
+			}
+			else return false;
 		}
-		else if (cx < x + leftSpace) {
-			setXOffset(getAlignedXOffset(xOffset) - cx + x + leftSpace, false, true);
-			hAlign = peote.ui.util.HAlign.LEFT;
-			return true; 
-		}
-		else return false;
 	}
 	
 	inline function yOffsetToCursor():Bool
 	{
-		//var cy = Math.round(getPositionAtLine(cursorLine));
-		var cy = Math.round(pageLine.y);
-		var ch = Math.round(pageLine.height);
-		if (cy + ch > y + height - bottomSpace) {
-			setYOffset(getAlignedYOffset(yOffset) - cy - ch + y + height - bottomSpace, false, true);
-			vAlign = peote.ui.util.VAlign.TOP;
-			return true; 
+		if (autoHeight) return false;
+		else {
+			//var cy = Math.round(getPositionAtLine(cursorLine));
+			var cy = Math.round(pageLine.y);
+			var ch = Math.round(pageLine.height);
+			if (cy + ch > y + height - bottomSpace) { //trace("yOffsetToCursor bottom");
+				setYOffset(getAlignedYOffset(yOffset) - cy - ch + y + height - bottomSpace, false, true);
+				vAlign = peote.ui.util.VAlign.TOP;
+				return true; 
+			}
+			else if (cy < y + topSpace) { //trace("yOffsetToCursor top");
+				setYOffset(getAlignedYOffset(yOffset) - cy + y + topSpace, false, true);
+				vAlign = peote.ui.util.VAlign.TOP;
+				return true;
+			}
+			else return false;
 		}
-		else if (cy < y + topSpace) {
-			setYOffset(getAlignedYOffset(yOffset) - cy + y + topSpace, false, true);
-			vAlign = peote.ui.util.VAlign.TOP;
-			return true;
-		}
-		else return false;
 	}
 	
 	inline function createSelectionMasked(addUpdate:Bool) setCreateSelectionMasked(addUpdate, true);
@@ -816,7 +822,6 @@ implements peote.layout.ILayoutElement
 		if (selectionIsVisible && selectionElementArray != null) selectionElementsRemove();
 		if (cursorIsVisible && cursorElement != null) cursorProgram.removeElement(cursorElement);
 	}
-
 	
 	inline function createFontStyle()
 	{
@@ -943,7 +948,7 @@ implements peote.layout.ILayoutElement
 		//trace("select from/to:", selectLineFrom, selectLineTo, selectFrom, selectTo);
 	}
 	
-	// select-handler what is called by PeoteUIDisplay
+	// select-handler (called by PeoteUIDisplay)
 	
 	var selectStartFrom:Int = 0;
 	var selectStartFromLine:Int = 0;
@@ -1061,6 +1066,9 @@ implements peote.layout.ILayoutElement
 	public inline function textInput(chars:String):Void {
 		if (page == null) return;
 			
+		oldTextWidth = page.textWidth;
+		oldTextHeight = page.textHeight;
+		
 		//var oldCursor = cursor;
 		
 		if (hasSelection()) {
@@ -1169,7 +1177,7 @@ implements peote.layout.ILayoutElement
 					if (pageLine.length == 0) pageLine = page.getPageLine(cursorLine); // Fix after deleting an empty pageline
 					//setCursorAndLine(cursor, cursorLine, false);
 					// check BUG here if out of selection
-					//trace("KKKselect from/to:",cursorLine, selectLineFrom, selectLineTo);
+					//trace("select from/to:",cursorLine, selectLineFrom, selectLineTo);
 					//if (cursorLine < selectLineFrom) selectLineFrom--;
 					//if (cursorLine < selectLineTo) selectLineTo--;					
 					updateTextOnly(true);
@@ -1191,6 +1199,10 @@ implements peote.layout.ILayoutElement
 	public inline function enter()
 	{
 		if (page == null) return;
+		
+		oldTextWidth = page.textWidth;
+		oldTextHeight = page.textHeight;
+		
 		if (hasSelection()) {
 			fontProgram.pageDeleteChars(page, selectLineFrom, selectLineTo, selectFrom, selectTo, isVisible);
 			fontProgram.pageAddLinefeedAt(page, selectLineFrom, selectFrom, isVisible);
@@ -1212,6 +1224,10 @@ implements peote.layout.ILayoutElement
 	
 	public function cutToClipboard() {
 		if (page != null && hasSelection()) {
+			
+			oldTextWidth = page.textWidth;
+			oldTextHeight = page.textHeight;
+			
 			lime.system.Clipboard.text = fontProgram.pageCutChars(page, selectLineFrom, selectLineTo, selectFrom, selectTo, isVisible);
 			setCursorAndLine(selectFrom, selectLineFrom, false);
 			removeSelection();
@@ -1221,7 +1237,11 @@ implements peote.layout.ILayoutElement
 	
 	public function pasteFromClipboard() {
 		#if !html5
-			if (lime.system.Clipboard.text != null) textInput(lime.system.Clipboard.text);
+			if (lime.system.Clipboard.text != null) {
+				oldTextWidth = page.textWidth;
+				oldTextHeight = page.textHeight;
+				textInput(lime.system.Clipboard.text);
+			}
 		#end		
 	}
 

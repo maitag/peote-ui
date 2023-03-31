@@ -150,17 +150,18 @@ implements peote.layout.ILayoutElement
 	}
 	
 	override inline function onRemoveVisibleFromDisplay()
-	{	//trace("UIElement onRemoveVisibleFromDisplay");
+	{
 		onRemoveUIElementFromDisplay();
 		if (styleIsVisible && styleElement != null) styleProgram.removeElement(styleElement);
 	}
 	function onRemoveUIElementFromDisplay():Void {} // to override by childclasses
 
 	// ------ internal Events ---------------
+	
 	var _onResizeWidth(default, set):UIElementResizeEventParams = null;
 	inline function set__onResizeWidth(f:UIElementResizeEventParams):UIElementResizeEventParams {
 		if (onResizeWidth == null) setOnResizeWidth(this, f);
-		else if (f == null)	setOnResizeWidth(this, onResizeWidth); 
+		else if (f == null)	setOnResizeWidth(this, onResizeWidth);
 		else setOnResizeWidth(this, function(e:UIElement, w:Int, h:Int) { f(e, w, h); onResizeWidth(e, w, h); } );
 		return _onResizeWidth = f;
 	}
@@ -168,7 +169,7 @@ implements peote.layout.ILayoutElement
 	var _onResizeHeight(default, set):UIElementResizeEventParams = null;
 	inline function set__onResizeHeight(f:UIElementResizeEventParams):UIElementResizeEventParams {
 		if (onResizeHeight == null) setOnResizeHeight(this, f);
-		else if (f == null)	setOnResizeHeight(this, onResizeHeight); 
+		else if (f == null)	setOnResizeHeight(this, onResizeHeight);
 		else setOnResizeHeight(this, function(e:UIElement, w:Int, h:Int) { f(e, w, h); onResizeHeight(e, w, h); } );
 		return _onResizeHeight = f;
 	}

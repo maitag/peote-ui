@@ -131,7 +131,7 @@ class TestUIArea extends Application
 			Std.int(peoteUiDisplay.height   / peoteUiDisplay.yz)
 		);
 		
-		// ---- header textline what starts dragging ----		
+		// ---- header textline (starts also area-dragging) ----		
 		
 		var header = new UITextLine<FontStyleTiled>(0, 0, {width:500, hAlign:HAlign.CENTER}, 1, "=== UIArea ===", font, fontStyleHeader, roundBorderStyle);
 		header.onPointerDown = (_, e:PointerEvent)-> area.startDragging(e);
@@ -179,7 +179,6 @@ class TestUIArea extends Application
 
 		var inputPage = new UITextPage<FontStyleTiled>(250, 300, 1, "input\ntext by\nUIText\tPage", font, fontStyleInput, textStyleInput);
 		inputPage.onPointerDown = function(t:UITextPage<FontStyleTiled>, e:PointerEvent) {
-			//t.setInputFocus(e, true);			
 			t.setInputFocus(e);			
 			t.startSelection(e);
 		}
@@ -187,14 +186,10 @@ class TestUIArea extends Application
 			t.stopSelection(e);
 		}
 		inputPage.onResizeWidth = (_, width:Int, deltaWidth:Int) -> {
-			//trace("inputPage.onResizeWidth", width, deltaWidth);
-			
-// TODO: problem here with text-size afterwards:
 			content.updateInnerSize();
 			inputPage.maskByElement(content, true); // CHECK: need here ?
 		}
 		inputPage.onResizeHeight = (_, height:Int, deltaHeight:Int) -> {
-			//trace("inputPage.onResizeHeight", height, deltaHeight);
 			content.updateInnerSize();
 			inputPage.maskByElement(content, true); // CHECK: need here ?
 		}
@@ -286,7 +281,7 @@ class TestUIArea extends Application
 		area.onResizeWidth = (_, width:Int, deltaWidth:Int) -> {
 			header.width = width;
 			vSlider.right = area.right;
-			content.rightSize = hSlider.rightSize = vSlider.left; // CHECK: if order is reversed !
+			content.rightSize = hSlider.rightSize = vSlider.left;
 		}
 
 		area.onResizeHeight = (_, height:Int, deltaHeight:Int) -> {
@@ -307,7 +302,7 @@ class TestUIArea extends Application
 		peoteView.zoom = 3;
 		#end
 		
-		PeoteUIDisplay.registerEvents(window);			
+		PeoteUIDisplay.registerEvents(window);
 	}	
 
 	

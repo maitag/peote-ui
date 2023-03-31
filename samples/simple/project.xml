@@ -7,7 +7,7 @@
 	<!-- <meta build-number="714" /> --> <!-- let set the buildnumber manual (android) -->
 	<!-- check this for GG-Playstore: <setenv name="ANDROID_GRADLE_TASK" value=":app:bundleRelease" /> -->
 	
-	<app main="TestStyles" path="bin" file="Main" />
+	<app main="CodeEditor" path="bin" file="Main" />
 	<!--
 		SimpleElements,
 		SimpleText,
@@ -21,10 +21,9 @@
 		TestStyles,
 		TestTextPage,
 		TestUIArea,
-		TextEditArea,
+		CodeEditor,
 		...
 	-->
-	
 	<!--<define name="stats" if="html5" />-->
 	
 	<!--<window fps="60" width="800" height="600" vsync="true" resizable="true" hardware="true" allow-shaders="true" require-shaders="true" depth-buffer="true" stencil-buffer="false" /> -->
@@ -82,6 +81,8 @@
 	<!--<haxedef name="peoteview_debug_texture" />-->
 	<!--<haxedef name="peoteview_debug_shader" />-->
 
+	<!--<haxeflag name="--no-traces" if="release" />-->
+	
 	<!-- <haxedef name="webgl-debug" /> --> <!-- try with chrome and look here: https://www.khronos.org/webgl/wiki/Debugging -->
 	<!-- <haxedef name="source-map-content" /> --> <!-- to debug with chrome id needs also "-debug" -->
 	<haxeflag name="-dce" value="full" />
