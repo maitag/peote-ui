@@ -1066,25 +1066,21 @@ implements peote.layout.ILayoutElement
 	public inline function textInput(chars:String):Void {
 		if (page == null) return;
 			
+// TODO:
 		oldTextWidth = page.textWidth;
 		oldTextHeight = page.textHeight;
 		
-		//var oldCursor = cursor;
-		
 		if (hasSelection()) {
-			//oldCursor = selectFrom;
-			//oldLine = selectLineFrom;
-// TODO
-			//trace("select from/to:", selectLineFrom, selectLineTo, selectFrom, selectTo);
-			fontProgram.pageDeleteChars(page, selectLineFrom, selectLineTo, selectFrom, selectTo, isVisible);
+			//fontProgram.pageDeleteChars(page, selectLineFrom, selectLineTo, selectFrom, selectTo, isVisible);
+			deleteChars(selectLineFrom, selectLineTo, selectFrom, selectTo);
 			cursorLine = selectLineFrom;
 			cursor = selectFrom;
 			setCursorAndLine(selectFrom, selectLineFrom, false, false);
 			removeSelection();
 		}
 			
-// TODO:
 		if (chars.length == 1 && chars != "\n") {
+			// TODO OPTIMIZE: insertChar(chars.substr(0,1), pageLine, cursor, fontStyle);
 			insertChars(chars, cursorLine, cursor, fontStyle);
 			setCursor(cursor+1, false);
 		}
@@ -1094,7 +1090,6 @@ implements peote.layout.ILayoutElement
 			
 			insertChars(chars, cursorLine, cursor, fontStyle);
 			
-			//trace("restCharLength",restCharLength);
 			if (page.length > oldPageLength) {
 				setCursorLine(cursorLine + page.length - oldPageLength, false, false);
 				setCursor(pageLine.length - restCharLength, false);
@@ -1142,13 +1137,15 @@ implements peote.layout.ILayoutElement
 		oldTextHeight = page.textHeight;
 		
 		if (hasSelection()) {
-			fontProgram.pageDeleteChars(page, selectLineFrom, selectLineTo, selectFrom, selectTo, isVisible);
+			//fontProgram.pageDeleteChars(page, selectLineFrom, selectLineTo, selectFrom, selectTo, isVisible);
+			deleteChars(selectLineFrom, selectLineTo, selectFrom, selectTo);
 			setCursorAndLine(selectFrom, selectLineFrom, false);
 			removeSelection();
 			updateTextOnly(true);
 		}
 		else if (cursorLine < page.length-1 || cursor < pageLine.length) {
-			fontProgram.pageDeleteChar(page, pageLine, cursorLine, cursor, isVisible);
+			//fontProgram.pageDeleteChar(page, pageLine, cursorLine, cursor, isVisible);
+			deleteCharAtCursor();
 			//if (cursor == 0 && pageLine.length == 0) pageLine = page.getPageLine(cursorLine); // Fix after deleting an empty pageline
 			setCursorAndLine(cursor, cursorLine, false);
 			updateTextOnly(true);
@@ -1163,7 +1160,8 @@ implements peote.layout.ILayoutElement
 		oldTextHeight = page.textHeight;
 		
 		if (hasSelection()) {
-			fontProgram.pageDeleteChars(page, selectLineFrom, selectLineTo, selectFrom, selectTo, isVisible);
+			//fontProgram.pageDeleteChars(page, selectLineFrom, selectLineTo, selectFrom, selectTo, isVisible);
+			deleteChars(selectLineFrom, selectLineTo, selectFrom, selectTo);
 			setCursorAndLine(selectFrom, selectLineFrom, false);
 			removeSelection();
 			updateTextOnly(true);
@@ -1173,7 +1171,8 @@ implements peote.layout.ILayoutElement
 				if (cursorLine > 0) {
 					setCursorLine(cursorLine-1, false, false);
 					setCursor(pageLine.length, false);
-					fontProgram.pageRemoveLinefeed(page, pageLine, cursorLine, isVisible);
+					//fontProgram.pageRemoveLinefeed(page, pageLine, cursorLine, isVisible);
+					removeLinefeed();
 					if (pageLine.length == 0) pageLine = page.getPageLine(cursorLine); // Fix after deleting an empty pageline
 					//setCursorAndLine(cursor, cursorLine, false);
 					// check BUG here if out of selection
@@ -1184,7 +1183,8 @@ implements peote.layout.ILayoutElement
 				}
 			}
 			else {
-				fontProgram.pageDeleteChar(page, pageLine, cursorLine, cursor - 1, isVisible);
+				//fontProgram.pageDeleteChar(page, pageLine, cursorLine, cursor - 1, isVisible);
+				deleteCharAtPos(cursor - 1);
 				setCursorAndLine(cursor-1, cursorLine, false);
 				updateTextOnly(true);
 			}
@@ -1204,13 +1204,16 @@ implements peote.layout.ILayoutElement
 		oldTextHeight = page.textHeight;
 		
 		if (hasSelection()) {
-			fontProgram.pageDeleteChars(page, selectLineFrom, selectLineTo, selectFrom, selectTo, isVisible);
-			fontProgram.pageAddLinefeedAt(page, selectLineFrom, selectFrom, isVisible);
+			//fontProgram.pageDeleteChars(page, selectLineFrom, selectLineTo, selectFrom, selectTo, isVisible);
+			deleteChars(selectLineFrom, selectLineTo, selectFrom, selectTo);
+			//fontProgram.pageAddLinefeedAt(page, selectLineFrom, selectFrom, isVisible);
+			addLinefeedAtLine(selectLineFrom, selectFrom);
 			setCursorAndLine(0, selectLineFrom+1, false);
 			removeSelection();
 		}
 		else {
-			fontProgram.pageAddLinefeedAt(page, pageLine, cursorLine, cursor, isVisible);
+			//fontProgram.pageAddLinefeedAt(page, pageLine, cursorLine, cursor, isVisible);
+			addLinefeedAtCursor();
 			setCursorAndLine(0, cursorLine+1, false);
 		}
 		updateTextOnly(true);
@@ -1228,7 +1231,8 @@ implements peote.layout.ILayoutElement
 			oldTextWidth = page.textWidth;
 			oldTextHeight = page.textHeight;
 			
-			lime.system.Clipboard.text = fontProgram.pageCutChars(page, selectLineFrom, selectLineTo, selectFrom, selectTo, isVisible);
+			//lime.system.Clipboard.text = fontProgram.pageCutChars(page, selectLineFrom, selectLineTo, selectFrom, selectTo, isVisible);
+			lime.system.Clipboard.text = cutChars(selectLineFrom, selectLineTo, selectFrom, selectTo);
 			setCursorAndLine(selectFrom, selectLineFrom, false);
 			removeSelection();
 			updateTextOnly(true);
@@ -1363,30 +1367,85 @@ implements peote.layout.ILayoutElement
 	}
 	
 */	
-	inline function pageLineInsertChar(chars:String, position:Int = 0, glyphStyle:$styleType = null) {		
-		//fontProgram.pageInsertChar(page, pageLine, chars, lineNumber, position, glyphStyle, isVisible);
+	public inline function addLinefeedAtCursor() {
+		_addLinefeed(pageLine, cursorLine, cursor);
 	}
 	
-	public inline function insertChars(chars:String, lineNumber:Int = 0, position:Int = 0, glyphStyle:$styleType = null) {		
-		fontProgram.pageInsertChars(page, chars, lineNumber, position, glyphStyle, isVisible);
+	public inline function addLinefeedAtPos(position:Int) {
+		_addLinefeed(pageLine, cursorLine, position);
 	}
+	
+	public inline function addLinefeedAtLine(lineNumber:Int, position:Int) {
+		_addLinefeed(null, lineNumber, position);
+	}
+	
+	public inline function removeLinefeed() {
+		_removeLinefeed(pageLine, cursorLine);
+	}
+	
+	public inline function removeLinefeedAtLine(lineNumber:Int) {
+		_removeLinefeed(pageLine, lineNumber);
+	}
+	
+	public inline function deleteCharAtCursor() {
+		_deleteChar(pageLine, cursorLine, cursor);
+	}
+	
+	public inline function deleteCharAtPos(position:Int) {
+		_deleteChar(pageLine, cursorLine, position);
+	}
+	
+	public inline function deleteCharAtLine(lineNumber:Int, position:Int) {
+		_deleteChar(null, lineNumber, position);
+	}
+	
+	// ------------ undo-buffer methods --------------
+	
+/*	public inline function insertChar(char:String, lineNumber:Int = 0, position:Int = 0, glyphStyle:$styleType = null) {	
+		// TODO:
+		fontProgram.pageInsertChar(page, char, lineNumber, position, glyphStyle, isVisible);
+	}
+*/
+	public inline function insertChars(chars:String, lineNumber:Int = 0, position:Int = 0, glyphStyle:$styleType = null) {
+		fontProgram.pageInsertChars(page, chars, lineNumber, position, glyphStyle, isVisible);
+		//TODO:
+		// if (hasUndoBuffer) undoBuffer.add(INSERT_CHARS, lineNumber, position, chars)
+	}
+	
+	public inline function deleteChars(fromLine:Int, toLine:Int, fromPos:Int, toPos:Int) {
+		fontProgram.pageDeleteChars(page, fromLine, toLine, fromPos, toPos, isVisible);
+		//TODO:
+		// if (hasUndoBuffer) 
+		//		undoBuffer.add(DELETE_CHARS, fromLine, toLine, fromPos, toPos,
+		// 			pageGetChars(page, fromLine, toLine, fromPos, toPos)
+		// );
+	}
+	
+	inline function _deleteChar(pageLine:peote.text.PageLine<$styleType>, lineNumber:Int, position:Int) {
+		fontProgram.pageDeleteChar(page, pageLine, lineNumber, position, isVisible);
+	}
+	
+	public inline function cutChars(fromLine:Int, toLine:Int, fromPos:Int, toPos:Int):String {
+		return fontProgram.pageCutChars(page, fromLine, toLine, fromPos, toPos, isVisible);
+	}
+	
+	public inline function _addLinefeed(pageLine:peote.text.PageLine<$styleType>, lineNumber:Int, position:Int) {
+		fontProgram.pageAddLinefeedAt(page, pageLine, lineNumber, position, isVisible); // TODO: glyphstyle/defaultRange
+	}
+	
+	public inline function _removeLinefeed(pageLine:peote.text.PageLine<$styleType>, lineNumber:Int) {
+		fontProgram.pageRemoveLinefeed(page, pageLine, lineNumber, isVisible);
+	}
+	
 	
 /*	public inline function appendChars(chars:String, glyphStyle:$styleType = null) {		
 		fontProgram.lineAppendChars(line, chars, glyphStyle, isVisible); 
 	}
-*/
-	public inline function deleteCharAt(lineNumber:Int = 0, position:Int = 0) {
-		fontProgram.pageDeleteChar(page, lineNumber, position, isVisible);
-	}
 
-/*	public inline function deleteChars(from:Int = 0, to:Null<Int> = null) {
-		fontProgram.lineDeleteChars(line, from, to, isVisible);
-	}
-	
-	public inline function cutChars(from:Int = 0, to:Null<Int> = null):String {
-		return fontProgram.lineCutChars(line, from, to, isVisible);
-	}
-*/	
+*/
+
+	// -------- get screen position to char or line or vice versa -------
+
 	public inline function getPositionAtChar(position:Int):Float {
 		return fontProgram.pageGetPositionAtChar(page, pageLine, position);
 	}

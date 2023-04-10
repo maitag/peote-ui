@@ -212,9 +212,9 @@ implements peote.layout.ILayoutElement
 	
 	var resizerAvail:ResizeType = ResizeType.NONE;
 	var resizerSize:Int = 5;
-	var resizerEdgeSize:Int = 20;
-	var minWidth:Int  = 100;  var maxWidth:Int  = 500;
-	var minHeight:Int = 100;  var maxHeight:Int = 500;
+	var resizerEdgeSize:Int = 7;
+	var minWidth:Int  = 100;  var maxWidth:Int  = 550;
+	var minHeight:Int = 100;  var maxHeight:Int = 550;
 	
 	var resizerTop:UIElement = null;
 	var resizerLeft:UIElement = null;

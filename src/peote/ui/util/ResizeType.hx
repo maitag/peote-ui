@@ -13,6 +13,7 @@ package peote.ui.util;
 	
 	public static inline var NONE         = 0;
 	public static inline var ALL          = 255;
+	public static inline var SIDE         = 15;
 	
 	
 	public var hasEdge(get, never):Bool;
