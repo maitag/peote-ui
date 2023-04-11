@@ -52,6 +52,10 @@ implements peote.layout.ILayoutElement
 	var page:peote.text.Page<$styleType> = null; // $pageType
 	var pageLine:peote.text.PageLine<$styleType> = null; //$lineType
 	
+	var undoBuffer:peote.ui.util.UndoBuffer = null;
+	public var hasUndo(get, never):Bool;
+	inline function get_hasUndo():Bool return (undoBuffer != null);
+	
 	public var textWidth(get, never):Float;
 	inline function get_textWidth():Float return page.textWidth;
 	
@@ -390,6 +394,9 @@ implements peote.layout.ILayoutElement
 			if (textStyle.selectionStyle != null) selectionStyle = textStyle.selectionStyle;
 			cursorStyle = textStyle.cursorStyle;
 		}
+		
+		// TODO: make optional and give a size
+		undoBuffer = new peote.ui.util.UndoBuffer(10);
 	}
 	
 	inline function getAlignedXOffset(_xOffset:Float):Float
@@ -1351,18 +1358,27 @@ implements peote.layout.ILayoutElement
 	
 	public inline function undo()
 	{
-		trace("undo");
-		/*
-		if (hasUndoBuffer) {
+		if (hasUndo) {
 			var undo = undoBuffer.undo();
-			if ( undo != null) switch (undo.action) {
-				case undoBuffer.INSERT:
-					fontProgram.pageDeleteChars(page, undo.fromLine, undo.toLine, undo.fromPos, undo.toPos, isVisible);
-				case undoBuffer.DELETE:
-					fontProgram.pageInsertChars(page, undo.chars, undo.fromLine, undo.fromPos, glyphStyle, isVisible);
+			if ( undo != null) {
+				
+				// TODO:
+				oldTextWidth = page.textWidth;
+				oldTextHeight = page.textHeight;
+				
+				trace(undo);
+				switch (undo.action) {
+					case INSERT: trace("undo INSERT");
+						fontProgram.pageDeleteChars(page, undo.fromLine, undo.toLine+1, undo.fromPos, undo.toPos, isVisible);
+					case DELETE: trace("undo DELETE");
+						fontProgram.pageInsertChars(page, undo.chars, undo.fromLine, undo.fromPos, fontStyle, isVisible);
+				}
+			
+				setCursorAndLine(undo.fromPos, undo.fromLine, false);
+				updateTextOnly(true);
 			}
 		}
-		*/
+		
 	}
 	
 	public inline function redo()
@@ -1428,13 +1444,14 @@ implements peote.layout.ILayoutElement
 	}
 */
 	public inline function insertChars(chars:String, lineNumber, position, glyphStyle:$styleType = null) {
-		//var toLine = page.length;
-		//var toPos = pageLine.length - position;
+		var toLine = page.length;
+		var toPos = pageLine.length - position;
+		
 		fontProgram.pageInsertChars(page, chars, lineNumber, position, glyphStyle, isVisible);
-		//TODO:
-		//toLine = lineNumber + page.length - toLine; 
-		//toPos = ((lineNumber == toLine) ? pageLine.length : page.getPageLine(toLine).length) - toPos;
-		// if (hasUndoBuffer) undoBuffer.insert(lineNumber, toLine, position, toPos, chars);
+		
+		toLine = lineNumber + page.length - toLine; 
+		toPos = ((lineNumber == toLine) ? pageLine.length : page.getPageLine(toLine).length) - toPos;
+		if (hasUndo) undoBuffer.insert(lineNumber, toLine, position, toPos, chars);
 	}
 	
 	public inline function deleteChars(fromLine:Int, toLine:Int, fromPos:Int, toPos:Int) {
