@@ -1145,7 +1145,7 @@ implements peote.layout.ILayoutElement
 		}
 		else if (cursorLine < page.length-1 || cursor < pageLine.length) {
 			//fontProgram.pageDeleteChar(page, pageLine, cursorLine, cursor, isVisible);
-			deleteCharAtCursor();
+			if (cursor == pageLine.length) removeLinefeed() else deleteCharAtCursor();
 			//if (cursor == 0 && pageLine.length == 0) pageLine = page.getPageLine(cursorLine); // Fix after deleting an empty pageline
 			setCursorAndLine(cursor, cursorLine, false);
 			updateTextOnly(true);
@@ -1349,6 +1349,27 @@ implements peote.layout.ILayoutElement
 		_updateCursorSelection(null, cursorLine + 1, addSelection);
 	}
 	
+	public inline function undo()
+	{
+		trace("undo");
+		/*
+		if (hasUndoBuffer) {
+			var undo = undoBuffer.undo();
+			if ( undo != null) switch (undo.action) {
+				case undoBuffer.INSERT:
+					fontProgram.pageDeleteChars(page, undo.fromLine, undo.toLine, undo.fromPos, undo.toPos, isVisible);
+				case undoBuffer.DELETE:
+					fontProgram.pageInsertChars(page, undo.chars, undo.fromLine, undo.fromPos, glyphStyle, isVisible);
+			}
+		}
+		*/
+	}
+	
+	public inline function redo()
+	{
+		trace("redo");
+	}
+	
 	
 	
 	// ----------------------- delegated methods from FontProgram -----------------------
@@ -1406,35 +1427,53 @@ implements peote.layout.ILayoutElement
 		fontProgram.pageInsertChar(page, char, lineNumber, position, glyphStyle, isVisible);
 	}
 */
-	public inline function insertChars(chars:String, lineNumber:Int = 0, position:Int = 0, glyphStyle:$styleType = null) {
+	public inline function insertChars(chars:String, lineNumber, position, glyphStyle:$styleType = null) {
+		//var toLine = page.length;
+		//var toPos = pageLine.length - position;
 		fontProgram.pageInsertChars(page, chars, lineNumber, position, glyphStyle, isVisible);
 		//TODO:
-		// if (hasUndoBuffer) undoBuffer.add(INSERT_CHARS, lineNumber, position, chars)
+		//toLine = lineNumber + page.length - toLine; 
+		//toPos = ((lineNumber == toLine) ? pageLine.length : page.getPageLine(toLine).length) - toPos;
+		// if (hasUndoBuffer) undoBuffer.insert(lineNumber, toLine, position, toPos, chars);
 	}
 	
 	public inline function deleteChars(fromLine:Int, toLine:Int, fromPos:Int, toPos:Int) {
 		fontProgram.pageDeleteChars(page, fromLine, toLine, fromPos, toPos, isVisible);
 		//TODO:
-		// if (hasUndoBuffer) 
-		//		undoBuffer.add(DELETE_CHARS, fromLine, toLine, fromPos, toPos,
-		// 			pageGetChars(page, fromLine, toLine, fromPos, toPos)
-		// );
+		// if (hasUndoBuffer) undoBuffer.delete(fromLine, toLine, fromPos, toPos, pageGetChars(page, fromLine, toLine, fromPos, toPos) );
 	}
 	
-	inline function _deleteChar(pageLine:peote.text.PageLine<$styleType>, lineNumber:Int, position:Int) {
-		fontProgram.pageDeleteChar(page, pageLine, lineNumber, position, isVisible);
+	inline function _deleteChar(_pageLine:peote.text.PageLine<$styleType>, lineNumber:Int, position:Int) {
+		fontProgram.pageDeleteChar(page, _pageLine, lineNumber, position, isVisible);
+		//TODO:optimize
+		// if (hasUndoBuffer) undoBuffer.delete(lineNumber, lineNumber, position, position+1, pageGetChars(page, lineNumber, lineNumber, position, position+1) );
 	}
 	
 	public inline function cutChars(fromLine:Int, toLine:Int, fromPos:Int, toPos:Int):String {
+		//TODO:
+		/*
+		if (hasUndoBuffer) {
+			var chars = fontProgram.pageCutChars(page, fromLine, toLine, fromPos, toPos, isVisible);
+			undoBuffer.delete(fromLine, toLine, fromPos, toPos, chars );
+			return chars;
+		} else 
+		*/
 		return fontProgram.pageCutChars(page, fromLine, toLine, fromPos, toPos, isVisible);
 	}
 	
-	public inline function _addLinefeed(pageLine:peote.text.PageLine<$styleType>, lineNumber:Int, position:Int) {
-		fontProgram.pageAddLinefeedAt(page, pageLine, lineNumber, position, isVisible); // TODO: glyphstyle/defaultRange
+	public inline function _addLinefeed(_pageLine:peote.text.PageLine<$styleType>, lineNumber:Int, position:Int) {
+		trace("_addLinefeed", lineNumber);
+		fontProgram.pageAddLinefeedAt(page, _pageLine, lineNumber, position, isVisible); // TODO: glyphstyle/defaultRange
+		//TODO:
+		// if (hasUndoBuffer) undoBuffer.addLinefeed(lineNumber, position);
 	}
 	
-	public inline function _removeLinefeed(pageLine:peote.text.PageLine<$styleType>, lineNumber:Int) {
-		fontProgram.pageRemoveLinefeed(page, pageLine, lineNumber, isVisible);
+	public inline function _removeLinefeed(_pageLine:peote.text.PageLine<$styleType>, lineNumber:Int) {
+		trace("_removeLinefeed", lineNumber);
+		fontProgram.pageRemoveLinefeed(page, _pageLine, lineNumber, isVisible);
+		//TODO:
+		// var position = (_pageLine != null) ? _pageLine.length : page.getPageLine(lineNumber).length;
+		// if (hasUndoBuffer) undoBuffer.removeLinefeed(lineNumber, position);
 	}
 	
 	

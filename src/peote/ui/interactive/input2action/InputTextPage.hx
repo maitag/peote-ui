@@ -25,6 +25,9 @@ class InputTextPage
 		
 		{ action: "selectAll" , keyboard: [ [KeyCode.LEFT_CTRL, KeyCode.A ], [KeyCode.RIGHT_CTRL, KeyCode.A ] ] },
 		
+		{ action: "undo" , keyboard: [ [KeyCode.LEFT_CTRL, KeyCode.Z ], [KeyCode.RIGHT_CTRL, KeyCode.Z ] ] },
+		{ action: "redo" , keyboard: [ [KeyCode.LEFT_CTRL, KeyCode.Y ], [KeyCode.RIGHT_CTRL, KeyCode.Y ] ] },
+		
 		{ action: "cursorStart", keyboard: KeyCode.HOME, single:true },
 		{ action: "cursorEnd"  , keyboard: KeyCode.END , single:true },
 		
@@ -57,13 +60,16 @@ class InputTextPage
 		
 		"selectAll"       => { action:selectAll },
 		
+		"undo" => { action:undo },
+		"redo" => { action:redo },
+		
 		"cursorStart"     => { action:cursorStart },
 		"cursorEnd"       => { action:cursorEnd },
 		
 		"cursorLeft"      => { action:cursorLeft     , repeatKeyboardDefault:true },
 		"cursorRight"     => { action:cursorRight    , repeatKeyboardDefault:true },
 		"cursorLeftWord"  => { action:cursorLeftWord , repeatKeyboardDefault:true },
-		"cursorRightWord" => { action:cursorRightWord, repeatKeyboardDefault:true },		
+		"cursorRightWord" => { action:cursorRightWord, repeatKeyboardDefault:true },
 		
 		"cursorUp"    => { action:cursorUp   , repeatKeyboardDefault:true },
 		"cursorDown"  => { action:cursorDown , repeatKeyboardDefault:true },
@@ -96,6 +102,9 @@ class InputTextPage
 	static inline function selectModifier (isDown:Bool, _) addSelection = isDown;
 	
 	static inline function selectAll      (_,_) focusElement.selectAll();
+	
+	static inline function undo (_,_) focusElement.undo();
+	static inline function redo (_,_) focusElement.redo();
 	
 	static inline function cursorStart    (_,_) focusElement.cursorStart(addSelection);
 	static inline function cursorEnd      (_,_) focusElement.cursorEnd(addSelection);

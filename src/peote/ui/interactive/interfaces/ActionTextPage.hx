@@ -12,6 +12,9 @@ interface ActionTextPage
 	
 	public function selectAll():Void;
 	
+	public function undo():Void;
+	public function redo():Void;
+	
 	public function cursorPageStart(addSelection:Bool = false):Void;
 	public function cursorPageEnd(addSelection:Bool = false):Void;
 	public function cursorStart(addSelection:Bool = false):Void;
