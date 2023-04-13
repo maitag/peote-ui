@@ -60,8 +60,8 @@ class InputTextPage
 		
 		"selectAll"       => { action:selectAll },
 		
-		"undo" => { action:undo },
-		"redo" => { action:redo },
+		"undo" => { action:undo , repeatKeyboardDefault:true },
+		"redo" => { action:redo , repeatKeyboardDefault:true },
 		
 		"cursorStart"     => { action:cursorStart },
 		"cursorEnd"       => { action:cursorEnd },

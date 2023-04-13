@@ -396,7 +396,7 @@ implements peote.layout.ILayoutElement
 		}
 		
 		// TODO: make optional and give a size
-		undoBuffer = new peote.ui.util.UndoBuffer(10);
+		undoBuffer = new peote.ui.util.UndoBuffer(100);
 	}
 	
 	inline function getAlignedXOffset(_xOffset:Float):Float
@@ -1359,22 +1359,23 @@ implements peote.layout.ILayoutElement
 	public inline function undo()
 	{
 		if (hasUndo) {
-			var undo = undoBuffer.undo();
-			if ( undo != null) {
-				
+			var step = undoBuffer.undo();
+			if ( step != null) {
+				if (hasSelection()) removeSelection();
 				// TODO:
 				oldTextWidth = page.textWidth;
 				oldTextHeight = page.textHeight;
 				
-				trace(undo);
-				switch (undo.action) {
-					case INSERT: trace("undo INSERT");
-						fontProgram.pageDeleteChars(page, undo.fromLine, undo.toLine+1, undo.fromPos, undo.toPos, isVisible);
-					case DELETE: trace("undo DELETE");
-						fontProgram.pageInsertChars(page, undo.chars, undo.fromLine, undo.fromPos, fontStyle, isVisible);
+				//trace(step);
+				switch (step.action) {
+					case INSERT: //trace("undo INSERT");
+						fontProgram.pageDeleteChars(page, step.fromLine, step.toLine, step.fromPos, step.toPos, isVisible);
+						setCursorAndLine(step.fromPos, step.fromLine, false);
+					case DELETE: //trace("undo DELETE");
+						fontProgram.pageInsertChars(page, step.chars, step.fromLine, step.fromPos, fontStyle, isVisible);
+						setCursorAndLine(step.toPos, step.toLine-1, false);
 				}
 			
-				setCursorAndLine(undo.fromPos, undo.fromLine, false);
 				updateTextOnly(true);
 			}
 		}
@@ -1383,7 +1384,28 @@ implements peote.layout.ILayoutElement
 	
 	public inline function redo()
 	{
-		trace("redo");
+		if (hasUndo) {
+			var step = undoBuffer.redo();
+			if ( step != null) {
+				
+				// TODO:
+				oldTextWidth = page.textWidth;
+				oldTextHeight = page.textHeight;
+				
+				//trace(step);
+				switch (step.action) {
+					case INSERT: //trace("redo INSERT");
+						fontProgram.pageInsertChars(page, step.chars, step.fromLine, step.fromPos, fontStyle, isVisible);
+						setCursorAndLine(step.toPos, step.toLine-1, false);
+					case DELETE: //trace("redo DELETE");
+						fontProgram.pageDeleteChars(page, step.fromLine, step.toLine, step.fromPos, step.toPos, isVisible);
+						setCursorAndLine(step.fromPos, step.fromLine, false);
+				}
+			
+				updateTextOnly(true);
+			}
+		}
+		
 	}
 	
 	
@@ -1451,46 +1473,41 @@ implements peote.layout.ILayoutElement
 		
 		toLine = lineNumber + page.length - toLine; 
 		toPos = ((lineNumber == toLine) ? pageLine.length : page.getPageLine(toLine).length) - toPos;
-		if (hasUndo) undoBuffer.insert(lineNumber, toLine, position, toPos, chars);
+		if (hasUndo) undoBuffer.insert(lineNumber, toLine+1, position, toPos, chars);
 	}
 	
 	public inline function deleteChars(fromLine:Int, toLine:Int, fromPos:Int, toPos:Int) {
+		if (hasUndo) undoBuffer.delete(fromLine, toLine, fromPos, toPos, fontProgram.pageGetChars(page, fromLine, toLine, fromPos, toPos) );
 		fontProgram.pageDeleteChars(page, fromLine, toLine, fromPos, toPos, isVisible);
-		//TODO:
-		// if (hasUndoBuffer) undoBuffer.delete(fromLine, toLine, fromPos, toPos, pageGetChars(page, fromLine, toLine, fromPos, toPos) );
 	}
 	
 	inline function _deleteChar(_pageLine:peote.text.PageLine<$styleType>, lineNumber:Int, position:Int) {
-		fontProgram.pageDeleteChar(page, _pageLine, lineNumber, position, isVisible);
 		//TODO:optimize
-		// if (hasUndoBuffer) undoBuffer.delete(lineNumber, lineNumber, position, position+1, pageGetChars(page, lineNumber, lineNumber, position, position+1) );
+		if (hasUndo) undoBuffer.delete(lineNumber, lineNumber+1, position, position+1, fontProgram.pageGetChars(page, lineNumber, lineNumber+1, position, position+1) );
+		fontProgram.pageDeleteChar(page, _pageLine, lineNumber, position, isVisible);
 	}
 	
 	public inline function cutChars(fromLine:Int, toLine:Int, fromPos:Int, toPos:Int):String {
-		//TODO:
-		/*
-		if (hasUndoBuffer) {
+		if (hasUndo) {
 			var chars = fontProgram.pageCutChars(page, fromLine, toLine, fromPos, toPos, isVisible);
 			undoBuffer.delete(fromLine, toLine, fromPos, toPos, chars );
 			return chars;
 		} else 
-		*/
+		
 		return fontProgram.pageCutChars(page, fromLine, toLine, fromPos, toPos, isVisible);
 	}
 	
 	public inline function _addLinefeed(_pageLine:peote.text.PageLine<$styleType>, lineNumber:Int, position:Int) {
-		trace("_addLinefeed", lineNumber);
+		//trace("_addLinefeed", lineNumber);
 		fontProgram.pageAddLinefeedAt(page, _pageLine, lineNumber, position, isVisible); // TODO: glyphstyle/defaultRange
-		//TODO:
-		// if (hasUndoBuffer) undoBuffer.addLinefeed(lineNumber, position);
+		if (hasUndo) undoBuffer.insert(lineNumber, lineNumber+2, position, 0, "\n");
 	}
 	
 	public inline function _removeLinefeed(_pageLine:peote.text.PageLine<$styleType>, lineNumber:Int) {
-		trace("_removeLinefeed", lineNumber);
+		//trace("_removeLinefeed", lineNumber);
+		var position = (_pageLine != null) ? _pageLine.length : page.getPageLine(lineNumber).length;
+		if (hasUndo) undoBuffer.delete(lineNumber, lineNumber+2, position, 0, "\n");
 		fontProgram.pageRemoveLinefeed(page, _pageLine, lineNumber, isVisible);
-		//TODO:
-		// var position = (_pageLine != null) ? _pageLine.length : page.getPageLine(lineNumber).length;
-		// if (hasUndoBuffer) undoBuffer.removeLinefeed(lineNumber, position);
 	}
 	
 	
