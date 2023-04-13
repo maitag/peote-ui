@@ -20,8 +20,8 @@ class UISlider extends Interactive
 implements peote.layout.ILayoutElement
 #end
 {
-	var last_x:Int;
-	var last_y:Int;
+	//var last_x:Int;
+	//var last_y:Int;
 	
 	var _percent(get, default):Float = 0.0; // allways from 0.0 to 1.0
 	inline function get__percent():Float return (reverse) ? 1.0 - _percent : _percent;
@@ -166,8 +166,8 @@ implements peote.layout.ILayoutElement
 	{
 		super(xPosition, yPosition, width, height, zIndex);
 
-		last_x = xPosition;
-		last_y = yPosition;
+		//last_x = xPosition;
+		//last_y = yPosition;
 		
 		if (sliderStyle != null) 
 		{			
@@ -247,14 +247,17 @@ implements peote.layout.ILayoutElement
 	{
 		if (!isVisible) return;
 		
-		var deltaX = x - last_x;
-		var deltaY = y - last_y;
-		last_x = x;
-		last_y = y;
+		//var deltaX = x - last_x;
+		//var deltaY = y - last_y;
+		//last_x = x;
+		//last_y = y;
 		
 		if (background != null) {
-			background.x += deltaX;
-			background.y += deltaY;
+			//background.x += deltaX;
+			//background.y += deltaY;
+			background.x = x;
+			background.y = y;
+			background.z = z + 1; // TODO: better by overriding z setter into interactive 
 			background.width = width;
 			background.height = height;
 			background.maskByElement(this);
@@ -268,6 +271,7 @@ implements peote.layout.ILayoutElement
 			//dragger.y += deltaY;
 			dragger.x = getDraggerPos(isVertical, x, width, dragger.width);
 			dragger.y = getDraggerPos(!isVertical, y, height, dragger.height);
+			dragger.z = z + 2; // TODO: better by overriding z setter into interactive 
 
 			updateDragArea();
 			dragger.maskByElement(this);

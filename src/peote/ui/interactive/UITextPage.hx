@@ -1387,7 +1387,7 @@ implements peote.layout.ILayoutElement
 		if (hasUndo) {
 			var step = undoBuffer.redo();
 			if ( step != null) {
-				
+				if (hasSelection()) removeSelection();
 				// TODO:
 				oldTextWidth = page.textWidth;
 				oldTextHeight = page.textHeight;
