@@ -20,9 +20,6 @@ class UISlider extends Interactive
 implements peote.layout.ILayoutElement
 #end
 {
-	//var last_x:Int;
-	//var last_y:Int;
-	
 	var _percent(get, default):Float = 0.0; // allways from 0.0 to 1.0
 	inline function get__percent():Float return (reverse) ? 1.0 - _percent : _percent;
 	
@@ -85,10 +82,6 @@ implements peote.layout.ILayoutElement
 	{
 		if (dragger.isDragging) return;
 		
-		//dragger.width = draggerWidth;
-		//dragger.height = draggerHeight;		
-		//if (isVertical) dragger.y = y + draggSpaceStart + Std.int( (height - dragger.height - draggSpaceStart - draggSpaceEnd) * _percent );
-		//else dragger.x = x + draggSpaceStart + Std.int( (width - dragger.width - draggSpaceStart - draggSpaceEnd) * _percent );
 		if (isVertical) {
 			dragger.height = draggerHeight;
 			dragger.y = getDraggerPos(!isVertical, y, height, dragger.height);
@@ -165,9 +158,6 @@ implements peote.layout.ILayoutElement
 	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int=0, sliderStyle:SliderStyle=null) 
 	{
 		super(xPosition, yPosition, width, height, zIndex);
-
-		//last_x = xPosition;
-		//last_y = yPosition;
 		
 		if (sliderStyle != null) 
 		{			
@@ -227,6 +217,8 @@ implements peote.layout.ILayoutElement
 		dragger.overOutEventsBubbleTo = this;
 		dragger.upDownEventsBubbleTo = this;
 		dragger.wheelEventsBubbleTo = this;
+		
+		if (background != null || dragger != null) changeZIndex = onChangeZIndex;
 	}
 	
 	inline function updateDragArea() {
@@ -236,6 +228,12 @@ implements peote.layout.ILayoutElement
 	
 	public inline function updateBackgroundStyle() if (background != null) background.updateVisibleStyle();
 	public inline function updateDraggerStyle() if (dragger != null) dragger.updateVisibleStyle();
+	
+	inline function onChangeZIndex(z:Int, deltaZ:Int):Void
+	{
+		if (background != null) background.z += deltaZ;
+		if (dragger != null) dragger.z += deltaZ;
+	}
 	
 	override inline function updateVisibleStyle():Void
 	{
@@ -247,17 +245,9 @@ implements peote.layout.ILayoutElement
 	{
 		if (!isVisible) return;
 		
-		//var deltaX = x - last_x;
-		//var deltaY = y - last_y;
-		//last_x = x;
-		//last_y = y;
-		
 		if (background != null) {
-			//background.x += deltaX;
-			//background.y += deltaY;
 			background.x = x;
 			background.y = y;
-			background.z = z + 1; // TODO: better by overriding z setter into interactive 
 			background.width = width;
 			background.height = height;
 			background.maskByElement(this);
@@ -265,14 +255,9 @@ implements peote.layout.ILayoutElement
 		}
 		if (dragger != null) {
 			dragger.width = draggerWidth;
-			dragger.height = draggerHeight;
-			
-			//dragger.x += deltaX;
-			//dragger.y += deltaY;
+			dragger.height = draggerHeight;			
 			dragger.x = getDraggerPos(isVertical, x, width, dragger.width);
 			dragger.y = getDraggerPos(!isVertical, y, height, dragger.height);
-			dragger.z = z + 2; // TODO: better by overriding z setter into interactive 
-
 			updateDragArea();
 			dragger.maskByElement(this);
 			dragger.updateLayout();
@@ -289,21 +274,15 @@ implements peote.layout.ILayoutElement
 	{
 		if (background != null) uiDisplay.add(background);
 		if (dragger != null) {
-			uiDisplay.add(dragger);
-			// set the drag-area to same size as the slider
-			updateDragArea();
+			uiDisplay.add(dragger);			
+			updateDragArea(); // set the drag-area to same size as the slider
 		}
 	}
 	
 	override inline function onRemoveVisibleFromDisplay()
 	{
-		if (background != null) {
-			uiDisplay.remove(background);
-		}
-		if (dragger != null && dragger.isVisible) {
-			uiDisplay.remove(dragger);
-		}
-		
+		if (background != null) uiDisplay.remove(background);
+		if (dragger != null && dragger.isVisible) uiDisplay.remove(dragger);
 	}
 	
 	// ------ internal Events ---------------

@@ -9,6 +9,5 @@ interface ParentElement
 	public var yOffset:Int;
  	public var x:Int;
 	public var y:Int;
-	public var z:Int;
- 
+	public var z(default, set):Int; 
 }

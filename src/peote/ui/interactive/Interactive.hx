@@ -130,7 +130,7 @@ implements peote.layout.ILayoutElement
 	public inline function setParentPosOffset(p:ParentElement) {
 		x += p.x + p.xOffset;
 		y += p.y + p.yOffset;
-		z += p.z + 1;
+		z += p.z + 1; trace("new z", z);
 	}
 	
 	public inline function removeParentPosOffset(p:ParentElement) {
@@ -142,6 +142,19 @@ implements peote.layout.ILayoutElement
 	
 	public var x:Int;
 	public var y:Int;
+	
+	public var z(default, set):Int;
+	inline function set_z(v:Int):Int {
+		if (v != z) {
+			if (changeZIndex != null) {
+				var oldZ = z;
+				changeZIndex(z = v, v - oldZ);
+			} else z = v;
+		}
+		return v;
+	}
+	var changeZIndex:Int->Int->Void = null;
+
 	
 	public var width(default, set):Int;
 	inline function set_width(w:Int):Int {
@@ -167,8 +180,6 @@ implements peote.layout.ILayoutElement
 		}
 		return h;
 	}
-	
-	public var z:Int;
 	
 	// get position by side
 	public var left(get, set):Int;

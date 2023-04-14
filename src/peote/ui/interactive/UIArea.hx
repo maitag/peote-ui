@@ -49,7 +49,14 @@ implements peote.layout.ILayoutElement
 		last_x = xPosition;
 		last_y = yPosition;
 		
+		changeZIndex = onChangeZIndex;
+		
 		createAllResizer(resizeType);
+	}
+	
+	inline function onChangeZIndex(z:Int, deltaZ:Int):Void
+	{
+		for (child in childs) child.z += deltaZ;
 	}
 	
 	public function add(child:Interactive)
