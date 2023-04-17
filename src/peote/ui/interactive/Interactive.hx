@@ -130,7 +130,7 @@ implements peote.layout.ILayoutElement
 	public inline function setParentPosOffset(p:ParentElement) {
 		x += p.x + p.xOffset;
 		y += p.y + p.yOffset;
-		z += p.z + 1; trace("new z", z);
+		z += p.z + 1;
 	}
 	
 	public inline function removeParentPosOffset(p:ParentElement) {
