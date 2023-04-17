@@ -122,6 +122,9 @@ class BoxStyleProgram extends Program implements StyleProgram
 	public inline function new()
 	{
 		super(new Buffer<BoxStyleElement>(1024, 1024));
+		
+		// TODO: make that optional!
+		alphaEnabled = true;
 	}
 
 	public inline function createElement(uiElement:Interactive, style:Dynamic, space:Space = null):StyleElement

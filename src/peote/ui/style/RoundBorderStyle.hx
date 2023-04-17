@@ -205,6 +205,8 @@ class RoundBorderStyleProgram extends Program implements StyleProgram
 		#else
 		setColorFormula('compose(color, borderColor, borderSize, borderRadius, vec4(mx, my, mw, mh))');
 		#end
+
+		// TODO: make that optional!
 		//discardAtAlpha(0.9);
 		alphaEnabled = true;
 	}
