@@ -4,6 +4,10 @@ interface ActionTextPage
 {
 	public function deleteChar():Void;
 	public function backspace():Void;
+	
+	public function delLeftWord():Void;
+	public function delRightWord():Void;
+	
 	public function tabulator():Void;
 	
 	public function copyToClipboard():Void;

@@ -103,8 +103,7 @@ class Sliders extends Application
 			//hSlider.updateLayout();
 		}
 		
-		
-		
+				
 		// TODO: make uiElement to switch between
 		//uiDisplay.mouseEnabled = false;
 		//uiDisplay.touchEnabled = false;

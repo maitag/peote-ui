@@ -19,10 +19,6 @@ import peote.ui.util.HAlign;
 import peote.ui.interactive.*;
 import peote.ui.style.*;
 
-import peote.view.Display;
-import peote.view.Program;
-import peote.view.Buffer;
-
 
 class CodeEditor extends Application
 {
@@ -55,7 +51,7 @@ class CodeEditor extends Application
 		
 		var roundBorderStyle = RoundBorderStyle.createById(0);		
 		
-		var cursorStyle = BoxStyle.createById(1, Color.RED);
+		var cursorStyle = BoxStyle.createById(1, 0xaa2211ff);
 		var selectionStyle = BoxStyle.createById(2, Color.GREY3);
 		
 		var fontStyleHeader = FontStyleTiled.createById(0);
@@ -89,6 +85,7 @@ class CodeEditor extends Application
 		
 		var sliderSize:Int = 20;
 		var headerSize:Int = 20;
+		var gap:Int = 3;
 		
 		var area = new UIArea(50, 50, 500, 500, roundBorderStyle, ResizeType.ALL);
 		// to let the area drag
@@ -100,25 +97,28 @@ class CodeEditor extends Application
 		// ---- header textline -----		
 		// --------------------------
 		
-		var header = new UITextLine<FontStyleTiled>(0, 0,
-			{width:500, height:headerSize, hAlign:HAlign.CENTER}, 
+		var header = new UITextLine<FontStyleTiled>(gap, gap,
+			{width:area.width - gap - gap, height:headerSize, hAlign:HAlign.CENTER}, 
 			"=== Edit Code ===", font, fontStyleHeader, roundBorderStyle
 		);
 		// start/stop area-dragging
 		header.onPointerDown = (_, e:PointerEvent)-> area.startDragging(e);
 		header.onPointerUp = (_, e:PointerEvent)-> area.stopDragging(e);
-		area.add(header);				
+		area.add(header);
 		
 		
 		// --------------------------
 		// ------- edit area --------
 		// --------------------------
 		
-		var editArea = new UITextPage<FontStyleTiled>(0, headerSize,
-			{ width: area.width - sliderSize, height: area.height - headerSize - sliderSize},
-			"input\ntext by\nUIText\tPage", font, fontStyleInput, textStyleInput
+		var editArea = new UITextPage<FontStyleTiled>(gap, headerSize + gap + 1, {
+				width: area.width - sliderSize - gap - gap - 1,
+				height: area.height - headerSize - sliderSize - 2 - gap - gap,
+				leftSpace: 3, rightSpace:1, topSpace:1, bottomSpace:1
+			},
+			"class Test {\n\tstatic function main() {\n\t\ttrace(\"Haxe is great!\");\n\t}\n}", font, fontStyleInput, textStyleInput
 		);
-			
+		
 		// TODO: make UITextPage "selectable" to automatic set internal onPointerDown/Up for selection
 		editArea.onPointerDown = function(t, e) {
 			t.setInputFocus(e);			
@@ -135,11 +135,11 @@ class CodeEditor extends Application
 		// ---- sliders to scroll editArea ----		
 		// ------------------------------------
 		
-		var hSlider = new UISlider(0, area.height-sliderSize, area.width-sliderSize, sliderSize, sliderStyle);
+		var hSlider = new UISlider(gap, area.height-sliderSize-gap, editArea.width, sliderSize, sliderStyle);
 		hSlider.onMouseWheel = (_, e:WheelEvent) -> hSlider.setWheelDelta( e.deltaY );
 		area.add(hSlider);		
 		
-		var vSlider = new UISlider(area.width-20, headerSize, sliderSize, area.height-headerSize-sliderSize, sliderStyle);
+		var vSlider = new UISlider(area.width-sliderSize-gap, headerSize + gap + 1, sliderSize, editArea.height, sliderStyle);
 		vSlider.onMouseWheel = (_, e:WheelEvent) -> vSlider.setWheelDelta( e.deltaY );
 		area.add(vSlider);
 				
@@ -147,52 +147,20 @@ class CodeEditor extends Application
 		editArea.bindHSlider(hSlider);
 		editArea.bindVSlider(vSlider);
 
-		
-		// ---------------------------------------------
-		// -------- button to change the size ----------		
-		// ---------------------------------------------
-		
-/*		// TODO: put this inside of UIArea.hx but for all directions of ResizeType
-		var resizerSize:Int = 18;
-		var minWidth:Int = 100;var maxWidth:Int = 600;
-		var minHeight:Int = 100; var maxHeight:Int = 500;
-		
-		var resizerBottomRight:UIElement = new UIElement(area.width - 19, area.height - 19, resizerSize, resizerSize, 2, roundBorderStyle.copy(Color.GREY3, Color.GREY1));	
-		
-		
-		resizerBottomRight.onPointerDown = (_, e:PointerEvent)-> {
-			resizerBottomRight.setDragArea(
-				area.x + minWidth,
-				area.y + minHeight,
-				Std.int(Math.min( maxWidth - minWidth, peoteUiDisplay.width  - (area.x + minWidth) )),
-				Std.int(Math.min( maxHeight - minHeight, peoteUiDisplay.height - (area.y + minHeight) ))
-			);
-			resizerBottomRight.startDragging(e);
-		}
-		resizerBottomRight.onPointerUp = (_, e:PointerEvent)-> resizerBottomRight.stopDragging(e);
-		
-		resizerBottomRight.onDrag = (_, x:Float, y:Float) -> {
-			area.rightSize  = resizerBottomRight.right + 1;
-			area.bottomSize = resizerBottomRight.bottom + 1;
-			area.updateLayout();
-		};
-		resizerBottomRight.onPointerOver = (_,_)-> window.cursor = MouseCursor.RESIZE_NWSE;
-		resizerBottomRight.onPointerOut  = (_,_)-> window.cursor = MouseCursor.DEFAULT;
-		
-		area.add(resizerBottomRight);
-*/		
-		
+				
 		// --- arrange header and sliders if area size is changing ---
 		
 		area.onResizeWidth = (_, width:Int, deltaWidth:Int) -> {
-			header.width = width;
-			vSlider.right = area.right;
-			editArea.width = hSlider.width = width - sliderSize;
+			header.width = width - gap - gap;
+			vSlider.right = area.right - gap;
+			editArea.rightSize = vSlider.left - 1;
+			hSlider.width = editArea.width;
 		}
 
 		area.onResizeHeight = (_, height:Int, deltaHeight:Int) -> {
-			hSlider.bottom = area.bottom;
-			editArea.height = vSlider.height = height - headerSize - sliderSize;
+			hSlider.bottom = area.bottom - gap;
+			editArea.bottomSize = hSlider.top - 1;
+			vSlider.height = editArea.height;
 		}
 
 		

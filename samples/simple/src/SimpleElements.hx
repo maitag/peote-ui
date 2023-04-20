@@ -73,6 +73,7 @@ class SimpleElements extends Application
 		button1.onPointerClick = onClick;
 		
 		var myStyle2 = new RoundBorderStyle(Color.GREY1, Color.GREY5);
+		//var myStyle2 = new RoundBorderStyle(0xff000099, Color.GREY5); // testing transparency
 		myStyle2.borderSize = 2.0;
 
 		trace("NEW BUTTON -----");

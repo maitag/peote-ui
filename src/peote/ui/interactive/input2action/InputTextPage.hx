@@ -13,9 +13,13 @@ class InputTextPage
 	// static functions to call the focused elements actions for input2action
 	
 	public static var actionConfig:ActionConfig = [
-		{ action: "deleteChar" , keyboard: KeyCode.DELETE },
-		{ action: "backspace"  , keyboard: KeyCode.BACKSPACE },
-		{ action: "tabulator"  , keyboard: KeyCode.TAB },
+		{ action: "deleteChar" , keyboard: KeyCode.DELETE, single:true },
+		{ action: "backspace"  , keyboard: KeyCode.BACKSPACE, single:true },
+		
+		{ action: "delLeftWord" , keyboard: [ [KeyCode.LEFT_CTRL, KeyCode.BACKSPACE ], [KeyCode.RIGHT_CTRL, KeyCode.BACKSPACE ] ] },
+		{ action: "delRightWord", keyboard: [ [KeyCode.LEFT_CTRL, KeyCode.DELETE ], [KeyCode.RIGHT_CTRL, KeyCode.DELETE ] ] },
+		
+		{ action: "tabulator", keyboard: KeyCode.TAB },
 		
 		{ action: "copyToClipboard"   , keyboard: [ KeyCode.COPY,  [KeyCode.LEFT_CTRL, KeyCode.C], [KeyCode.RIGHT_CTRL, KeyCode.C] ] },
 		{ action: "cutToClipboard"    , keyboard: [ KeyCode.CUT,   [KeyCode.LEFT_CTRL, KeyCode.X], [KeyCode.RIGHT_CTRL, KeyCode.X] ] },
@@ -48,11 +52,15 @@ class InputTextPage
 	];
 	
 	public static var actionMap:ActionMap = [
-		"deleteChar"  => { action:deleteChar , repeatKeyboardDefault:true },
-		"backspace"   => { action:backspace  , repeatKeyboardDefault:true },
-		"tabulator"   => { action:tabulator  , repeatKeyboardDefault:true },
+		"deleteChar"  => { action:deleteChar  , repeatKeyboardDefault:true },
+		"backspace"   => { action:backspace   , repeatKeyboardDefault:true },
 		
-		"copyToClipboard"      => { action:copyToClipboard   , repeatKeyboardDefault:true },
+		"delLeftWord" => { action:delLeftWord , repeatKeyboardDefault:true },
+		"delRightWord"=> { action:delRightWord, repeatKeyboardDefault:true },
+		
+		"tabulator"   => { action:tabulator, repeatKeyboardDefault:true },
+		
+		"copyToClipboard"      => { action:copyToClipboard, repeatKeyboardDefault:true },
 		"cutToClipboard"       => { action:cutToClipboard  },
 		"pasteFromClipboard"   => { action:pasteFromClipboard, repeatKeyboardDefault:true },
 		
@@ -77,7 +85,7 @@ class InputTextPage
 		"cursorPageStart"     => { action:cursorPageStart },
 		"cursorPageEnd"       => { action:cursorPageEnd },
 		
-		"enter"       => { action:enter      , repeatKeyboardDefault:true },
+		"enter"       => { action:enter, repeatKeyboardDefault:true },
 	];
 	
 	
@@ -92,6 +100,10 @@ class InputTextPage
 	
 	static inline function deleteChar (_,_) focusElement.deleteChar();
 	static inline function backspace  (_,_) focusElement.backspace();
+	
+	static inline function delLeftWord  (_,_) focusElement.delLeftWord();
+	static inline function delRightWord (_,_) focusElement.delRightWord();
+	
 	static inline function tabulator  (_,_) focusElement.tabulator();
 	
 	static inline function copyToClipboard   (_,_) focusElement.copyToClipboard();

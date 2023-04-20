@@ -28,8 +28,6 @@ import peote.ui.style.TextStyle;
 
 import peote.ui.style.interfaces.FontStyle;
 
-import input2action.*;
-import lime.ui.KeyCode;
 
 // ------------------------------------------
 // --- using a custom FontStyle here --------
@@ -41,6 +39,7 @@ import lime.ui.KeyCode;
 class MyFontStyle implements FontStyle
 {
 	public var color:Color = Color.GREEN;
+	//public var color:Color = Color.GREEN.setAlpha(0.5);
 	public var width:Float = 38; // (<- is it still fixed to get from font-defaults if this is MISSING ?)
 	public var height:Float = 36;
 	@global public var weight = 0.5; //0.49 <- more thick (only for ttfcompiled fonts)

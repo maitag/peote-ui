@@ -1155,7 +1155,7 @@ implements peote.layout.ILayoutElement
 	
 	public inline function backspace()
 	{
-		if (page == null) return;		
+		if (page == null) return;
 		if (hasSelection()) {
 			setOldTextSize();
 			deleteChars(selectLineFrom, selectLineTo, selectFrom, selectTo);
@@ -1188,6 +1188,54 @@ implements peote.layout.ILayoutElement
 		}
 	}
 	
+	public inline function delLeftWord()
+	{
+		if (page == null) return;
+		if (cursor == 0) {
+			if (cursorLine > 0) {
+				setOldTextSize();
+				setCursorLine(cursorLine-1, false, false);
+				setCursor(pageLine.length, false);
+				removeLinefeed();
+				if (pageLine.length == 0) pageLine = page.getPageLine(cursorLine); // Fix after deleting an empty pageline
+				//setCursorAndLine(cursor, cursorLine, false);
+				if (hasSelection()) {
+					if (selectLineFrom == selectLineTo - 1) selectTo = cursor + (selectTo - selectFrom);
+					select(cursor, selectTo, selectLineFrom-1, selectLineTo-2);
+				}
+				updateTextOnly(true);
+			}
+		}
+		else {
+			setOldTextSize();
+			var from = fontProgram.pageLineWordLeft(pageLine, cursor);
+			deleteChars(cursorLine, cursorLine+1, from, cursor);
+			if (hasSelection()) {
+				if (cursor == selectTo) removeSelection();
+				else {
+					if (selectLineFrom == selectLineTo - 1) selectTo -= cursor - from;
+					select(from, selectTo, selectLineFrom, selectLineTo-1);
+				}
+			}
+			setCursor(from, false);
+			updateTextOnly(true);
+		}
+	}
+	
+	public inline function delRightWord()
+	{
+		if (page == null) return;
+		if (cursorLine < page.length - 1 || cursor < pageLine.length) {
+			if (hasSelection()) removeSelection();
+			setOldTextSize();
+			if (cursor == pageLine.length) removeLinefeed();
+			else deleteChars(cursorLine, cursorLine+1, cursor, fontProgram.pageLineWordRight(pageLine, cursor));
+			//if (cursor == 0 && pageLine.length == 0) pageLine = page.getPageLine(cursorLine); // Fix after deleting an empty pageline
+			setCursorAndLine(cursor, cursorLine, false);
+			updateTextOnly(true);
+		}		
+	}
+	
 	public inline function tabulator()
 	{
 		textInput("\t");
@@ -1195,7 +1243,7 @@ implements peote.layout.ILayoutElement
 	
 	public inline function enter()
 	{
-		if (page == null) return;		
+		if (page == null) return;
 		setOldTextSize();		
 		if (hasSelection()) {
 			deleteChars(selectLineFrom, selectLineTo, selectFrom, selectTo);
