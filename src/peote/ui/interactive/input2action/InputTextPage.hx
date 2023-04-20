@@ -16,8 +16,14 @@ class InputTextPage
 		{ action: "deleteChar" , keyboard: KeyCode.DELETE, single:true },
 		{ action: "backspace"  , keyboard: KeyCode.BACKSPACE, single:true },
 		
-		{ action: "delLeftWord" , keyboard: [ [KeyCode.LEFT_CTRL, KeyCode.BACKSPACE ], [KeyCode.RIGHT_CTRL, KeyCode.BACKSPACE ] ] },
-		{ action: "delRightWord", keyboard: [ [KeyCode.LEFT_CTRL, KeyCode.DELETE ], [KeyCode.RIGHT_CTRL, KeyCode.DELETE ] ] },
+		{ action: "delLeft" , keyboard: [
+			[KeyCode.LEFT_CTRL, KeyCode.BACKSPACE ], [KeyCode.RIGHT_CTRL, KeyCode.BACKSPACE ],
+			[KeyCode.LEFT_SHIFT, KeyCode.BACKSPACE ], [KeyCode.RIGHT_SHIFT, KeyCode.BACKSPACE ] 		
+		] },
+		{ action: "delRight", keyboard: [
+			[KeyCode.LEFT_CTRL, KeyCode.DELETE ], [KeyCode.RIGHT_CTRL, KeyCode.DELETE ],
+			[KeyCode.LEFT_SHIFT, KeyCode.DELETE ], [KeyCode.RIGHT_SHIFT, KeyCode.DELETE ]
+		] },
 		
 		{ action: "tabulator", keyboard: KeyCode.TAB },
 		
@@ -25,7 +31,7 @@ class InputTextPage
 		{ action: "cutToClipboard"    , keyboard: [ KeyCode.CUT,   [KeyCode.LEFT_CTRL, KeyCode.X], [KeyCode.RIGHT_CTRL, KeyCode.X] ] },
 		{ action: "pasteFromClipboard", keyboard: [ KeyCode.PASTE, [KeyCode.LEFT_CTRL, KeyCode.V], [KeyCode.RIGHT_CTRL, KeyCode.V] ] },
 		
-		{ action: "selectModifier", keyboard: [KeyCode.LEFT_SHIFT, KeyCode.RIGHT_SHIFT] },
+		{ action: "shiftModifier", keyboard: [KeyCode.LEFT_SHIFT, KeyCode.RIGHT_SHIFT] },
 		
 		{ action: "selectAll" , keyboard: [ [KeyCode.LEFT_CTRL, KeyCode.A ], [KeyCode.RIGHT_CTRL, KeyCode.A ] ] },
 		
@@ -55,8 +61,8 @@ class InputTextPage
 		"deleteChar"  => { action:deleteChar  , repeatKeyboardDefault:true },
 		"backspace"   => { action:backspace   , repeatKeyboardDefault:true },
 		
-		"delLeftWord" => { action:delLeftWord , repeatKeyboardDefault:true },
-		"delRightWord"=> { action:delRightWord, repeatKeyboardDefault:true },
+		"delLeft" => { action:delLeft , repeatKeyboardDefault:true },
+		"delRight"=> { action:delRight, repeatKeyboardDefault:true },
 		
 		"tabulator"   => { action:tabulator, repeatKeyboardDefault:true },
 		
@@ -64,7 +70,7 @@ class InputTextPage
 		"cutToClipboard"       => { action:cutToClipboard  },
 		"pasteFromClipboard"   => { action:pasteFromClipboard, repeatKeyboardDefault:true },
 		
-		"selectModifier"      => { action:selectModifier, up:true },
+		"shiftModifier"      => { action:shiftModifier, up:true },
 		
 		"selectAll"       => { action:selectAll },
 		
@@ -101,8 +107,8 @@ class InputTextPage
 	static inline function deleteChar (_,_) focusElement.deleteChar();
 	static inline function backspace  (_,_) focusElement.backspace();
 	
-	static inline function delLeftWord  (_,_) focusElement.delLeftWord();
-	static inline function delRightWord (_,_) focusElement.delRightWord();
+	static inline function delLeft  (_,_) focusElement.delLeft(isShift);
+	static inline function delRight (_,_) focusElement.delRight(isShift);
 	
 	static inline function tabulator  (_,_) focusElement.tabulator();
 	
@@ -110,27 +116,27 @@ class InputTextPage
 	static inline function cutToClipboard    (_,_) focusElement.cutToClipboard();
 	static inline function pasteFromClipboard(_,_) focusElement.pasteFromClipboard();
 	
-	static var addSelection:Bool = false;
-	static inline function selectModifier (isDown:Bool, _) addSelection = isDown;
+	static var isShift:Bool = false;
+	static inline function shiftModifier (isDown:Bool, _) isShift = isDown;
 	
 	static inline function selectAll      (_,_) focusElement.selectAll();
 	
 	static inline function undo (_,_) focusElement.undo();
 	static inline function redo (_,_) focusElement.redo();
 	
-	static inline function cursorStart    (_,_) focusElement.cursorStart(addSelection);
-	static inline function cursorEnd      (_,_) focusElement.cursorEnd(addSelection);
+	static inline function cursorStart    (_,_) focusElement.cursorStart(isShift);
+	static inline function cursorEnd      (_,_) focusElement.cursorEnd(isShift);
 	
-	static inline function cursorLeft     (_,_) focusElement.cursorLeft(addSelection);
-	static inline function cursorRight    (_,_) focusElement.cursorRight(addSelection);
-	static inline function cursorLeftWord (_,_) focusElement.cursorLeftWord(addSelection);
-	static inline function cursorRightWord(_,_) focusElement.cursorRightWord(addSelection);	
+	static inline function cursorLeft     (_,_) focusElement.cursorLeft(isShift);
+	static inline function cursorRight    (_,_) focusElement.cursorRight(isShift);
+	static inline function cursorLeftWord (_,_) focusElement.cursorLeftWord(isShift);
+	static inline function cursorRightWord(_,_) focusElement.cursorRightWord(isShift);	
 	
-	static inline function cursorUp   (_,_) focusElement.cursorUp(addSelection);
-	static inline function cursorDown (_,_) focusElement.cursorDown(addSelection);
+	static inline function cursorUp   (_,_) focusElement.cursorUp(isShift);
+	static inline function cursorDown (_,_) focusElement.cursorDown(isShift);
 	
-	static inline function cursorPageStart    (_,_) focusElement.cursorPageStart(addSelection);
-	static inline function cursorPageEnd      (_, _) focusElement.cursorPageEnd(addSelection);
+	static inline function cursorPageStart    (_,_) focusElement.cursorPageStart(isShift);
+	static inline function cursorPageEnd      (_, _) focusElement.cursorPageEnd(isShift);
 	
 	static inline function enter(_,_) focusElement.enter();
 

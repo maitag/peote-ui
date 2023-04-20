@@ -5,8 +5,8 @@ interface ActionTextPage
 	public function deleteChar():Void;
 	public function backspace():Void;
 	
-	public function delLeftWord():Void;
-	public function delRightWord():Void;
+	public function delLeft(toLineStart:Bool = false):Void;
+	public function delRight(toLineEnd:Bool = false):Void;
 	
 	public function tabulator():Void;
 	
