@@ -57,7 +57,8 @@ class InputTextPage
 				
 		{ action: "enter"      , keyboard: [KeyCode.RETURN, KeyCode.RETURN2, KeyCode.NUMPAD_ENTER] },
 		
-		// TODO: undo/redo
+		// TODO: ctrl-d for duplicate cursorLine
+		// TODO: ctrl-x for delete cursorLine
 	];
 	
 	public static var actionMap:ActionMap = [
