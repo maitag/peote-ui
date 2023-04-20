@@ -32,5 +32,8 @@ interface ActionTextPage
 	public function cursorUp(addSelection:Bool = false):Void;
 	public function cursorDown(addSelection:Bool = false):Void;
 	
+	public function cursorPageUp(addSelection:Bool = false):Void;
+	public function cursorPageDown(addSelection:Bool = false):Void;
+	
 	public function enter():Void;
 }

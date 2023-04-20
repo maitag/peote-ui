@@ -46,12 +46,15 @@ class InputTextPage
 		{ action: "cursorLeftWord" , keyboard: [ [KeyCode.LEFT_CTRL, KeyCode.LEFT ], [KeyCode.RIGHT_CTRL, KeyCode.LEFT ] ] },
 		{ action: "cursorRightWord", keyboard: [ [KeyCode.LEFT_CTRL, KeyCode.RIGHT], [KeyCode.RIGHT_CTRL, KeyCode.RIGHT] ] },
 		
-		{ action: "cursorUp"   , keyboard: KeyCode.UP  },
-		{ action: "cursorDown" , keyboard: KeyCode.DOWN},
+		{ action: "cursorUp"   , keyboard: KeyCode.UP   },
+		{ action: "cursorDown" , keyboard: KeyCode.DOWN },
 				
 		{ action: "cursorPageStart", keyboard: [ [KeyCode.LEFT_CTRL, KeyCode.HOME], [KeyCode.RIGHT_CTRL, KeyCode.HOME] ] },
 		{ action: "cursorPageEnd"  , keyboard: [ [KeyCode.LEFT_CTRL, KeyCode.END ], [KeyCode.RIGHT_CTRL, KeyCode.END ] ] },
 		
+		{ action: "cursorPageUp"   , keyboard: KeyCode.PAGE_UP   },
+		{ action: "cursorPageDown" , keyboard: KeyCode.PAGE_DOWN },
+				
 		{ action: "enter"      , keyboard: [KeyCode.RETURN, KeyCode.RETURN2, KeyCode.NUMPAD_ENTER] },
 		
 		// TODO: undo/redo
@@ -90,6 +93,9 @@ class InputTextPage
 		
 		"cursorPageStart"     => { action:cursorPageStart },
 		"cursorPageEnd"       => { action:cursorPageEnd },
+		
+		"cursorPageUp"    => { action:cursorPageUp   , repeatKeyboardDefault:true },
+		"cursorPageDown"  => { action:cursorPageDown , repeatKeyboardDefault:true },
 		
 		"enter"       => { action:enter, repeatKeyboardDefault:true },
 	];
@@ -135,8 +141,11 @@ class InputTextPage
 	static inline function cursorUp   (_,_) focusElement.cursorUp(isShift);
 	static inline function cursorDown (_,_) focusElement.cursorDown(isShift);
 	
-	static inline function cursorPageStart    (_,_) focusElement.cursorPageStart(isShift);
-	static inline function cursorPageEnd      (_, _) focusElement.cursorPageEnd(isShift);
+	static inline function cursorPageStart (_,_) focusElement.cursorPageStart(isShift);
+	static inline function cursorPageEnd   (_, _) focusElement.cursorPageEnd(isShift);
+	
+	static inline function cursorPageUp   (_,_) focusElement.cursorPageUp(isShift);
+	static inline function cursorPageDown (_,_) focusElement.cursorPageDown(isShift);
 	
 	static inline function enter(_,_) focusElement.enter();
 
