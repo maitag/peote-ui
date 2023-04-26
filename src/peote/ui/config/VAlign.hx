@@ -1,4 +1,4 @@
-package peote.ui.util;
+package peote.ui.config;
 
 @:enum abstract VAlign(Int) from Int to Int 
 {

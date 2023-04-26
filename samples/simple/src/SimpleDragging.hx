@@ -1,7 +1,5 @@
 package;
 
-import haxe.CallStack;
-
 import lime.app.Application;
 import lime.ui.Window;
 
@@ -9,11 +7,8 @@ import peote.view.PeoteView;
 import peote.view.Color;
 
 import peote.ui.PeoteUIDisplay;
-
 import peote.ui.interactive.UIElement;
-
 import peote.ui.style.RoundBorderStyle;
-
 import peote.ui.event.PointerEvent;
 
 
@@ -28,7 +23,7 @@ class SimpleDragging extends Application
 		{
 			case WEBGL, OPENGL, OPENGLES:
 				try startSample(window)
-				catch (_) trace(CallStack.toString(CallStack.exceptionStack()), _);
+				catch (_) trace(haxe.CallStack.toString(haxe.CallStack.exceptionStack()), _);
 			default: throw("Sorry, only works with OpenGL.");
 		}
 	}

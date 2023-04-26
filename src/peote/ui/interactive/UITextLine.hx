@@ -258,8 +258,8 @@ implements peote.layout.ILayoutElement
 		return b;
 	}
 	
-	public var hAlign:peote.ui.util.HAlign = peote.ui.util.HAlign.LEFT;
-	public var vAlign:peote.ui.util.VAlign = peote.ui.util.VAlign.CENTER;
+	public var hAlign = peote.ui.config.HAlign.LEFT;
+	public var vAlign = peote.ui.config.VAlign.CENTER;
 	
 	public var xOffset:Float = 0;
 	public var yOffset:Float = 0;
@@ -273,9 +273,9 @@ implements peote.layout.ILayoutElement
 	var maskElement:peote.text.MaskElement;
 	#end
 	
-	public function new(xPosition:Int, yPosition:Int, ?textSize:peote.ui.util.TextSize, zIndex:Int = 0, text:String,
-	                    //font:$fontType, fontStyle:$styleType) 
-	                    font:peote.text.Font<$styleType>, ?fontStyle:$styleType, ?textStyle:peote.ui.style.TextStyle) //textStyle=null
+	public function new(xPosition:Int, yPosition:Int, ?textSize:peote.ui.config.TextSize, zIndex:Int = 0, text:String,	                    
+	                    font:peote.text.Font<$styleType>, ?fontStyle:$styleType, //font:$fontType, fontStyle:$styleType
+						?config:peote.ui.config.TextConfig)
 	{
 		//trace("NEW UITextLine");		
 		var width:Int = 0;
@@ -287,10 +287,12 @@ implements peote.layout.ILayoutElement
 			if (textSize.vAlign != null) vAlign = textSize.vAlign;
 			if (textSize.xOffset != null) xOffset = textSize.xOffset;
 			if (textSize.yOffset != null) yOffset = textSize.yOffset;
-			if (textSize.leftSpace != null) leftSpace = textSize.leftSpace;
-			if (textSize.rightSpace != null) rightSpace = textSize.rightSpace;
-			if (textSize.topSpace != null) topSpace = textSize.topSpace;
-			if (textSize.bottomSpace != null) bottomSpace = textSize.bottomSpace;
+			if (textSize.space != null) {
+				if (textSize.space.left != null) leftSpace = textSize.space.left;
+				if (textSize.space.right != null) rightSpace = textSize.space.right;
+				if (textSize.space.top != null) topSpace = textSize.space.top;
+				if (textSize.space.bottom != null) bottomSpace = textSize.space.bottom;
+			}
 		}
 		
 		super(xPosition, yPosition, width, height, zIndex);
@@ -307,18 +309,18 @@ implements peote.layout.ILayoutElement
 			default: macro {}
 		}}
 		
-		if (textStyle != null) {
-			if (textStyle.backgroundStyle != null) backgroundStyle = textStyle.backgroundStyle;
-			if (textStyle.selectionStyle != null) selectionStyle = textStyle.selectionStyle;
-			cursorStyle = textStyle.cursorStyle;
+		if (config != null) {
+			if (config.backgroundStyle != null) backgroundStyle = config.backgroundStyle;
+			if (config.selectionStyle != null) selectionStyle = config.selectionStyle;
+			cursorStyle = config.cursorStyle;
 		}
 	}
 	
 	inline function getAlignedXOffset(_xOffset:Float):Float
 	{
 		return (autoWidth) ? _xOffset : switch (hAlign) {
-			case peote.ui.util.HAlign.CENTER: (width - leftSpace - rightSpace - line.textSize) / 2 + _xOffset;
-			case peote.ui.util.HAlign.RIGHT: width - leftSpace - rightSpace - line.textSize + _xOffset;
+			case peote.ui.config.HAlign.CENTER: (width - leftSpace - rightSpace - line.textSize) / 2 + _xOffset;
+			case peote.ui.config.HAlign.RIGHT: width - leftSpace - rightSpace - line.textSize + _xOffset;
 			//case peote.ui.util.HAlign.CENTER: (width - leftSpace - rightSpace - Math.floor(line.textSize))/2 + _xOffset;
 			//case peote.ui.util.HAlign.RIGHT: width - leftSpace - rightSpace - Math.floor(line.textSize) + _xOffset;
 			default: _xOffset;
@@ -328,8 +330,8 @@ implements peote.layout.ILayoutElement
 	inline function getAlignedYOffset():Float
 	{
 		return (autoHeight) ? yOffset : switch (vAlign) {
-			case peote.ui.util.VAlign.CENTER: (height - topSpace - bottomSpace - line.height) / 2 + yOffset;
-			case peote.ui.util.VAlign.BOTTOM: height - topSpace - bottomSpace - line.height + yOffset;
+			case peote.ui.config.VAlign.CENTER: (height - topSpace - bottomSpace - line.height) / 2 + yOffset;
+			case peote.ui.config.VAlign.BOTTOM: height - topSpace - bottomSpace - line.height + yOffset;
 			default: yOffset;
 		}
 	}
@@ -809,10 +811,10 @@ implements peote.layout.ILayoutElement
 			true, false, false, // updateBgMask, updateSelection, updateCursor
 			false, true, false); // lineUpdatePosition, lineUpdateSize, lineUpdateOffset
 		else {
-			if ( !autoWidth && hAlign == peote.ui.util.HAlign.LEFT && isVisible) fontProgram.lineUpdate(line);
+			if ( !autoWidth && hAlign == peote.ui.config.HAlign.LEFT && isVisible) fontProgram.lineUpdate(line);
 			else updateLineLayout(false,  // updateStyle
 				// updateBgMask, updateSelection, updateCursor
-				autoWidth, false, (hAlign != peote.ui.util.HAlign.LEFT),
+				autoWidth, false, (hAlign != peote.ui.config.HAlign.LEFT),
 				// lineUpdatePosition, lineUpdateSize, lineUpdateOffset
 				false, autoWidth, !autoWidth);
 		}					

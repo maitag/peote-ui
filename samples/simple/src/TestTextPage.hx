@@ -1,12 +1,7 @@
 package;
 
-import haxe.CallStack;
 import lime.app.Application;
 import lime.ui.Window;
-import peote.ui.event.PointerEvent;
-import peote.ui.util.HAlign;
-import peote.ui.util.TextSize;
-import peote.ui.util.VAlign;
 
 import peote.view.PeoteView;
 import peote.view.Color;
@@ -14,10 +9,10 @@ import peote.view.Color;
 import peote.text.Font;
 
 import peote.ui.PeoteUIDisplay;
-import peote.ui.interactive.UITextLine;
-import peote.ui.interactive.UITextPage;
-
+import peote.ui.interactive.*;
 import peote.ui.style.*;
+import peote.ui.config.*;
+import peote.ui.event.*;
 
 
 class TestTextPage extends Application
@@ -31,7 +26,7 @@ class TestTextPage extends Application
 		{
 			case WEBGL, OPENGL, OPENGLES:
 				try startSample(window)
-				catch (_) trace(CallStack.toString(CallStack.exceptionStack()), _);
+				catch (_) trace(haxe.CallStack.toString(haxe.CallStack.exceptionStack()), _);
 			default: throw("Sorry, only works with OpenGL.");
 		}
 	}
@@ -58,7 +53,7 @@ class TestTextPage extends Application
 	var buttonY:Int = 0;
 	var fontButtons:Font<FontStyleTiled>;
 	var buttonBackgroundStyle = new RoundBorderStyle(Color.GREY5, Color.BLACK, 1.0, 9.0);
-	var buttonSize:TextSize = {leftSpace:6, rightSpace:6, topSpace:3, bottomSpace:3 }; //height:23
+	var buttonSize:TextSize = { space: { left:6, right:6, top:3, bottom:3 } }; //height:23
 	var buttonStyle:FontStyleTiled = {letterSpace:-0.5};
 
 	public function button(
@@ -129,13 +124,13 @@ class TestTextPage extends Application
 		var cursorSimpleStyle = cursorStyle.copy(Color.RED.setAlpha(0.5));
 		var cursorRoundStyle = roundBorderStyle.copy();
 		
-		var textStyle:TextStyle = {
+		var textConfig:TextConfig = {
 			backgroundStyle:backgroundSimpleStyle,
 			selectionStyle:selectionSimpleStyle,
 			cursorStyle:cursorSimpleStyle
 		}
 
-		var textPage = new UITextPage<FontStylePacked>(240, 5, "Hello World\nTesting UITextPage\nabdefg\n123456789", fontPacked, fontStylePacked, textStyle);
+		var textPage = new UITextPage<FontStylePacked>(240, 5, "Hello World\nTesting UITextPage\nabdefg\n123456789", fontPacked, fontStylePacked, textConfig);
 		textPage.onPointerOver = (_, _)-> trace("textPage onPointerOver");
 		textPage.onPointerOut  = (_, _)-> trace("textPage onPointerOut");
 		textPage.onPointerClick  = (t, e:PointerEvent)-> {

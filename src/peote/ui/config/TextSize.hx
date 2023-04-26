@@ -1,4 +1,4 @@
-package peote.ui.util;
+package peote.ui.config;
 
 typedef TextSize = {
 	?width:Int,
@@ -10,8 +10,5 @@ typedef TextSize = {
 	?xOffset:Float,
 	?yOffset:Float,
 	
-	?leftSpace:Int,
-	?rightSpace:Int,
-	?topSpace:Int,
-	?bottomSpace:Int	
+	?space:Space	
 }

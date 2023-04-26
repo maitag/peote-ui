@@ -6,7 +6,7 @@ import peote.ui.interactive.Interactive;
 import peote.ui.interactive.UIElement;
 import peote.ui.interactive.interfaces.ParentElement;
 import peote.ui.style.interfaces.Style;
-import peote.ui.util.ResizeType;
+import peote.ui.config.ResizeType;
 
 @:allow(peote.ui)
 class UIArea extends UIElement implements ParentElement

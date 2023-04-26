@@ -1,8 +1,5 @@
 package;
 
-import haxe.CallStack;
-import peote.ui.util.HAlign;
-
 import lime.app.Application;
 import lime.ui.Window;
 
@@ -12,19 +9,10 @@ import peote.view.Color;
 import peote.text.Font;
 
 import peote.ui.PeoteUIDisplay;
-
-import peote.ui.interactive.UITextLine;
-import peote.ui.interactive.UITextPage;
-import peote.ui.event.PointerEvent;
-//import peote.ui.event.WheelEvent;
-
-//import peote.ui.util.TextSize;
-//import peote.ui.util.HAlign;
-//import peote.ui.util.VAlign;
-
-//import peote.ui.style.RoundBorderStyle;
-import peote.ui.style.BoxStyle;
-import peote.ui.style.TextStyle;
+import peote.ui.interactive.*;
+import peote.ui.style.*;
+import peote.ui.config.*;
+import peote.ui.event.*;
 
 import peote.ui.style.interfaces.FontStyle;
 
@@ -60,7 +48,7 @@ class SimpleText extends Application
 		{
 			case WEBGL, OPENGL, OPENGLES:
 				try startSample(window)
-				catch (_) trace(CallStack.toString(CallStack.exceptionStack()), _);
+				catch (_) trace(haxe.CallStack.toString(haxe.CallStack.exceptionStack()), _);
 			default: throw("Sorry, only works with OpenGL.");
 		}
 	}
@@ -86,7 +74,7 @@ class SimpleText extends Application
 		
 				
 		// --------------------------------------------------------------
-		// ------ simple TextLine with autosize and no textStyle --------
+		// ---- simple TextLine with autosize and default textConfig ----
 		// --------------------------------------------------------------
 
 		var textLine = new UITextLine<MyFontStyle>(20, 20, "UITextLine", font, fontStyle);
@@ -114,15 +102,15 @@ class SimpleText extends Application
 		//fontStyleInput.height = 30;
 		//fontStyleInput.width = 20;
 		
-		var textStyle:TextStyle = {
+		var textConfig:TextConfig = {
 			backgroundStyle:boxStyle,
 			selectionStyle:BoxStyle.createById(1, Color.GREY3), // new ID for new Layer
 			cursorStyle:BoxStyle.createById(2, Color.RED)       // new ID for new Layer
 		}
 		
-		//var inputLine = new UITextLine<MyFontStyle>(300, 20, "input UITextLine", font, fontStyleInput, textStyle);
-		var inputLine = new UITextLine<MyFontStyle>(300, 20, {width:200}, "input UITextLine", font, fontStyleInput, textStyle);
-		//var inputLine = new UITextLine<MyFontStyle>(300, 20, {width:200, hAlign:HAlign.RIGHT}, "input UITextLine", font, fontStyleInput, textStyle);
+		var inputLine = new UITextLine<MyFontStyle>(300, 20, "input UITextLine", font, fontStyleInput, textConfig);
+		// var inputLine = new UITextLine<MyFontStyle>(300, 20, {width:200}, "input UITextLine", font, fontStyleInput, textConfig);
+		// var inputLine = new UITextLine<MyFontStyle>(300, 20, {width:200, hAlign:HAlign.RIGHT}, "input UITextLine", font, fontStyleInput, textConfig);
 
 		// set events
 		inputLine.onPointerDown = function(t:UITextLine<MyFontStyle>, e:PointerEvent) {
@@ -142,13 +130,13 @@ class SimpleText extends Application
 		uiDisplay.add(inputLine);
 		
 
-		// -------------------------------
-		// ------ simple TextPage --------
-		// -------------------------------
+		// --------------------------------------------------------------
+		// ---- simple TextPage with autosize and default textConfig ----
+		// --------------------------------------------------------------
 
 		var textPage = new UITextPage<MyFontStyle>(20, 100, "UITextPage\ncan contain\nlinebreaks", font, fontStyle);
 		// alternatively it can also be:
-		//var textPage = font.createUITextPage(20, 100, "This text\ncontains\nlinebreaks", fontStyle);
+		// var textPage = font.createUITextPage(20, 100, "This text\ncontains\nlinebreaks", fontStyle);
 		
 		// set events
 		textPage.onPointerOver = function(t:UITextPage<MyFontStyle>, e:PointerEvent) {
@@ -174,13 +162,13 @@ class SimpleText extends Application
 		//fontStyleInput.height = 30;
 		//fontStyleInput.width = 20;
 		
-		var textStyle:TextStyle = {
+		var textConfig:TextConfig = {
 			backgroundStyle:boxStyle,
 			selectionStyle:BoxStyle.createById(1, Color.GREY3), // new ID for new Layer
 			cursorStyle:BoxStyle.createById(2, Color.RED)       // new ID for new Layer
 		}
 		
-		var inputPage = new UITextPage<MyFontStyle>(300, 100, "input\ntext by\nUIText\tPage", font, fontStyleInput, textStyle);
+		var inputPage = new UITextPage<MyFontStyle>(300, 100, "input\ntext by\nUIText\tPage", font, fontStyleInput, textConfig);
 
 		// set events
 		inputPage.onPointerDown = function(t:UITextPage<MyFontStyle>, e:PointerEvent) {

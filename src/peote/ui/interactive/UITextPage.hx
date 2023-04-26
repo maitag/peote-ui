@@ -66,7 +66,7 @@ implements peote.layout.ILayoutElement
 	var font:peote.text.Font<$styleType>; //$fontType	
 	public var fontStyle:$styleType;
 	
-	public var backgroundSpace:peote.ui.util.Space = null;
+	public var backgroundSpace:peote.ui.config.Space = null;
 
 	
 	// -------- background style ---------
@@ -341,8 +341,8 @@ implements peote.layout.ILayoutElement
 		return b;
 	}
 	
-	public var hAlign:peote.ui.util.HAlign = peote.ui.util.HAlign.LEFT;
-	public var vAlign:peote.ui.util.VAlign = peote.ui.util.VAlign.TOP;
+	public var hAlign = peote.ui.config.HAlign.LEFT;
+	public var vAlign = peote.ui.config.VAlign.TOP;
 	
 	public var xOffset:Float = 0;
 	public var yOffset:Float = 0;
@@ -356,9 +356,9 @@ implements peote.layout.ILayoutElement
 	var maskElement:peote.text.MaskElement;
 	#end
 	
-	public function new(xPosition:Int, yPosition:Int, ?textSize:peote.ui.util.TextSize, zIndex:Int = 0, text:String,
-	                    //font:$fontType, fontStyle:$styleType) 
-	                    font:peote.text.Font<$styleType>, ?fontStyle:$styleType, ?textStyle:peote.ui.style.TextStyle) //textStyle=null
+	public function new(xPosition:Int, yPosition:Int, ?textSize:peote.ui.config.TextSize, zIndex:Int = 0, text:String,
+	                    font:peote.text.Font<$styleType>, ?fontStyle:$styleType, //font:$fontType, fontStyle:$styleType
+						?config:peote.ui.config.TextConfig)
 	{
 		//trace("NEW UITextPage");		
 		var width:Int = 0;
@@ -370,10 +370,12 @@ implements peote.layout.ILayoutElement
 			if (textSize.vAlign != null) vAlign = textSize.vAlign;
 			if (textSize.xOffset != null) xOffset = textSize.xOffset;
 			if (textSize.yOffset != null) yOffset = textSize.yOffset;
-			if (textSize.leftSpace != null)  leftSpace  = textSize.leftSpace;
-			if (textSize.rightSpace != null) rightSpace = textSize.rightSpace;
-			if (textSize.topSpace != null) topSpace = textSize.topSpace;
-			if (textSize.bottomSpace != null) bottomSpace = textSize.bottomSpace;
+			if (textSize.space != null) {
+				if (textSize.space.left != null) leftSpace = textSize.space.left;
+				if (textSize.space.right != null) rightSpace = textSize.space.right;
+				if (textSize.space.top != null) topSpace = textSize.space.top;
+				if (textSize.space.bottom != null) bottomSpace = textSize.space.bottom;
+			}
 		}
 		
 		super(xPosition, yPosition, width, height, zIndex);
@@ -390,10 +392,10 @@ implements peote.layout.ILayoutElement
 			default: macro {}
 		}}
 		
-		if (textStyle != null) {
-			if (textStyle.backgroundStyle != null) backgroundStyle = textStyle.backgroundStyle;
-			if (textStyle.selectionStyle != null) selectionStyle = textStyle.selectionStyle;
-			cursorStyle = textStyle.cursorStyle;
+		if (config != null) {
+			if (config.backgroundStyle != null) backgroundStyle = config.backgroundStyle;
+			if (config.selectionStyle != null) selectionStyle = config.selectionStyle;
+			cursorStyle = config.cursorStyle;
 		}
 		
 		// TODO: make optional and give a size
@@ -403,8 +405,8 @@ implements peote.layout.ILayoutElement
 	inline function getAlignedXOffset(_xOffset:Float):Float
 	{
 		return (autoWidth) ? _xOffset : switch (hAlign) {
-			case peote.ui.util.HAlign.CENTER: (width - leftSpace - rightSpace - page.textWidth) / 2 + _xOffset;
-			case peote.ui.util.HAlign.RIGHT: width - leftSpace - rightSpace - page.textWidth + _xOffset;
+			case peote.ui.config.HAlign.CENTER: (width - leftSpace - rightSpace - page.textWidth) / 2 + _xOffset;
+			case peote.ui.config.HAlign.RIGHT: width - leftSpace - rightSpace - page.textWidth + _xOffset;
 			default: _xOffset;
 		}
 	}
@@ -412,8 +414,8 @@ implements peote.layout.ILayoutElement
 	inline function getAlignedYOffset(_yOffset:Float):Float
 	{
 		return (autoHeight) ? _yOffset : switch (vAlign) {
-			case peote.ui.util.VAlign.CENTER: (height - topSpace - bottomSpace - page.textHeight) / 2 + _yOffset;
-			case peote.ui.util.VAlign.BOTTOM: height - topSpace - bottomSpace - page.textHeight + _yOffset;
+			case peote.ui.config.VAlign.CENTER: (height - topSpace - bottomSpace - page.textHeight) / 2 + _yOffset;
+			case peote.ui.config.VAlign.BOTTOM: height - topSpace - bottomSpace - page.textHeight + _yOffset;
 			default: _yOffset;
 		}
 	}
@@ -426,12 +428,12 @@ implements peote.layout.ILayoutElement
 			var cw = 2; // TODO: make customizable		
 			if (cx + cw > x + width - rightSpace) { //trace("xOffsetToCursor right");
 				setXOffset(getAlignedXOffset(xOffset) - cx - cw + x + width - rightSpace, false, true);
-				hAlign = peote.ui.util.HAlign.LEFT;
+				hAlign = peote.ui.config.HAlign.LEFT;
 				return true;
 			}
 			else if (cx < x + leftSpace) { //trace("xOffsetToCursor left");
 				setXOffset(getAlignedXOffset(xOffset) - cx + x + leftSpace, false, true);
-				hAlign = peote.ui.util.HAlign.LEFT;
+				hAlign = peote.ui.config.HAlign.LEFT;
 				return true; 
 			}
 			else return false;
@@ -451,12 +453,12 @@ implements peote.layout.ILayoutElement
 			
 			if (cy + ch > y + height - bottomSpace) { //trace("yOffsetToCursor bottom");
 				setYOffset(getAlignedYOffset(yOffset) - cy - ch + y + height - bottomSpace, false, true);
-				vAlign = peote.ui.util.VAlign.TOP;
+				vAlign = peote.ui.config.VAlign.TOP;
 				return true; 
 			}
 			else if (cy < y + topSpace) { //trace("yOffsetToCursor top");
 				setYOffset(getAlignedYOffset(yOffset) - cy + y + topSpace, false, true);
-				vAlign = peote.ui.util.VAlign.TOP;
+				vAlign = peote.ui.config.VAlign.TOP;
 				return true;
 			}
 			else return false;
@@ -1296,7 +1298,7 @@ implements peote.layout.ILayoutElement
 		var oldCursorLine = cursorLine;
 		var oldCursor = cursor;
 		
-		if (newCursor != null) cursorWant = -1;
+		if (newCursor != null) cursorWant = -1; // TODO: cursorWant als Float um tabulator-problem zu umgehen!
 		else if (cursorWant > 0) newCursor = cursorWant;
 		
 		if (newCursor != null && newCursorLine != null) setCursorAndLine(newCursor, newCursorLine); // TODO: , (keepCursorY) ? oldCursorLine : null
@@ -1371,6 +1373,8 @@ implements peote.layout.ILayoutElement
 	{
 		if (!addSelection && hasSelection()) removeSelection();
 		_updateCursorSelection(null, cursorLine - 1, addSelection);
+		// TODO: identation-guide-bug ...better into _updateCursorSelection
+		//_updateCursorSelection(fontProgram.pageGetCharAtPosition(page, page.getPageLine(cursorLine - 1), cursorElement.x), cursorLine - 1, addSelection);
 	}
 
 	public inline function cursorDown(addSelection:Bool = false)

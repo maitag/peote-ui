@@ -1,27 +1,23 @@
 package;
 
-import haxe.CallStack;
-import lime.ui.MouseCursor;
-
 import lime.app.Application;
 import lime.ui.Window;
+import lime.ui.MouseCursor;
 
 import peote.view.PeoteView;
+import peote.view.Display;
+import peote.view.Program;
+import peote.view.Buffer;
+import peote.view.Element;
 import peote.view.Color;
 
 import peote.text.Font;
 
 import peote.ui.PeoteUIDisplay;
-import peote.ui.event.PointerEvent;
-import peote.ui.event.WheelEvent;
-import peote.ui.util.HAlign;
 import peote.ui.interactive.*;
 import peote.ui.style.*;
-
-import peote.view.Display;
-import peote.view.Program;
-import peote.view.Buffer;
-import peote.view.Element;
+import peote.ui.config.*;
+import peote.ui.event.*;
 
 class Elem implements Element {
 	@posX @anim("Position", "pingpong") public var x:Int;
@@ -61,7 +57,7 @@ class TestUIArea extends Application
 		switch (window.context.type) {
 			case WEBGL, OPENGL, OPENGLES:
 				try startSample(window)
-				catch (_) trace(CallStack.toString(CallStack.exceptionStack()), _);
+				catch (_) trace(haxe.CallStack.toString(haxe.CallStack.exceptionStack()), _);
 			default: throw("Sorry, only works with OpenGL.");
 		}
 	}
@@ -89,13 +85,13 @@ class TestUIArea extends Application
 		var fontStyleInput = FontStyleTiled.createById(1);
 		
 		
-		var textStyleInput:TextStyle = {
+		var textInputConfig:TextConfig = {
 			backgroundStyle:boxStyle.copy(Color.GREY5),
 			selectionStyle: selectionStyle,
 			cursorStyle: cursorStyle
 		}
 		
-		var sliderStyle:SliderStyle = {
+		var sliderConfig:SliderConfig = {
 			backgroundStyle: roundBorderStyle.copy(Color.GREY2),
 			draggerStyle: roundBorderStyle.copy(Color.GREY3, Color.GREY2, 0.5),
 			draggerSize:16,
@@ -177,7 +173,7 @@ class TestUIArea extends Application
 		}
 		content.add(uiElement);		
 
-		var inputPage = new UITextPage<FontStyleTiled>(250, 300, 1, "input\ntext by\nUIText\tPage", font, fontStyleInput, textStyleInput);
+		var inputPage = new UITextPage<FontStyleTiled>(250, 300, 1, "input\ntext by\nUIText\tPage", font, fontStyleInput, textInputConfig);
 		inputPage.onPointerDown = function(t:UITextPage<FontStyleTiled>, e:PointerEvent) {
 			t.setInputFocus(e);			
 			t.startSelection(e);
@@ -200,11 +196,11 @@ class TestUIArea extends Application
 		// ---- Sliders to scroll the innerArea ----		
 		// ---------------------------------------------------------
 		
-		var hSlider = new UISlider(0, area.height-20, area.width-20, 20, sliderStyle);
+		var hSlider = new UISlider(0, area.height-20, area.width-20, 20, sliderConfig);
 		hSlider.onMouseWheel = (_, e:WheelEvent) -> hSlider.setWheelDelta( e.deltaY );
 		area.add(hSlider);		
 		
-		var vSlider = new UISlider(area.width-20, header.height, 20, area.height-header.height-20, sliderStyle);
+		var vSlider = new UISlider(area.width-20, header.height, 20, area.height-header.height-20, sliderConfig);
 		vSlider.onMouseWheel = (_, e:WheelEvent) -> vSlider.setWheelDelta( e.deltaY );
 		area.add(vSlider);
 		

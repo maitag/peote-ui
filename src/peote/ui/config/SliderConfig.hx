@@ -1,10 +1,10 @@
-package peote.ui.style;
+package peote.ui.config;
 
 import peote.ui.style.interfaces.Style;
-import peote.ui.util.Space;
+import peote.ui.config.Space;
 
 @:structInit
-class SliderStyleImpl
+class SliderConfigImpl
 {
 	public var backgroundStyle:Style = null;	
 	public var draggerStyle:Style = null;
@@ -66,10 +66,10 @@ class SliderStyleImpl
 
 @:structInit
 @:forward
-abstract SliderStyle(SliderStyleImpl) from SliderStyleImpl to SliderStyleImpl
+abstract SliderConfig(SliderConfigImpl) from SliderConfigImpl to SliderConfigImpl
 {
 	@:from
-	static public inline function fromStyle(s:Style):SliderStyle {
+	static public inline function fromStyle(s:Style):SliderConfig {
 		return {backgroundStyle:s, draggerStyle:s};
 		// TODO: gemeinsames interface (ohne alle speziellen argumente!) was den style kopiert
 		//return {backgroundStyle:s.copyAll(), draggerStyle:s.copyAll()};

@@ -1,4 +1,4 @@
-package peote.ui.util;
+package peote.ui.config;
 
 @:structInit
 class Space 

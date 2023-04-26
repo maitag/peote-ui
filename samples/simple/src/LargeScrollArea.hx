@@ -1,22 +1,18 @@
 package;
 
-import haxe.CallStack;
-
 import lime.app.Application;
 import lime.ui.Window;
 
 import peote.view.PeoteView;
 import peote.view.Color;
 
-import peote.ui.PeoteUIDisplay;
-
-import peote.ui.event.PointerEvent;
-import peote.ui.event.WheelEvent;
-
 import peote.text.Font;
 
+import peote.ui.PeoteUIDisplay;
 import peote.ui.interactive.*;
 import peote.ui.style.*;
+import peote.ui.config.*;
+import peote.ui.event.*;
 
 
 class LargeScrollArea extends Application
@@ -30,7 +26,7 @@ class LargeScrollArea extends Application
 		{
 			case WEBGL, OPENGL, OPENGLES:
 				try startSample(window)
-				catch (_) trace(CallStack.toString(CallStack.exceptionStack()), _);
+				catch (_) trace(haxe.CallStack.toString(haxe.CallStack.exceptionStack()), _);
 			default: throw("Sorry, only works with OpenGL.");
 		}
 	}
@@ -66,18 +62,18 @@ class LargeScrollArea extends Application
 		
 		// -- creating some text and slider styles --
 		
-		var textStyle:TextStyle = {
+		var textStyle:TextConfig = {
 			backgroundStyle:roundBorderStyle.copy(Color.GREY3),
 			selectionStyle:boxStyle,
 			cursorStyle:boxStyle.copy(Color.RED)
 		}
 		
-		var sliderStyle:SliderStyle = {
+		var sliderConfig:SliderConfig = {
 			backgroundStyle: roundBorderStyle.copy(),
 			draggerStyle: roundBorderStyle.copy(Color.YELLOW),
 		};
 		
-		var sliderInsideStyle:SliderStyle = {
+		var sliderInsideConfig:SliderConfig = {
 			backgroundStyle: roundBorderStyle.copy(),
 			draggerStyle: roundBorderStyle.copy(Color.YELLOW),
 		};
@@ -138,7 +134,7 @@ class LargeScrollArea extends Application
 		
 		for (i in 0...1000) {
 			for (j in 0...10) {
-				var sliderInside = new UISlider(200*j, 30+30*i, 200, 30, sliderInsideStyle);
+				var sliderInside = new UISlider(200*j, 30+30*i, 200, 30, sliderInsideConfig);
 				setSliderEvents(sliderInside);
 				area.add(sliderInside);
 			}
@@ -151,7 +147,7 @@ class LargeScrollArea extends Application
 		// -----------------------------------------------
 		
 		
-		var hSlider = new UISlider(60, 15, 500, 40, sliderStyle);
+		var hSlider = new UISlider(60, 15, 500, 40, sliderConfig);
 		setSliderEvents(hSlider);
 		uiDisplay.add(hSlider);
 		hSlider.onChange = function(uiSlider:UISlider, value:Float, percent:Float) {
@@ -161,7 +157,7 @@ class LargeScrollArea extends Application
 		}
 		
 		
-		var vSlider = new UISlider(15, 60, 40, 500, sliderStyle);
+		var vSlider = new UISlider(15, 60, 40, 500, sliderConfig);
 		setSliderEvents(vSlider);
 		uiDisplay.add(vSlider);
 		

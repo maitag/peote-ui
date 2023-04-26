@@ -1,7 +1,7 @@
 package peote.ui.style.interfaces;
 
 import peote.ui.interactive.Interactive;
-import peote.ui.util.Space;
+import peote.ui.config.Space;
 
 interface StyleProgram
 {

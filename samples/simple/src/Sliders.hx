@@ -1,8 +1,5 @@
 package;
 
-import haxe.CallStack;
-import peote.ui.style.SliderStyle;
-
 import lime.app.Application;
 import lime.ui.Window;
 
@@ -10,13 +7,10 @@ import peote.view.PeoteView;
 import peote.view.Color;
 
 import peote.ui.PeoteUIDisplay;
-
 import peote.ui.interactive.UISlider;
-
-import peote.ui.style.RoundBorderStyle;
-
-import peote.ui.event.PointerEvent;
-import peote.ui.event.WheelEvent;
+import peote.ui.style.*;
+import peote.ui.config.*;
+import peote.ui.event.*;
 
 
 class Sliders extends Application
@@ -30,7 +24,7 @@ class Sliders extends Application
 		{
 			case WEBGL, OPENGL, OPENGLES:
 				try startSample(window)
-				catch (_) trace(CallStack.toString(CallStack.exceptionStack()), _);
+				catch (_) trace(haxe.CallStack.toString(haxe.CallStack.exceptionStack()), _);
 			default: throw("Sorry, only works with OpenGL.");
 		}
 	}
@@ -51,7 +45,7 @@ class Sliders extends Application
 			borderRadius: 20.0
 		}
 		
-		var sliderStyle:SliderStyle = {
+		var sliderConfig:SliderConfig = {
 			backgroundStyle: roundBorderStyle,
 			draggerStyle: roundBorderStyle.copy(Color.YELLOW),
 			
@@ -77,7 +71,7 @@ class Sliders extends Application
 			draggSpaceEnd:20,
 		};
 		
-		var hSlider = new UISlider(80, 10, 500, 40, sliderStyle);
+		var hSlider = new UISlider(80, 10, 500, 40, sliderConfig);
 		hSlider.valueStart = -5;
 		hSlider.valueEnd = 10;
 		setSliderEvents(hSlider);
@@ -86,7 +80,7 @@ class Sliders extends Application
 		//hSlider.reverse = true; hSlider.updateDragger();
 		
 		
-		var vSlider = new UISlider(10, 10, 60, 500, sliderStyle);
+		var vSlider = new UISlider(10, 10, 60, 500, sliderConfig);
 		setSliderEvents(vSlider);
 		uiDisplay.add(vSlider);
 		

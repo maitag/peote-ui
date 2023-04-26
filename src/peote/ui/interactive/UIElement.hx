@@ -4,7 +4,7 @@ import peote.ui.interactive.Interactive;
 import peote.ui.style.interfaces.Style;
 import peote.ui.style.interfaces.StyleProgram;
 import peote.ui.style.interfaces.StyleElement;
-import peote.ui.util.Space;
+import peote.ui.config.Space;
 
 import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;

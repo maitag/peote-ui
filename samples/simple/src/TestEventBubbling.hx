@@ -1,9 +1,6 @@
 package;
 
-import haxe.CallStack;
 import lime.ui.MouseButton;
-import peote.ui.event.PointerType;
-import peote.ui.util.HAlign;
 
 import lime.app.Application;
 import lime.ui.Window;
@@ -11,17 +8,13 @@ import lime.ui.Window;
 import peote.view.PeoteView;
 import peote.view.Color;
 
-import peote.ui.PeoteUIDisplay;
-import peote.ui.interactive.UIElement;
-
-import peote.ui.style.RoundBorderStyle;
-
-import peote.ui.event.PointerEvent;
-import peote.ui.event.WheelEvent;
-
 import peote.text.Font;
-import peote.ui.style.FontStyleTiled;
-import peote.ui.interactive.UITextLine;
+
+import peote.ui.PeoteUIDisplay;
+import peote.ui.interactive.*;
+import peote.ui.style.*;
+import peote.ui.config.*;
+import peote.ui.event.*;
 
 
 class TestEventBubbling extends Application
@@ -36,7 +29,7 @@ class TestEventBubbling extends Application
 		{
 			case WEBGL, OPENGL, OPENGLES:
 				try startSample(window)
-				catch (_) trace(CallStack.toString(CallStack.exceptionStack()), _);
+				catch (_) trace(haxe.CallStack.toString(haxe.CallStack.exceptionStack()), _);
 			default: throw("Sorry, only works with OpenGL.");
 		}
 	}

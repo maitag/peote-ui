@@ -1,10 +1,10 @@
-package peote.ui.style;
+package peote.ui.config;
 
 import peote.ui.style.interfaces.Style;
 //import peote.view.Color;
 
 @:structInit
-class TextStyleImpl
+class TextConfigImpl
 {
 	public var backgroundStyle:Style = null;
 	
@@ -23,14 +23,14 @@ class TextStyleImpl
 
 @:structInit
 @:forward
-abstract TextStyle(TextStyleImpl) from TextStyleImpl to TextStyleImpl
+abstract TextConfig(TextConfigImpl) from TextConfigImpl to TextConfigImpl
 {
 	//inline function new(t:_TextLineStyle) {
 		//this = t;
 	//}
 	
 	@:from
-	static public inline function fromStyle(s:Style):TextStyle {
+	static public inline function fromStyle(s:Style):TextConfig {
 		return {backgroundStyle:s};
 	}
 

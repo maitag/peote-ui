@@ -1,4 +1,4 @@
-package peote.ui.util;
+package peote.ui.config;
 
 abstract Align(Int) from Int to Int
 {

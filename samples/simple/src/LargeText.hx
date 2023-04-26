@@ -1,7 +1,5 @@
 package;
 
-import haxe.CallStack;
-
 import lime.app.Application;
 import lime.ui.Window;
 
@@ -11,13 +9,10 @@ import peote.view.Color;
 import peote.text.Font;
 
 import peote.ui.PeoteUIDisplay;
-import peote.ui.interactive.UITextPage;
-import peote.ui.interactive.UISlider;
-import peote.ui.event.PointerEvent;
-import peote.ui.event.WheelEvent;
-import peote.ui.style.BoxStyle;
-import peote.ui.style.SliderStyle;
-import peote.ui.style.TextStyle;
+import peote.ui.interactive.*;
+import peote.ui.style.*;
+import peote.ui.config.*;
+import peote.ui.event.*;
 
 import peote.ui.style.interfaces.FontStyle;
 
@@ -63,7 +58,7 @@ class LargeText extends Application
 		{
 			case WEBGL, OPENGL, OPENGLES:
 				try startSample(window)
-				catch (_) trace(CallStack.toString(CallStack.exceptionStack()), _);
+				catch (_) trace(haxe.CallStack.toString(haxe.CallStack.exceptionStack()), _);
 			default: throw("Sorry, only works with OpenGL.");
 		}
 	}
@@ -86,7 +81,7 @@ class LargeText extends Application
 		
 		var fontStyle = new MyFontStyle();		
 		var boxStyle = new BoxStyle(0x0e1306ff);
-		var textStyle:TextStyle = {
+		var textConfig:TextConfig = {
 			backgroundStyle:boxStyle,
 			selectionStyle:BoxStyle.createById(1, 0x226c11ff), // new ID for new Layer
 			cursorStyle:BoxStyle.createById(2, Color.RED)       // new ID for new Layer
@@ -111,11 +106,13 @@ class LargeText extends Application
 				
 				var textPage = new UITextPage<MyFontStyle>(
 					0, 0,
-					{ width:uiDisplay.width - 30, height:uiDisplay.height-30, leftSpace:8, rightSpace:8, topSpace:6, bottomSpace:6 },
+					{	width :uiDisplay.width  - 30,
+						height:uiDisplay.height - 30,
+						space:{ left:8, right:8, top:6, bottom:6 }
+					},
 					text,
-					font,
-					fontStyle,
-					textStyle
+					font, fontStyle,
+					textConfig
 				);
 				
 				// set events
@@ -133,16 +130,16 @@ class LargeText extends Application
 				
 				// ------ sliders --------
 				
-				var sliderStyle:SliderStyle = {
+				var sliderConfig:SliderConfig = {
 					backgroundStyle: boxStyle.copy(0x123107ff),
 					draggerStyle: boxStyle.copy(0x227111ff),
 					draggerLength: 30,
 				};
 				
-				var hSlider = new UISlider(0, uiDisplay.height-30, uiDisplay.width - 30, 30, sliderStyle);
+				var hSlider = new UISlider(0, uiDisplay.height-30, uiDisplay.width - 30, 30, sliderConfig);
 				uiDisplay.add(hSlider);
 				
-				var vSlider = new UISlider(uiDisplay.width - 30, 0, 30, uiDisplay.height - 30, sliderStyle);
+				var vSlider = new UISlider(uiDisplay.width - 30, 0, 30, uiDisplay.height - 30, sliderConfig);
 				uiDisplay.add(vSlider);
 				
 				// mousewheel events

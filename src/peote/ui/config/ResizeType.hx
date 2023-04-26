@@ -1,4 +1,4 @@
-package peote.ui.util;
+package peote.ui.config;
 
 @:enum abstract ResizeType(Int) from Int to Int 
 {

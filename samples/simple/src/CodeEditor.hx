@@ -1,8 +1,6 @@
 package;
 
 import haxe.CallStack;
-import lime.ui.MouseCursor;
-import peote.ui.util.ResizeType;
 
 import lime.app.Application;
 import lime.ui.Window;
@@ -15,8 +13,9 @@ import peote.text.Font;
 import peote.ui.PeoteUIDisplay;
 import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
-import peote.ui.util.HAlign;
+
 import peote.ui.interactive.*;
+import peote.ui.config.*;
 import peote.ui.style.*;
 
 
@@ -57,13 +56,13 @@ class CodeEditor extends Application
 		var fontStyleHeader = FontStyleTiled.createById(0);
 		var fontStyleInput = FontStyleTiled.createById(1);
 				
-		var textStyleInput:TextStyle = {
+		var textConfig:TextConfig = {
 			backgroundStyle:boxStyle.copy(Color.GREY5),
 			selectionStyle: selectionStyle,
 			cursorStyle: cursorStyle
 		}
 		
-		var sliderStyle:SliderStyle = {
+		var sliderConfig:SliderConfig = {
 			backgroundStyle: roundBorderStyle.copy(Color.GREY2),
 			draggerStyle: roundBorderStyle.copy(Color.GREY3, Color.GREY2, 0.5),
 			draggerSize:16,
@@ -98,7 +97,7 @@ class CodeEditor extends Application
 		// --------------------------
 		
 		var header = new UITextLine<FontStyleTiled>(gap, gap,
-			{width:area.width - gap - gap, height:headerSize, hAlign:HAlign.CENTER}, 
+			{ width:area.width - gap - gap, height:headerSize, hAlign:HAlign.CENTER }, 
 			"=== Edit Code ===", font, fontStyleHeader, roundBorderStyle
 		);
 		// start/stop area-dragging
@@ -111,41 +110,42 @@ class CodeEditor extends Application
 		// ------- edit area --------
 		// --------------------------
 		
-		var editArea = new UITextPage<FontStyleTiled>(gap, headerSize + gap + 1, {
-				width: area.width - sliderSize - gap - gap - 1,
+		var textPage = new UITextPage<FontStyleTiled>(gap, headerSize + gap + 1,
+			{	width: area.width - sliderSize - gap - gap - 1,
 				height: area.height - headerSize - sliderSize - 2 - gap - gap,
-				leftSpace: 3, rightSpace:1, topSpace:1, bottomSpace:1
+				space: { left:3, right:1, top:1, bottom:1 }
 			},
-			"class Test {\n\tstatic function main() {\n\t\ttrace(\"Haxe is great!\");\n\t}\n}", font, fontStyleInput, textStyleInput
+			"class Test {\n\tstatic function main() {\n\t\ttrace(\"Haxe is great!\");\n\t}\n}",
+			font, fontStyleInput, textConfig
 		);
 		
 		// TODO: make UITextPage "selectable" to automatic set internal onPointerDown/Up for selection
-		editArea.onPointerDown = function(t, e) {
+		textPage.onPointerDown = function(t, e) {
 			t.setInputFocus(e);			
 			t.startSelection(e);
 		}
 		
-		editArea.onPointerUp = function(t, e) {
+		textPage.onPointerUp = function(t, e) {
 			t.stopSelection(e);
 		}
-		area.add(editArea);
+		area.add(textPage);
 		
 				
 		// ------------------------------------
-		// ---- sliders to scroll editArea ----		
+		// ---- sliders to scroll textPage ----		
 		// ------------------------------------
 		
-		var hSlider = new UISlider(gap, area.height-sliderSize-gap, editArea.width, sliderSize, sliderStyle);
+		var hSlider = new UISlider(gap, area.height-sliderSize-gap, textPage.width, sliderSize, sliderConfig);
 		hSlider.onMouseWheel = (_, e:WheelEvent) -> hSlider.setWheelDelta( e.deltaY );
 		area.add(hSlider);		
 		
-		var vSlider = new UISlider(area.width-sliderSize-gap, headerSize + gap + 1, sliderSize, editArea.height, sliderStyle);
+		var vSlider = new UISlider(area.width-sliderSize-gap, headerSize + gap + 1, sliderSize, textPage.height, sliderConfig);
 		vSlider.onMouseWheel = (_, e:WheelEvent) -> vSlider.setWheelDelta( e.deltaY );
 		area.add(vSlider);
 				
-		// bind editArea to sliders
-		editArea.bindHSlider(hSlider);
-		editArea.bindVSlider(vSlider);
+		// bind textPage to sliders
+		textPage.bindHSlider(hSlider);
+		textPage.bindVSlider(vSlider);
 
 				
 		// --- arrange header and sliders if area size is changing ---
@@ -153,14 +153,14 @@ class CodeEditor extends Application
 		area.onResizeWidth = (_, width:Int, deltaWidth:Int) -> {
 			header.width = width - gap - gap;
 			vSlider.right = area.right - gap;
-			editArea.rightSize = vSlider.left - 1;
-			hSlider.width = editArea.width;
+			textPage.rightSize = vSlider.left - 1;
+			hSlider.width = textPage.width;
 		}
 
 		area.onResizeHeight = (_, height:Int, deltaHeight:Int) -> {
 			hSlider.bottom = area.bottom - gap;
-			editArea.bottomSize = hSlider.top - 1;
-			vSlider.height = editArea.height;
+			textPage.bottomSize = hSlider.top - 1;
+			vSlider.height = textPage.height;
 		}
 
 		
