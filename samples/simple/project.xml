@@ -9,7 +9,7 @@
 	
 	<app main="CodeEditor" path="bin" file="Main" />
 	<!--
-		SimpleElements,
+		TestEventBubbling,
 		SimpleText,
 		LargeText,
 		SimpleDragging,

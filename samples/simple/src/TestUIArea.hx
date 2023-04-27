@@ -129,7 +129,7 @@ class TestUIArea extends Application
 		
 		// ---- header textline (starts also area-dragging) ----		
 		
-		var header = new UITextLine<FontStyleTiled>(0, 0, {width:500, hAlign:HAlign.CENTER}, 1, "=== UIArea ===", font, fontStyleHeader, roundBorderStyle);
+		var header = new UITextLine<FontStyleTiled>(0, 0, 500, 0, 1, "=== UIArea ===", font, fontStyleHeader, {backgroundStyle:roundBorderStyle, hAlign:HAlign.CENTER});
 		header.onPointerDown = (_, e:PointerEvent)-> area.startDragging(e);
 		header.onPointerUp = (_, e:PointerEvent)-> area.stopDragging(e);
 		area.add(header);				
@@ -173,7 +173,7 @@ class TestUIArea extends Application
 		}
 		content.add(uiElement);		
 
-		var inputPage = new UITextPage<FontStyleTiled>(250, 300, 1, "input\ntext by\nUIText\tPage", font, fontStyleInput, textInputConfig);
+		var inputPage = new UITextPage<FontStyleTiled>(250, 300, 0, 0, 1, "input\ntext by\nUIText\tPage", font, fontStyleInput, textInputConfig);
 		inputPage.onPointerDown = function(t:UITextPage<FontStyleTiled>, e:PointerEvent) {
 			t.setInputFocus(e);			
 			t.startSelection(e);

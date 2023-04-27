@@ -84,7 +84,8 @@ class LargeText extends Application
 		var textConfig:TextConfig = {
 			backgroundStyle:boxStyle,
 			selectionStyle:BoxStyle.createById(1, 0x226c11ff), // new ID for new Layer
-			cursorStyle:BoxStyle.createById(2, Color.RED)       // new ID for new Layer
+			cursorStyle:BoxStyle.createById(2, Color.RED),     // new ID for new Layer
+			textSpace:{ left:8, right:8, top:6, bottom:6 }
 		}
 		
 		// -------------------------------
@@ -106,10 +107,8 @@ class LargeText extends Application
 				
 				var textPage = new UITextPage<MyFontStyle>(
 					0, 0,
-					{	width :uiDisplay.width  - 30,
-						height:uiDisplay.height - 30,
-						space:{ left:8, right:8, top:6, bottom:6 }
-					},
+					uiDisplay.width  - 30,
+					uiDisplay.height - 30,
 					text,
 					font, fontStyle,
 					textConfig

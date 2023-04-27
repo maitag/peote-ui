@@ -52,8 +52,10 @@ class TestTextPage extends Application
 	var buttonX:Int = 0;
 	var buttonY:Int = 0;
 	var fontButtons:Font<FontStyleTiled>;
-	var buttonBackgroundStyle = new RoundBorderStyle(Color.GREY5, Color.BLACK, 1.0, 9.0);
-	var buttonSize:TextSize = { space: { left:6, right:6, top:3, bottom:3 } }; //height:23
+	var buttonBackgroundStyle:TextConfig = {
+		backgroundStyle: new RoundBorderStyle(Color.GREY5, Color.BLACK, 1.0, 9.0), 
+		textSpace: { left:6, right:6, top:3, bottom:3 }
+	};
 	var buttonStyle:FontStyleTiled = {letterSpace:-0.5};
 
 	public function button(
@@ -64,13 +66,13 @@ class TestTextPage extends Application
 	{
 		var b:UITextLine<FontStyleTiled> = null;
 		var hgap:Int = 5; var vgap:Int = 30;
-		if (s1 != null) uiDisplay.add(b = fontButtons.createUITextLine(buttonX             , buttonY, buttonSize, s1, buttonStyle, buttonBackgroundStyle));
+		if (s1 != null) uiDisplay.add(b = fontButtons.createUITextLine(buttonX             , buttonY, 0, 0, s1, buttonStyle, buttonBackgroundStyle));
 		if (f1 != null) { b.onPointerClick = (_, _)-> f1(); b.onPointerOver = buttonOver; b.onPointerOut = buttonOut; }
-		if (s2 != null) uiDisplay.add(b = fontButtons.createUITextLine(b.x + hgap + b.width, buttonY, buttonSize, s2, buttonStyle, buttonBackgroundStyle));
+		if (s2 != null) uiDisplay.add(b = fontButtons.createUITextLine(b.x + hgap + b.width, buttonY, 0, 0, s2, buttonStyle, buttonBackgroundStyle));
 		if (f2 != null) { b.onPointerClick = (_,_)-> f2(); b.onPointerOver = buttonOver; b.onPointerOut = buttonOut; }
-		if (s3 != null) uiDisplay.add(b = fontButtons.createUITextLine(b.x + hgap + b.width, buttonY, buttonSize, s3, buttonStyle, buttonBackgroundStyle));
+		if (s3 != null) uiDisplay.add(b = fontButtons.createUITextLine(b.x + hgap + b.width, buttonY, 0, 0, s3, buttonStyle, buttonBackgroundStyle));
 		if (f3 != null) { b.onPointerClick = (_,_)-> f3(); b.onPointerOver = buttonOver; b.onPointerOut = buttonOut; }
-		if (s4 != null) uiDisplay.add(b = fontButtons.createUITextLine(b.x + hgap + b.width, buttonY, buttonSize, s4, buttonStyle, buttonBackgroundStyle));
+		if (s4 != null) uiDisplay.add(b = fontButtons.createUITextLine(b.x + hgap + b.width, buttonY, 0, 0, s4, buttonStyle, buttonBackgroundStyle));
 		if (f4 != null) { b.onPointerClick = (_, _)-> f4(); b.onPointerOver = buttonOver; b.onPointerOut = buttonOut; }
 		buttonY += vgap;
 	}
@@ -127,10 +129,14 @@ class TestTextPage extends Application
 		var textConfig:TextConfig = {
 			backgroundStyle:backgroundSimpleStyle,
 			selectionStyle:selectionSimpleStyle,
-			cursorStyle:cursorSimpleStyle
+			cursorStyle:cursorSimpleStyle,
+			undoBufferSize:20
 		}
 
-		var textPage = new UITextPage<FontStylePacked>(240, 5, "Hello World\nTesting UITextPage\nabdefg\n123456789", fontPacked, fontStylePacked, textConfig);
+		var textPage = new UITextPage<FontStylePacked>(240, 5, 0, 0,
+			"Hello World\nTesting UITextPage\nabdefg\n123456789",
+			fontPacked, fontStylePacked, textConfig
+		);
 		textPage.onPointerOver = (_, _)-> trace("textPage onPointerOver");
 		textPage.onPointerOut  = (_, _)-> trace("textPage onPointerOut");
 		textPage.onPointerClick  = (t, e:PointerEvent)-> {

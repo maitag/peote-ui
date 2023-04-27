@@ -327,7 +327,7 @@ implements peote.layout.ILayoutElement
 	}
 	
 	// ----------------- aligning -----------
-	var autoSize:Int = 3; // first bit is autoheight, second bit is autowidth
+	var autoSize:Int = 0; // first bit is autoheight, second bit is autowidth
 	public var autoWidth(get, set):Bool;
 	inline function get_autoWidth():Bool return (autoSize & 2 > 0);
 	inline function set_autoWidth(b:Bool):Bool {
@@ -344,8 +344,8 @@ implements peote.layout.ILayoutElement
 	public var hAlign = peote.ui.config.HAlign.LEFT;
 	public var vAlign = peote.ui.config.VAlign.TOP;
 	
-	public var xOffset:Float = 0;
-	public var yOffset:Float = 0;
+	public var xOffset:Float = 0.0;
+	public var yOffset:Float = 0.0;
 	
 	public var leftSpace:Int = 0;
 	public var rightSpace:Int = 0;
@@ -356,28 +356,12 @@ implements peote.layout.ILayoutElement
 	var maskElement:peote.text.MaskElement;
 	#end
 	
-	public function new(xPosition:Int, yPosition:Int, ?textSize:peote.ui.config.TextSize, zIndex:Int = 0, text:String,
+	//public function new(xPosition:Int, yPosition:Int, ?textSize:peote.ui.config.TextSize, zIndex:Int = 0, text:String,
+	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int = 0, text:String,
 	                    font:peote.text.Font<$styleType>, ?fontStyle:$styleType, //font:$fontType, fontStyle:$styleType
 						?config:peote.ui.config.TextConfig)
 	{
 		//trace("NEW UITextPage");		
-		var width:Int = 0;
-		var height:Int = 0;
-		if (textSize != null) {
-			if (textSize.height != null) { height = textSize.height; autoHeight = false; }
-			if (textSize.width  != null) { width  = textSize.width;  autoWidth  = false; }
-			if (textSize.hAlign != null) hAlign = textSize.hAlign;
-			if (textSize.vAlign != null) vAlign = textSize.vAlign;
-			if (textSize.xOffset != null) xOffset = textSize.xOffset;
-			if (textSize.yOffset != null) yOffset = textSize.yOffset;
-			if (textSize.space != null) {
-				if (textSize.space.left != null) leftSpace = textSize.space.left;
-				if (textSize.space.right != null) rightSpace = textSize.space.right;
-				if (textSize.space.top != null) topSpace = textSize.space.top;
-				if (textSize.space.bottom != null) bottomSpace = textSize.space.bottom;
-			}
-		}
-		
 		super(xPosition, yPosition, width, height, zIndex);
 		
 		this.text = text;
@@ -392,14 +376,33 @@ implements peote.layout.ILayoutElement
 			default: macro {}
 		}}
 		
-		if (config != null) {
-			if (config.backgroundStyle != null) backgroundStyle = config.backgroundStyle;
-			if (config.selectionStyle != null) selectionStyle = config.selectionStyle;
+		if (config != null)
+		{
+			backgroundStyle = config.backgroundStyle;
+			selectionStyle = config.selectionStyle;
 			cursorStyle = config.cursorStyle;
+			
+			if (config.autoWidth != null) autoWidth = config.autoWidth else if (width == 0) autoWidth = true;
+			if (config.autoHeight != null) autoHeight = config.autoHeight else if (height == 0) autoHeight = true;
+			hAlign = config.hAlign;
+			vAlign = config.vAlign;
+			xOffset = config.xOffset;
+			yOffset = config.yOffset;
+			
+			if (config.textSpace != null) {
+				leftSpace = config.textSpace.left;
+				rightSpace = config.textSpace.right;
+				topSpace = config.textSpace.top;
+				bottomSpace = config.textSpace.bottom;
+			}
+			
+			if (config.undoBufferSize > 0) undoBuffer = new peote.ui.util.UndoBuffer(config.undoBufferSize);
+		}
+		else {
+			if (width == 0) autoWidth = true;
+			if (height == 0) autoHeight = true;
 		}
 		
-		// TODO: make optional and give a size
-		undoBuffer = new peote.ui.util.UndoBuffer(100);
 	}
 	
 	inline function getAlignedXOffset(_xOffset:Float):Float

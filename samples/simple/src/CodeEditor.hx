@@ -59,7 +59,9 @@ class CodeEditor extends Application
 		var textConfig:TextConfig = {
 			backgroundStyle:boxStyle.copy(Color.GREY5),
 			selectionStyle: selectionStyle,
-			cursorStyle: cursorStyle
+			cursorStyle: cursorStyle,
+			textSpace: { left:3, right:1, top:1, bottom:1 },
+			undoBufferSize:100
 		}
 		
 		var sliderConfig:SliderConfig = {
@@ -97,8 +99,8 @@ class CodeEditor extends Application
 		// --------------------------
 		
 		var header = new UITextLine<FontStyleTiled>(gap, gap,
-			{ width:area.width - gap - gap, height:headerSize, hAlign:HAlign.CENTER }, 
-			"=== Edit Code ===", font, fontStyleHeader, roundBorderStyle
+			area.width - gap - gap, headerSize, 
+			"=== Edit Code ===", font, fontStyleHeader, { backgroundStyle:roundBorderStyle, hAlign:HAlign.CENTER }
 		);
 		// start/stop area-dragging
 		header.onPointerDown = (_, e:PointerEvent)-> area.startDragging(e);
@@ -111,10 +113,8 @@ class CodeEditor extends Application
 		// --------------------------
 		
 		var textPage = new UITextPage<FontStyleTiled>(gap, headerSize + gap + 1,
-			{	width: area.width - sliderSize - gap - gap - 1,
-				height: area.height - headerSize - sliderSize - 2 - gap - gap,
-				space: { left:3, right:1, top:1, bottom:1 }
-			},
+			area.width - sliderSize - gap - gap - 1,
+			area.height - headerSize - sliderSize - 2 - gap - gap,
 			"class Test {\n\tstatic function main() {\n\t\ttrace(\"Haxe is great!\");\n\t}\n}",
 			font, fontStyleInput, textConfig
 		);

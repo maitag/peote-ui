@@ -112,7 +112,7 @@ class LargeScrollArea extends Application
 		
 		// fill into some textlines
 
-		var textLine = new UITextLine<FontStyleTiled>(85, 0, 1, "10 000 Sliders", font, fontStyle, textStyle);
+		var textLine = new UITextLine<FontStyleTiled>(85, 0, 0, 0, 1, "10 000 Sliders", font, fontStyle, textStyle);
 		textLine.onPointerOver = (_, _)-> trace("textLine onPointerOver");
 		textLine.onPointerOut  = (_, _)-> trace("textLine onPointerOut");
 		textLine.onPointerClick  = (t, e:PointerEvent)-> {

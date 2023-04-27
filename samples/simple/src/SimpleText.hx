@@ -77,9 +77,9 @@ class SimpleText extends Application
 		// ---- simple TextLine with autosize and default textConfig ----
 		// --------------------------------------------------------------
 
-		var textLine = new UITextLine<MyFontStyle>(20, 20, "UITextLine", font, fontStyle);
+		//var textLine = new UITextLine<MyFontStyle>(20, 20, 0, 0, "UITextLine", font, fontStyle);
 		// alternatively it can also be:
-		//var textLine = font.createUITextLine(x, y+=yOffset, "hello", fontStyle);
+		var textLine = font.createUITextLine(20, 20, 0, 0, "UITextLine", fontStyle);
 		
 		// set events
 		textLine.onPointerOver = function(t:UITextLine<MyFontStyle>, e:PointerEvent) {
@@ -105,12 +105,13 @@ class SimpleText extends Application
 		var textConfig:TextConfig = {
 			backgroundStyle:boxStyle,
 			selectionStyle:BoxStyle.createById(1, Color.GREY3), // new ID for new Layer
-			cursorStyle:BoxStyle.createById(2, Color.RED)       // new ID for new Layer
+			cursorStyle:BoxStyle.createById(2, Color.RED),       // new ID for new Layer
+			//hAlign:HAlign.RIGHT
 		}
 		
-		var inputLine = new UITextLine<MyFontStyle>(300, 20, "input UITextLine", font, fontStyleInput, textConfig);
-		// var inputLine = new UITextLine<MyFontStyle>(300, 20, {width:200}, "input UITextLine", font, fontStyleInput, textConfig);
-		// var inputLine = new UITextLine<MyFontStyle>(300, 20, {width:200, hAlign:HAlign.RIGHT}, "input UITextLine", font, fontStyleInput, textConfig);
+		var inputLine = new UITextLine<MyFontStyle>(300, 20, 0, 0, "input UITextLine", font, fontStyleInput, textConfig);
+		// var inputLine = new UITextLine<MyFontStyle>(300, 20, 200, 0, "input UITextLine", font, fontStyleInput, textConfig);
+		// var inputLine = new UITextLine<MyFontStyle>(300, 20, 200, 0 , "input UITextLine", font, fontStyleInput, textConfig);
 
 		// set events
 		inputLine.onPointerDown = function(t:UITextLine<MyFontStyle>, e:PointerEvent) {
@@ -134,9 +135,9 @@ class SimpleText extends Application
 		// ---- simple TextPage with autosize and default textConfig ----
 		// --------------------------------------------------------------
 
-		var textPage = new UITextPage<MyFontStyle>(20, 100, "UITextPage\ncan contain\nlinebreaks", font, fontStyle);
+		var textPage = new UITextPage<MyFontStyle>(20, 100, 0, 0, "UITextPage\ncan contain\nlinebreaks", font, fontStyle);
 		// alternatively it can also be:
-		// var textPage = font.createUITextPage(20, 100, "This text\ncontains\nlinebreaks", fontStyle);
+		//var textPage = font.createUITextPage(20, 100, 0, 0, "This text\ncontains\nlinebreaks", fontStyle);
 		
 		// set events
 		textPage.onPointerOver = function(t:UITextPage<MyFontStyle>, e:PointerEvent) {
@@ -168,7 +169,7 @@ class SimpleText extends Application
 			cursorStyle:BoxStyle.createById(2, Color.RED)       // new ID for new Layer
 		}
 		
-		var inputPage = new UITextPage<MyFontStyle>(300, 100, "input\ntext by\nUIText\tPage", font, fontStyleInput, textConfig);
+		var inputPage = new UITextPage<MyFontStyle>(300, 100, 0, 0, "input\ntext by\nUIText\tPage", font, fontStyleInput, textConfig);
 
 		// set events
 		inputPage.onPointerDown = function(t:UITextPage<MyFontStyle>, e:PointerEvent) {

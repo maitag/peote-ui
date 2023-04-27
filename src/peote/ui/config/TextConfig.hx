@@ -13,7 +13,20 @@ class TextConfigImpl
 	
 	public var cursorStyle:Style = null;
 	//public var cursorFontColor:Color = Color.GREEN;
+	
+	public var autoWidth:Null<Bool> = null;
+	public var autoHeight:Null<Bool> = null;
+	
+	public var hAlign:HAlign = HAlign.LEFT;
+	public var vAlign:VAlign = VAlign.TOP;
+	
+	public var xOffset:Float = 0.0;
+	public var yOffset:Float = 0.0;
+	
+	//TODO:public var backgroundSpace:Space = null;
+	public var textSpace:Space = null;
 
+	public var undoBufferSize:Int = 0;
 /*	public function new() 
 	{
 		
