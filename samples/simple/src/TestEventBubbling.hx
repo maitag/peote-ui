@@ -179,7 +179,7 @@ class TestEventBubbling extends Application
 		uiDisplay.add(button);
 		
 		if (text != "") {
-			var textLine = new UITextLine<FontStyleTiled>(x, y, {width:w, height:h, hAlign:HAlign.CENTER}, z, text, font, fontStyle);
+			var textLine = new UITextLine<FontStyleTiled>(x, y, w, h, z, text, font, fontStyle, {hAlign:HAlign.CENTER, vAlign:VAlign.CENTER});
 			uiDisplay.add(textLine);
 		}
 		

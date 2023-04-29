@@ -4,7 +4,7 @@ import peote.ui.style.interfaces.Style;
 import peote.ui.config.Space;
 
 @:structInit
-class SliderConfigImpl
+private class SliderConfigImpl
 {
 	public var backgroundStyle:Style = null;	
 	public var draggerStyle:Style = null;
@@ -74,9 +74,4 @@ abstract SliderConfig(SliderConfigImpl) from SliderConfigImpl to SliderConfigImp
 		// TODO: gemeinsames interface (ohne alle speziellen argumente!) was den style kopiert
 		//return {backgroundStyle:s.copyAll(), draggerStyle:s.copyAll()};
 	}
-
-	//@:to
-	//public inline function toStyle():Style {
-		//return this.backgroundStyle;
-	//}
 }

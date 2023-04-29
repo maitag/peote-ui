@@ -2,6 +2,7 @@ package peote.ui.interactive;
 
 import peote.ui.interactive.Interactive;
 import peote.ui.interactive.UIElement;
+import peote.ui.config.ElementConfig;
 import peote.ui.config.SliderConfig;
 import peote.ui.config.Space;
 
@@ -132,9 +133,6 @@ implements peote.layout.ILayoutElement
 	public var draggerLengthPercent(default, set):Null<Float> = null;
 	inline function set_draggerLengthPercent(p:Null<Float>):Null<Float> return draggerLengthPercent = (p != null && p > 1.0) ? 1.0 : p;
 	
-	public var draggerSpace:Space;
-	public var backgroundSpace:Space;
-	
 	var draggerWidth(get, never):Int;
 	var draggerHeight(get, never):Int;
 	inline function get_draggerWidth():Int return get_draggerWidthHeight(isVertical, width, height);
@@ -165,10 +163,11 @@ implements peote.layout.ILayoutElement
 			reverse = config.reverse;
 			
 			if (config.backgroundStyle != null) {
-				backgroundSpace = (config.backgroundSpace != null) ? config.backgroundSpace.copy() : new Space();
+				var backgroundSpace:Space = (config.backgroundSpace != null) ? config.backgroundSpace.copy() : new Space();
 				backgroundSpace.setRelativeWidthOrHeight(isVertical, width, height, config.backgroundSize, config.backgroundSizePercent, config.backgroundOffset, config.backgroundOffsetPercent);
 				backgroundSpace.setRelativeWidthOrHeight(!isVertical, width, height, config.backgroundLength, config.backgroundLengthPercent, null, null);
-				background = new UIElement(x, y, width, height, zIndex + 1, config.backgroundStyle, backgroundSpace);				
+				//background = new UIElement(x, y, width, height, zIndex + 1, { backgroundStyle:config.backgroundStyle, space:backgroundSpace });				
+				background = new UIElement(x, y, width, height, zIndex + 1, new ElementConfig(config.backgroundStyle, backgroundSpace));				
 			}
 			
 			if (config.draggSpace != null) draggSpaceStart = draggSpaceEnd = config.draggSpace;
@@ -179,9 +178,10 @@ implements peote.layout.ILayoutElement
 			draggerLengthPercent = config.draggerLengthPercent;
 						
 			if (config.draggerStyle != null) {
-				draggerSpace = (config.draggerSpace != null) ? config.draggerSpace.copy() : new Space();
+				var draggerSpace:Space = (config.draggerSpace != null) ? config.draggerSpace.copy() : new Space();
 				draggerSpace.setRelativeWidthOrHeight(isVertical, width, height, config.draggerSize, config.draggerSizePercent, config.draggerOffset, config.draggerOffsetPercent);
-				dragger = new UIElement(getDraggerPos(isVertical, x, width, draggerWidth), getDraggerPos(!isVertical, y, height, draggerHeight), draggerWidth, draggerHeight, zIndex + 2, config.draggerStyle, draggerSpace);
+				//dragger = new UIElement(getDraggerPos(isVertical, x, width, draggerWidth), getDraggerPos(!isVertical, y, height, draggerHeight), draggerWidth, draggerHeight, zIndex + 2, { backgroundStyle:config.draggerStyle, space:draggerSpace });
+				dragger = new UIElement(getDraggerPos(isVertical, x, width, draggerWidth), getDraggerPos(!isVertical, y, height, draggerHeight), draggerWidth, draggerHeight, zIndex + 2, new ElementConfig(config.draggerStyle, draggerSpace) );
 			}
 			else dragger = new UIElement(getDraggerPos(isVertical, x, width, draggerWidth), getDraggerPos(!isVertical, y, height, draggerHeight), draggerWidth, draggerHeight, zIndex + 2);
 		}

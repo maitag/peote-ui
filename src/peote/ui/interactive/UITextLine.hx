@@ -8,8 +8,6 @@ class UITextLine<T> extends peote.ui.interactive.Interactive {}
 import haxe.macro.Expr;
 import haxe.macro.Context;
 import peote.text.util.Macro;
-//import peote.text.util.GlyphStyleHasField;
-//import peote.text.util.GlyphStyleHasMeta;
 
 class UITextLineMacro
 {
@@ -30,10 +28,7 @@ class UITextLineMacro
 			//var fontPath = TPath({ pack:["peote","text"], name:"Font" + Macro.classNameExtension(styleName, styleModule), params:[] });
 			//var fontProgramPath = TPath({ pack:["peote","text"], name:"FontProgram" + Macro.classNameExtension(styleName, styleModule), params:[] });
 			//var linePath = TPath({ pack:["peote","text"], name:"Line" + Macro.classNameExtension(styleName, styleModule), params:[] });
-
 			
-			//var glyphStyleHasMeta = peote.text.Glyph.GlyphMacro.parseGlyphStyleMetas(styleModule+"."+styleName); // trace("FontProgram: glyphStyleHasMeta", glyphStyleHasMeta);
-			//var glyphStyleHasField = peote.text.Glyph.GlyphMacro.parseGlyphStyleFields(styleModule+"."+styleName); // trace("FontProgram: glyphStyleHasField", glyphStyleHasField);
 			var glyphStyleHasMeta = Macro.parseGlyphStyleMetas(styleModule+"."+styleName); // trace("FontProgram: glyphStyleHasMeta", glyphStyleHasMeta);
 			var glyphStyleHasField = Macro.parseGlyphStyleFields(styleModule+"."+styleName); // trace("FontProgram: glyphStyleHasField", glyphStyleHasField);
 
@@ -51,10 +46,16 @@ implements peote.layout.ILayoutElement
 {	
 	var line:peote.text.Line<$styleType> = null; //$lineType
 	
+	var undoBuffer:peote.ui.util.UndoBuffer = null;
+	public var hasUndo(get, never):Bool;
+	inline function get_hasUndo():Bool return (undoBuffer != null);
+	
 	var fontProgram:peote.text.FontProgram<$styleType>; //$fontProgramType	
 	var font:peote.text.Font<$styleType>; //$fontType	
 	public var fontStyle:$styleType;
 	
+	public var backgroundSpace:peote.ui.config.Space = null;
+
 	// -------- background style ---------
 	var backgroundProgram:peote.ui.style.interfaces.StyleProgram = null;
 	var backgroundElement:peote.ui.style.interfaces.StyleElement = null;
@@ -146,7 +147,8 @@ implements peote.layout.ILayoutElement
 	public inline function selectionShow():Void selectionIsVisible = true;
 	public inline function selectionHide():Void selectionIsVisible = false;
 	var selectFrom:Int = 0;
-	var selectTo:Int = 0;	
+	var selectTo:Int = 0;
+	
 	public function select(from:Int, to:Int):Void {
 		if (from < 0) from = 0;
 		if (to < 0) to = 0;
@@ -207,6 +209,7 @@ implements peote.layout.ILayoutElement
 	}	
 	public inline function cursorShow():Void cursorIsVisible = true;
 	public inline function cursorHide():Void cursorIsVisible = false;
+	
 	public var cursor(default,set):Int = 0;
 	inline function set_cursor(pos:Int):Int {		
 		if (pos != cursor) {
@@ -295,13 +298,15 @@ implements peote.layout.ILayoutElement
 		if (config != null)
 		{
 			backgroundStyle = config.backgroundStyle;
+			backgroundSpace = config.backgroundSpace;
+			
 			selectionStyle = config.selectionStyle;
 			cursorStyle = config.cursorStyle;
 			
 			if (config.autoWidth != null) autoWidth = config.autoWidth else if (width == 0) autoWidth = true;
 			if (config.autoHeight != null) autoHeight = config.autoHeight else if (height == 0) autoHeight = true;
-			hAlign = config.hAlign;
-			vAlign = config.vAlign;
+			if (config.hAlign != null) hAlign = config.hAlign;
+			if (config.vAlign != null) vAlign = config.vAlign;
 			xOffset = config.xOffset;
 			yOffset = config.yOffset;
 			
@@ -311,6 +316,8 @@ implements peote.layout.ILayoutElement
 				topSpace = config.textSpace.top;
 				bottomSpace = config.textSpace.bottom;
 			}
+			
+			if (config.undoBufferSize > 0) undoBuffer = new peote.ui.util.UndoBuffer(config.undoBufferSize);
 		}
 		else {
 			if (width == 0) autoWidth = true;
@@ -323,8 +330,6 @@ implements peote.layout.ILayoutElement
 		return (autoWidth) ? _xOffset : switch (hAlign) {
 			case peote.ui.config.HAlign.CENTER: (width - leftSpace - rightSpace - line.textSize) / 2 + _xOffset;
 			case peote.ui.config.HAlign.RIGHT: width - leftSpace - rightSpace - line.textSize + _xOffset;
-			//case peote.ui.util.HAlign.CENTER: (width - leftSpace - rightSpace - Math.floor(line.textSize))/2 + _xOffset;
-			//case peote.ui.util.HAlign.RIGHT: width - leftSpace - rightSpace - Math.floor(line.textSize) + _xOffset;
 			default: _xOffset;
 		}
 	}
@@ -469,7 +474,6 @@ implements peote.layout.ILayoutElement
 		if (updateStyle) fontProgram.lineSetStyle(line, fontStyle, isVisible);
 		
 		if (autoSize > 0) { // auto aligning width and height to textsize
-			//if (autoWidth) width = Std.int(line.textSize) + leftSpace + rightSpace;
 			if (autoWidth) width = Std.int(line.textSize) + leftSpace + rightSpace;
 			if (autoHeight) height = Std.int(line.height) + topSpace + bottomSpace;
 			updatePickable(); // fit interactive pickables to new width and height
@@ -489,7 +493,7 @@ implements peote.layout.ILayoutElement
 			fontProgram.lineSetPosition(line, _x, _y + y_offset, (lineUpdateOffset) ? getAlignedXOffset(xOffset) : null, isVisible);
 		else if (lineUpdateSize) 
 			fontProgram.lineSetSize(line, _width, (lineUpdateOffset) ? getAlignedXOffset(xOffset) : null, isVisible);
-		else
+		else if (lineUpdateOffset) 
 			fontProgram.lineSetOffset(line, getAlignedXOffset(xOffset), isVisible);
 		
 		if (isVisible) {
@@ -665,10 +669,10 @@ implements peote.layout.ILayoutElement
 	// ------------------- Input Focus -----------------------
 	// -------------------------------------------------------
 	
-	public inline function setInputFocus(e:peote.ui.event.PointerEvent = null, setCursor:Bool = false):Void {
+	public inline function setInputFocus(e:peote.ui.event.PointerEvent = null, cursorToPointer:Bool = false):Void {
 		peote.ui.interactive.input2action.InputTextLine.focusElement = this;
 		if (uiDisplay != null) uiDisplay.setInputFocus(this, e);
-		if (setCursor) setCursorToPointer(e);
+		if (cursorToPointer) setCursorToPointer(e);
 		cursorShow();
 	}
 	
@@ -910,7 +914,8 @@ implements peote.layout.ILayoutElement
 	// ----------------------- delegated methods from FontProgram -----------------------
 
 	public inline function setStyle(glyphStyle:$styleType, from:Int = 0, to:Null<Int> = null) {
-		fontProgram.lineSetStyle(line, glyphStyle, from, to, isVisible);
+		fontStyle = glyphStyle;
+		fontProgram.lineSetStyle(line, fontStyle, from, to, isVisible);
 	}
 	
 	public inline function setChar(charcode:Int, position:Int = 0, glyphStyle:$styleType = null) {
@@ -945,6 +950,12 @@ implements peote.layout.ILayoutElement
 		return fontProgram.lineCutChars(line, from, to, isVisible);
 	}
 	
+	// ------------ undo-buffer methods --------------
+	
+	// TODO
+	
+	// -------- get screen position to char or line or vice versa -------
+
 	public inline function getPositionAtChar(position:Int):Float {
 		return fontProgram.lineGetPositionAtChar(line, position);
 	}
@@ -952,6 +963,18 @@ implements peote.layout.ILayoutElement
 	public inline function getCharAtPosition(xPosition:Float):Int {
 		return fontProgram.lineGetCharAtPosition(line, xPosition);
 	}
+	
+	// ------------- set Offsets ----------------
+	
+	// TODO
+	
+	// ------- bind automatic to UISliders ------
+	
+	// TODO
+	
+	// ------ internal Events ---------------
+	
+	// TODO
 	
 	// ----------- events ------------------
 	
@@ -991,6 +1014,9 @@ implements peote.layout.ILayoutElement
 	inline function set_onFocus(f:UITextLine < $styleType >->Void):UITextLine < $styleType >->Void 
 		return setOnFocus(this, f);
 		
+	
+	// TODO:	
+	
 	public var onResizeWidth(never, set):UITextLine<$styleType>->Int->Int->Void;
 	inline function set_onResizeWidth(f:UITextLine<$styleType>->Int->Int->Void):UITextLine<$styleType>->Int->Int->Void
 		return setOnResizeWidth(this, f);

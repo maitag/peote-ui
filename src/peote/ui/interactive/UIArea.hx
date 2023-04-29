@@ -5,7 +5,7 @@ import peote.ui.event.PointerEvent;
 import peote.ui.interactive.Interactive;
 import peote.ui.interactive.UIElement;
 import peote.ui.interactive.interfaces.ParentElement;
-import peote.ui.style.interfaces.Style;
+import peote.ui.config.AreaConfig;
 import peote.ui.config.ResizeType;
 
 @:allow(peote.ui)
@@ -42,16 +42,24 @@ implements peote.layout.ILayoutElement
 	public var innerHeight(get, never):Int;
 	inline function get_innerHeight():Int return innerBottom - innerTop;
 			
-	public function new(xPosition:Int = 0, yPosition:Int = 0, width:Int = 100, height:Int = 100, zIndex:Int = 0,
-		backgroundStyle:Style=null, resizeType:ResizeType = ResizeType.NONE) 
+	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int = 0, ?config:AreaConfig) 
 	{
-		super(xPosition, yPosition, width, height, zIndex, backgroundStyle);
+		super(xPosition, yPosition, width, height, zIndex, config);
+		
+		if (config != null) {
+			resizerSize = config.resizerSize;
+			resizerEdgeSize = config.resizerEdgeSize;
+			minWidth  = config.minWidth;
+			maxWidth  = config.maxWidth;
+			minHeight = config.minHeight;
+			maxHeight = config.maxHeight;
+			createAllResizer(config.resizeType);
+		}
+		
 		last_x = xPosition;
 		last_y = yPosition;
 		
-		changeZIndex = onChangeZIndex;
-		
-		createAllResizer(resizeType);
+		changeZIndex = onChangeZIndex;		
 	}
 	
 	inline function onChangeZIndex(z:Int, deltaZ:Int):Void
@@ -218,10 +226,13 @@ implements peote.layout.ILayoutElement
 	// ----------- Resizer buttons ---------------
 	
 	var resizerAvail:ResizeType = ResizeType.NONE;
+	
 	var resizerSize:Int = 5;
 	var resizerEdgeSize:Int = 7;
-	var minWidth:Int  = 100;  var maxWidth:Int  = 550;
-	var minHeight:Int = 100;  var maxHeight:Int = 550;
+	var minWidth:Int  = 10;
+	var maxWidth:Int  = 2000;
+	var minHeight:Int = 10;
+	var maxHeight:Int = 2000;
 	
 	var resizerTop:UIElement = null;
 	var resizerLeft:UIElement = null;

@@ -4,7 +4,7 @@ import peote.ui.style.interfaces.Style;
 //import peote.view.Color;
 
 @:structInit
-class TextConfigImpl
+private class TextConfigImpl
 {
 	public var backgroundStyle:Style = null;
 	
@@ -17,13 +17,13 @@ class TextConfigImpl
 	public var autoWidth:Null<Bool> = null;
 	public var autoHeight:Null<Bool> = null;
 	
-	public var hAlign:HAlign = HAlign.LEFT;
-	public var vAlign:VAlign = VAlign.TOP;
+	public var hAlign:Null<HAlign> = null;
+	public var vAlign:Null<VAlign> = null;
 	
 	public var xOffset:Float = 0.0;
 	public var yOffset:Float = 0.0;
 	
-	//TODO:public var backgroundSpace:Space = null;
+	public var backgroundSpace:Space = null;
 	public var textSpace:Space = null;
 
 	public var undoBufferSize:Int = 0;
@@ -38,8 +38,8 @@ class TextConfigImpl
 @:forward
 abstract TextConfig(TextConfigImpl) from TextConfigImpl to TextConfigImpl
 {
-	//inline function new(t:_TextLineStyle) {
-		//this = t;
+	//inline function new(c:TextConfigImpl) {
+		//this = c;
 	//}
 	
 	@:from
@@ -47,8 +47,4 @@ abstract TextConfig(TextConfigImpl) from TextConfigImpl to TextConfigImpl
 		return {backgroundStyle:s};
 	}
 
-	@:to
-	public inline function toStyle():Style {
-		return this.backgroundStyle;
-	}	
 }

@@ -88,7 +88,7 @@ class CodeEditor extends Application
 		var headerSize:Int = 20;
 		var gap:Int = 3;
 		
-		var area = new UIArea(50, 50, 500, 500, roundBorderStyle, ResizeType.ALL);
+		var area = new UIArea(50, 50, 500, 500, {backgroundStyle:roundBorderStyle, resizeType:ResizeType.ALL, minWidth:200, minHeight:100});
 		// to let the area drag
 		area.setDragArea(0, 0, peoteUiDisplay.width, peoteUiDisplay.height);
 		peoteUiDisplay.add(area);

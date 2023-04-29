@@ -4,6 +4,7 @@ import peote.ui.interactive.Interactive;
 import peote.ui.style.interfaces.Style;
 import peote.ui.style.interfaces.StyleProgram;
 import peote.ui.style.interfaces.StyleElement;
+import peote.ui.config.ElementConfig;
 import peote.ui.config.Space;
 
 import peote.ui.event.PointerEvent;
@@ -67,31 +68,33 @@ implements peote.layout.ILayoutElement
 	public inline function styleHide():Void styleIsVisible = false;
 	
 	
-	public var space:Space;
+	public var backgroundSpace:Space = null;
 	
 	public var styleX(get, set):Int;
-	inline function get_styleX():Int return x + space.left;
-	inline function set_styleX(v:Int):Int { x = v - space.left; return v; }
+	inline function get_styleX():Int return x + backgroundSpace.left;
+	inline function set_styleX(v:Int):Int { x = v - backgroundSpace.left; return v; }
 
 	public var styleY(get, set):Int;
-	inline function get_styleY():Int return y + space.top;
-	inline function set_styleY(v:Int):Int { y = v - space.top; return v; }
+	inline function get_styleY():Int return y + backgroundSpace.top;
+	inline function set_styleY(v:Int):Int { y = v - backgroundSpace.top; return v; }
 
 	public var styleWidth(get, set):Int;
-	inline function get_styleWidth():Int return width - space.left - space.right;
-	inline function set_styleWidth(v:Int):Int { width = v + space.left + space.right; return v; }
+	inline function get_styleWidth():Int return width - backgroundSpace.left - backgroundSpace.right;
+	inline function set_styleWidth(v:Int):Int { width = v + backgroundSpace.left + backgroundSpace.right; return v; }
 
 	public var styleHeight(get, set):Int;
-	inline function get_styleHeight():Int return height - space.top - space.bottom;
-	inline function set_styleHeight(v:Int):Int { height = v + space.top + space.bottom; return v; }
+	inline function get_styleHeight():Int return height - backgroundSpace.top - backgroundSpace.bottom;
+	inline function set_styleHeight(v:Int):Int { height = v + backgroundSpace.top + backgroundSpace.bottom; return v; }
 	
 	
 
-	public function new(xPosition:Int=0, yPosition:Int=0, width:Int=100, height:Int=100, zIndex:Int=0, style:Style=null, space:Space=null)
+	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int = 0, ?config:ElementConfig)
 	{
 		super(xPosition, yPosition, width, height, zIndex);
-		this.style = style;
-		this.space = space;
+		if (config != null) {
+			this.style = config.backgroundStyle;
+			this.backgroundSpace = config.backgroundSpace;
+		}
 	}
 	
 	
@@ -106,7 +109,7 @@ implements peote.layout.ILayoutElement
 	override inline function updateVisibleLayout():Void
 	{
 		if (styleElement != null) {
-			styleElement.setLayout(this, space);
+			styleElement.setLayout(this, backgroundSpace);
 			if (isVisible && styleIsVisible) styleProgram.update(styleElement);
 		}
 		updateUIElementLayout(); // hook to childclass
@@ -117,7 +120,7 @@ implements peote.layout.ILayoutElement
 	{	
 		if (styleElement != null) {
 			styleElement.setStyle(style);
-			styleElement.setLayout(this, space);
+			styleElement.setLayout(this, backgroundSpace);
 			if (isVisible && styleIsVisible) styleProgram.update(styleElement);
 		}
 		updateUIElement(); // hook to childclass
@@ -145,7 +148,7 @@ implements peote.layout.ILayoutElement
 			styleProgram = cast uiDisplay.usedStyleProgram[stylePos];
 			if (styleProgram == null) uiDisplay.addProgramAtStylePos(cast styleProgram = style.createStyleProgram(), stylePos);				
 		}
-		styleElement = styleProgram.createElement(this, style, space);
+		styleElement = styleProgram.createElement(this, style, backgroundSpace);
 		if (addUpdate) styleProgram.addElement(styleElement);		
 	}
 	

@@ -46,7 +46,7 @@ implements peote.layout.ILayoutElement
 
 	// TODO: zoom, xZoom and yZoom should delegate do .display!
 	
-	public function new(xPosition:Int = 0, yPosition:Int = 0, width:Int = 100, height:Int = 100, zIndex:Int = 0, color:Color = 0, addAtDisplay:Display = null, addBefore:Bool = false) 
+	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int = 0, color:Color = 0, addAtDisplay:Display = null, addBefore:Bool = false) 
 	{
 		super(xPosition, yPosition, width, height, zIndex);
 

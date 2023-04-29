@@ -157,7 +157,7 @@ implements peote.layout.ILayoutElement
 	#if (peoteui_maxDisplays != "1")
 	override public function swapDisplay(display:Display):Void
 	{
-		swapActiveUIDisplays(display); 
+		swapActiveUIDisplays(display);// TODO: bug if the display is not active!
 		super.swapDisplay(display);
 	}
 	#end

@@ -8,8 +8,6 @@ class UITextPage<T> extends peote.ui.interactive.Interactive {}
 import haxe.macro.Expr;
 import haxe.macro.Context;
 import peote.text.util.Macro;
-//import peote.text.util.GlyphStyleHasField;
-//import peote.text.util.GlyphStyleHasMeta;
 
 class UITextPageMacro
 {
@@ -30,10 +28,7 @@ class UITextPageMacro
 			//var fontPath = TPath({ pack:["peote","text"], name:"Font" + Macro.classNameExtension(styleName, styleModule), params:[] });
 			//var fontProgramPath = TPath({ pack:["peote","text"], name:"FontProgram" + Macro.classNameExtension(styleName, styleModule), params:[] });
 			//var pagePath = TPath({ pack:["peote","text"], name:"Page" + Macro.classNameExtension(styleName, styleModule), params:[] });
-
 			
-			//var glyphStyleHasMeta = peote.text.Glyph.GlyphMacro.parseGlyphStyleMetas(styleModule+"."+styleName); // trace("FontProgram: glyphStyleHasMeta", glyphStyleHasMeta);
-			//var glyphStyleHasField = peote.text.Glyph.GlyphMacro.parseGlyphStyleFields(styleModule+"."+styleName); // trace("FontProgram: glyphStyleHasField", glyphStyleHasField);
 			var glyphStyleHasMeta = Macro.parseGlyphStyleMetas(styleModule+"."+styleName); // trace("FontProgram: glyphStyleHasMeta", glyphStyleHasMeta);
 			var glyphStyleHasField = Macro.parseGlyphStyleFields(styleModule+"."+styleName); // trace("FontProgram: glyphStyleHasField", glyphStyleHasField);
 
@@ -67,7 +62,6 @@ implements peote.layout.ILayoutElement
 	public var fontStyle:$styleType;
 	
 	public var backgroundSpace:peote.ui.config.Space = null;
-
 	
 	// -------- background style ---------
 	var backgroundProgram:peote.ui.style.interfaces.StyleProgram = null;
@@ -379,13 +373,15 @@ implements peote.layout.ILayoutElement
 		if (config != null)
 		{
 			backgroundStyle = config.backgroundStyle;
+			backgroundSpace = config.backgroundSpace;
+			
 			selectionStyle = config.selectionStyle;
 			cursorStyle = config.cursorStyle;
 			
 			if (config.autoWidth != null) autoWidth = config.autoWidth else if (width == 0) autoWidth = true;
 			if (config.autoHeight != null) autoHeight = config.autoHeight else if (height == 0) autoHeight = true;
-			hAlign = config.hAlign;
-			vAlign = config.vAlign;
+			if (config.hAlign != null) hAlign = config.hAlign;
+			if (config.vAlign != null) vAlign = config.vAlign;
 			xOffset = config.xOffset;
 			yOffset = config.yOffset;
 			
@@ -943,9 +939,7 @@ implements peote.layout.ILayoutElement
 	// -------------------------------------------------------
 	
 	public function setCursorToPointer(e:peote.ui.event.PointerEvent):Void {
-		if (uiDisplay != null) {
-			setCursorToPosition(e.x, e.y);
-		}
+		if (uiDisplay != null) setCursorToPosition(e.x, e.y);
 	}
 	
 	public function setCursorToPosition(x:Int, y:Int):Void {
@@ -962,7 +956,6 @@ implements peote.layout.ILayoutElement
 	
 	public function stopSelection(e:peote.ui.event.PointerEvent = null):Void {
 		if (uiDisplay != null) uiDisplay.stopSelection(this, e);
-		//trace("select from/to:", selectLineFrom, selectLineTo, selectFrom, selectTo);
 	}
 	
 	// select-handler (called by PeoteUIDisplay)
@@ -1572,7 +1565,8 @@ implements peote.layout.ILayoutElement
 	}
 	
 
-	// --------------------
+	// ------------- set Offsets ----------------
+	
 	public inline function setOffset(xOffset:Float, yOffset:Float, update:Bool = true, triggerEvent:Bool = false) {
 		if (triggerEvent) {
 			if (_onChangeXOffset != null) _onChangeXOffset(this, xOffset , xOffset-this.xOffset);
