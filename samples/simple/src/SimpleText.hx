@@ -106,7 +106,8 @@ class SimpleText extends Application
 			backgroundStyle:boxStyle,
 			selectionStyle:BoxStyle.createById(1, Color.GREY3), // new ID for new Layer
 			cursorStyle:BoxStyle.createById(2, Color.RED),       // new ID for new Layer
-			//hAlign:HAlign.RIGHT
+			//hAlign:HAlign.RIGHT,
+			undoBufferSize: 30
 		}
 		
 		var inputLine = new UITextLine<MyFontStyle>(300, 20, 0, 0, "input UITextLine", font, fontStyleInput, textConfig);
@@ -166,7 +167,8 @@ class SimpleText extends Application
 		var textConfig:TextConfig = {
 			backgroundStyle:boxStyle,
 			selectionStyle:BoxStyle.createById(1, Color.GREY3), // new ID for new Layer
-			cursorStyle:BoxStyle.createById(2, Color.RED)       // new ID for new Layer
+			cursorStyle:BoxStyle.createById(2, Color.RED),      // new ID for new Layer
+			undoBufferSize: 30
 		}
 		
 		var inputPage = new UITextPage<MyFontStyle>(300, 100, 0, 0, "input\ntext by\nUIText\tPage", font, fontStyleInput, textConfig);

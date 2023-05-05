@@ -88,6 +88,8 @@
 	<haxeflag name="-dce" value="full" />
 	<!-- <haxedef name="dump=pretty output" /> -->
 	<haxedef name="keep_inline_positions" />
+		
+	<haxedef name="no-deprecation-warnings" />
 	
 	<!-- <haxedef name="HXCPP_CHECK_POINTER"/> -->
 	<!-- <haxedef name="HXCPP_M32" if="cpp" /> --> <!-- on windows 64 is default -->

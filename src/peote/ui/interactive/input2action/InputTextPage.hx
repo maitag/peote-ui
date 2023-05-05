@@ -58,7 +58,6 @@ class InputTextPage
 		{ action: "enter"      , keyboard: [KeyCode.RETURN, KeyCode.RETURN2, KeyCode.NUMPAD_ENTER] },
 		
 		// TODO: ctrl-d for duplicate cursorLine
-		// TODO: ctrl-x for delete cursorLine
 	];
 	
 	public static var actionMap:ActionMap = [
@@ -111,13 +110,13 @@ class InputTextPage
 	public static var input2Action:Input2Action;	
 	public static var focusElement:ActionTextPage;		
 	
-	static inline function deleteChar (_,_) focusElement.deleteChar();
-	static inline function backspace  (_,_) focusElement.backspace();
+	static inline function deleteChar(_,_) focusElement.deleteChar();
+	static inline function backspace (_,_) focusElement.backspace();
 	
-	static inline function delLeft  (_,_) focusElement.delLeft(isShift);
-	static inline function delRight (_,_) focusElement.delRight(isShift);
+	static inline function delLeft (_,_) focusElement.delLeft(isShift);
+	static inline function delRight(_,_) focusElement.delRight(isShift);
 	
-	static inline function tabulator  (_,_) focusElement.tabulator();
+	static inline function tabulator(_,_) focusElement.tabulator();
 	
 	static inline function copyToClipboard   (_,_) focusElement.copyToClipboard();
 	static inline function cutToClipboard    (_,_) focusElement.cutToClipboard();
@@ -126,27 +125,27 @@ class InputTextPage
 	static var isShift:Bool = false;
 	static inline function shiftModifier (isDown:Bool, _) isShift = isDown;
 	
-	static inline function selectAll      (_,_) focusElement.selectAll();
+	static inline function selectAll(_,_) focusElement.selectAll();
 	
-	static inline function undo (_,_) focusElement.undo();
-	static inline function redo (_,_) focusElement.redo();
+	static inline function undo(_,_) focusElement.undo();
+	static inline function redo(_,_) focusElement.redo();
 	
-	static inline function cursorStart    (_,_) focusElement.cursorStart(isShift);
-	static inline function cursorEnd      (_,_) focusElement.cursorEnd(isShift);
+	static inline function cursorStart(_,_) focusElement.cursorStart(isShift);
+	static inline function cursorEnd  (_,_) focusElement.cursorEnd(isShift);
 	
 	static inline function cursorLeft     (_,_) focusElement.cursorLeft(isShift);
 	static inline function cursorRight    (_,_) focusElement.cursorRight(isShift);
 	static inline function cursorLeftWord (_,_) focusElement.cursorLeftWord(isShift);
 	static inline function cursorRightWord(_,_) focusElement.cursorRightWord(isShift);	
 	
-	static inline function cursorUp   (_,_) focusElement.cursorUp(isShift);
-	static inline function cursorDown (_,_) focusElement.cursorDown(isShift);
+	static inline function cursorUp  (_,_) focusElement.cursorUp(isShift);
+	static inline function cursorDown(_,_) focusElement.cursorDown(isShift);
 	
-	static inline function cursorPageStart (_,_) focusElement.cursorPageStart(isShift);
-	static inline function cursorPageEnd   (_, _) focusElement.cursorPageEnd(isShift);
+	static inline function cursorPageStart(_,_) focusElement.cursorPageStart(isShift);
+	static inline function cursorPageEnd  (_, _) focusElement.cursorPageEnd(isShift);
 	
-	static inline function cursorPageUp   (_,_) focusElement.cursorPageUp(isShift);
-	static inline function cursorPageDown (_,_) focusElement.cursorPageDown(isShift);
+	static inline function cursorPageUp  (_,_) focusElement.cursorPageUp(isShift);
+	static inline function cursorPageDown(_,_) focusElement.cursorPageDown(isShift);
 	
 	static inline function enter(_,_) focusElement.enter();
 

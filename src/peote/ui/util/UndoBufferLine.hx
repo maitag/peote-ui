@@ -2,28 +2,20 @@ package peote.ui.util;
 
 import haxe.ds.Vector;
 
-@:enum abstract UndoAction(Int) from Int to Int
-{
-	public static inline var INSERT = 0;
-	public static inline var DELETE = 1;
-}
-
 @:structInit
-class UndoItem 
+class UndoItemLine 
 {
 	public var action:UndoAction;
-	public var fromLine:Int;
-	public var toLine:Int;
 	public var fromPos:Int;
 	public var toPos:Int;
 	public var chars:String;
 }
 
-class UndoBuffer
+class UndoBufferLine
 {
-	var buffer:Vector<UndoItem>;
+	var buffer:Vector<UndoItemLine>;
 	
-	var prevItem:UndoItem;
+	var prevItem:UndoItemLine;
 	
 	var start(default, null):Int = 0;
 	var pos  (default, null):Int = 0;
@@ -31,7 +23,7 @@ class UndoBuffer
 	
 	public function new(size:Int) 
 	{
-		buffer = new Vector<UndoItem>(size+1);
+		buffer = new Vector<UndoItemLine>(size+1);
 	}
 	
 	inline function nextPos()
@@ -47,7 +39,7 @@ class UndoBuffer
 	}
 	
 	
-	public inline function undo():UndoItem 
+	public inline function undo():UndoItemLine 
 	{		
 		if (pos == start) return null; // no more undo
 		prevItem = null;
@@ -55,7 +47,7 @@ class UndoBuffer
 		return buffer.get(pos);
 	}
 	
-	public inline function redo():UndoItem
+	public inline function redo():UndoItemLine
 	{		
 		if (pos == end) return null; // no more undo
 		prevItem = null;
@@ -65,10 +57,9 @@ class UndoBuffer
 	}
 	
 	// add UndoActions to Buffer
-	public inline function insert(fromLine:Int, toLine:Int, fromPos:Int, toPos:Int, chars:String) 
+	public inline function insert(fromPos:Int, toPos:Int, chars:String) 
 	{		
-		if (prevItem != null && prevItem.action == UndoAction.INSERT && prevItem.toPos == fromPos &&
-			fromLine == toLine-1 && prevItem.fromLine == fromLine && prevItem.fromLine ==  prevItem.toLine-1)
+		if (prevItem != null && prevItem.action == UndoAction.INSERT && prevItem.toPos == fromPos)
 		{
 			prevItem.toPos = toPos;
 			prevItem.chars += chars;
@@ -77,8 +68,6 @@ class UndoBuffer
 		else {
 			prevItem = {
 				action:UndoAction.INSERT,
-				fromLine:fromLine,
-				toLine:toLine,
 				fromPos:fromPos,
 				toPos:toPos,
 				chars:chars
@@ -90,12 +79,9 @@ class UndoBuffer
 		}
 	}
 	
-	public inline function delete(fromLine:Int, toLine:Int, fromPos:Int, toPos:Int, chars:String) 
+	public inline function delete(fromPos:Int, toPos:Int, chars:String) 
 	{		
-		if (prevItem != null && prevItem.action == UndoAction.DELETE &&
-			(prevItem.fromPos == fromPos ||  prevItem.fromPos == toPos) &&
-			fromLine == toLine-1 && prevItem.fromLine == fromLine && prevItem.fromLine ==  prevItem.toLine-1) 
-			
+		if (prevItem != null && prevItem.action == UndoAction.DELETE &&	(prevItem.fromPos == fromPos || prevItem.fromPos == toPos) )			
 		{
 			if (prevItem.fromPos == fromPos) {
 				prevItem.toPos += toPos-fromPos;
@@ -109,8 +95,6 @@ class UndoBuffer
 		else {
 			prevItem = {
 				action:UndoAction.DELETE,
-				fromLine:fromLine,
-				toLine:toLine,
 				fromPos:fromPos,
 				toPos:toPos,
 				chars:chars

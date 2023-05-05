@@ -46,9 +46,12 @@ implements peote.layout.ILayoutElement
 {	
 	var line:peote.text.Line<$styleType> = null; //$lineType
 	
-	var undoBuffer:peote.ui.util.UndoBuffer = null;
+	var undoBuffer:peote.ui.util.UndoBufferLine = null;
 	public var hasUndo(get, never):Bool;
 	inline function get_hasUndo():Bool return (undoBuffer != null);
+	
+	public var textWidth(get, never):Float;
+	inline function get_textWidth():Float return line.textSize;
 	
 	var fontProgram:peote.text.FontProgram<$styleType>; //$fontProgramType	
 	var font:peote.text.Font<$styleType>; //$fontType	
@@ -173,7 +176,7 @@ implements peote.layout.ILayoutElement
 	inline function set_cursorStyle(style:peote.ui.style.interfaces.Style):peote.ui.style.interfaces.Style {
 		if (cursorElement == null) { // not added to Display yet
 			cursorStyle = style;
-			if (style != null && line != null) createCursorMasked(isVisible && cursorIsVisible);
+			if (style != null && line != null) _createCursorMasked(isVisible && cursorIsVisible);
 		}
 		else { // already have styleprogram and element 
 			if (style != null) {
@@ -181,7 +184,7 @@ implements peote.layout.ILayoutElement
 					if (isVisible && cursorIsVisible) cursorProgram.removeElement(cursorElement);
 					cursorProgram = null;
 					cursorStyle = style;
-					createCursorMasked(isVisible && cursorIsVisible);
+					_createCursorMasked(isVisible && cursorIsVisible);
 				} 
 				else { // styleprogram is of same type
 					cursorStyle = style;
@@ -200,7 +203,7 @@ implements peote.layout.ILayoutElement
 	inline function set_cursorIsVisible(b:Bool):Bool {
 		if (line != null && cursorStyle != null) {
 			if (b && !cursorIsVisible) {
-				if (cursorElement == null) createCursorMasked(isVisible); // create new selectElement
+				if (cursorElement == null) _createCursorMasked(isVisible); // create new selectElement
 				else if (isVisible) cursorProgram.addElement(cursorElement);
 			}
 			else if (!b && cursorIsVisible && cursorElement != null && isVisible) cursorProgram.removeElement(cursorElement);
@@ -210,27 +213,44 @@ implements peote.layout.ILayoutElement
 	public inline function cursorShow():Void cursorIsVisible = true;
 	public inline function cursorHide():Void cursorIsVisible = false;
 	
-	public var cursor(default,set):Int = 0;
-	inline function set_cursor(pos:Int):Int {		
-		if (pos != cursor) {
-			if (pos < 0) cursor = 0;
-			else {
-				if (line != null) {
-					if (pos > line.length) cursor = line.length;
-					else cursor = pos;
-				}
-				else {
-					if (pos > text.length) cursor = text.length;
-					else cursor = pos;
-				}
-			}		
-			if (line != null && cursorStyle != null) {	
-				setCreateCursorMasked( (isVisible && cursorIsVisible), (cursorElement == null) );
-			}
-		}
-		return cursor;
+	public var cursor(default,null):Int = 0;
+	public inline function setCursor(cursor:Int, update:Bool = true, changeOffset:Bool = true)
+	{		
+		//trace("setCursor", cursor);
+		if (cursor < 0) this.cursor = 0 else this.cursor = cursor;		
+		if (line != null) {
+			if (cursor > line.length) this.cursor = line.length;
+			_updateCursorOrOffset(update, changeOffset);
+		}		
 	}	
 	
+	inline function _updateCursorOrOffset(update:Bool, changeOffset:Bool)
+	{
+		if (changeOffset) {
+			var xOffsetChanged = xOffsetToCursor();
+			if (update) {
+				if (xOffsetChanged) {
+					updateLineLayout( false, // updateStyle
+					false, false, true, // updateBgMask, updateSelection, updateCursor
+					false, false, xOffsetChanged); // lineUpdatePosition, lineUpdateSize, lineUpdateOffset
+				}
+				else if (cursorStyle != null) _setCreateCursorMasked( (isVisible && cursorIsVisible), (cursorElement == null) );
+			}
+		}
+		else if (update && cursorStyle != null) {
+			_setCreateCursorMasked( (isVisible && cursorIsVisible), (cursorElement == null) );
+		}		
+	}
+	
+	public inline function offsetToCursor(update:Bool = true)
+	{
+		var xOffsetChanged = xOffsetToCursor();
+		if (update && line != null && xOffsetChanged) {
+			updateLineLayout( false, false, false, true, //  updateStyle, updateBgMask, updateSelection, updateCursor
+				false, false, xOffsetChanged // lineUpdatePosition, lineUpdateSize, lineUpdateOffset
+			);
+		}
+	}
 	
 	// ---------- text ---------------	
 	@:isVar public var text(get, set):String = null;
@@ -317,7 +337,7 @@ implements peote.layout.ILayoutElement
 				bottomSpace = config.textSpace.bottom;
 			}
 			
-			if (config.undoBufferSize > 0) undoBuffer = new peote.ui.util.UndoBuffer(config.undoBufferSize);
+			if (config.undoBufferSize > 0) undoBuffer = new peote.ui.util.UndoBufferLine(config.undoBufferSize);
 		}
 		else {
 			if (width == 0) autoWidth = true;
@@ -340,6 +360,26 @@ implements peote.layout.ILayoutElement
 			case peote.ui.config.VAlign.CENTER: (height - topSpace - bottomSpace - line.height) / 2 + yOffset;
 			case peote.ui.config.VAlign.BOTTOM: height - topSpace - bottomSpace - line.height + yOffset;
 			default: yOffset;
+		}
+	}
+	
+	inline function xOffsetToCursor():Bool
+	{
+		if (autoWidth) return false;
+		else {
+			var cx = Math.round(getPositionAtChar(cursor));
+			var cw = 2; // TODO: make customizable		
+			if (cx + cw > x + width - rightSpace) { //trace("xOffsetToCursor right");
+				setXOffset(getAlignedXOffset(xOffset) - cx - cw + x + width - rightSpace, false, true);
+				hAlign = peote.ui.config.HAlign.LEFT;
+				return true;
+			}
+			else if (cx < x + leftSpace) { //trace("xOffsetToCursor left");
+				setXOffset(getAlignedXOffset(xOffset) - cx + x + leftSpace, false, true);
+				hAlign = peote.ui.config.HAlign.LEFT;
+				return true; 
+			}
+			else return false;
 		}
 	}
 	
@@ -388,8 +428,8 @@ implements peote.layout.ILayoutElement
 		}
 	}
 	
-	inline function createCursorMasked(addUpdate:Bool) setCreateCursorMasked(addUpdate, true);
-	inline function setCreateCursorMasked(addUpdate:Bool, create:Bool) 
+	inline function _createCursorMasked(addUpdate:Bool) _setCreateCursorMasked(addUpdate, true);
+	inline function _setCreateCursorMasked(addUpdate:Bool, create:Bool) 
 	{
 		var _x = x + leftSpace;
 		var _y = y + topSpace;
@@ -405,8 +445,8 @@ implements peote.layout.ILayoutElement
 		#end
 		_setCreateCursor(_x, _y, _width, _height, getAlignedYOffset() + topSpace, addUpdate, create);
 	}
-	inline function createCursor(x:Int, y:Int, w:Int, h:Int, y_offset:Float, addUpdate:Bool) _setCreateCursor(x, y, w, h, y_offset, addUpdate, true);
-	inline function setCursor(x:Int, y:Int, w:Int, h:Int, y_offset:Float, addUpdate:Bool) _setCreateCursor(x, y, w, h, y_offset, addUpdate, false);
+	inline function _createCursor(x:Int, y:Int, w:Int, h:Int, y_offset:Float, addUpdate:Bool) _setCreateCursor(x, y, w, h, y_offset, addUpdate, true);
+	inline function _setCursor(x:Int, y:Int, w:Int, h:Int, y_offset:Float, addUpdate:Bool) _setCreateCursor(x, y, w, h, y_offset, addUpdate, false);
 	inline function _setCreateCursor(_x:Int, _y:Int, _width:Int, _height:Int, y_offset:Float, addUpdate:Bool, create:Bool)
 	{
 		_width += 3; // TODO: fix for cursor at line-end
@@ -535,7 +575,7 @@ implements peote.layout.ILayoutElement
 		
 		if (updateCursor && cursorElement != null) {
 			if (updateStyle) cursorElement.setStyle(cursorStyle);
-			setCursor(_x, _y, _width, _height, y_offset + topSpace, (isVisible && cursorIsVisible));
+			_setCursor(_x, _y, _width, _height, y_offset + topSpace, (isVisible && cursorIsVisible));
 		}
 	}
 		
@@ -595,7 +635,7 @@ implements peote.layout.ILayoutElement
 			
 			if (backgroundStyle != null) createBackgroundStyle(backgroundIsVisible);
 			if (selectionStyle != null) createSelection(_x, _y, _width, _height, y_offset + topSpace, selectionIsVisible);
-			if (cursorStyle != null) createCursor(_x, _y, _width, _height, y_offset + topSpace, cursorIsVisible);
+			if (cursorStyle != null) _createCursor(_x, _y, _width, _height, y_offset + topSpace, cursorIsVisible);
 		}		
 	}
 	
@@ -715,10 +755,13 @@ implements peote.layout.ILayoutElement
 	// --------------- Cursor and Selection ------------------
 	// -------------------------------------------------------
 	
-	public function setCursorToPointer(e:peote.ui.event.PointerEvent):Void {
-		if (uiDisplay != null) cursor = getCharAtPosition(e.x);
+	public inline function setCursorToPointer(e:peote.ui.event.PointerEvent):Void {
+		if (uiDisplay != null) setCursorToPosition(e.x);
 	}
 	
+	public inline function setCursorToPosition(x:Int):Void {
+		setCursor(getCharAtPosition(x)); 
+	}
 	// ----------- Selection Events -----------
 	
 	public function startSelection(e:peote.ui.event.PointerEvent):Void {
@@ -729,49 +772,70 @@ implements peote.layout.ILayoutElement
 		if (uiDisplay != null) uiDisplay.stopSelection(this, e);
 	}
 	
-	// select-handler what is called by PeoteUIDisplay
+	// select-handler (called by PeoteUIDisplay)
 	
 	var selectStartFrom:Int = 0;
-	var xOffsetAtSelectStart:Float = 0;
 		
-	function onSelectStart(e:peote.ui.event.PointerEvent):Void {
+	inline function onSelectStart(e:peote.ui.event.PointerEvent):Void {
 		//trace("selectStart", xOffset);
 		removeSelection();
-		selectStartFrom = cursor = getCharAtPosition(e.x);
-		xOffsetAtSelectStart = xOffset;
+		setCursorToPosition(e.x);
+		selectStartFrom = cursor;
 		selectionHide();
 	}
 	
-	function onSelectStop(e:peote.ui.event.PointerEvent = null):Void {
+	inline function onSelectStop(e:peote.ui.event.PointerEvent = null):Void {
 		//trace("selectStop", (e != null) ? e.x : "", xOffset);
+		stopSelectOutsideTimer();
+		selectNextX = 0;
 	}
 	
-	function onSelect(e:peote.ui.event.PointerEvent):Void {
+	inline function onSelect(e:peote.ui.event.PointerEvent):Void {
+		//trace("onSelect");
 		if (localX(e.x) < leftSpace) {
-			if (localX(e.x) < getAlignedXOffset(leftSpace) + xOffsetAtSelectStart) {
-				xOffset = Math.max(- getAlignedXOffset(0), xOffsetAtSelectStart);
-			}
-			else xOffset = leftSpace - localX(e.x) + xOffsetAtSelectStart;
-			updateLineLayout(false); // OPTIMIZING: not for the background!
+			if (selectNextX != -1) { selectNextX = - 1; startSelectOutsideTimer(); }
 		}
 		else if (localX(e.x) > width - rightSpace) {
-			if ( localX(e.x) > getAlignedXOffset(line.textSize + leftSpace  + xOffsetAtSelectStart ) ) {
-				xOffset = Math.min(-getAlignedXOffset(Math.floor(line.textSize) - width + leftSpace + rightSpace), xOffsetAtSelectStart);
-			} 
-			else xOffset = width - localX(e.x) - rightSpace  + xOffsetAtSelectStart;
-			updateLineLayout(false); // OPTIMIZING: not for the background!
+			if (selectNextX != 1) { selectNextX = 1; startSelectOutsideTimer();	}
 		}
-		else if (xOffset != xOffsetAtSelectStart) {
-			xOffset = xOffsetAtSelectStart;
-			updateLineLayout(false); // OPTIMIZING: not for the background!
+		else selectNextX = 0;
+				
+		if (selectNextX == 0) {
+			stopSelectOutsideTimer();
+			setCursorToPosition(e.x);
+			select( selectStartFrom, cursor );
 		}
-		cursor = getCharAtPosition(e.x);
-		select( selectStartFrom, cursor );
-		// TODO: detect the char left right while xOffset changes at the border
-		//       OR allways change xScroll to make cursor fully visible!
+		else if (selectNextX == 0) {
+			setCursor(getCharAtPosition(e.x));
+			select( selectStartFrom, cursor );
+		}
 	}
 
-		
+	var seletionOutsideTimer = new haxe.Timer(50);
+	var seletionOutsideTimerIsRun = false;
+	var selectNextX:Int = 0;
+	function startSelectOutsideTimer() {
+		if (! seletionOutsideTimerIsRun) {
+			seletionOutsideTimer = new haxe.Timer(50);
+			seletionOutsideTimer.run = selectNextOutside;
+			seletionOutsideTimerIsRun = true;
+		}
+	}
+	function stopSelectOutsideTimer() {
+		seletionOutsideTimer.stop();
+		seletionOutsideTimerIsRun = false;
+	}
+	function selectNextOutside() {
+		if ((selectNextX < 0 && cursor == 0) || (selectNextX > 0 && cursor == line.length)) stopSelectOutsideTimer();
+		else {
+			if (selectNextX < 0 && cursor > line.visibleFrom) cursor = line.visibleFrom;
+			else if (selectNextX > 0 && cursor < line.visibleTo) cursor = line.visibleTo;
+			
+			if (selectNextX != 0) setCursor(cursor + selectNextX);
+			select( selectStartFrom, cursor );
+		}
+	}
+			
 	// -----------------------------------------------------
 	// ------------------- TextInput -----------------------
 	// -----------------------------------------------------
@@ -785,45 +849,54 @@ implements peote.layout.ILayoutElement
 		if (forceAutoHeight != null) autoHeight = forceAutoHeight;
 		
 		if (line != null) {
+			setOldTextSize();
 			fontProgram.lineSet(line, text, x, y, (autoWidth) ? null : width, xOffset, this.fontStyle, null, isVisible);
-			if (cursor > line.length) cursor = line.length;
-			if (selectTo > line.length) selectTo = line.length;
 			
-			if (autoUpdate) updateTextOnly();
+			if (selectTo > line.length) selectTo = line.length;
+			setCursor(cursor, autoUpdate);			
+			if (autoUpdate) updateTextOnly(true);
 		} 
 		else this.text = text;
 	}
 	
 	public inline function textInput(chars:String):Void {
 		if (line == null) return;
-		var oldCursor = cursor;			
+		setOldTextSize();
 		if (hasSelection()) {
-			fontProgram.lineDeleteChars(line, selectFrom, selectTo, isVisible);
-			oldCursor = selectFrom;
+			deleteChars(selectFrom, selectTo);
+			setCursor(selectFrom, false, false);
 			removeSelection();
 		}
-		var oldLength = line.length;
-		insertChars(chars, oldCursor, fontStyle); // TODO: extra "inputFontStyle" for textInput
-		updateTextOnly();
-		cursor = oldCursor + (line.length - oldLength);
+			
+		if (chars.length == 1) {
+			insertChar(chars, cursor, fontStyle);
+			setCursor(cursor+1, false);
+		}
+		else {
+			insertChars(chars, cursor, fontStyle);
+			setCursor(cursor + chars.length, false); // TODO: unrecognized chars!					
+		}
+		updateTextOnly(true);
 	}
 
-	inline function updateTextOnly()
+	var oldTextWidth:Float = 0.0;
+	inline function setOldTextSize() oldTextWidth = line.textSize;
+	
+	inline function updateTextOnly(updateCursor:Bool)
 	{
 		// TODO: if FontStyle changed -> also for autoHeight!
 		
-		// updateStyle, updateBgMask, updateSelection, updateCursor, lineUpdatePosition, lineUpdateSize, lineUpdateOffset
-		if (autoWidth) updateLineLayout(false, // updateStyle
-			true, false, false, // updateBgMask, updateSelection, updateCursor
-			false, true, false); // lineUpdatePosition, lineUpdateSize, lineUpdateOffset
-		else {
-			if ( !autoWidth && hAlign == peote.ui.config.HAlign.LEFT && isVisible) fontProgram.lineUpdate(line);
-			else updateLineLayout(false,  // updateStyle
-				// updateBgMask, updateSelection, updateCursor
-				autoWidth, false, (hAlign != peote.ui.config.HAlign.LEFT),
-				// lineUpdatePosition, lineUpdateSize, lineUpdateOffset
-				false, autoWidth, !autoWidth);
-		}					
+		updateLineLayout(
+			// updateStyle, updateBgMask, updateSelection, updateCursor
+			false, autoWidth, false, updateCursor,
+			// lineUpdatePosition, lineUpdateSize, lineUpdateOffset
+			false, autoWidth, !autoWidth
+		);
+				
+		if (oldTextWidth != line.textSize) {
+			if (_onResizeTextWidth != null) _onResizeTextWidth(this, line.textSize, line.textSize - oldTextWidth);
+			if (onResizeTextWidth != null) onResizeTextWidth(this, line.textSize, line.textSize - oldTextWidth);
+		}		
 	}
 	
 	// --------------------------------
@@ -834,14 +907,17 @@ implements peote.layout.ILayoutElement
 	{
 		if (line == null) return;
 		if (hasSelection()) {
-			fontProgram.lineDeleteChars(line, selectFrom, selectTo, isVisible);
-			cursor = selectFrom;
+			setOldTextSize();
+			deleteChars(selectFrom, selectTo);
+			setCursor(selectFrom, false);
 			removeSelection();
-			updateTextOnly();
+			updateTextOnly(true);
 		}
 		else if (cursor < line.length) {
-			fontProgram.lineDeleteChar(line, cursor, isVisible);
-			updateTextOnly();
+			setOldTextSize();
+			deleteCharAtCursor();
+			setCursor(cursor, false);
+			updateTextOnly(true);
 		}
 	}
 
@@ -849,16 +925,49 @@ implements peote.layout.ILayoutElement
 	{
 		if (line == null) return;
 		if (hasSelection()) {
-			fontProgram.lineDeleteChars(line, selectFrom, selectTo, isVisible);
-			cursor = selectFrom;
+			setOldTextSize();
+			deleteChars(selectFrom, selectTo);
+			setCursor(selectFrom, false);
 			removeSelection();
-			updateTextOnly();
+			updateTextOnly(true);
 		}
 		else if (cursor > 0) {
-			cursor--;
-			fontProgram.lineDeleteChar(line, cursor, isVisible);
-			updateTextOnly();
+			setOldTextSize();
+			deleteCharAtPos(cursor - 1);
+			setCursor(cursor-1, false);
+			updateTextOnly(true);
 		}
+	}
+	
+	public inline function delLeft(toLineStart:Bool = false)
+	{
+		if (line == null) return;
+		if (cursor > 0) {
+			setOldTextSize();
+			var from = (toLineStart) ? 0 : fontProgram.lineWordLeft(line, cursor);
+			deleteChars(from, cursor);
+			if (hasSelection()) {
+				if (cursor == selectTo) removeSelection();
+				else {
+					selectTo -= cursor - from;
+					select(from, selectTo);
+				}
+			}
+			setCursor(from, false);
+			updateTextOnly(true);
+		}
+	}
+	
+	public inline function delRight(toLineEnd:Bool = false)
+	{
+		if (line == null) return;
+		if (cursor < line.length) {
+			if (hasSelection()) removeSelection();
+			setOldTextSize();
+			deleteChars(cursor, (toLineEnd) ? line.length : fontProgram.lineWordRight(line, cursor));
+			setCursor(cursor, false);
+			updateTextOnly(true);
+		}		
 	}
 	
 	public inline function tabulator()
@@ -874,10 +983,11 @@ implements peote.layout.ILayoutElement
 	
 	public function cutToClipboard() {
 		if (line != null && hasSelection()) {
-			lime.system.Clipboard.text = fontProgram.lineCutChars(line, selectFrom, selectTo, isVisible);
-			cursor = selectFrom;
+			setOldTextSize();
+			lime.system.Clipboard.text = cutChars(selectFrom, selectTo);
+			setCursor(selectFrom, false);
 			removeSelection();
-			updateTextOnly();
+			updateTextOnly(true);
 		}
 	}
 	
@@ -887,38 +997,118 @@ implements peote.layout.ILayoutElement
 		#end		
 	}
 
-	public inline function cursorLeft()
-	{
-		if (hasSelection()) { cursor = selectFrom; removeSelection(); }
-		else cursor--;
+	public function selectAll() {
+		select(0, line.length - 1);
+		setCursor(0, false, false);
 	}
 
-	public inline function cursorRight()
-	{
-		if (hasSelection()) { cursor = selectTo; removeSelection(); }
-		else cursor++;
-	}
-
-	public inline function cursorLeftWord() {
-		if (hasSelection()) removeSelection();
-		cursor = fontProgram.lineWordLeft(line, cursor);
+	inline function _updateCursorSelection(newCursor:Int, addSelection:Bool) {
+		var oldCursor = cursor;
+		
+		setCursor(newCursor);
+				
+		if (addSelection) {
+			if (hasSelection()) {
+				if (oldCursor == selectFrom) select(cursor, selectTo);
+				else select(selectFrom, cursor);
+			}
+			else select( oldCursor, cursor );
+		}
 	}
 	
-	public inline function cursorRightWord()
+	public inline function cursorStart(addSelection:Bool = false)
 	{
-		if (hasSelection()) removeSelection();
-		cursor = fontProgram.lineWordRight(line, cursor);
+		if (!addSelection && hasSelection()) removeSelection();
+		_updateCursorSelection(0, addSelection);
+	}
+	
+	public inline function cursorEnd(addSelection:Bool = false)
+	{
+		if (!addSelection && hasSelection()) removeSelection();
+		_updateCursorSelection(line.length, addSelection);
+	}
+	
+	public inline function cursorLeft(addSelection:Bool = false)
+	{
+		if (!addSelection && hasSelection()) { setCursor(selectFrom); removeSelection(); }
+		else if (cursor > 0 ) _updateCursorSelection(cursor - 1, addSelection);
 	}
 
+	public inline function cursorRight(addSelection:Bool = false)
+	{
+		if (!addSelection && hasSelection()) { setCursor(selectTo); removeSelection(); }
+		else if (cursor < line.length) _updateCursorSelection(cursor + 1, addSelection);
+	}
+
+	public inline function cursorLeftWord(addSelection:Bool = false) {
+		if (!addSelection && hasSelection()) removeSelection();
+		if (cursor > 0) _updateCursorSelection(fontProgram.lineWordLeft(line, cursor), addSelection);
+	}
 	
+	public inline function cursorRightWord(addSelection:Bool = false)
+	{
+		if (!addSelection && hasSelection()) removeSelection();
+		if (cursor < line.length) _updateCursorSelection(fontProgram.lineWordRight(line, cursor), addSelection);
+	}
+
+	public inline function undo()
+	{
+		if (hasUndo) {
+			var step = undoBuffer.undo();
+			if ( step != null) {
+				if (hasSelection()) removeSelection();
+				
+				setOldTextSize();
+				
+				switch (step.action) {
+					case INSERT: //trace("undo INSERT");
+						fontProgram.lineDeleteChars(line, step.fromPos, step.toPos, isVisible);
+						setCursor(step.fromPos, false);
+					case DELETE: //trace("undo DELETE");
+						fontProgram.lineInsertChars(line, step.chars, step.fromPos, fontStyle, isVisible);
+						setCursor(step.toPos, false);
+				}
+			
+				updateTextOnly(true);
+			}
+		}
+		
+	}
+	
+	public inline function redo()
+	{
+		if (hasUndo) {
+			var step = undoBuffer.redo();
+			if ( step != null) {
+				if (hasSelection()) removeSelection();
+				
+				setOldTextSize();
+				
+				switch (step.action) {
+					case INSERT: //trace("redo INSERT");
+						fontProgram.lineInsertChars(line, step.chars, step.fromPos, fontStyle, isVisible);
+						setCursor(step.toPos, false);
+					case DELETE: //trace("redo DELETE");
+						fontProgram.lineDeleteChars(line, step.fromPos, step.toPos, isVisible);
+						setCursor(step.fromPos, false);
+				}
+				
+				updateTextOnly(true);
+			}
+		}
+		
+	}
+		
 	// ----------------------- delegated methods from FontProgram -----------------------
+	
+	// TODO	
 
 	public inline function setStyle(glyphStyle:$styleType, from:Int = 0, to:Null<Int> = null) {
 		fontStyle = glyphStyle;
 		fontProgram.lineSetStyle(line, fontStyle, from, to, isVisible);
 	}
 	
-	public inline function setChar(charcode:Int, position:Int = 0, glyphStyle:$styleType = null) {
+/*	public inline function setChar(charcode:Int, position:Int = 0, glyphStyle:$styleType = null) {
 		fontProgram.lineSetChar(line, charcode, position, glyphStyle, isVisible);
 	}
 	
@@ -926,33 +1116,47 @@ implements peote.layout.ILayoutElement
 		fontProgram.lineSetChars(line, chars, position, glyphStyle, isVisible);		
 	}
 	
-	public inline function insertChar(charcode:Int, position:Int = 0, glyphStyle:$styleType = null) {
-		fontProgram.lineInsertChar(line, charcode, position, glyphStyle, isVisible);
-	}
-	
-	public inline function insertChars(chars:String, position:Int = 0, glyphStyle:$styleType = null) {
-		fontProgram.lineInsertChars(line, chars, position, glyphStyle, isVisible);
-	}
-	
 	public inline function appendChars(chars:String, glyphStyle:$styleType = null) {
 		fontProgram.lineAppendChars(line, chars, glyphStyle, isVisible); 
 	}
-
-	public inline function deleteCharAt(position:Int = 0) {
-		fontProgram.lineDeleteChar(line, position, isVisible);
+*/
+	public inline function deleteCharAtCursor() {
+		_deleteChar(cursor);
+	}
+	
+	public inline function deleteCharAtPos(position:Int) {
+		_deleteChar(position);
 	}
 
-	public inline function deleteChars(from:Int = 0, to:Null<Int> = null) {
+	// ------------ undo-buffer methods --------------
+	
+	public inline function insertChar(char:String, position:Int, glyphStyle:$styleType = null) {
+		fontProgram.lineInsertChar(line, char.charCodeAt(0), position, glyphStyle, isVisible);
+		if (hasUndo) undoBuffer.insert(position, position + 1, char);
+	}
+	
+	public inline function insertChars(chars:String, position:Int, glyphStyle:$styleType = null) {
+		fontProgram.lineInsertChars(line, chars, position, glyphStyle, isVisible);
+		if (hasUndo) undoBuffer.insert(position, position + chars.length, chars);
+	}
+	
+	inline function _deleteChar(position:Int = 0) {
+		if (hasUndo) undoBuffer.delete(position, position+1, fontProgram.lineGetChars(line, position, position+1) );
+		fontProgram.lineDeleteChar(line, position, isVisible);
+	}
+	
+	public inline function deleteChars(from:Int, to:Int) {
+		if (hasUndo) undoBuffer.delete(from, to, fontProgram.lineGetChars(line, from, to) );
 		fontProgram.lineDeleteChars(line, from, to, isVisible);
 	}
 	
-	public inline function cutChars(from:Int = 0, to:Null<Int> = null):String {
-		return fontProgram.lineCutChars(line, from, to, isVisible);
+	public inline function cutChars(from:Int, to:Int):String {
+		if (hasUndo) {
+			var chars = fontProgram.lineCutChars(line, from, to, isVisible);
+			undoBuffer.delete(from, to, chars);
+			return chars;
+		} else return fontProgram.lineCutChars(line, from, to, isVisible);
 	}
-	
-	// ------------ undo-buffer methods --------------
-	
-	// TODO
 	
 	// -------- get screen position to char or line or vice versa -------
 
@@ -966,18 +1170,54 @@ implements peote.layout.ILayoutElement
 	
 	// ------------- set Offsets ----------------
 	
-	// TODO
+	public inline function setXOffset(xOffset:Float, update:Bool = true, triggerEvent:Bool = false) _setXOffset(xOffset, update, triggerEvent, triggerEvent);
+	inline function _setXOffset(xOffset:Float, update:Bool, triggerInternalEvent:Bool, triggerEvent:Bool) {
+		if (triggerInternalEvent && _onChangeXOffset != null) _onChangeXOffset(this, xOffset , xOffset-this.xOffset);
+		if (triggerEvent && onChangeXOffset != null) onChangeXOffset(this, xOffset , xOffset-this.xOffset);
+		this.xOffset = xOffset;
+		if (update) updateLineLayout( false, false, true, true, //  updateStyle, updateBgMask, updateSelection, updateCursor
+			false, false, true); // lineUpdatePosition, lineUpdateSize, lineUpdateOffset
+	}
 	
 	// ------- bind automatic to UISliders ------
+	// TODO: check that the internal events not already used, 
+	// more parameters: offsetBySlider, sliderByOffset, sliderByResize, sliderByTextResize
 	
-	// TODO
+	public function bindHSlider(slider:peote.ui.interactive.UISlider) {
+		slider.setRange(0, Math.min(0, width - leftSpace - rightSpace - textWidth), (width  - leftSpace - rightSpace ) / textWidth, false, false );		
+		slider._onChange = function(_, value:Float, _) _setXOffset(value, true, false, true); // don't trigger internal _onChangeXOffset again!
+		_onChangeXOffset = function (_,xOffset:Float,_) slider.setValue(xOffset, true, false); // trigger sliders _onChange and onChange						
+		_onResizeWidth = _onResizeTextWidth = function(_,_,_) {
+			slider.setRange(0, Math.min(0, width - leftSpace - rightSpace - textWidth), (width - leftSpace - rightSpace ) / textWidth, true, false );
+		}
+	}
+	
+	public function unbindHSlider(slider:peote.ui.interactive.UISlider) {
+		slider._onChange = null; _onChangeXOffset = null; _onResizeWidth = null; _onResizeTextWidth = null;
+	}
+	
 	
 	// ------ internal Events ---------------
 	
-	// TODO
+	var _onResizeWidth(default, set):UITextLine<$styleType>->Int->Int->Void = null;
+	inline function set__onResizeWidth(f:UITextLine<$styleType>->Int->Int->Void):UITextLine<$styleType>->Int->Int->Void {
+		if (onResizeWidth == null) setOnResizeWidth(this, f);
+		else if (f == null)	setOnResizeWidth(this, onResizeWidth); 
+		else setOnResizeWidth(this, function(t:UITextLine<$styleType>, w:Int, h:Int) { f(t, w, h); onResizeWidth(t, w, h); } );
+		return _onResizeWidth = f;
+	}
+	
+	var _onResizeTextWidth:UITextLine<$styleType>->Float->Float->Void = null;
+	var _onChangeXOffset:UITextLine<$styleType>->Float->Float->Void = null;
 	
 	// ----------- events ------------------
 	
+	// text-size (inner) resize events
+	public var onResizeTextWidth:UITextLine<$styleType>->Float->Float->Void = null;
+	
+	// events if text page is changing offset
+	public var onChangeXOffset:UITextLine<$styleType>->Float->Float->Void = null;
+
 	public var onPointerOver(never, set):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void;
 	inline function set_onPointerOver(f:UITextLine<$styleType>->peote.ui.event.PointerEvent->Void):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void
 		return setOnPointerOver(this, f);
@@ -1017,9 +1257,12 @@ implements peote.layout.ILayoutElement
 	
 	// TODO:	
 	
-	public var onResizeWidth(never, set):UITextLine<$styleType>->Int->Int->Void;
-	inline function set_onResizeWidth(f:UITextLine<$styleType>->Int->Int->Void):UITextLine<$styleType>->Int->Int->Void
-		return setOnResizeWidth(this, f);
+	//public var onResizeWidth(never, set):UITextLine<$styleType>->Int->Int->Void;
+	//inline function set_onResizeWidth(f:UITextLine<$styleType>->Int->Int->Void):UITextLine<$styleType>->Int->Int->Void return setOnResizeWidth(this, f);
+	public var onResizeWidth(default, set):UITextLine<$styleType>->Int->Int->Void = null;
+	inline function set_onResizeWidth(f:UITextLine<$styleType>->Int->Int->Void):UITextLine<$styleType>->Int->Int->Void {
+		onResizeWidth = f; set__onResizeWidth(_onResizeWidth); return f;
+	}
 		
 	public var onResizeHeight(never, set):UITextLine<$styleType>->Int->Int->Void;
 	inline function set_onResizeHeight(f:UITextLine<$styleType>->Int->Int->Void):UITextLine<$styleType>->Int->Int->Void

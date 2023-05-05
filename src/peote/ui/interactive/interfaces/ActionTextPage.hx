@@ -19,15 +19,16 @@ interface ActionTextPage
 	public function undo():Void;
 	public function redo():Void;
 	
-	public function cursorPageStart(addSelection:Bool = false):Void;
-	public function cursorPageEnd(addSelection:Bool = false):Void;
-	public function cursorStart(addSelection:Bool = false):Void;
-	public function cursorEnd(addSelection:Bool = false):Void;
-	
 	public function cursorLeft(addSelection:Bool = false):Void;
 	public function cursorRight(addSelection:Bool = false):Void;
 	public function cursorLeftWord(addSelection:Bool = false):Void;
 	public function cursorRightWord(addSelection:Bool = false):Void;
+	
+	public function cursorStart(addSelection:Bool = false):Void;
+	public function cursorEnd(addSelection:Bool = false):Void;
+	
+	public function cursorPageStart(addSelection:Bool = false):Void;
+	public function cursorPageEnd(addSelection:Bool = false):Void;
 	
 	public function cursorUp(addSelection:Bool = false):Void;
 	public function cursorDown(addSelection:Bool = false):Void;
