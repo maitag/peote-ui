@@ -30,7 +30,7 @@ haxelib git peote-view https://github.com/maitag/input2action
 
 Finally install the lib itself by:
 ```
-haxelib git peote-view https://github.com/maitag/peote-ui
+haxelib git peote-ui https://github.com/maitag/peote-ui
 ```
 
 
