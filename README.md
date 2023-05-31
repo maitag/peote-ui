@@ -24,7 +24,7 @@ you can also using `PeoteUIDisplay` and layout it manually like into sample here
 
 To map keyboard-shortcuts or using gamepad for input-control you need [input2action](https://github.com/maitag/input2action):
 ```
-haxelib git peote-view https://github.com/maitag/input2action
+haxelib git input2action https://github.com/maitag/input2action
 ```
 
 
