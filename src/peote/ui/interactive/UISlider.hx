@@ -21,11 +21,10 @@ class UISlider extends Interactive
 implements peote.layout.ILayoutElement
 #end
 {
-	var _percent(get, default):Float = 0.0; // allways from 0.0 to 1.0
-	inline function get__percent():Float return (reverse) ? 1.0 - _percent : _percent;
+	var _percent:Float = 0.0; // allways from 0.0 to 1.0
 	
 	public var percent(get, set):Float;
-	inline function get_percent():Float return _percent;
+	inline function get_percent():Float return (reverse) ? 1.0 - _percent : _percent;
 	inline function set_percent(v:Float):Float {
 		setPercent(v, false, false);
 		return v;
@@ -35,21 +34,21 @@ implements peote.layout.ILayoutElement
 	public var valueEnd:Float = 1.0;
 	
 	public var value(get, set):Float;
-	inline function get_value():Float return valueStart + _percent * (valueEnd - valueStart);
+	inline function get_value():Float return valueStart + percent * (valueEnd - valueStart);
 	inline function set_value(v:Float):Float {
 		setValue(v, false, false);
 		return v;
 	}
 	
 	inline function normalizeValue(v:Float):Float {
-		if (valueStart != valueEnd) return v / (valueEnd - valueStart);
+		if (valueStart != valueEnd) return (v - valueStart) / (valueEnd - valueStart)
 		else return 0.0;
 	}
 	
 	public inline function setPercent(percent:Float, triggerOnChange:Bool = true, triggerMouseMove:Bool = true) 
 	{
 		if (percent < 0.0) percent = 0.0 else if (percent > 1.0) percent = 1.0;
-		_percent = percent;
+		_percent = (reverse) ? 1.0 - percent : percent;
 		updateDragger(triggerOnChange, triggerMouseMove);
 	}
 	
@@ -184,6 +183,10 @@ implements peote.layout.ILayoutElement
 				dragger = new UIElement(getDraggerPos(isVertical, x, width, draggerWidth), getDraggerPos(!isVertical, y, height, draggerHeight), draggerWidth, draggerHeight, zIndex + 2, new ElementConfig(config.draggerStyle, draggerSpace) );
 			}
 			else dragger = new UIElement(getDraggerPos(isVertical, x, width, draggerWidth), getDraggerPos(!isVertical, y, height, draggerHeight), draggerWidth, draggerHeight, zIndex + 2);
+			
+			if (config.valueStart != 0.0 || config.valueEnd != 1.0) setRange(config.valueStart, config.valueEnd, false, false);
+			if (config.value != 0.0) value = config.value;
+			//updateDragger(false, false);
 		}
 		
 		// set dragger events
@@ -209,8 +212,8 @@ implements peote.layout.ILayoutElement
 		// onDrag event
 		dragger.onDrag = function(uiElement:UIElement, percentX:Float, percentY:Float) {
 			_percent = (isVertical) ? percentY : percentX;
-			if (_onChange != null) _onChange(this, value, _percent);
-			if (onChange != null) onChange(this, value, _percent);
+			if (_onChange != null) _onChange(this, value, percent);
+			if (onChange != null) onChange(this, value, percent);
 		}
 		
 		// to bubble events down to the dragger

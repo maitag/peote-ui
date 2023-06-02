@@ -253,12 +253,12 @@ class TestStyles extends Application
 		button(
 			"w+=5",      ()-> { textLine.autoWidth = false; textLine.width += 5; textLine.maskWidth += 5; textLine.updateLayout(); },
 			"w-=5",      ()-> { textLine.autoWidth = false; textLine.width -= 5; textLine.maskWidth -= 5; textLine.updateLayout(); },
-			"autoWidth", ()-> { textLine.autoWidth = true; textLine.updateLayout(); }
+			"autoWidth", ()-> { textLine.autoWidth = true; textLine.xOffset = 0; textLine.updateLayout(); }
 		);
 		button(
-			"left"  , ()-> { textLine.hAlign = HAlign.LEFT;   textLine.updateLayout(); },
-			"center", ()-> { textLine.hAlign = HAlign.CENTER; textLine.updateLayout(); },
-			"right" , ()-> { textLine.hAlign = HAlign.RIGHT;  textLine.updateLayout(); }
+			"left"  , ()-> { textLine.hAlign = HAlign.LEFT;   textLine.setXOffset(0); textLine.updateLayout(); },
+			"center", ()-> { textLine.hAlign = HAlign.CENTER; textLine.setXOffset(0); textLine.updateLayout(); },
+			"right" , ()-> { textLine.hAlign = HAlign.RIGHT;  textLine.setXOffset(0); textLine.updateLayout(); }
 		);		
 		button(
 			"leftSpace++", ()-> { textLine.leftSpace++; textLine.updateLayout(); },

@@ -24,6 +24,12 @@ private class SliderConfigImpl
 	// 1.0	
 	// to change this -> feel free to reverse
 	public var reverse:Bool = false;
+	
+	// ---- start value and range ---------------
+	public var value:Float = 0.0;
+	public var valueStart:Float = 0.0;
+	public var valueEnd:Float = 1.0;
+	
    
 	public var draggerSpace:Space = null;
 	public var backgroundSpace:Space = null;

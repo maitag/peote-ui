@@ -51,6 +51,9 @@ class Sliders extends Application
 			
 			//vertical:true,
 			//reverse:true,
+			//value: -2,
+			//valueStart: -5,
+			//valueEnd: 10,
 			
 			//draggerSpace:{left:15, right:15},
 			//backgroundSpace:{left:50},
@@ -72,12 +75,14 @@ class Sliders extends Application
 		};
 		
 		var hSlider = new UISlider(80, 10, 500, 40, sliderConfig);
-		hSlider.valueStart = -5;
-		hSlider.valueEnd = 10;
+		//hSlider.valueStart = -5;
+		//hSlider.valueEnd = 10;
 		setSliderEvents(hSlider);
 		uiDisplay.add(hSlider);
 		
-		//hSlider.reverse = true; hSlider.updateDragger();
+		//hSlider.reverse = true;
+		//hSlider.value = -2;
+		hSlider.updateDragger();
 		
 		
 		var vSlider = new UISlider(10, 10, 60, 500, sliderConfig);
@@ -85,12 +90,12 @@ class Sliders extends Application
 		uiDisplay.add(vSlider);
 		
 		hSlider.onChange = function(uiSlider:UISlider, value:Float, percent:Float) {
-			//trace( 'hSlider value:$value, percent:$percent' );
+			trace( 'hSlider value:$value, percent:$percent' );
 			vSlider.percent = percent;
 		}
 		
 		vSlider.onChange = function(uiSlider:UISlider, value:Float, percent:Float) {
-			//trace( 'vSlider value:$value, percent:$percent' );
+			trace( 'vSlider value:$value, percent:$percent' );
 			hSlider.percent = percent;
 			//hSlider.x = 100 + Std.int(percent * 500);
 			//hSlider.height = 40 + Std.int(percent * 100);
