@@ -1,6 +1,7 @@
 package peote.ui.event;
 
-@:enum abstract PointerType(Int) from Int to Int
+#if (haxe_ver >= 4.0) enum #else @:enum#end
+abstract PointerType(Int) from Int to Int
 {
 	var MOUSE = 0;
 	var TOUCH = 1;

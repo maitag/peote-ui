@@ -54,15 +54,19 @@ class Pickable implements Element
 }
 
 // ---------------------------------------------------------------
-
-@:enum private abstract UIEventMove(Int) from Int to Int {
+private
+#if (haxe_ver >= 4.0) enum #else @:enum#end
+abstract UIEventMove(Int) from Int to Int {
 
 	public static inline var over :Int = 1;
 	public static inline var out  :Int = 2;
 	public static inline var move :Int = 4;
 	public static inline var wheel:Int = 8;
 }
-@:enum private abstract UIEventClick(Int) from Int to Int {
+
+private 
+#if (haxe_ver >= 4.0) enum #else @:enum#end
+abstract UIEventClick(Int) from Int to Int {
 
 	public static inline var down :Int = 1;
 	public static inline var up   :Int = 2;

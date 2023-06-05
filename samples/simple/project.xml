@@ -7,13 +7,14 @@
 	<!-- <meta build-number="714" /> --> <!-- let set the buildnumber manual (android) -->
 	<!-- check this for GG-Playstore: <setenv name="ANDROID_GRADLE_TASK" value=":app:bundleRelease" /> -->
 	
-	<app main="SimpleText" path="bin" file="Main" />
+	<app main="CustomSelect" path="bin" file="Main" />
 	<!--
 		SimpleElements,
 		SimpleText,
 		LargeText,
 		SimpleDragging,
 		CustomSlider,
+		CustomSelect,
 		Sliders,
 		LargeScrollArea,
 		// TODO: FocusAndNavigation,
@@ -89,7 +90,7 @@
 	<!-- <haxedef name="dump=pretty output" /> -->
 	<haxedef name="keep_inline_positions" />
 		
-	<haxedef name="no-deprecation-warnings" />
+	<!--<haxedef name="no-deprecation-warnings" />-->
 	
 	<!-- <haxedef name="HXCPP_CHECK_POINTER"/> -->
 	<!-- <haxedef name="HXCPP_M32" if="cpp" /> --> <!-- on windows 64 is default -->

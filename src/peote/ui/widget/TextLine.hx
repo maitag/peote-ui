@@ -29,7 +29,7 @@ abstract TextLine(Widget) from Widget to Widget
 		// trace(Type.getClassName(Type.getClass(font)), Type.getClassName(Type.getClass(fontStyle)));
 		this = new Widget(ContainerType.BOX,
 			//font.createLayoutedTextLine(0, 0, null, 0, text, fontStyle),
-			font.createUITextLine(0, 0, null, 0, text, cast fontStyle, null), // todo: replace last null by textlinestyle
+			font.createUITextLine(0, 0, 0, 0, 3, text, cast fontStyle, null), // todo: replace last null by textlinestyle
 			textLineOptions
 		);
 		

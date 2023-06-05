@@ -295,6 +295,57 @@ implements peote.layout.ILayoutElement
 	//}
 		
 	
+	// -------------------------------------------------------
+	#if peote_layout
+	
+	public var rootLayout:peote.layout.LayoutContainer = null;
+	
+	// TODO: do all this inside of peote-layout
+	var layoutIsInit = false;
+	
+	@:access(peote.layout.LayoutContainer, peote.ui.layout.LayoutElement)
+	public function addLayout(layoutElement:peote.ui.layout.LayoutElement):Void 
+	{
+		add(layoutElement.interactive);
+		
+		// TODO:
+		if (rootLayout == null) rootLayout = new peote.layout.LayoutContainer(peote.layout.ContainerType.BOX, {
+			//scrollX:true,
+			limitMinWidthToChilds:false,
+			alignChildsOnOversizeX:peote.layout.Align.CENTER
+		});
+		
+		// TODO: do all "re-init" inside of peote-layout
+		rootLayout.addChild(layoutElement);
+		layoutIsInit = false;
+		
+		layoutElement.onAddToDisplay(this);
+	}
+	
+	public function removeLayout(layoutElement:peote.ui.layout.LayoutElement):Void 
+	{
+		if (rootLayout == null) { // TODO || not added
+			throw('Error, layoutElement is not added to UIDisplay');
+		}
+		remove(layoutElement.interactive);
+		
+		//TODO: not implemented into peote-layout yet
+		rootLayout.removeChild(layoutElement);
+	}
+	
+	public inline function updateLayout():Void
+	{
+		if (rootLayout == null) return;
+		
+		if (!layoutIsInit) {
+			rootLayout.init();
+			layoutIsInit = true;
+		}
+		
+		rootLayout.update(width, height);
+	}
+	#end
+	
 	// -------------------------------------------------------	
 	public function add(uiElement:Interactive):Void {
 		//TODO
@@ -323,8 +374,7 @@ implements peote.layout.ILayoutElement
 		}
 		
 		uiElements.remove(uiElement);
-		uiElement.onRemoveFromDisplay(this);
-		
+		uiElement.onRemoveFromDisplay(this);		
 	}
 	
 	public function removeAll():Void {

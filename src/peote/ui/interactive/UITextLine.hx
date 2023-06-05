@@ -848,6 +848,8 @@ implements peote.layout.ILayoutElement
 		if (forceAutoWidth != null) autoWidth = forceAutoWidth;
 		if (forceAutoHeight != null) autoHeight = forceAutoHeight;
 		
+		// TODO: check why have to reset xOffset after another update() ?
+		
 		if (line != null) {
 			setOldTextSize();
 			fontProgram.lineSet(line, text, x, y, (autoWidth) ? null : width, xOffset, this.fontStyle, null, isVisible);

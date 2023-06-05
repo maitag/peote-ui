@@ -102,10 +102,12 @@ implements peote.layout.ILayoutElement
 		
 		if (isVisible) {
 			uiDisplay.add(child);
-			child.maskByElement(this);
-			child.updateLayout(); // need if the child is a parent itself
+			//child.maskByElement(this);
+			//child.updateLayout(); // need if the child is a parent itself
 		}
-		
+		// here to update pickable also if area not added
+		child.maskByElement(this);
+		child.updateLayout(); // need if the child is a parent itself
 	}
 	
 	public function remove(child:Interactive) 
@@ -184,6 +186,7 @@ implements peote.layout.ILayoutElement
 	{
 		for (child in childs) {
 			uiDisplay.add(child);
+			//child.maskByElement(this);
 			//child.updateLayout(); // need if the child is a parent itself?
 		}
 		addResizer(resizerAvail);

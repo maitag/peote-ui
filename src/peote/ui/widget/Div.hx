@@ -2,6 +2,7 @@ package peote.ui.widget;
 
 import peote.layout.ContainerType;
 import peote.layout.LayoutOptions;
+import peote.ui.style.interfaces.Style;
 
 import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
@@ -21,7 +22,7 @@ typedef DivOptions = {
 
 	
 	
-	?style:Dynamic,
+	?style:Style,
 
 }
 

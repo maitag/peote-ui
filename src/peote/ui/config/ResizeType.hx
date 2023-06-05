@@ -1,6 +1,7 @@
 package peote.ui.config;
 
-@:enum abstract ResizeType(Int) from Int to Int 
+#if (haxe_ver >= 4.0) enum #else @:enum#end
+abstract ResizeType(Int) from Int to Int 
 {
 	public static inline var TOP          = 1;
 	public static inline var LEFT         = 2;
