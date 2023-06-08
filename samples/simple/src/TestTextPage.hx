@@ -112,7 +112,7 @@ class TestTextPage extends Application
 		//uiDisplay.getStyleProgram(roundBorderStyle).alphaEnabled = false;				
 		uiDisplay.addFontStyleProgram(fontStyleTiled, fontTiled);
 		
-		uiDisplay.addStyleProgram(cursorStyle, true).alphaEnabled = true;
+		uiDisplay.addStyleProgram(cursorStyle, true).blendEnabled = true;
 		
 		
 		

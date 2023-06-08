@@ -80,7 +80,7 @@ class CustomSelect extends Application
 		// ---- creating Select-Area ------
 		// --------------------------------
 		
-		var selectArea = new UISelectArea(105, 105, 160, 300, 1,
+		var selectArea = new UISelectArea(100, 100, 160, 300, 1,
 			["item 0", "item 1", "item 2", "item 3", "item 4"],
 			font, fontStyleFront, textConfigFront,
 			boxStyleFront 
@@ -146,8 +146,8 @@ class UISelectArea extends UIArea implements ParentElement
 			textline.onPointerDown = _onSelect.bind(i, _, _);
 
 			// TODO
-			//textline.onPointerOver = function(t:UITextLine<FontStyleTiled>, e:PointerEvent) {  };
-			//textline.onPointerOut = function(t:UITextLine<FontStyleTiled>, e:PointerEvent) {  };
+			textline.onPointerOver = function(t:UITextLine<FontStyleTiled>, e:PointerEvent) { t.backgroundStyle.color = Color.GREY7; t.updateStyle(); };
+			textline.onPointerOut  = function(t:UITextLine<FontStyleTiled>, e:PointerEvent) { t.backgroundStyle.color = Color.GREY5; t.updateStyle(); };
 			
 			add(textline);			
 		}
