@@ -208,7 +208,7 @@ class RoundBorderStyleProgram extends Program implements StyleProgram
 
 		// TODO: make that optional!
 		//discardAtAlpha(0.9);
-		alphaEnabled = true;
+		blendEnabled = true;
 	}
 
 	public inline function createElement(uiElement:Interactive, style:Dynamic, space:Space = null):StyleElement
