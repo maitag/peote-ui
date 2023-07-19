@@ -1399,9 +1399,11 @@ implements peote.layout.ILayoutElement
 				switch (step.action) {
 					case INSERT: //trace("undo INSERT");
 						fontProgram.pageDeleteChars(page, step.fromLine, step.toLine, step.fromPos, step.toPos, isVisible);
+						if (onDeleteText != null) onDeleteText(this, step.fromLine, step.toLine, step.fromPos, step.toPos, step.chars);
 						setCursorAndLine(step.fromPos, step.fromLine, false);
 					case DELETE: //trace("undo DELETE");
 						fontProgram.pageInsertChars(page, step.chars, step.fromLine, step.fromPos, fontStyle, isVisible);
+						if (onInsertText != null) onInsertText(this, step.fromLine, step.toLine, step.fromPos, step.toPos, step.chars);
 						setCursorAndLine(step.toPos, step.toLine-1, false);
 				}
 			
@@ -1423,9 +1425,11 @@ implements peote.layout.ILayoutElement
 				switch (step.action) {
 					case INSERT: //trace("redo INSERT");
 						fontProgram.pageInsertChars(page, step.chars, step.fromLine, step.fromPos, fontStyle, isVisible);
+						if (onInsertText != null) onInsertText(this, step.fromLine, step.toLine, step.fromPos, step.toPos, step.chars);
 						setCursorAndLine(step.toPos, step.toLine-1, false);
 					case DELETE: //trace("redo DELETE");
 						fontProgram.pageDeleteChars(page, step.fromLine, step.toLine, step.fromPos, step.toPos, isVisible);
+						if (onDeleteText != null) onDeleteText(this, step.fromLine, step.toLine, step.fromPos, step.toPos, step.chars);
 						setCursorAndLine(step.fromPos, step.fromLine, false);
 				}
 				
@@ -1506,23 +1510,27 @@ implements peote.layout.ILayoutElement
 		toLine = lineNumber + page.length - toLine; 
 		toPos = ((lineNumber == toLine) ? pageLine.length : page.getPageLine(toLine).length) - toPos;
 		if (hasUndo) undoBuffer.insert(lineNumber, toLine+1, position, toPos, chars);
+		if (onInsertText != null) onInsertText(this, lineNumber, toLine+1, position, toPos, chars);
 	}
 	
 	public inline function deleteChars(fromLine:Int, toLine:Int, fromPos:Int, toPos:Int) {
 		if (hasUndo) undoBuffer.delete(fromLine, toLine, fromPos, toPos, fontProgram.pageGetChars(page, fromLine, toLine, fromPos, toPos) );
+		if (onDeleteText != null) onDeleteText(this, fromLine, toLine, fromPos, toPos, fontProgram.pageGetChars(page, fromLine, toLine, fromPos, toPos) );
 		fontProgram.pageDeleteChars(page, fromLine, toLine, fromPos, toPos, isVisible);
 	}
 	
 	inline function _deleteChar(_pageLine:peote.text.PageLine<$styleType>, lineNumber:Int, position:Int) {
 		//TODO:optimize
 		if (hasUndo) undoBuffer.delete(lineNumber, lineNumber+1, position, position+1, fontProgram.pageGetChars(page, lineNumber, lineNumber+1, position, position+1) );
+		if (onDeleteText != null) onDeleteText(this, lineNumber, lineNumber+1, position, position+1, fontProgram.pageGetChars(page, lineNumber, lineNumber+1, position, position+1) );
 		fontProgram.pageDeleteChar(page, _pageLine, lineNumber, position, isVisible);
 	}
 	
 	public inline function cutChars(fromLine:Int, toLine:Int, fromPos:Int, toPos:Int):String {
-		if (hasUndo) {
+		if (hasUndo || onDeleteText != null) {
 			var chars = fontProgram.pageCutChars(page, fromLine, toLine, fromPos, toPos, isVisible);
-			undoBuffer.delete(fromLine, toLine, fromPos, toPos, chars);
+			if (hasUndo) undoBuffer.delete(fromLine, toLine, fromPos, toPos, chars);
+			if (onDeleteText != null) onDeleteText(this, fromLine, toLine, fromPos, toPos, chars);
 			return chars;
 		} else return fontProgram.pageCutChars(page, fromLine, toLine, fromPos, toPos, isVisible);
 	}
@@ -1530,11 +1538,13 @@ implements peote.layout.ILayoutElement
 	inline function _addLinefeed(_pageLine:peote.text.PageLine<$styleType>, lineNumber:Int, position:Int) {
 		fontProgram.pageAddLinefeedAt(page, _pageLine, lineNumber, position, isVisible); // TODO: glyphstyle/defaultRange
 		if (hasUndo) undoBuffer.insert(lineNumber, lineNumber+2, position, 0, "\n");
+		if (onInsertText != null) onInsertText(this, lineNumber, lineNumber+2, position, 0, "\n");
 	}
 	
 	inline function _removeLinefeed(_pageLine:peote.text.PageLine<$styleType>, lineNumber:Int) {
 		var position = (_pageLine != null) ? _pageLine.length : page.getPageLine(lineNumber).length;
 		if (hasUndo) undoBuffer.delete(lineNumber, lineNumber+2, position, 0, "\n");
+		if (onDeleteText != null) onDeleteText(this, lineNumber, lineNumber+2, position, 0, "\n");
 		fontProgram.pageRemoveLinefeed(page, _pageLine, lineNumber, isVisible);
 	}
 	
@@ -1658,6 +1668,9 @@ implements peote.layout.ILayoutElement
 	public var onChangeXOffset:UITextPage<$styleType>->Float->Float->Void = null;
 	public var onChangeYOffset:UITextPage<$styleType>->Float->Float->Void = null;
 
+	// events if text is changed: fromLine, toLine, fromPos, toPos, chars
+	public var onInsertText:UITextPage<$styleType>->Int->Int->Int->Int->String->Void = null;
+	public var onDeleteText:UITextPage<$styleType>->Int->Int->Int->Int->String->Void = null;
 	
 	public var onPointerOver(never, set):UITextPage<$styleType>->peote.ui.event.PointerEvent->Void;
 	inline function set_onPointerOver(f:UITextPage<$styleType>->peote.ui.event.PointerEvent->Void):UITextPage<$styleType>->peote.ui.event.PointerEvent->Void
