@@ -1065,9 +1065,11 @@ implements peote.layout.ILayoutElement
 				switch (step.action) {
 					case INSERT: //trace("undo INSERT");
 						fontProgram.lineDeleteChars(line, step.fromPos, step.toPos, isVisible);
+						if (onDeleteText != null) onDeleteText(this, step.fromPos, step.toPos, step.chars);
 						setCursor(step.fromPos, false);
 					case DELETE: //trace("undo DELETE");
 						fontProgram.lineInsertChars(line, step.chars, step.fromPos, fontStyle, isVisible);
+						if (onInsertText != null) onInsertText(this, step.fromPos, step.toPos, step.chars);
 						setCursor(step.toPos, false);
 				}
 			
@@ -1089,9 +1091,11 @@ implements peote.layout.ILayoutElement
 				switch (step.action) {
 					case INSERT: //trace("redo INSERT");
 						fontProgram.lineInsertChars(line, step.chars, step.fromPos, fontStyle, isVisible);
+						if (onInsertText != null) onInsertText(this, step.fromPos, step.toPos, step.chars);
 						setCursor(step.toPos, false);
 					case DELETE: //trace("redo DELETE");
 						fontProgram.lineDeleteChars(line, step.fromPos, step.toPos, isVisible);
+						if (onDeleteText != null) onDeleteText(this, step.fromPos, step.toPos, step.chars);
 						setCursor(step.fromPos, false);
 				}
 				
@@ -1135,27 +1139,32 @@ implements peote.layout.ILayoutElement
 	public inline function insertChar(char:String, position:Int, glyphStyle:$styleType = null) {
 		fontProgram.lineInsertChar(line, char.charCodeAt(0), position, glyphStyle, isVisible);
 		if (hasUndo) undoBuffer.insert(position, position + 1, char);
+		if (onInsertText != null) onInsertText(this, position, position + 1, char);
 	}
 	
 	public inline function insertChars(chars:String, position:Int, glyphStyle:$styleType = null) {
 		fontProgram.lineInsertChars(line, chars, position, glyphStyle, isVisible);
 		if (hasUndo) undoBuffer.insert(position, position + chars.length, chars);
+		if (onInsertText != null) onInsertText(this, position, position + chars.length, chars);
 	}
 	
 	inline function _deleteChar(position:Int = 0) {
 		if (hasUndo) undoBuffer.delete(position, position+1, fontProgram.lineGetChars(line, position, position+1) );
+		if (onDeleteText != null) onDeleteText(this, position, position+1, fontProgram.lineGetChars(line, position, position+1) );
 		fontProgram.lineDeleteChar(line, position, isVisible);
 	}
 	
 	public inline function deleteChars(from:Int, to:Int) {
 		if (hasUndo) undoBuffer.delete(from, to, fontProgram.lineGetChars(line, from, to) );
+		if (onDeleteText != null) onDeleteText(this, from, to, fontProgram.lineGetChars(line, from, to) );
 		fontProgram.lineDeleteChars(line, from, to, isVisible);
 	}
 	
 	public inline function cutChars(from:Int, to:Int):String {
-		if (hasUndo) {
+		if (hasUndo || onDeleteText != null) {
 			var chars = fontProgram.lineCutChars(line, from, to, isVisible);
-			undoBuffer.delete(from, to, chars);
+			if (hasUndo) undoBuffer.delete(from, to, chars);
+			if (onDeleteText != null) onDeleteText(this, from, to, chars);
 			return chars;
 		} else return fontProgram.lineCutChars(line, from, to, isVisible);
 	}
@@ -1220,6 +1229,10 @@ implements peote.layout.ILayoutElement
 	// events if text page is changing offset
 	public var onChangeXOffset:UITextLine<$styleType>->Float->Float->Void = null;
 
+	// events if text is changed: fromPos, toPos, chars
+	public var onInsertText:UITextLine<$styleType>->Int->Int->String->Void = null;
+	public var onDeleteText:UITextLine<$styleType>->Int->Int->String->Void = null;
+	
 	public var onPointerOver(never, set):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void;
 	inline function set_onPointerOver(f:UITextLine<$styleType>->peote.ui.event.PointerEvent->Void):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void
 		return setOnPointerOver(this, f);
