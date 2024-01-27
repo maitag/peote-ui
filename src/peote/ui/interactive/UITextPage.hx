@@ -909,7 +909,6 @@ implements peote.layout.ILayoutElement
 	public var input2Action:input2action.Input2Action = null;
 
 	// for the interface InputFocus 
-	@:access(input2action.Input2Action)
 	public inline function keyDown(keyCode:lime.ui.KeyCode, modifier:lime.ui.KeyModifier):Void
 	{
 		//trace("key DOWN");
@@ -920,7 +919,6 @@ implements peote.layout.ILayoutElement
 		else peote.ui.interactive.input2action.InputTextPage.input2Action.keyDown(keyCode, modifier);
 	}
 	
-	@:access(input2action.Input2Action)
 	public inline function keyUp(keyCode:lime.ui.KeyCode, modifier:lime.ui.KeyModifier):Void
 	{
 		//trace("key UP");

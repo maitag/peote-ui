@@ -3,16 +3,25 @@ package peote.ui.interactive.input2action;
 import lime.ui.KeyCode;
 
 import input2action.Input2Action;
+import input2action.KeyboardAction;
 import input2action.ActionConfig;
 import input2action.ActionMap;
 import peote.ui.interactive.interfaces.ActionTextPage;
 
 class InputTextPage
 {
+	public static var input2Action:Input2Action;	
+	public static var keyboardAction:KeyboardAction;	
+	public static var focusElement:ActionTextPage;		
 
-	// static functions to call the focused elements actions for input2action
+	public static inline function init() {
+		input2Action = new Input2Action();
+		keyboardAction = new KeyboardAction(actionConfig, actionMap);
+		input2Action.addKeyboard(keyboardAction);
+	}
 	
-	public static var actionConfig:ActionConfig = [
+	public static var actionConfig:ActionConfig =
+	[
 		{ action: "deleteChar" , keyboard: KeyCode.DELETE, single:true },
 		{ action: "backspace"  , keyboard: KeyCode.BACKSPACE, single:true },
 		
@@ -60,7 +69,8 @@ class InputTextPage
 		// TODO: ctrl-d for duplicate cursorLine
 	];
 	
-	public static var actionMap:ActionMap = [
+	public static var actionMap:ActionMap =
+	[
 		"deleteChar"  => { action:deleteChar  , repeatKeyboardDefault:true },
 		"backspace"   => { action:backspace   , repeatKeyboardDefault:true },
 		
@@ -99,17 +109,7 @@ class InputTextPage
 		
 		"enter"       => { action:enter, repeatKeyboardDefault:true },
 	];
-	
-	
-	public static inline function init() {
-		input2Action = new Input2Action(actionConfig, actionMap);
-		input2Action.setKeyboard();
-	}
-	
-	
-	public static var input2Action:Input2Action;	
-	public static var focusElement:ActionTextPage;		
-	
+		
 	static inline function deleteChar(_,_) focusElement.deleteChar();
 	static inline function backspace (_,_) focusElement.backspace();
 	

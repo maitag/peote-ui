@@ -1134,8 +1134,7 @@ implements peote.layout.ILayoutElement
 	
 	//public var onKeyDown:UIDisplay->InputEvent->Void = null;
 
-	@:access(input2action.Input2Action)
-	inline function keyDown (keyCode:KeyCode, modifier:KeyModifier):Void
+	inline function keyDown(keyCode:KeyCode, modifier:KeyModifier):Void
 	{
 		#if html5
 		if (modifier.altKey && modifier.ctrlKey) js.Syntax.code('event.preventDefault();');
@@ -1153,13 +1152,12 @@ implements peote.layout.ILayoutElement
 		}
 	}
 	
-	@:access(input2action.Input2Action)
-	inline function keyUp (keyCode:KeyCode, modifier:KeyModifier):Void
+	inline function keyUp(keyCode:KeyCode, modifier:KeyModifier):Void
 	{
 		if (inputFocusElement != null) inputFocusElement.keyUp(keyCode, modifier);
 	}
 	
-	inline function textInput (chars:String):Void {
+	inline function textInput(chars:String):Void {
 		//trace("textInput:", chars.length);
 		if (inputFocusElement != null) inputFocusElement.textInput(chars);
 	}
