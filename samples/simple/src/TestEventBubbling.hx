@@ -77,8 +77,12 @@ class TestEventBubbling extends Application
 		//uiDisplayLeft.onPointerMove =  function(uiDisplay:UIDisplay, e:PointerEvent) { trace("uiDisplayLeft onPointerMove"); };
 		
 		
-		createButton(uiDisplayLeft, "hide right uiDisplay", 25, 0).onPointerClick = function onClick(uiElement:UIElement, e:PointerEvent) {
+		createButton(uiDisplayLeft, "hide/show right", 25, 0).onPointerClick = function onClick(uiElement:UIElement, e:PointerEvent) {
 			if (uiDisplayRight.isVisible) uiDisplayRight.hide() else uiDisplayRight.show();
+		};
+		
+		createButton(uiDisplayLeft, "de/activate right", 25, 53).onPointerClick = function onClick(uiElement:UIElement, e:PointerEvent) {
+			if (uiDisplayRight.isActive) uiDisplayRight.deactivate() else uiDisplayRight.activate();
 		};
 		
 		// bubbling to other Display on/off
@@ -95,7 +99,7 @@ class TestEventBubbling extends Application
 		};
 		uiDisplayLeft.add(bubbleToDisplay);
 
-		createButton(uiDisplayLeft, "swap uiDisplays", 25, 50).onPointerClick = function onClick(uiElement:UIElement, e:PointerEvent) {
+		createButton(uiDisplayLeft, "swap uiDisplays", 25, 106).onPointerClick = function onClick(uiElement:UIElement, e:PointerEvent) {
 			uiDisplayLeft.swapDisplay(uiDisplayRight);
 		};
 		
@@ -122,8 +126,12 @@ class TestEventBubbling extends Application
 		// inserting before the left one into RenderList
 		//peoteView.addDisplay(uiDisplayRight, uiDisplayLeft, true);
 		
-		createButton(uiDisplayRight, "hide left uiDisplay", 20, 0).onPointerClick = function onClick(uiElement:UIElement, e:PointerEvent) {
+		createButton(uiDisplayRight, "hide/show left", 20, 0).onPointerClick = function onClick(uiElement:UIElement, e:PointerEvent) {
 			if (uiDisplayLeft.isVisible) uiDisplayLeft.hide() else uiDisplayLeft.show();
+		};
+		
+		createButton(uiDisplayRight, "de/activate left", 25, 53).onPointerClick = function onClick(uiElement:UIElement, e:PointerEvent) {
+			if (uiDisplayLeft.isActive) uiDisplayLeft.deactivate() else uiDisplayLeft.activate();
 		};
 		
 		// bubbling to other Display on/off

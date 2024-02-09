@@ -169,6 +169,14 @@ implements peote.layout.ILayoutElement
 		removeFromActiveUIDisplay();
 	}
 		
+	public function activate() {
+		addToActiveUIDisplay(this);
+	}
+	
+	public function deactivate() {
+		removeFromActiveUIDisplay();
+	}
+		
 	#if (peoteui_maxDisplays != "1")
 	override public function swapDisplay(display:Display):Void
 	{
@@ -1347,14 +1355,15 @@ implements peote.layout.ILayoutElement
 		static var maxActiveIndex:Int = 0;
 		static var activeUIDisplay = new Vector<PeoteUIDisplay>(MAX_DISPLAYS);
 		
-		inline function swapActiveUIDisplays(display:Display) 
-		{
-			if ( Std.isOfType(display, PeoteUIDisplay) ) {
+		inline function swapActiveUIDisplays(display:Display)
+		{	
+			if (!isActive) return;
+			if ( Std.isOfType(display, PeoteUIDisplay) && cast(display, PeoteUIDisplay).isActive ) {
 				_swapActiveUIDisplays(cast display);
 			}
 			else {
 				var displayListItem:RenderListItem<Display> = peoteView.displayList.itemMap.get(display);
-				while (displayListItem.value != null && !Std.isOfType(displayListItem.value, PeoteUIDisplay)) {
+				while (displayListItem.value != null && !( Std.isOfType(displayListItem.value, PeoteUIDisplay) && !cast(displayListItem.value, PeoteUIDisplay).isActive ) ) {
 					displayListItem = displayListItem.next;
 				}
 				if (displayListItem.value == null ) {
@@ -1379,7 +1388,7 @@ implements peote.layout.ILayoutElement
 		
 		inline function addToActiveUIDisplay(?atDisplay:Display, addBefore:Bool=false)
 		{
-			if (activeIndex >= 0) return;
+			if (isActive) return;
 			if (addBefore && (atDisplay == null || atDisplay == peoteView.displayList.first.value)) {
 				activeIndex = maxActiveIndex;
 			}
@@ -1389,7 +1398,7 @@ implements peote.layout.ILayoutElement
 				var i = maxActiveIndex;
 				while (displayListItem != toItem)
 				{
-					if ( Std.isOfType(displayListItem.value, PeoteUIDisplay) ) { //TODO: check for older haxe-version and Std.is() instead
+					if ( Std.isOfType(displayListItem.value, PeoteUIDisplay) && cast(displayListItem.value, PeoteUIDisplay).isActive) { 
 						var d:PeoteUIDisplay = cast displayListItem.value;
 						i = d.activeIndex; 
 						d.activeIndex = d.activeIndex+1;
@@ -1400,12 +1409,12 @@ implements peote.layout.ILayoutElement
 				activeIndex = i;
 			}		
 			maxActiveIndex++;
-			activeUIDisplay.set(activeIndex, this);
+			activeUIDisplay.set(activeIndex, this);trace(activeIndex);
 		}
 		
 		inline function removeFromActiveUIDisplay()
 		{	
-			if (activeIndex < 0) return;
+			if (!isActive) return;
 			for (i in activeIndex + 1...maxActiveIndex) {
 				var d:PeoteUIDisplay = activeUIDisplay.get(i);
 				d.activeIndex = i - 1;
