@@ -23,6 +23,7 @@
 		TestTextPage,
 		TestUIArea,
 		CodeEditor,
+		TestUIDisplayFramebuffer,
 		...
 	-->
 	<!--<define name="stats" if="html5" />-->

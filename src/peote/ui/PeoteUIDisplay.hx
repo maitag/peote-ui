@@ -144,6 +144,21 @@ implements peote.layout.ILayoutElement
 		super.removeFromPeoteView(peoteView);
 	}
 	
+	override public function addToPeoteViewFramebuffer(peoteView:PeoteView, ?atDisplay:Display, addBefore:Bool=false)
+	{
+		if ( isIn(peoteView) ) removeFromActiveUIDisplay();
+		super.addToPeoteViewFramebuffer(peoteView, atDisplay, addBefore);
+		movePickProgram.setNewGLContext(peoteView.gl);
+		clickPickProgram.setNewGLContext(peoteView.gl);
+		addToActiveUIDisplay(atDisplay, addBefore);
+	}	
+		
+	override public function removeFromPeoteViewFramebuffer(peoteView:PeoteView)
+	{
+		removeFromActiveUIDisplay();
+		super.removeFromPeoteViewFramebuffer(peoteView);
+	}
+	
 	override public function show() {
 		super.show();
 		addToActiveUIDisplay(this);
@@ -1325,7 +1340,10 @@ implements peote.layout.ILayoutElement
 	#else
 		//public inline function get_pointerEnabled():Bool return (activeUIDisplay.indexOf(this) >= 0);
 
-		var activeIndex:Int = 0;
+		var activeIndex:Int = -1;
+		public var isActive(get, never):Bool;
+		inline function get_isActive():Bool return (activeIndex >=0);  
+
 		static var maxActiveIndex:Int = 0;
 		static var activeUIDisplay = new Vector<PeoteUIDisplay>(MAX_DISPLAYS);
 		
@@ -1361,6 +1379,7 @@ implements peote.layout.ILayoutElement
 		
 		inline function addToActiveUIDisplay(?atDisplay:Display, addBefore:Bool=false)
 		{
+			if (activeIndex >= 0) return;
 			if (addBefore && (atDisplay == null || atDisplay == peoteView.displayList.first.value)) {
 				activeIndex = maxActiveIndex;
 			}
@@ -1385,13 +1404,15 @@ implements peote.layout.ILayoutElement
 		}
 		
 		inline function removeFromActiveUIDisplay()
-		{
+		{	
+			if (activeIndex < 0) return;
 			for (i in activeIndex + 1...maxActiveIndex) {
 				var d:PeoteUIDisplay = activeUIDisplay.get(i);
 				d.activeIndex = i - 1;
 				activeUIDisplay.set(d.activeIndex, d);
 			}
 			maxActiveIndex--;
+			activeIndex = -1;
 		}
 		
 		static var draggingMouseDisplays:Array<PeoteUIDisplay> = new Array<PeoteUIDisplay>();
