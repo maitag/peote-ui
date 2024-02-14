@@ -300,8 +300,18 @@ class TestEventBubbling extends Application
 
 	// override function onPreloadComplete() {}
 	// override function update(deltaTime:Int) {}
-	// public override function onRenderContextLost ():Void trace(" --- WARNING: LOST RENDERCONTEXT --- ");		
-	// public override function onRenderContextRestored (context:RenderContext):Void trace(" --- onRenderContextRestored --- ");		
+	// override function onRenderContextLost ():Void trace(" --- WARNING: LOST RENDERCONTEXT --- ");		
+	// override function onRenderContextRestored (context:RenderContext):Void trace(" --- onRenderContextRestored --- ");		
+
+	override function onKeyDown(keyCode:lime.ui.KeyCode, modifier:lime.ui.KeyModifier) {
+		switch (keyCode) {
+			case lime.ui.KeyCode.NUMBER_1:
+				if (uiDisplayLeft.isVisible) uiDisplayLeft.hide() else uiDisplayLeft.show();
+			case lime.ui.KeyCode.NUMBER_2:
+				if (uiDisplayRight.isVisible) uiDisplayRight.hide() else uiDisplayRight.show();
+			default:
+		}
+	}
 
 	// override function onWindowResize (width:Int, height:Int) { trace("onWindowResize"); }
 	// override function onWindowActivate():Void { trace("onWindowActivate"); }

@@ -167,6 +167,7 @@ implements peote.layout.ILayoutElement
 	override public function hide() {
 		super.hide();
 		removeFromActiveUIDisplay();
+		windowLeave();
 	}
 		
 	public function activate() {
@@ -175,6 +176,7 @@ implements peote.layout.ILayoutElement
 	
 	public function deactivate() {
 		removeFromActiveUIDisplay();
+		windowLeave();
 	}
 		
 	#if (peoteui_maxDisplays != "1")
@@ -1065,89 +1067,95 @@ implements peote.layout.ILayoutElement
 
 	public inline function windowLeave():Void {
 		trace("----------windowLeave-----------");
-		
-		var lastElem:Interactive;
-		// mouse
-		if (lastMouseOverIndex >= 0) {
-			lastElem = movePickBuffer.getElement(lastMouseOverIndex).uiElement;
-			while (lastElem != null) {
-				lastElem.pointerOut({x: -1, y: -1, type:PointerType.MOUSE});
-				lastElem = lastElem.overOutEventsBubbleTo;
-			}
-			lastMouseOverIndex = -1;
-		}
-		var lastIndex:Int;
-		for (i in 0...lastMouseDownIndex.length) {
-			lastIndex = lastMouseDownIndex.get(i) ;
-			if (lastIndex >= 0) {
-				lastElem = clickPickBuffer.getElement(lastIndex).uiElement;
-				while (lastElem != null) {
-					lastElem.pointerUp({x:-1, y:-1, type:PointerType.MOUSE, mouseButton:i});
-					lastElem = lastElem.upDownEventsBubbleTo;
-				}
-				lastMouseDownIndex.set(i, -1);
-			}
-		}
-		lockMouseDown = 0;
-				
-		// UIDisplay event
-		if (isMouseOver) {
-			if (onPointerOut != null) onPointerOut(this, {x:-1, y:-1, type:PointerType.MOUSE});					
-			isMouseInside = false;
-			isMouseOver = false;
-		}
-		
-		var button = 0;
-		while (isMouseDown > 0) {			
-			if (isMouseDown & (1 << button) > 0) {
-				if (onPointerUp != null) onPointerUp(this, {x:-1, y:-1, type:PointerType.MOUSE, mouseButton:button});
-				isMouseDown -= (1 << button);
-			}
-			button++;
-		}
 
-		
-		// -----------------touch ----------------
-		
-		for (i in 0...lastTouchOverIndex.length) {
-			lastIndex = lastTouchOverIndex.get(i) ;
-			if (lastIndex >= 0) {
-				lastElem = movePickBuffer.getElement(lastIndex).uiElement;
+		var lastIndex:Int;
+		var lastElem:Interactive;
+
+		if (mouseEnabled)
+		{
+			// mouse
+			if (lastMouseOverIndex >= 0) {
+				lastElem = movePickBuffer.getElement(lastMouseOverIndex).uiElement;
 				while (lastElem != null) {
-					lastElem.pointerOut({x:-1, y:-1, type:PointerType.TOUCH, touch:new Touch(-1, -1, i, 0, 0, 0, 0)});
+					lastElem.pointerOut({x: -1, y: -1, type:PointerType.MOUSE});
 					lastElem = lastElem.overOutEventsBubbleTo;
 				}
-				lastTouchOverIndex.set(i, -1);
+				lastMouseOverIndex = -1;
 			}
-		}
-		for (i in 0...lastTouchDownIndex.length) {
-			lastIndex = lastTouchDownIndex.get(i);
-			if (lastIndex >= 0) {
-				lastElem = clickPickBuffer.getElement(lastIndex).uiElement;
-				while (lastElem != null) {
-					lastElem.pointerUp({x:-1, y:-1, type:PointerType.TOUCH, touch:new Touch(-1, -1, i, 0, 0, 0, 0)});
-					lastElem = lastElem.upDownEventsBubbleTo;
+			
+			for (i in 0...lastMouseDownIndex.length) {
+				lastIndex = lastMouseDownIndex.get(i) ;
+				if (lastIndex >= 0) {
+					lastElem = clickPickBuffer.getElement(lastIndex).uiElement;
+					while (lastElem != null) {
+						lastElem.pointerUp({x:-1, y:-1, type:PointerType.MOUSE, mouseButton:i});
+						lastElem = lastElem.upDownEventsBubbleTo;
+					}
+					lastMouseDownIndex.set(i, -1);
 				}
-				lastTouchDownIndex.set(i, -1);
+			}
+			lockMouseDown = 0;
+					
+			// UIDisplay event
+			if (isMouseOver) {
+				if (onPointerOut != null) onPointerOut(this, {x:-1, y:-1, type:PointerType.MOUSE});					
+				isMouseInside = false;
+				isMouseOver = false;
+			}
+			
+			var button = 0;
+			while (isMouseDown > 0) {			
+				if (isMouseDown & (1 << button) > 0) {
+					if (onPointerUp != null) onPointerUp(this, {x:-1, y:-1, type:PointerType.MOUSE, mouseButton:button});
+					isMouseDown -= (1 << button);
+				}
+				button++;
 			}
 		}
-		lockTouchDown = 0;
 		
-		// UIDisplay event
-		// TODO: for all touch-ids ?
-		if (isTouchOver) {
-			if (onPointerOut != null) onPointerOut(this, {x:-1, y:-1, type:PointerType.TOUCH, touch:new Touch(-1, -1, 0, 0, 0, 0, 0)});					
-			isTouchInside = false;
-			isTouchOver = false;
-		}
-		
-		var touchID = 0;
-		while (isTouchDown > 0) {
-			if (isTouchDown & (1 << touchID) > 0) {
-				if (onPointerUp != null) onPointerUp(this, {x:-1, y:-1, type:PointerType.TOUCH, touch:new Touch(-1, -1, touchID, 0, 0, 0, 0)});
-				isTouchDown -= (1 << touchID);
+		// -----------------touch ----------------
+		if (touchEnabled)
+		{
+			for (i in 0...lastTouchOverIndex.length) {
+				lastIndex = lastTouchOverIndex.get(i) ;
+				if (lastIndex >= 0) {
+					lastElem = movePickBuffer.getElement(lastIndex).uiElement;
+					while (lastElem != null) {
+						lastElem.pointerOut({x:-1, y:-1, type:PointerType.TOUCH, touch:new Touch(-1, -1, i, 0, 0, 0, 0)});
+						lastElem = lastElem.overOutEventsBubbleTo;
+					}
+					lastTouchOverIndex.set(i, -1);
+				}
 			}
-			touchID++;
+			for (i in 0...lastTouchDownIndex.length) {
+				lastIndex = lastTouchDownIndex.get(i);
+				if (lastIndex >= 0) {
+					lastElem = clickPickBuffer.getElement(lastIndex).uiElement;
+					while (lastElem != null) {
+						lastElem.pointerUp({x:-1, y:-1, type:PointerType.TOUCH, touch:new Touch(-1, -1, i, 0, 0, 0, 0)});
+						lastElem = lastElem.upDownEventsBubbleTo;
+					}
+					lastTouchDownIndex.set(i, -1);
+				}
+			}
+			lockTouchDown = 0;
+			
+			// UIDisplay event
+			// TODO: for all touch-ids ?
+			if (isTouchOver) {
+				if (onPointerOut != null) onPointerOut(this, {x:-1, y:-1, type:PointerType.TOUCH, touch:new Touch(-1, -1, 0, 0, 0, 0, 0)});					
+				isTouchInside = false;
+				isTouchOver = false;
+			}
+			
+			var touchID = 0;
+			while (isTouchDown > 0) {
+				if (isTouchDown & (1 << touchID) > 0) {
+					if (onPointerUp != null) onPointerUp(this, {x:-1, y:-1, type:PointerType.TOUCH, touch:new Touch(-1, -1, touchID, 0, 0, 0, 0)});
+					isTouchDown -= (1 << touchID);
+				}
+				touchID++;
+			}
 		}
 		
 	}
@@ -1576,6 +1584,7 @@ implements peote.layout.ILayoutElement
 		#if html5
 		window.onMouseMove.remove(mouseMoveActive);
 		window.onLeave.remove(windowLeaveActive);
+		window.onActivate.remove(_windowActivateHackFocus);
 		#else
 		window.onRender.remove(_mouseMoveFrameSynced);
 		window.onMouseMove.remove(_mouseMove);
