@@ -22,7 +22,7 @@ import peote.view.Buffer;
 import peote.view.Program;
 import peote.view.Color;
 
-import peote.view.utils.RenderListItem;
+import peote.view.intern.RenderListItem;
 
 import peote.ui.interactive.Interactive;
 import peote.ui.interactive.interfaces.InputText;
