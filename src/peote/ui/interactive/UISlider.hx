@@ -258,7 +258,7 @@ implements peote.layout.ILayoutElement
 		}
 		if (dragger != null) {
 			dragger.width = draggerWidth;
-			dragger.height = draggerHeight;			
+			dragger.height = draggerHeight;
 			dragger.x = getDraggerPos(isVertical, x, width, dragger.width);
 			dragger.y = getDraggerPos(!isVertical, y, height, dragger.height);
 			updateDragArea();

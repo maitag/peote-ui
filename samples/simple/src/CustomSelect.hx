@@ -80,7 +80,10 @@ class CustomSelect extends Application
 		// ---- creating Select-Area ------
 		// --------------------------------
 		
-		var selectArea = new UISelectArea(100, 100, 160, 300, 1,
+		var itemHeight:Int = 20;
+		var itemGap:Int = 1;
+
+		var selectArea = new UISelectArea(100, 100, 160, itemHeight, itemGap, 1,
 			["item 0", "item 1", "item 2", "item 3", "item 4"],
 			font, fontStyleFront, textConfigFront,
 			boxStyleFront 
@@ -93,7 +96,7 @@ class CustomSelect extends Application
 		// ---- creating Selector-Button ----
 		// ----------------------------------
 		
-		var selector = new UITextLine<FontStyleTiled>(100, 100, 160, 0, "item 0", font, fontStyle, textConfig);
+		var selector = new UITextLine<FontStyleTiled>(100, 100, 160, itemHeight, 0, "item 0", font, fontStyle, textConfig);
 		selector.onPointerDown = function(t:UITextLine<FontStyleTiled>, e:PointerEvent)
 		{
 			selectArea.show();
@@ -105,7 +108,12 @@ class CustomSelect extends Application
 		
 		selectArea.onSelect = (area:UISelectArea, item:Int, text:String) -> {
 			trace('item $item selected -> $text');
-			selector.setText(text, null, null, null, true);
+			selector.setText(text);
+			// selector.vAlign = VAlign.CENTER;
+			// selector.hAlign = HAlign.LEFT;
+			selector.setXOffset(0);
+			selector.updateLayout();
+
 			area.hide();
 		}
 		
@@ -125,16 +133,14 @@ class CustomSelect extends Application
 
 class UISelectArea extends UIArea implements ParentElement
 {
-	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int = 0,
+	public function new(xPosition:Int, yPosition:Int, width:Int, itemHeight:Int, itemGap:Int, zIndex:Int = 0,
 		items:Array<String>, font:Font<FontStyleTiled>, fontStyle:FontStyleTiled,
 		textConfig:TextConfig,
 		?config:AreaConfig
 	) 
 	{
-		super(xPosition, yPosition, width, height, zIndex, config);
+		super(xPosition, yPosition, width, (itemHeight + itemGap)*items.length - itemGap, zIndex, config);
 		
-		var itemHeight:Int = 20;
-		var itemGap:Int = 1;
 		
 		var yPos:Int = 0;
 		
@@ -149,7 +155,7 @@ class UISelectArea extends UIArea implements ParentElement
 			textline.onPointerOver = function(t:UITextLine<FontStyleTiled>, e:PointerEvent) { t.backgroundStyle.color = Color.GREY7; t.updateStyle(); };
 			textline.onPointerOut  = function(t:UITextLine<FontStyleTiled>, e:PointerEvent) { t.backgroundStyle.color = Color.GREY5; t.updateStyle(); };
 			
-			add(textline);			
+			add(textline);
 		}
 		
 		this.height = innerHeight;
