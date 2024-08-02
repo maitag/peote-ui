@@ -4,9 +4,9 @@
 	"license": "MIT",
 	"tags": ["peote", "ui", "userinterface", "layout", "widgets"],
 	"description": "Userinterface for peote-view",
-	"version": "0.9.3",
+	"version": "0.9.4",
 	"classPath": "src/",
-	"releasenote": "better input2action integration for keyboard shortcuts",
+	"releasenote": "fixing macros how it detects already generated types (lang-server cache glitch)",
 	"contributors": ["maitag"],
 	"dependencies": {
 		"lime": "",

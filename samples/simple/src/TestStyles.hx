@@ -126,7 +126,7 @@ class TestStyles extends Application
 		var selectionSimpleStyle = boxStyle.copy(Color.GREY4);
 		var selectionRoundStyle = roundBorderStyle.copy(Color.GREY4);		
 		//var cursorSimpleStyle = boxStyle.copy();
-		var cursorSimpleStyle = cursorStyle.copy(Color.RED.setAlpha(0.5));
+		var cursorSimpleStyle = cursorStyle.copy(Color.FloatRGBA(1.0, 0.0, 0.0, 0.5));
 		var cursorRoundStyle = roundBorderStyle.copy();
 		
 		var textConfig:TextConfig = {
@@ -231,7 +231,7 @@ class TestStyles extends Application
 			"text3", ()-> textLine.setText("ui stuff", textLine.autoWidth, textLine.autoHeight, true)
 		);		
 		button(
-			"fontStyle color", ()-> { textLine.fontStyle = fontStylePacked.copy(Color.random().setAlpha(1.0)); textLine.updateStyle(); },
+			"fontStyle color", ()-> { textLine.fontStyle = fontStylePacked.copy(Color.random(255)); textLine.updateStyle(); },
 			"size", ()-> {
 				if (textLine.fontStyle.width == 20) textLine.fontStyle.width = textLine.fontStyle.height = 30;
 				else textLine.fontStyle.width = textLine.fontStyle.height = 20; 

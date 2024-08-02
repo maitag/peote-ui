@@ -16,7 +16,8 @@ class UITextLineMacro
 	{
 		className += Macro.classNameExtension(styleName, styleModule);
 		
-		if ( Macro.isNotGenerated(className) )
+		if ( Macro.typeNotGenerated(classPackage.concat([className]).join('.')) )
+		// if ( Macro.isNotGenerated(className) )
 		{
 			Macro.debug(className, classPackage, stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
 			

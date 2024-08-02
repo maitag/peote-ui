@@ -123,7 +123,7 @@ class TestTextPage extends Application
 		var selectionSimpleStyle = boxStyle.copy(Color.GREY4);
 		var selectionRoundStyle = roundBorderStyle.copy(Color.GREY4);		
 		//var cursorSimpleStyle = boxStyle.copy();
-		var cursorSimpleStyle = cursorStyle.copy(Color.RED.setAlpha(0.5));
+		var cursorSimpleStyle = cursorStyle.copy(Color.FloatRGBA(1.0, 0.0, 0.0, 0.5));
 		var cursorRoundStyle = roundBorderStyle.copy();
 		
 		var textConfig:TextConfig = {
@@ -232,7 +232,7 @@ class TestTextPage extends Application
 			"text3", ()-> textPage.setText("only one line", textPage.autoWidth, textPage.autoHeight, true)
 		);		
 		button(
-			"fontStyle color", ()-> { textPage.fontStyle = fontStylePacked.copy(Color.random().setAlpha(1.0)); textPage.updateStyle(); },
+			"fontStyle color", ()-> { textPage.fontStyle = fontStylePacked.copy(Color.random(255)); textPage.updateStyle(); },
 			"size", ()-> {
 				if (textPage.fontStyle.width == 20) textPage.fontStyle.width = textPage.fontStyle.height = 30;
 				else textPage.fontStyle.width = textPage.fontStyle.height = 20; 

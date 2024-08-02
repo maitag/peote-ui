@@ -200,7 +200,7 @@ class WidgetLayout extends Application
 	}
 
 	// --------------------------------------------------
-	public inline function onOverOut(color:Color, widget:Div, e:PointerEvent) {
+	public function onOverOut(color:Color, widget:Div, e:PointerEvent) {
 		//trace(widget.parent);
 		//widget.parent.uiElement.color = Color.RED;
 		

@@ -182,7 +182,7 @@ implements peote.layout.ILayoutElement
 	
 	// -----------------
 	
-	override inline function onAddUIElementToDisplay()
+	override function onAddUIElementToDisplay()
 	{
 		for (child in childs) {
 			uiDisplay.add(child);
@@ -192,7 +192,7 @@ implements peote.layout.ILayoutElement
 		addResizer(resizerAvail);
 	}
 	
-	override inline function onRemoveUIElementFromDisplay()
+	override function onRemoveUIElementFromDisplay()
 	{	
 		for (child in childs) if (child.isVisible) uiDisplay.remove(child);
 		removeResizer(resizerAvail);

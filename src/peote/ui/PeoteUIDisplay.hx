@@ -1066,7 +1066,7 @@ implements peote.layout.ILayoutElement
 	}
 
 	public inline function windowLeave():Void {
-		trace("----------windowLeave-----------");
+		// trace("----------windowLeave-----------");
 
 		var lastIndex:Int;
 		var lastElem:Interactive;
@@ -1417,7 +1417,7 @@ implements peote.layout.ILayoutElement
 				activeIndex = i;
 			}		
 			maxActiveIndex++;
-			activeUIDisplay.set(activeIndex, this);trace(activeIndex);
+			activeUIDisplay.set(activeIndex, this);
 		}
 		
 		inline function removeFromActiveUIDisplay()

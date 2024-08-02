@@ -16,7 +16,8 @@ class UITextPageMacro
 	{
 		className += Macro.classNameExtension(styleName, styleModule);
 		
-		if ( Macro.isNotGenerated(className) )
+		if ( Macro.typeNotGenerated(classPackage.concat([className]).join('.')) )
+		// if ( Macro.isNotGenerated(className) )
 		{
 			Macro.debug(className, classPackage, stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
 			
@@ -52,10 +53,10 @@ implements peote.layout.ILayoutElement
 	inline function get_hasUndo():Bool return (undoBuffer != null);
 	
 	public var textWidth(get, never):Float;
-	inline function get_textWidth():Float return page.textWidth;
+	inline function get_textWidth():Float return (page != null) ? page.textWidth : width;
 	
 	public var textHeight(get, never):Float;
-	inline function get_textHeight():Float return page.textHeight;
+	inline function get_textHeight():Float return (page != null) ? page.textHeight : height;
 	
 	var fontProgram:peote.text.FontProgram<$styleType>; //$fontProgramType	
 	var font:peote.text.Font<$styleType>; //$fontType	
