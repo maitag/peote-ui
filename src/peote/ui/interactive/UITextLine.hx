@@ -1149,14 +1149,22 @@ implements peote.layout.ILayoutElement
 	
 	inline function _deleteChar(position:Int = 0) {
 		if (hasUndo) undoBuffer.delete(position, position+1, fontProgram.lineGetChars(line, position, position+1) );
-		if (onDeleteText != null) onDeleteText(this, position, position+1, fontProgram.lineGetChars(line, position, position+1) );
-		fontProgram.lineDeleteChar(line, position, isVisible);
+		if (onDeleteText != null) {
+			var chars = fontProgram.lineGetChars(line, position, position+1);
+			fontProgram.lineDeleteChar(line, position, isVisible);
+			onDeleteText(this, position, position+1, chars );
+		} 
+		else fontProgram.lineDeleteChar(line, position, isVisible);
 	}
 	
 	public inline function deleteChars(from:Int, to:Int) {
 		if (hasUndo) undoBuffer.delete(from, to, fontProgram.lineGetChars(line, from, to) );
-		if (onDeleteText != null) onDeleteText(this, from, to, fontProgram.lineGetChars(line, from, to) );
-		fontProgram.lineDeleteChars(line, from, to, isVisible);
+		if (onDeleteText != null) {
+			var chars = fontProgram.lineGetChars(line, from, to);
+			fontProgram.lineDeleteChars(line, from, to, isVisible);
+			onDeleteText(this, from, to, chars );
+		}
+		else fontProgram.lineDeleteChars(line, from, to, isVisible);
 	}
 	
 	public inline function cutChars(from:Int, to:Int):String {
