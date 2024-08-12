@@ -184,8 +184,12 @@ implements peote.layout.ILayoutElement
 			}
 			else dragger = new UIElement(getDraggerPos(isVertical, x, width, draggerWidth), getDraggerPos(!isVertical, y, height, draggerHeight), draggerWidth, draggerHeight, zIndex + 2);
 			
-			if (config.valueStart != 0.0 || config.valueEnd != 1.0) setRange(config.valueStart, config.valueEnd, false, false);
-			if (config.value != 0.0) value = config.value;
+			if (config.valueStart != 0.0 || config.valueEnd != 1.0) {
+				setRange(config.valueStart, config.valueEnd, false, false);
+				value = config.value;
+			}
+			else if (config.value != 0.0) value = config.value;
+			
 			//updateDragger(false, false);
 		}
 		
