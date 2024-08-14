@@ -112,7 +112,7 @@ implements peote.layout.ILayoutElement
 	
 	public function remove(child:Interactive) 
 	{
-		if (isVisible) uiDisplay.remove(child);
+		if (isVisible && child.isVisible) uiDisplay.remove(child);
 		childs.remove(child);
 		
 		if (child.left - x - xOffset >= innerLeft || child.right - x - xOffset >= innerRight || 
