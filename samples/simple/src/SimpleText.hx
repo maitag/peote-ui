@@ -2,17 +2,25 @@ package;
 
 import lime.app.Application;
 import lime.ui.Window;
+import lime.ui.KeyCode;
 
 import peote.view.PeoteView;
 import peote.view.Color;
 
 import peote.text.Font;
 
+import input2action.Input2Action;
+import input2action.ActionConfig;
+import input2action.ActionMap;
+import input2action.KeyboardAction;
+import peote.ui.interactive.input2action.InputTextLine;
+
 import peote.ui.PeoteUIDisplay;
 import peote.ui.interactive.*;
 import peote.ui.style.*;
 import peote.ui.config.*;
 import peote.ui.event.*;
+
 
 import peote.ui.style.interfaces.FontStyle;
 
@@ -111,8 +119,6 @@ class SimpleText extends Application
 		}
 		
 		var inputLine = new UITextLine<MyFontStyle>(300, 20, 0, 0, "input UITextLine", font, fontStyleInput, textConfig);
-		// var inputLine = new UITextLine<MyFontStyle>(300, 20, 200, 0, "input UITextLine", font, fontStyleInput, textConfig);
-		// var inputLine = new UITextLine<MyFontStyle>(300, 20, 200, 0 , "input UITextLine", font, fontStyleInput, textConfig);
 
 		// set events
 		inputLine.onPointerDown = function(t:UITextLine<MyFontStyle>, e:PointerEvent) {
@@ -130,6 +136,9 @@ class SimpleText extends Application
 			//uiDisplay.onPointerMove = null; // stops moving the cursor while dragging
 		}
 		uiDisplay.add(inputLine);
+
+		// restrict the chars what is allowed for input
+		inputLine.restrictedChars = "a-zA-Z0-9+-*~/\\^.,;:§$%&=?_#\"'`[](){}%&<>|";
 		
 
 		// --------------------------------------------------------------
@@ -185,33 +194,92 @@ class SimpleText extends Application
 		
 		uiDisplay.add(inputPage);
 		
+
+
+
+
+		// ---------------------------------------------------------
+		// ---- input TextLine with custom keyboard handling -------
+		// ---------------------------------------------------------
+			
+		var inputLineKeys = new UITextLine<MyFontStyle>(300, 500, 0, 0, "custom keyhandling", font, fontStyleInput, textConfig);
+
+		// set events
+		inputLineKeys.onPointerDown = function(t:UITextLine<MyFontStyle>, e:PointerEvent) {
+			t.setInputFocus(e); // alternatively: uiDisplay.setInputFocus(t);
+			//t.setInputFocus(e, true); // to also set the cursor
+			t.startSelection(e);
+		}
+		inputLineKeys.onPointerUp = function(t:UITextLine<MyFontStyle>, e:PointerEvent) {
+			t.stopSelection(e);
+		}
+		uiDisplay.add(inputLineKeys);
 		
 		// use custom keyboard-control via input2action
-		
-/*		var actionConfig:ActionConfig = [
-			{ action: "cursorCharLeft" , keyboard: KeyCode.LEFT  },
-			{ action: "cursorCharRight", keyboard: KeyCode.RIGHT },
-			//KeyCode.DELETE
-			//KeyCode.BACKSPACE
-			//KeyCode.HOME
-			//KeyCode.END
-			// SELECT ALL
-			// CUT
-			// COPY
-			// PASTE
+		// look at peote/ui/interactive/input2action/InputTextLine.hx for default action-names
+		var actionConfig:ActionConfig = [
+			{ action: "cursorUp" , keyboard: KeyCode.UP, single:true },
+			{ action: "cursorDown", keyboard: KeyCode.DOWN, single:true },
+			{ action: "return" , keyboard: KeyCode.RETURN, single:true },
 		];
 		
-		var actionMap = [
-			"cursorCharLeft"  => { action:(_, _) -> inputPage.cursorCharLeft() , repeatKeyboardDefault:true },
-			"cursorCharRight"  => { action:(_, _) -> inputPage.cursorCharRight() , repeatKeyboardDefault:true },
+		var actionMap:ActionMap = [
+			"cursorUp" => {
+				action:(_, _) -> { 
+					trace("cursor up"); 
+				},
+				repeatKeyboardDefault:true
+			},
+
+			"cursorDown" => {
+				action:(_, _) -> {
+					trace("cursor down");
+				},
+				repeatKeyboardDefault:true
+			},
+			"return" => { 
+				action:(_, _) -> {
+					trace("return");
+					// to check which textline if used globally
+					// trace( (cast uiDisplay.inputFocusElement : UITextLine<MyFontStyle>).text);
+					// trace( (cast InputTextLine.focusElement : UITextLine<MyFontStyle>).text);
+				},
+				repeatKeyboardDefault:false
+			},			
 		];
 
-		var input2Action = new Input2Action(actionConfig, actionMap);
-		input2Action.setKeyboard();
+		// to use globally add the custom actionConfig and actionMap to ALL InputTextLines defaults:
+		// InputTextLine.actionConfig.add(actionConfig);
+		// InputTextLine.actionMap.add(actionMap);
+		// InputTextLine.init(); // this only after instanzing the first uiDisplay
+
+
+		// this adds the InputTextLines defaults to custom actionConfig/Map
+		actionConfig.add(InputTextLine.actionConfig, false); // don't replace existing values (false parameter)
+		actionMap.add(InputTextLine.actionMap, false); // don't replace existing values (false parameter)
+
+		// set keyboard bindings
+		var keyboardAction = new KeyboardAction(actionConfig, actionMap);
+
+		// create new Input2Action instanze
+		var input2Action:Input2Action = new Input2Action();
 		
-		inputPage.input2Action = input2Action;
-*/		
+		// add the keyboard actions
+		input2Action.addKeyboard(keyboardAction);
+				
+		// add custom input2action to UITextLines ".input2Action" property
+		inputLineKeys.input2Action = input2Action;
 		
+
+
+
+
+
+
+		// -----------------------------------------------------------------
+		// -----------------------------------------------------------------
+		// -----------------------------------------------------------------
+
 		#if android
 		uiDisplay.mouseEnabled = false;
 		peoteView.zoom = 3;

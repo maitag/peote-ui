@@ -1196,7 +1196,7 @@ implements peote.layout.ILayoutElement
 	// -------------------------- text inputfocus  --------------------------
 	
 	static var inputFocusUIDisplay:PeoteUIDisplay = null;
-	var inputFocusElement:InputFocus = null;
+	public var inputFocusElement(default, null):InputFocus = null;
 	
 	inline function setInputFocus(t:InputFocus, e:PointerEvent=null) {
 		if (inputFocusElement != t) {

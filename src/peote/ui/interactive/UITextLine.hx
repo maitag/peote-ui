@@ -297,9 +297,9 @@ implements peote.layout.ILayoutElement
 	var maskElement:peote.text.MaskElement;
 	#end
 	
-	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int = 0, text:String,	                    
+	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int = 0, text:String,
 	                    font:peote.text.Font<$styleType>, ?fontStyle:$styleType, //font:$fontType, fontStyle:$styleType
-						?config:peote.ui.config.TextConfig)
+	                    ?config:peote.ui.config.TextConfig)
 	{
 		//trace("NEW UITextLine");		
 		super(xPosition, yPosition, width, height, zIndex);
@@ -729,22 +729,12 @@ implements peote.layout.ILayoutElement
 	public var input2Action:input2action.Input2Action = null;
 
 	// for the interface InputFocus 
-	public inline function keyDown(keyCode:lime.ui.KeyCode, modifier:lime.ui.KeyModifier):Void
-	{
-		//trace("key DOWN");
-		//switch (keyCode) {
-			//default:
-		//}
+	public inline function keyDown(keyCode:lime.ui.KeyCode, modifier:lime.ui.KeyModifier):Void {
 		if (input2Action != null) input2Action.keyDown(keyCode, modifier);
 		else peote.ui.interactive.input2action.InputTextLine.input2Action.keyDown(keyCode, modifier);
 	}
 	
-	public inline function keyUp(keyCode:lime.ui.KeyCode, modifier:lime.ui.KeyModifier):Void
-	{
-		//trace("key UP");
-		//switch (keyCode) {
-			//default:
-		//}
+	public inline function keyUp(keyCode:lime.ui.KeyCode, modifier:lime.ui.KeyModifier):Void {
 		if (input2Action != null) input2Action.keyUp(keyCode, modifier);
 		else peote.ui.interactive.input2action.InputTextLine.input2Action.keyUp(keyCode, modifier);
 	}
@@ -859,9 +849,52 @@ implements peote.layout.ILayoutElement
 		} 
 		else this.text = text;
 	}
-	
+
+	var r_az = ~/[a-z]-[a-z]/g;
+	var r_AZ = ~/[A-Z]-[A-Z]/g;
+	var r_09 = ~/[0-9]-[0-9]/g;
+	var restricRegExp:EReg = null;
+
+	public var restrictedChars(default, set):String = "";
+	inline function set_restrictedChars(chars:String):String
+	{
+		if (chars == restrictedChars) return chars;
+		if (chars == "") {
+			restricRegExp = null;
+			return restrictedChars = chars;
+		}
+
+		var ranges:String = "";
+		
+		if (r_az.match(chars)) {
+		  ranges += r_az.matched(0);
+		  chars = r_az.replace(chars, "");
+		}		
+		if (r_AZ.match(chars)) {
+		  ranges += r_AZ.matched(0);
+		  chars = r_AZ.replace(chars, "");
+		}		
+		if (r_09.match(chars)) {
+		  ranges += r_09.matched(0);
+		  chars = r_09.replace(chars, "");
+		}
+			
+		chars = StringTools.replace(chars, "\\", "\\\\");
+		chars = StringTools.replace(chars, "-", "\\-");
+		chars = StringTools.replace(chars, "[", "\\[");
+		chars = StringTools.replace(chars, "]", "\\]");
+				
+		// restricRegExp = new EReg("[^"+ ranges + restrictedChars + "\r\n]", "g");
+		restricRegExp = new EReg( "[^" + ranges + chars + "]", "g" );
+		return restrictedChars = chars;
+	}
+
 	public inline function textInput(chars:String):Void {
 		if (line == null) return;
+
+		// restrict chars
+		if (restricRegExp != null) chars = restricRegExp.replace(chars, "");
+
 		setOldTextSize();
 		if (hasSelection()) {
 			deleteChars(selectFrom, selectTo);
