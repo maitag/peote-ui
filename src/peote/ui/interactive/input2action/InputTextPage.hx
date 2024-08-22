@@ -69,7 +69,7 @@ class InputTextPage
 		// TODO: ctrl-d for duplicate cursorLine
 	];
 	
-	public static var actionMap:ActionMap =
+	public static var actionMap = new ActionMap(
 	[
 		"deleteChar"  => { action:deleteChar  , repeatKeyboardDefault:true },
 		"backspace"   => { action:backspace   , repeatKeyboardDefault:true },
@@ -108,7 +108,7 @@ class InputTextPage
 		"cursorPageDown"  => { action:cursorPageDown , repeatKeyboardDefault:true },
 		
 		"enter"       => { action:enter, repeatKeyboardDefault:true },
-	];
+	]);
 		
 	static inline function deleteChar(_,_) focusElement.deleteChar();
 	static inline function backspace (_,_) focusElement.backspace();

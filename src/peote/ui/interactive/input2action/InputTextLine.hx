@@ -57,7 +57,7 @@ class InputTextLine
 		
 	];
 	
-	public static var actionMap:ActionMap =
+	public static var actionMap = new ActionMap(
 	[
 		"deleteChar"  => { action:deleteChar , repeatKeyboardDefault:true },
 		"backspace"   => { action:backspace  , repeatKeyboardDefault:true },
@@ -85,7 +85,7 @@ class InputTextLine
 		"cursorRight" => { action:cursorRight, repeatKeyboardDefault:true },
 		"cursorLeftWord"  => { action:cursorLeftWord , repeatKeyboardDefault:true },
 		"cursorRightWord" => { action:cursorRightWord, repeatKeyboardDefault:true },
-	];
+	]);
 	
 	static inline function deleteChar(_,_) focusElement.deleteChar();
 	static inline function backspace (_,_) focusElement.backspace();

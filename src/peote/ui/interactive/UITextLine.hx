@@ -850,6 +850,7 @@ implements peote.layout.ILayoutElement
 		else this.text = text;
 	}
 
+	// ---------- create regexp to restrict chars --------
 	var r_az = ~/[a-z]-[a-z]/g;
 	var r_AZ = ~/[A-Z]-[A-Z]/g;
 	var r_09 = ~/[0-9]-[0-9]/g;
@@ -884,7 +885,6 @@ implements peote.layout.ILayoutElement
 		chars = StringTools.replace(chars, "[", "\\[");
 		chars = StringTools.replace(chars, "]", "\\]");
 				
-		// restricRegExp = new EReg("[^"+ ranges + restrictedChars + "\r\n]", "g");
 		restricRegExp = new EReg( "[^" + ranges + chars + "]", "g" );
 		return restrictedChars = chars;
 	}

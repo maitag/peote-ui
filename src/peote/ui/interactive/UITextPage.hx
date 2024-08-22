@@ -1070,9 +1070,52 @@ implements peote.layout.ILayoutElement
 		} 
 		else this.text = text;
 	}
+
+	// ---------- create regexp to restrict chars --------
+	var r_az = ~/[a-z]-[a-z]/g;
+	var r_AZ = ~/[A-Z]-[A-Z]/g;
+	var r_09 = ~/[0-9]-[0-9]/g;
+	var restricRegExp:EReg = null;
+
+	public var restrictedChars(default, set):String = "";
+	inline function set_restrictedChars(chars:String):String
+	{
+		if (chars == restrictedChars) return chars;
+		if (chars == "") {
+			restricRegExp = null;
+			return restrictedChars = chars;
+		}
+
+		var ranges:String = "";
+		
+		if (r_az.match(chars)) {
+		  ranges += r_az.matched(0);
+		  chars = r_az.replace(chars, "");
+		}		
+		if (r_AZ.match(chars)) {
+		  ranges += r_AZ.matched(0);
+		  chars = r_AZ.replace(chars, "");
+		}		
+		if (r_09.match(chars)) {
+		  ranges += r_09.matched(0);
+		  chars = r_09.replace(chars, "");
+		}
+			
+		chars = StringTools.replace(chars, "\\", "\\\\");
+		chars = StringTools.replace(chars, "-", "\\-");
+		chars = StringTools.replace(chars, "[", "\\[");
+		chars = StringTools.replace(chars, "]", "\\]");
+				
+		restricRegExp = new EReg("[^"+ ranges + chars + "\r\n]", "g");
+		return restrictedChars = chars;
+	}
 	
 	public inline function textInput(chars:String):Void {
 		if (page == null) return;			
+
+		// restrict chars
+		if (restricRegExp != null) chars = restricRegExp.replace(chars, "");
+
 		setOldTextSize();
 		if (hasSelection()) {
 			deleteChars(selectLineFrom, selectLineTo, selectFrom, selectTo);
