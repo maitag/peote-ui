@@ -224,6 +224,7 @@ implements peote.layout.ILayoutElement
 		dragger.overOutEventsBubbleTo = this;
 		dragger.upDownEventsBubbleTo = this;
 		dragger.wheelEventsBubbleTo = this;
+		dragger.moveEventsBubbleTo = this;
 		
 		if (background != null || dragger != null) changeZIndex = onChangeZIndex;
 	}

@@ -97,6 +97,7 @@ implements peote.layout.ILayoutElement
 		child.overOutEventsBubbleTo = this;
 		child.upDownEventsBubbleTo = this;
 		child.wheelEventsBubbleTo = this;
+		child.moveEventsBubbleTo = this;
 		
 		child.setParentPosOffset(this);  // TODO:overriding z setter into interactive  to also update z of all childs!
 		

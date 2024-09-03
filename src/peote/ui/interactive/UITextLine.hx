@@ -894,6 +894,7 @@ implements peote.layout.ILayoutElement
 
 		// restrict chars
 		if (restricRegExp != null) chars = restricRegExp.replace(chars, "");
+		if (chars == "") return;
 
 		setOldTextSize();
 		if (hasSelection()) {
