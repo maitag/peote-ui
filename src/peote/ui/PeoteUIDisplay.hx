@@ -75,7 +75,7 @@ implements peote.layout.ILayoutElement
 	var draggingMouseElements:Array<Interactive>;
 	var draggingTouchElements:Vector<Array<Interactive>>;
 	
-	var maxTouchpoints:Int;
+	public var maxTouchpoints(default,null):Int;
 	
 	var usedStyleProgram = new Array<Program>();
 	var usedStyleID = new Array<Int>();
@@ -796,7 +796,7 @@ implements peote.layout.ILayoutElement
 						hasEventOut = true;
 					}
 
-					if (hasEventOver && !hasEventOut && !isTouchOver) { trace("KK");
+					if (hasEventOver && !hasEventOut && !isTouchOver) { // trace("KK");
 						if (onPointerOver != null) onPointerOver(this, {x:x, y:y, type:PointerType.TOUCH, touch:touch});
 						isTouchOver = true;
 					}
@@ -910,7 +910,7 @@ implements peote.layout.ILayoutElement
 				
 				
 				// UIDisplay event
-				trace("hasEventOver", hasEventOver, "isTouchOver", isTouchOver);
+				// trace("hasEventOver", hasEventOver, "isTouchOver", isTouchOver);
 				if (hasEventOver && !isTouchOver) {
 					if (onPointerOver != null) onPointerOver(this, {x:x, y:y, type:PointerType.TOUCH, touch:touch});
 					isTouchOver = true;
@@ -918,7 +918,7 @@ implements peote.layout.ILayoutElement
 				}
 				else hasEventOver = true; // TODO: same as for touchmove and via checkForEvent
 				
-				trace("hasEventDown", hasEventDown);
+				// trace("hasEventDown", hasEventDown);
 				if (hasEventDown) {
 					if (onPointerDown != null) onPointerDown(this, {x:x, y:y, type:PointerType.TOUCH, touch:touch});
 					isTouchDown = isTouchDown | (1 << touch.id);
