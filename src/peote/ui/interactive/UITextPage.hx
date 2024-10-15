@@ -1174,7 +1174,7 @@ implements peote.layout.ILayoutElement
 		if (oldTextHeight != page.textHeight) {
 			if (_onResizeTextHeight != null) _onResizeTextHeight(this, page.textHeight, page.textHeight - oldTextHeight);
 			if (onResizeTextHeight != null) onResizeTextHeight(this, page.textHeight, page.textHeight - oldTextHeight);
-		}		
+		}
 	}
 	
 	// --------------------------------
@@ -1658,19 +1658,37 @@ implements peote.layout.ILayoutElement
 	
 	public function bindHSlider(slider:peote.ui.interactive.UISlider) {
 		slider.setRange(0, Math.min(0, width - leftSpace - rightSpace - textWidth), (width  - leftSpace - rightSpace ) / textWidth, false, false );		
-		slider._onChange = function(_, value:Float, _) _setXOffset(value, true, false, true); // don't trigger internal _onChangeXOffset again!
-		_onChangeXOffset = function (_,xOffset:Float,_) slider.setValue(xOffset, true, false); // trigger sliders _onChange and onChange						
-		_onResizeWidth = _onResizeTextWidth = function(_,_,_) {
+		slider._onChange = function(_, value:Float, _) _setXOffset(Math.round(value), true, false, true); // don't trigger internal _onChangeXOffset again!
+		_onChangeXOffset = function (_,xOffset:Float,_) slider.setValue(xOffset, true, false); // trigger sliders _onChange and onChange
+		_onResizeWidth = function(_,_,_) {
 			slider.setRange(0, Math.min(0, width - leftSpace - rightSpace - textWidth), (width - leftSpace - rightSpace ) / textWidth, true, false );
+		}
+		_onResizeTextWidth = function(_,_,delta:Float) {
+			var s = width - leftSpace - rightSpace;
+			if (textWidth < s || textWidth - delta > s) {
+				slider.setRange(0, Math.min(0, s - textWidth), s / textWidth, true, false );
+			} else {
+				slider.setRange(0, Math.min(0, s - textWidth), s / textWidth, false, false );
+				slider.setValue(xOffset, true, false);
+			}
 		}
 	}
 	
 	public function bindVSlider(slider:peote.ui.interactive.UISlider) {
 		slider.setRange(0, Math.min(0, height - topSpace - bottomSpace - textHeight), (height - topSpace - bottomSpace) / textHeight , false, false);				
-		slider._onChange = function(_, value:Float, _) _setYOffset(value, true, false, true); // don't trigger internal _onChangeYOffset again!
+		slider._onChange = function(_, value:Float, _) _setYOffset(Math.round(value), true, false, true); // don't trigger internal _onChangeYOffset again!
 		_onChangeYOffset = function (_,yOffset:Float,_) slider.setValue(yOffset, true, false); // trigger sliders _onChange and onChange					
-		_onResizeHeight = _onResizeTextHeight = function(_,_,_) {
+		_onResizeHeight = function(_,_,_) {
 			slider.setRange(0, Math.min(0, height - topSpace - bottomSpace - textHeight), (height - topSpace - bottomSpace) / textHeight , true, false);
+		}
+		_onResizeTextHeight = function(_,_,delta:Float) {
+			var s = height - topSpace - bottomSpace;
+			if (textHeight < s || textHeight - delta > s) {
+				slider.setRange(0, Math.min(0, s - textHeight), s / textHeight , true, false);
+			} else {
+				slider.setRange(0, Math.min(0, s - textHeight), s / textHeight , false, false);
+				slider.setValue(yOffset, true, false);
+			}
 		}
 	}
 	
