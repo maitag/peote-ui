@@ -15,10 +15,14 @@ class UITextPageMacro
 	static public function buildClass(className:String, classPackage:Array<String>, stylePack:Array<String>, styleModule:String, styleName:String, styleSuperModule:String, styleSuperName:String, styleType:ComplexType, styleField:Array<String>):ComplexType
 	{
 		className += Macro.classNameExtension(styleName, styleModule);
+
+		var fullyQualifiedName:String = classPackage.concat([className]).join('.');
+		var tp = TPath({ pack:classPackage, name:className, params:[] });
+		if ( Macro.typeAlreadyGenerated(fullyQualifiedName) ) return tp;
 		
-		if ( Macro.typeNotGenerated(classPackage.concat([className]).join('.')) )
+		// if ( Macro.typeNotGenerated(classPackage.concat([className]).join('.')) )
 		// if ( Macro.isNotGenerated(className) )
-		{
+		// {
 			Macro.debug(className, classPackage, stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
 			
 			//var glyphType = peote.text.Glyph.GlyphMacro.buildClass("Glyph", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType);
@@ -1770,9 +1774,11 @@ implements peote.layout.ILayoutElement
 // -------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------
 			
-			Context.defineModule(classPackage.concat([className]).join('.'),[c]);
-		}
-		return TPath({ pack:classPackage, name:className, params:[] });
+			// Context.defineModule(classPackage.concat([className]).join('.'),[c]);
+			Context.defineModule(fullyQualifiedName, [c]);
+		// }
+		// return TPath({ pack:classPackage, name:className, params:[] });
+		return tp;
 	}
 }
 #end
