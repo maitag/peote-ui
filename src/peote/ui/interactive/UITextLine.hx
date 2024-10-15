@@ -1243,8 +1243,17 @@ implements peote.layout.ILayoutElement
 		slider.setRange(0, Math.min(0, width - leftSpace - rightSpace - textWidth), (width  - leftSpace - rightSpace ) / textWidth, false, false );		
 		slider._onChange = function(_, value:Float, _) _setXOffset(value, true, false, true); // don't trigger internal _onChangeXOffset again!
 		_onChangeXOffset = function (_,xOffset:Float,_) slider.setValue(xOffset, true, false); // trigger sliders _onChange and onChange						
-		_onResizeWidth = _onResizeTextWidth = function(_,_,_) {
+		_onResizeWidth = function(_,_,_) {
 			slider.setRange(0, Math.min(0, width - leftSpace - rightSpace - textWidth), (width - leftSpace - rightSpace ) / textWidth, true, false );
+		}
+		_onResizeTextWidth = function(_,_,delta:Float) {
+			var s = width - leftSpace - rightSpace;
+			if (textWidth < s || textWidth - delta > s) {
+				slider.setRange(0, Math.min(0, s - textWidth), s / textWidth, true, false );
+			} else {
+				slider.setRange(0, Math.min(0, s - textWidth), s / textWidth, false, false );
+				slider.setValue(xOffset, true, false);
+			}
 		}
 	}
 	
