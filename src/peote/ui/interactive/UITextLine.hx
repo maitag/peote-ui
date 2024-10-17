@@ -1238,10 +1238,11 @@ implements peote.layout.ILayoutElement
 	// ------- bind automatic to UISliders ------
 	// TODO: check that the internal events not already used, 
 	// more parameters: offsetBySlider, sliderByOffset, sliderByResize, sliderByTextResize
+	// optional param for Math.round(value)
 	
 	public function bindHSlider(slider:peote.ui.interactive.UISlider) {
 		slider.setRange(0, Math.min(0, width - leftSpace - rightSpace - textWidth), (width  - leftSpace - rightSpace ) / textWidth, false, false );		
-		slider._onChange = function(_, value:Float, _) _setXOffset(value, true, false, true); // don't trigger internal _onChangeXOffset again!
+		slider._onChange = function(_, value:Float, _) _setXOffset(Math.round(value), true, false, true); // don't trigger internal _onChangeXOffset again!
 		_onChangeXOffset = function (_,xOffset:Float,_) slider.setValue(xOffset, true, false); // trigger sliders _onChange and onChange						
 		_onResizeWidth = function(_,_,_) {
 			slider.setRange(0, Math.min(0, width - leftSpace - rightSpace - textWidth), (width - leftSpace - rightSpace ) / textWidth, true, false );

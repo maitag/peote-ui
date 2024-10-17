@@ -1504,11 +1504,11 @@ implements peote.layout.ILayoutElement
 	public inline function setChars(chars:String, position:Int = 0, glyphStyle:$styleType = null) {
 		//fontProgram.pageSetChars(page, chars, position, glyphStyle, isVisible);
 	}
-	
-	public inline function appendChars(chars:String, glyphStyle:$styleType = null) {
-		//fontProgram.pageAppendChars(page, chars, glyphStyle, isVisible); 
-	}	
 */	
+	public inline function appendChars(chars:String, glyphStyle:$styleType = null) {
+		fontProgram.pageAppendChars(page, chars, glyphStyle, isVisible); 
+	}	
+	
 	public inline function addLinefeedAtCursor() {
 		_addLinefeed(pageLine, cursorLine, cursor);
 	}
@@ -1655,6 +1655,7 @@ implements peote.layout.ILayoutElement
 	// ------- bind automatic to UISliders ------
 	// TODO: check that the internal events not already used, 
 	// more parameters: offsetBySlider, sliderByOffset, sliderByResize, sliderByTextResize
+	// optional param for Math.round(value)
 	
 	public function bindHSlider(slider:peote.ui.interactive.UISlider) {
 		slider.setRange(0, Math.min(0, width - leftSpace - rightSpace - textWidth), (width  - leftSpace - rightSpace ) / textWidth, false, false );		
