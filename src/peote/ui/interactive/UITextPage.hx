@@ -1506,7 +1506,9 @@ implements peote.layout.ILayoutElement
 	}
 */	
 	public inline function appendChars(chars:String, glyphStyle:$styleType = null) {
-		fontProgram.pageAppendChars(page, chars, glyphStyle, isVisible); 
+		setOldTextSize();
+		fontProgram.pageAppendChars(page, chars, glyphStyle, isVisible);
+		updateTextOnly(false);
 	}	
 	
 	public inline function addLinefeedAtCursor() {
