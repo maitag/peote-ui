@@ -1,30 +1,15 @@
 package interactive;
 
-import haxe.CallStack;
-
-import lime.app.Application;
-import lime.ui.Window;
-
-import peote.view.PeoteView;
-import peote.view.Color;
-
-import peote.text.Font;
-
-import peote.ui.PeoteUIDisplay;
-import peote.ui.event.PointerEvent;
-import peote.ui.event.WheelEvent;
-
 import peote.ui.interactive.UIArea;
 import peote.ui.interactive.Interactive;
 import peote.ui.interactive.interfaces.ParentElement;
-import peote.ui.config.AreaConfig;
-import peote.ui.style.*;
 
+//import peote.ui.config.AreaConfig;
 
 class UIAreaList extends UIArea implements ParentElement
 {
 
-	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int = 0, ?config:AreaConfig)
+	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int = 0, ?config:AreaListConfig)
 	{		
 		super(xPosition, yPosition, width, height, zIndex, config);		
 		
@@ -62,7 +47,9 @@ class UIAreaList extends UIArea implements ParentElement
 		super.add(child);
 
 		child.resizeHeight = function(height:Int, deltaHeight:Int) {
-			moveChildsByOffset.bind(childs.length-1)(deltaHeight);
+			child.maskByElement(this);
+			child.updateLayout();
+			moveChildsByOffset(childs.indexOf(child)+1, deltaHeight);
 		};
 
 	}
@@ -86,8 +73,12 @@ class UIAreaList extends UIArea implements ParentElement
 	function moveChildsByOffset(fromIndex:Int, offset:Int) {
 		for (i in fromIndex...childs.length) {
 			childs[i].y += offset;
-			if (childs[i].isVisible) childs[i].updateLayout();
+			// if (childs[i].isVisible) {
+				childs[i].maskByElement(this);
+				childs[i].updateLayout();
+			// }
 		}
+		// updateLayout();
 	}
 	
 }
