@@ -13,6 +13,8 @@ private class AreaListConfigImpl
 	public var backgroundStyle:Style = null;	
 	public var backgroundSpace:Space = null;
 	
+	public var maskSpace:Space = null;
+	
 	public var resizeType:ResizeType = ResizeType.NONE;
 	public var resizerSize:Int = 5;
 	public var resizerEdgeSize:Int = 7;
@@ -21,8 +23,8 @@ private class AreaListConfigImpl
 	public var minHeight:Int = 10;
 	public var maxHeight:Int = 2000;
 
-    // this is a new one for "UIAreaList"
-    public var hAlign:Align = Align.CENTER;
+	// this is a new one for "UIAreaList"
+	public var hAlign:Align = Align.CENTER;
 	
 /*	public function new() 
 	{
@@ -41,42 +43,44 @@ abstract AreaListConfig(AreaListConfigImpl) from AreaListConfigImpl to AreaListC
 	//}
 	
 
-    // GLITCH if activate this here:
+	// GLITCH if activate this here:
 
-    /*
+	/*
 	@:from
 	static public inline function fromAreaConfig(c: AreaConfig):AreaListConfig {
 		return {
-            backgroundStyle: c.backgroundStyle,
-            backgroundSpace: c.backgroundSpace,
-            resizeType: c.resizeType,
-            resizerSize: c.resizerSize,
-            resizerEdgeSize: c.resizerEdgeSize,
-            minWidth: c.minWidth,
-            maxWidth: c.maxWidth,
-            minHeight: c.minHeight,
-            maxHeight: c.maxHeight
-       };
+			backgroundStyle: c.backgroundStyle,
+			backgroundSpace: c.backgroundSpace,
+			maskSpace: c.maskSpace,
+			resizeType: c.resizeType,
+			resizerSize: c.resizerSize,
+			resizerEdgeSize: c.resizerEdgeSize,
+			minWidth: c.minWidth,
+			maxWidth: c.maxWidth,
+			minHeight: c.minHeight,
+			maxHeight: c.maxHeight
+	   };
 	}
-    */
+	*/
 
 	@:to
 	public inline function toAreaConfig():AreaConfig {
 		return {
-            backgroundStyle: this.backgroundStyle,
-            backgroundSpace: this.backgroundSpace,
-            resizeType: this.resizeType,
-            resizerSize: this.resizerSize,
-            resizerEdgeSize: this.resizerEdgeSize,
-            minWidth: this.minWidth,
-            maxWidth: this.maxWidth,
-            minHeight: this.minHeight,
-            maxHeight: this.maxHeight
-        };
+			backgroundStyle: this.backgroundStyle,
+			backgroundSpace: this.backgroundSpace,
+			maskSpace: this.maskSpace,
+			resizeType: this.resizeType,
+			resizerSize: this.resizerSize,
+			resizerEdgeSize: this.resizerEdgeSize,
+			minWidth: this.minWidth,
+			maxWidth: this.maxWidth,
+			minHeight: this.minHeight,
+			maxHeight: this.maxHeight
+		};
 	}
 
-    
-    @:from
+	
+	@:from
 	static public inline function fromStyle(s:Style):AreaListConfig {
 		return { backgroundStyle:s };
 	}

@@ -17,11 +17,11 @@ class UIAreaList extends UIArea implements ParentElement
 		// --------- RESIZE HANDLING ----------		
 		// ------------------------------------
 		
-		this.onResizeWidth = (_, width:Int, deltaWidth:Int) -> {
+		this._onResizeWidth = (_, width:Int, deltaWidth:Int) -> {
 			
 		}
 
-		this.onResizeHeight = (_, height:Int, deltaHeight:Int) -> {
+		this._onResizeHeight = (_, height:Int, deltaHeight:Int) -> {
 			
 		}
 	}

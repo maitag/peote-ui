@@ -83,7 +83,7 @@ class TestUIAreaList extends Application
 		// ---------------------------------------------------------
 				
 		// var areaList = new UIAreaList(10, 10, 200, 400);
-		var areaList = new UIAreaList(10, 10, 200, 400, 0, {backgroundStyle:boxStyle, resizeType:ResizeType.ALL});
+		var areaList = new UIAreaList(10, 10, 200, 400, 0, { backgroundStyle:boxStyle, resizeType:ResizeType.ALL, maskSpace:{left:10} });
 		peoteUiDisplay.add(areaList);
 		
 		// ---- add content ----
@@ -107,9 +107,27 @@ class TestUIAreaList extends Application
 		}
 		areaList.add(inputPage);
 
+
+		var innerArea = new UIArea(0, 0, 0, 100, {backgroundStyle:roundBorderStyle.copy(Color.BLUE2), resizeType:ResizeType.BOTTOM});
+		areaList.add(innerArea);
+
+
+		// -------------------------------
 		var innerAreaList = new UIAreaList(0, 0, 0, 100, {backgroundStyle:roundBorderStyle.copy(Color.RED2), resizeType:ResizeType.BOTTOM});
 		areaList.add(innerAreaList);
 
+			// inner content of innerAreaList
+			var uiElement00 = new UIElement(0, 0, 0, 20, 0, roundBorderStyle.copy(Color.LIME));
+			uiElement00.onPointerDown = (elem:UIElement, e:PointerEvent)-> {innerAreaList.remove(elem);}
+			innerAreaList.add(uiElement00);
+
+			var uiElement01 = new UIElement(0, 0, 0, 30, 0, roundBorderStyle.copy(Color.MAGENTA));		
+			uiElement01.onPointerDown = (elem:UIElement, e:PointerEvent)-> {innerAreaList.remove(elem);}
+			innerAreaList.add(uiElement01);
+		
+		// -------------------------------
+
+		
 		var uiElement2 = new UIElement(0, 0, 0, 100, 0, roundBorderStyle);		
 		uiElement2.onPointerDown = (elem:UIElement, e:PointerEvent)-> {areaList.remove(elem);}
 		areaList.add(uiElement2);
