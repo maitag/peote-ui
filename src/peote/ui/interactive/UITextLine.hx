@@ -568,7 +568,7 @@ implements peote.layout.ILayoutElement
 			#end			
 			if (backgroundElement != null) {
 				if (updateStyle) backgroundElement.setStyle(backgroundStyle);
-				backgroundElement.setLayout(this);
+				backgroundElement.setLayout(this, backgroundSpace);
 				if (isVisible && backgroundIsVisible) backgroundProgram.update(backgroundElement);
 			}
 		}
@@ -679,7 +679,7 @@ implements peote.layout.ILayoutElement
 			backgroundProgram = cast uiDisplay.usedStyleProgram[stylePos];
 			if (backgroundProgram == null) uiDisplay.addProgramAtStylePos(cast backgroundProgram = backgroundStyle.createStyleProgram(), stylePos);				
 		}
-		backgroundElement = backgroundProgram.createElement(this, backgroundStyle);
+		backgroundElement = backgroundProgram.createElement(this, backgroundStyle, backgroundSpace);
 		if (addUpdate) backgroundProgram.addElement(backgroundElement);
 	}
 	

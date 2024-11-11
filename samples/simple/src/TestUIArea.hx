@@ -129,7 +129,11 @@ class TestUIArea extends Application
 		
 		// ---- header textline (starts also area-dragging) ----		
 		
-		var header = new UITextLine<FontStyleTiled>(0, 0, 500, 0, 1, "=== UIArea ===", font, fontStyleHeader, {backgroundStyle:roundBorderStyle, hAlign:HAlign.CENTER});
+		var header = new UITextLine<FontStyleTiled>(0, 0, 500, 0, 1, "=== UIArea ===", font, fontStyleHeader, {
+			backgroundStyle:roundBorderStyle,
+			backgroundSpace:{left:5},
+			hAlign:HAlign.CENTER
+		});
 		header.onPointerDown = (_, e:PointerEvent)-> area.startDragging(e);
 		header.onPointerUp = (_, e:PointerEvent)-> area.stopDragging(e);
 		area.add(header);				
@@ -141,35 +145,43 @@ class TestUIArea extends Application
 		
 		// ---- inner UIArea for scrolling content ----
 		
-		var content = new UIArea(2, header.height, area.width-20-2, area.height-header.height-20, boxStyle);
+		var content = new UIArea(2, header.height, area.width-20-2, area.height-header.height-20, 0,
+			{
+				backgroundStyle:boxStyle,
+				// backgroundSpace:{left:5},
+				maskSpace:{left:10, right:20, top:10, bottom:30}
+			});
 		area.add(content);
 		
 		// ---- add content ----
 		
-		var uiDisplay = new UIDisplay(20, 20, 200, 200, 1, Color.BLUE);
+		var uiDisplay = new UIDisplay(0, 0, 200, 200, 1, Color.BLUE);
 		uiDisplay.onPointerOver = (_,_)-> uiDisplay.display.color = Color.RED;
 		uiDisplay.onPointerOut  = (_,_)-> uiDisplay.display.color = Color.BLUE;
 		uiDisplay.onPointerDown = (_, e:PointerEvent)-> {
-			uiDisplay.setDragArea(Std.int(content.x), Std.int(content.y), Std.int(content.width + uiDisplay.width - 10), Std.int(content.height + uiDisplay.height - 10));
+			uiDisplay.setDragArea(Std.int(content.x + content.maskSpace.left), Std.int(content.y + content.maskSpace.top), Std.int(content.width + uiDisplay.width - 50), Std.int(content.height + uiDisplay.height - 50));
+			// uiDisplay.setDragArea(0, Std.int(content.y), Std.int(content.width + uiDisplay.width - 10), Std.int(content.height + uiDisplay.height - 10));
 			uiDisplay.startDragging(e);
 		}
 		uiDisplay.onPointerUp = (_, e:PointerEvent)-> uiDisplay.stopDragging(e);
 		uiDisplay.onDrag = (_, x:Float, y:Float) -> {
 			content.updateInnerSize();
-			uiDisplay.maskByElement(content, true);
+			uiDisplay.maskByElement(content, true, content.maskSpace);
 		}
 		content.add(uiDisplay);
 		Elem.playIntoDisplay(uiDisplay.display);
 		
-		var uiElement = new UIElement(220, 20, 200, 200, 0, roundBorderStyle);
+		var uiElement = new UIElement(200, 0, 200, 200, 0, roundBorderStyle);
 		uiElement.onPointerDown = (_, e:PointerEvent)-> {
-			uiElement.setDragArea(Std.int(content.x), Std.int(content.y), Std.int(content.width + uiElement.width - 10), Std.int(content.height + uiElement.height - 10));
+			uiElement.setDragArea(Std.int(content.x + content.maskSpace.left), Std.int(content.y + content.maskSpace.top), Std.int(content.width + uiElement.width - 50), Std.int(content.height + uiElement.height - 50));
 			uiElement.startDragging(e);
 		}
-		uiElement.onPointerUp = (_, e:PointerEvent)-> uiElement.stopDragging(e);
+		uiElement.onPointerUp = (_, e:PointerEvent)-> {
+			uiElement.stopDragging(e);
+		}
 		uiElement.onDrag = (_, x:Float, y:Float) -> {
 			content.updateInnerSize();
-			uiElement.maskByElement(content, true);
+			uiElement.maskByElement(content, true, content.maskSpace);
 		}
 		content.add(uiElement);		
 
@@ -183,14 +195,17 @@ class TestUIArea extends Application
 		}
 		inputPage.onResizeWidth = (_, width:Int, deltaWidth:Int) -> {
 			content.updateInnerSize();
-			inputPage.maskByElement(content, true); // CHECK: need here ?
+			inputPage.maskByElement(content, true, content.maskSpace); // CHECK: need here ?
 		}
 		inputPage.onResizeHeight = (_, height:Int, deltaHeight:Int) -> {
 			content.updateInnerSize();
-			inputPage.maskByElement(content, true); // CHECK: need here ?
+			inputPage.maskByElement(content, true, content.maskSpace); // CHECK: need here ?
 		}
 		content.add(inputPage);
 		
+		// content.xOffset = content.xOffsetEnd;
+		// content.updateLayout();
+
 				
 		// ---------------------------------------------------------
 		// ---- Sliders to scroll the innerArea ----		

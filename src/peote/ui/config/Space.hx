@@ -8,7 +8,6 @@ class Space
 	public var right :Int;
 	public var bottom:Int;
 	
-	//public inline function new() {}
 	public inline function new(left:Int = 0, top:Int = 0, right:Int = 0, bottom:Int = 0) 
 	{
 		this.left   = left;

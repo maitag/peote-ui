@@ -8,6 +8,13 @@ private class AreaConfigImpl
 {
 	public var backgroundStyle:Style = null;	
 	public var backgroundSpace:Space = null;
+
+	public var maskSpace:Space = null;
+
+	public var paddingLeft:Int  = 0;
+	public var paddingRight:Int  = 0;
+	public var paddingTop:Int  = 0;
+	public var paddingBottom:Int  = 0;
 	
 	public var resizeType:ResizeType = ResizeType.NONE;
 	public var resizerSize:Int = 5;

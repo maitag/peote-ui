@@ -6,7 +6,7 @@ import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
 import peote.ui.PeoteUIDisplay;
 import peote.ui.interactive.interfaces.ParentElement;
-
+import peote.ui.config.Space;
 
 class Pickable implements Element
 {
@@ -262,7 +262,7 @@ implements peote.layout.ILayoutElement
 	var resizeWidth:Int->Int->Void = null;
 	var resizeHeight:Int->Int->Void = null;
 
-	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int) 
+	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int)
 	{
 		x = xPosition;
 		y = yPosition;
@@ -317,7 +317,7 @@ implements peote.layout.ILayoutElement
 		}
 		if ( hasClickEvent != 0 ) {
 			pickableClick.update(this);
-			if (isVisible) uiDisplay.clickPickBuffer.updateElement( pickableClick );		
+			if (isVisible) uiDisplay.clickPickBuffer.updateElement( pickableClick );
 		}
 	}
 	
@@ -651,22 +651,29 @@ implements peote.layout.ILayoutElement
 	
 	// -----------------------------------------------------------------
 	
-	public inline function maskByElement(uiElement:Interactive, maskOnDrag:Bool = false)
+	// public inline function maskByElement(uiElement:Interactive, maskOnDrag:Bool = false)
+	public inline function maskByElement(uiElement:Interactive, maskOnDrag:Bool = false, maskSpace:Space = null)
 	{
 		#if (!peoteui_no_parentmasking)
-		if (maskOnDrag || !isDragging) _maskByElement(uiElement);
+		if (maskOnDrag || !isDragging) {
+			if (maskSpace != null) _maskByElement(uiElement, maskSpace.left, maskSpace.right, maskSpace.top, maskSpace.bottom);
+			else _maskByElement(uiElement, 0, 0, 0, 0);
+		}
 		#end
 	}
 	
-	inline function _maskByElement(uiElement:Interactive)
+	inline function _maskByElement(uiElement:Interactive, leftOffset:Int, rightOffset:Int, topOffset:Int, bottomOffset:Int)
 	{
 		#if (!peoteui_no_masking)
 		masked = if (uiElement.masked) 
-			mask(uiElement.x + uiElement.maskX, uiElement.y + uiElement.maskY, uiElement.maskWidth, uiElement.maskHeight, uiElement.isVisible);
-		else mask(uiElement.x, uiElement.y, uiElement.width, uiElement.height, uiElement.isVisible);
+			// mask(uiElement.x + uiElement.maskX, uiElement.y + uiElement.maskY, uiElement.maskWidth, uiElement.maskHeight, uiElement.isVisible);
+			mask(uiElement.x + uiElement.maskX + leftOffset, uiElement.y + uiElement.maskY + topOffset, uiElement.maskWidth - leftOffset - rightOffset, uiElement.maskHeight - topOffset - bottomOffset, uiElement.isVisible);
+		// else mask(uiElement.x, uiElement.y, uiElement.width, uiElement.height, uiElement.isVisible);
+		else mask(uiElement.x + leftOffset, uiElement.y + topOffset, uiElement.width - leftOffset - rightOffset, uiElement.height - topOffset - bottomOffset, uiElement.isVisible);
 		//trace(masked, maskX, maskY, maskWidth, maskHeight);
 		#else
-		if (uiElement.isVisible && isOutsideOf(uiElement.x, uiElement.y, uiElement.width, uiElement.height)) 
+		// if (uiElement.isVisible && isOutsideOf(uiElement.x, uiElement.y, uiElement.width, uiElement.height)) 
+		if (uiElement.isVisible && isOutsideOf(uiElement.x + leftOffset, uiElement.y + topOffset, uiElement.width - leftOffset - rightOffset, uiElement.height - topOffset - bottomOffset)) 
 			hide();
 		else if (uiElement.isVisible) show();
 		#end

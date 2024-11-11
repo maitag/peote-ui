@@ -7,6 +7,7 @@ import peote.ui.interactive.UIElement;
 import peote.ui.interactive.interfaces.ParentElement;
 import peote.ui.config.AreaConfig;
 import peote.ui.config.ResizeType;
+import peote.ui.config.Space;
 
 @:allow(peote.ui)
 class UIArea extends UIElement implements ParentElement
@@ -22,15 +23,17 @@ implements peote.layout.ILayoutElement
 	public var xOffset:Int = 0;
 	public var yOffset:Int = 0;
 	
+	public var maskSpace:Space = null;
+
 	public var xOffsetStart(get, never):Int;
-	inline function get_xOffsetStart():Int return -innerLeft;
+	inline function get_xOffsetStart():Int return ((maskSpace != null) ? maskSpace.left : 0) - innerLeft;
 	public var xOffsetEnd(get, never):Int;
-	inline function get_xOffsetEnd():Int return (innerRight - width < innerLeft) ? -innerLeft : width - innerRight;
+	inline function get_xOffsetEnd():Int return (innerRight - width - ((maskSpace != null) ? maskSpace.right : 0) < innerLeft) ? xOffsetStart : width - ((maskSpace != null) ? maskSpace.right : 0) - innerRight;
 
 	public var yOffsetStart(get, never):Int;
-	inline function get_yOffsetStart():Int return -innerTop;
+	inline function get_yOffsetStart():Int return ((maskSpace != null) ? maskSpace.top : 0) - innerTop;
 	public var yOffsetEnd(get, never):Int;
-	inline function get_yOffsetEnd():Int return (innerBottom - height < innerTop) ? -innerTop : height - innerBottom;
+	inline function get_yOffsetEnd():Int return (innerBottom - height - ((maskSpace != null) ? maskSpace.top : 0) < innerTop) ? yOffsetStart : height - ((maskSpace != null) ? maskSpace.bottom : 0) - innerBottom;
 	
 	public var innerLeft(default, null):Int = 0;
 	public var innerRight(default, null):Int = 0;
@@ -47,6 +50,7 @@ implements peote.layout.ILayoutElement
 		super(xPosition, yPosition, width, height, zIndex, config);
 		
 		if (config != null) {
+			maskSpace = config.maskSpace;
 			resizerSize = config.resizerSize;
 			resizerEdgeSize = config.resizerEdgeSize;
 			minWidth  = config.minWidth;
@@ -100,14 +104,18 @@ implements peote.layout.ILayoutElement
 		child.moveEventsBubbleTo = this;
 		
 		child.setParentPosOffset(this);  // TODO:overriding z setter into interactive  to also update z of all childs!
-		
+		if (maskSpace != null) {
+			child.x += maskSpace.left;
+			child.y += maskSpace.top;
+		}
+
 		if (isVisible) {
 			uiDisplay.add(child);
-			//child.maskByElement(this);
+			//child.maskByElement(this, maskSpace);
 			//child.updateLayout(); // need if the child is a parent itself
 		}
 		// here to update pickable also if area not added
-		child.maskByElement(this);
+		child.maskByElement(this, maskSpace);
 		child.updateLayout(); // need if the child is a parent itself
 	}
 	
@@ -120,6 +128,10 @@ implements peote.layout.ILayoutElement
 			child.top - y - yOffset >= innerTop || child.bottom - y - yOffset >= innerBottom) updateInnerSize();
 		
 		child.removeParentPosOffset(this);
+		if (maskSpace != null) {
+			child.x -= maskSpace.left;
+			child.y -= maskSpace.top;
+		}
 	}
 	
 	// ---------------------------------------
@@ -170,7 +182,7 @@ implements peote.layout.ILayoutElement
 		for (child in childs) {
 			child.x += deltaX;
 			child.y += deltaY;
-			child.maskByElement(this);
+			child.maskByElement(this, maskSpace);
 			child.updateLayout();
 		}		
 		updateResizer(resizerAvail);
@@ -187,7 +199,7 @@ implements peote.layout.ILayoutElement
 	{
 		for (child in childs) {
 			uiDisplay.add(child);
-			//child.maskByElement(this);
+			//child.maskByElement(this, maskSpace);
 			//child.updateLayout(); // need if the child is a parent itself?
 		}
 		addResizer(resizerAvail);
@@ -359,19 +371,31 @@ implements peote.layout.ILayoutElement
 	// more parameters: offsetBySlider, sliderByOffset, sliderByResize, sliderByTextResize
 	
 	public function bindHSlider(slider:peote.ui.interactive.UISlider) {
-		slider.setRange(0, Math.min(0, width - innerRight), width / innerRight, false, false );		
-		slider._onChange = function(_, value:Float, _) _setXOffset(Std.int(value), true, false, true); // don't trigger internal _onChangeXOffset again!
-		_onChangeXOffset = function (_,xOffset:Float,_) slider.setValue(xOffset, true, false); // trigger sliders _onChange and onChange						
-		_onResizeWidth = function(_,_,_) slider.setRange(0, Math.min(0, width - innerRight), width / innerRight, true, false );
-		_onResizeInnerWidth = function(_,_,_) slider.setRange(0, Math.min(0, width - innerRight), width / innerRight, true, false );
+		// slider.setRange(0, Math.min(0, width - innerRight), width / innerRight, false, false );		
+		// slider.setRange( xOffsetStart, width - innerRight - ((maskSpace != null) ? maskSpace.right : 0),  (width - ((maskSpace != null) ? maskSpace.left - maskSpace.right : 0)) / ( innerRight - innerLeft ), false, false );
+		// slider.setValue(xOffset, false, false);
+		slider.setRange( 0, Math.min(0, width - innerRight - ((maskSpace != null) ? maskSpace.right : 0)), (width - ((maskSpace != null) ? maskSpace.left - maskSpace.right : 0)) / ( innerRight ), false, false );
+
+		slider._onChange = function(_, value:Float, _) {
+			// _setXOffset(Std.int(value), true, false, true); // don't trigger internal _onChangeXOffset again!
+			_setXOffset(Math.round(value), true, false, true); // don't trigger internal _onChangeXOffset again!			
+		}
+		_onChangeXOffset = function (_,xOffset:Float,_) slider.setValue(xOffset, true, false); // trigger sliders _onChange and onChange
+
+		_onResizeWidth = function(_,_,_) {
+			slider.setRange( 0, Math.min(0, width - innerRight - ((maskSpace != null) ? maskSpace.right : 0)), (width - ((maskSpace != null) ? maskSpace.left - maskSpace.right : 0)) / ( innerRight ), true, false );
+		}
+		_onResizeInnerWidth = function(_,_,_) {
+			slider.setRange( 0, Math.min(0, width - innerRight - ((maskSpace != null) ? maskSpace.right : 0)), (width - ((maskSpace != null) ? maskSpace.left - maskSpace.right : 0)) / ( innerRight ), true, false );
+		}
 	}
 	
 	public function bindVSlider(slider:peote.ui.interactive.UISlider) {
-		slider.setRange(0, Math.min(0, height - innerBottom), height / innerBottom , false, false);				
-		slider._onChange = function(_, value:Float, _) _setYOffset(Std.int(value), true, false, true); // don't trigger internal _onChangeYOffset again!
+		slider.setRange(0, Math.min(0, height - innerBottom - ((maskSpace != null) ? maskSpace.bottom : 0)), (height - ((maskSpace != null) ? maskSpace.top - maskSpace.bottom : 0)) / innerBottom , false, false);
+		slider._onChange = function(_, value:Float, _) _setYOffset(Math.round(value), true, false, true); // don't trigger internal _onChangeYOffset again!
 		_onChangeYOffset = function (_,yOffset:Float,_) slider.setValue(yOffset, true, false); // trigger sliders _onChange and onChange						
-		_onResizeHeight = function(_,_,_) slider.setRange(0, Math.min(0, height - innerBottom), height / innerBottom , true, false);
-		_onResizeInnerHeight = function(_,_,_) slider.setRange(0, Math.min(0, height - innerBottom), height / innerBottom , true, false);
+		_onResizeHeight = function(_,_,_) slider.setRange(0, Math.min(0, height - innerBottom - ((maskSpace != null) ? maskSpace.bottom : 0)), (height - ((maskSpace != null) ? maskSpace.top - maskSpace.bottom : 0)) / innerBottom , true, false);
+		_onResizeInnerHeight = function(_,_,_) slider.setRange(0, Math.min(0, height - innerBottom - ((maskSpace != null) ? maskSpace.bottom : 0)), (height - ((maskSpace != null) ? maskSpace.top - maskSpace.bottom : 0)) / innerBottom , true, false);
 	}
 	
 	public function unbindHSlider(slider:peote.ui.interactive.UISlider) {
