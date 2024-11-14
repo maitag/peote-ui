@@ -149,13 +149,18 @@ class TestUIArea extends Application
 			{
 				backgroundStyle:boxStyle,
 				// backgroundSpace:{left:5},
-				maskSpace:{left:10, right:20, top:10, bottom:30}
+				maskSpace:{left:10, right:20, top:20, bottom:30}
 			});
 		area.add(content);
 		
 		// ---- add content ----
+
+		// add some fixed Element out of mask and area-offset
+		var fixedButton = new UITextLine<FontStyleTiled>(0, 0, 0, 0, 2, "Fixed Button", font, fontStyleInput, textInputConfig);
+		content.addFixed(fixedButton);
+
 		
-		var uiDisplay = new UIDisplay(0, 0, 200, 200, 1, Color.BLUE);
+		var uiDisplay = new UIDisplay(-100, 0, 200, 200, 1, Color.BLUE);
 		uiDisplay.onPointerOver = (_,_)-> uiDisplay.display.color = Color.RED;
 		uiDisplay.onPointerOut  = (_,_)-> uiDisplay.display.color = Color.BLUE;
 		uiDisplay.onPointerDown = (_, e:PointerEvent)-> {
@@ -171,7 +176,7 @@ class TestUIArea extends Application
 		content.add(uiDisplay);
 		Elem.playIntoDisplay(uiDisplay.display);
 		
-		var uiElement = new UIElement(200, 0, 200, 200, 0, roundBorderStyle);
+		var uiElement = new UIElement(240, 0, 200, 200, 0, roundBorderStyle);
 		uiElement.onPointerDown = (_, e:PointerEvent)-> {
 			uiElement.setDragArea(Std.int(content.x + content.maskSpace.left), Std.int(content.y + content.maskSpace.top), Std.int(content.width + uiElement.width - 50), Std.int(content.height + uiElement.height - 50));
 			uiElement.startDragging(e);
@@ -202,7 +207,7 @@ class TestUIArea extends Application
 			inputPage.maskByElement(content, true, content.maskSpace); // CHECK: need here ?
 		}
 		content.add(inputPage);
-		
+
 		// content.xOffset = content.xOffsetEnd;
 		// content.updateLayout();
 
@@ -222,6 +227,12 @@ class TestUIArea extends Application
 		// bindings for sliders
 		content.bindHSlider(hSlider);
 		content.bindVSlider(vSlider);
+
+		// scroll to start/end!
+		trace(content.innerLeft, content.innerRight);
+		trace(content.xOffsetStart, content.xOffsetEnd);
+		// content.setXOffset(content.xOffsetEnd, true, true);
+		content.setXOffset(content.xOffsetEnd, true, true);
 
 		// all here automatic after binding content to sliders 
 /*

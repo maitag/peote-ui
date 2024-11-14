@@ -499,7 +499,7 @@ implements peote.layout.ILayoutElement
 // TODO		
 		if (from >= page.length) {
 			from = page.length - 1; // only dirty FIX here
-			trace("bug into _setCreateSelection", from, "out of max page-line"); // TODO: bug here after deleting line and out of selection
+			// trace("bug into _setCreateSelection", from, "out of max page-line"); // TODO: bug here after deleting line and out of selection
 		}
 		
 		//if ( selectFrom == page.getPageLine(from).length ) {
@@ -509,7 +509,7 @@ implements peote.layout.ILayoutElement
 // TODO		
 			if (to - 1 >= page.length) {
 				to = page.length; // only dirty FIX here
-				trace("bug into _setCreateSelection", to, "out of max page-line"); // TODO: bug here after deleting line and out of selection
+				// trace("bug into _setCreateSelection", to, "out of max page-line"); // TODO: bug here after deleting line and out of selection
 			}
 						
 			to--; 
@@ -703,7 +703,7 @@ implements peote.layout.ILayoutElement
 			if (autoHeight) height = Std.int(page.textHeight) + topSpace  + bottomSpace;
 			updatePickable(); // fit interactive pickables to new width and height
 		}
-			
+		
 		var _x = x + leftSpace;
 		var _y = y + topSpace;
 		var _width  = width  - leftSpace - rightSpace;

@@ -16,9 +16,12 @@ implements peote.layout.ILayoutElement
 #end
 {
 	var childs = new Array<Interactive>();
+	var childsFixed = new Array<Interactive>();
 	
 	var last_x:Int;
 	var last_y:Int;
+	var last_xOffset:Int;
+	var last_yOffset:Int;
 	
 	public var xOffset:Int = 0;
 	public var yOffset:Int = 0;
@@ -26,14 +29,20 @@ implements peote.layout.ILayoutElement
 	public var maskSpace:Space = null;
 
 	public var xOffsetStart(get, never):Int;
-	inline function get_xOffsetStart():Int return ((maskSpace != null) ? maskSpace.left : 0) - innerLeft;
+	// inline function get_xOffsetStart():Int return ((maskSpace != null) ? maskSpace.left : 0) - innerLeft;
+	inline function get_xOffsetStart():Int return -innerLeft;
 	public var xOffsetEnd(get, never):Int;
-	inline function get_xOffsetEnd():Int return (innerRight - width - ((maskSpace != null) ? maskSpace.right : 0) < innerLeft) ? xOffsetStart : width - ((maskSpace != null) ? maskSpace.right : 0) - innerRight;
+	// inline function get_xOffsetEnd():Int return (innerRight - width - ((maskSpace != null) ? maskSpace.right : 0) < innerLeft) ? xOffsetStart : width - ((maskSpace != null) ? maskSpace.right : 0) - innerRight;
+	// inline function get_xOffsetEnd():Int return width - ((maskSpace != null) ? maskSpace.left + maskSpace.right : 0) - innerWidth;
+	inline function get_xOffsetEnd():Int return width - ((maskSpace != null) ? maskSpace.left + maskSpace.right : 0) - innerRight;
 
 	public var yOffsetStart(get, never):Int;
-	inline function get_yOffsetStart():Int return ((maskSpace != null) ? maskSpace.top : 0) - innerTop;
+	// inline function get_yOffsetStart():Int return ((maskSpace != null) ? maskSpace.top : 0) - innerTop;
+	inline function get_yOffsetStart():Int return -innerTop;
 	public var yOffsetEnd(get, never):Int;
-	inline function get_yOffsetEnd():Int return (innerBottom - height - ((maskSpace != null) ? maskSpace.top : 0) < innerTop) ? yOffsetStart : height - ((maskSpace != null) ? maskSpace.bottom : 0) - innerBottom;
+	// inline function get_yOffsetEnd():Int return (innerBottom - height - ((maskSpace != null) ? maskSpace.top+maskSpace.bottom : 0) < innerTop) ? yOffsetStart : height - ((maskSpace != null) ?  maskSpace.top+maskSpace.bottom : 0) - innerBottom;
+	// inline function get_yOffsetEnd():Int return height - ((maskSpace != null) ?  maskSpace.top + maskSpace.bottom : 0) - innerHeight;
+	inline function get_yOffsetEnd():Int return height - ((maskSpace != null) ?  maskSpace.top + maskSpace.bottom : 0) - innerBottom;
 	
 	public var innerLeft(default, null):Int = 0;
 	public var innerRight(default, null):Int = 0;
@@ -62,6 +71,8 @@ implements peote.layout.ILayoutElement
 		
 		last_x = xPosition;
 		last_y = yPosition;
+		last_xOffset = xOffset + xPosition;
+		last_yOffset = yOffset + yPosition;
 		
 		changeZIndex = onChangeZIndex;		
 	}
@@ -69,6 +80,7 @@ implements peote.layout.ILayoutElement
 	inline function onChangeZIndex(z:Int, deltaZ:Int):Void
 	{
 		for (child in childs) child.z += deltaZ;
+		for (child in childsFixed) child.z += deltaZ;
 	}
 	
 	public function add(child:Interactive)
@@ -109,8 +121,9 @@ implements peote.layout.ILayoutElement
 			child.y += maskSpace.top;
 		}
 
+		// TODO
 		if (isVisible) {
-			uiDisplay.add(child);
+			uiDisplay.add(child); // <-- glitch: if child is a autosized-text-element it gets its size at the First time here!
 			//child.maskByElement(this, maskSpace);
 			//child.updateLayout(); // need if the child is a parent itself
 		}
@@ -119,21 +132,45 @@ implements peote.layout.ILayoutElement
 		child.updateLayout(); // need if the child is a parent itself
 	}
 	
+	public function addFixed(child:Interactive)
+	{
+		childsFixed.push(child);
+		
+		// to bubble events down to the elements
+		child.overOutEventsBubbleTo = this;
+		child.upDownEventsBubbleTo = this;
+		child.wheelEventsBubbleTo = this;
+		child.moveEventsBubbleTo = this;
+
+		child.setParentPos(this);
+		if (isVisible) uiDisplay.add(child);
+		child.updateLayout(); // need if the child is a parent itself
+	}
+
 	public function remove(child:Interactive) 
 	{
 		if (isVisible && child.isVisible) uiDisplay.remove(child);
 		childs.remove(child);
 		
-		if (child.left - x - xOffset >= innerLeft || child.right - x - xOffset >= innerRight || 
-			child.top - y - yOffset >= innerTop || child.bottom - y - yOffset >= innerBottom) updateInnerSize();
-		
-		child.removeParentPosOffset(this);
 		if (maskSpace != null) {
 			child.x -= maskSpace.left;
 			child.y -= maskSpace.top;
 		}
+		// if (child.left - x - xOffset >= innerLeft || child.right - x - xOffset >= innerRight || 
+			// child.top - y - yOffset >= innerTop || child.bottom - y - yOffset >= innerBottom) updateInnerSize();
+		if (child.left - x - xOffset <= innerLeft || child.right - x - xOffset >= innerRight || 
+			child.top - y - yOffset <= innerTop || child.bottom - y - yOffset >= innerBottom) updateInnerSize();
+		
+		child.removeParentPosOffset(this);
 	}
-	
+
+	public function removeFixed(child:Interactive) 
+	{
+		if (isVisible && child.isVisible) uiDisplay.remove(child);
+		childsFixed.remove(child);
+		child.removeParentPos(this);
+	}
+
 	// ---------------------------------------
 	public function updateInnerSize() 
 	{
@@ -148,17 +185,23 @@ implements peote.layout.ILayoutElement
 			innerBottom = 0;
 		}
 		else {
-			innerLeft = childs[0].left - x - xOffset;
-			innerRight = childs[0].right - x - xOffset;
-			innerTop = childs[0].top - y - yOffset;
-			innerBottom = childs[0].bottom - y - yOffset;
+			var xOff:Int = x + xOffset;
+			var yOff:Int = y + yOffset;
+			if (maskSpace != null) {
+				xOff += maskSpace.left;
+				yOff += maskSpace.top;
+			}
+			innerLeft = childs[0].left - xOff;
+			innerRight = childs[0].right - xOff;
+			innerTop = childs[0].top - yOff;
+			innerBottom = childs[0].bottom - yOff;
 			var child:Interactive;
 			for (i in 1...childs.length) {
 				child = childs[i];
-				if (child.left   - x - xOffset < innerLeft  ) innerLeft   = child.left   - x - xOffset;
-				if (child.right  - x - xOffset > innerRight ) innerRight  = child.right  - x - xOffset;
-				if (child.top    - y - yOffset < innerTop   ) innerTop    = child.top    - y - yOffset;
-				if (child.bottom - y - yOffset > innerBottom) innerBottom = child.bottom - y - yOffset;
+				if (child.left   - xOff < innerLeft  ) innerLeft   = child.left   - xOff;
+				if (child.right  - xOff > innerRight ) innerRight  = child.right  - xOff;
+				if (child.top    - yOff < innerTop   ) innerTop    = child.top    - yOff;
+				if (child.bottom - yOff > innerBottom) innerBottom = child.bottom - yOff;
 			}
 		}
 
@@ -174,15 +217,27 @@ implements peote.layout.ILayoutElement
 	{
 		if (!isVisible) return;
 
-		var deltaX = x + xOffset - last_x;
-		var deltaY = y + yOffset - last_y;
-		last_x = x + xOffset;
-		last_y = y + yOffset;
+		var deltaX = x + xOffset - last_xOffset;
+		var deltaY = y + yOffset - last_yOffset;
+		last_xOffset = x + xOffset;
+		last_yOffset = y + yOffset;
 		
 		for (child in childs) {
 			child.x += deltaX;
 			child.y += deltaY;
 			child.maskByElement(this, maskSpace);
+			child.updateLayout();
+		}
+
+		deltaX = x - last_x;
+		deltaY = y - last_y;
+		last_x = x;
+		last_y = y;
+
+		for (child in childsFixed) {
+			child.x += deltaX;
+			child.y += deltaY;
+			child.maskByElement(this); // TODO: only if child have that option
 			child.updateLayout();
 		}		
 		updateResizer(resizerAvail);
@@ -199,8 +254,16 @@ implements peote.layout.ILayoutElement
 	{
 		for (child in childs) {
 			uiDisplay.add(child);
-			//child.maskByElement(this, maskSpace);
-			//child.updateLayout(); // need if the child is a parent itself?
+			// TODO: this is need if add the area to display after adding childs
+			child.maskByElement(this, maskSpace);
+			child.updateLayout(); // need if the child is a parent itself?
+		}
+
+		for (child in childsFixed) {
+			uiDisplay.add(child);
+			// TODO: this is need if add the area to display after adding childs
+			// child.maskByElement(this, maskSpace);
+			child.updateLayout(); // need if the child is a parent itself?
 		}
 		addResizer(resizerAvail);
 	}
@@ -208,6 +271,7 @@ implements peote.layout.ILayoutElement
 	override function onRemoveUIElementFromDisplay()
 	{	
 		for (child in childs) if (child.isVisible) uiDisplay.remove(child);
+		for (child in childsFixed) if (child.isVisible) uiDisplay.remove(child);
 		removeResizer(resizerAvail);
 	}	
 	
@@ -370,32 +434,41 @@ implements peote.layout.ILayoutElement
 	// TODO: check that the internal events not already used, 
 	// more parameters: offsetBySlider, sliderByOffset, sliderByResize, sliderByTextResize
 	
-	public function bindHSlider(slider:peote.ui.interactive.UISlider) {
-		// slider.setRange(0, Math.min(0, width - innerRight), width / innerRight, false, false );		
-		// slider.setRange( xOffsetStart, width - innerRight - ((maskSpace != null) ? maskSpace.right : 0),  (width - ((maskSpace != null) ? maskSpace.left - maskSpace.right : 0)) / ( innerRight - innerLeft ), false, false );
+	public function bindHSlider(slider:peote.ui.interactive.UISlider, triggerOnInnerResize = true, triggerOnResize = true) {
+		slider.setRange(xOffsetStart, xOffsetEnd, (width - ((maskSpace != null) ? maskSpace.left + maskSpace.right : 0)) / innerWidth, false, false);
 		// slider.setValue(xOffset, false, false);
-		slider.setRange( 0, Math.min(0, width - innerRight - ((maskSpace != null) ? maskSpace.right : 0)), (width - ((maskSpace != null) ? maskSpace.left - maskSpace.right : 0)) / ( innerRight ), false, false );
 
-		slider._onChange = function(_, value:Float, _) {
-			// _setXOffset(Std.int(value), true, false, true); // don't trigger internal _onChangeXOffset again!
-			_setXOffset(Math.round(value), true, false, true); // don't trigger internal _onChangeXOffset again!			
-		}
+		slider._onChange = function(_, value:Float, _) _setXOffset(Math.round(value), true, false, true); // don't trigger internal _onChangeXOffset again!
 		_onChangeXOffset = function (_,xOffset:Float,_) slider.setValue(xOffset, true, false); // trigger sliders _onChange and onChange
 
-		_onResizeWidth = function(_,_,_) {
-			slider.setRange( 0, Math.min(0, width - innerRight - ((maskSpace != null) ? maskSpace.right : 0)), (width - ((maskSpace != null) ? maskSpace.left - maskSpace.right : 0)) / ( innerRight ), true, false );
-		}
 		_onResizeInnerWidth = function(_,_,_) {
-			slider.setRange( 0, Math.min(0, width - innerRight - ((maskSpace != null) ? maskSpace.right : 0)), (width - ((maskSpace != null) ? maskSpace.left - maskSpace.right : 0)) / ( innerRight ), true, false );
+			slider.setRange(xOffsetStart, xOffsetEnd, (width - ((maskSpace != null) ? maskSpace.left + maskSpace.right : 0)) / innerWidth, triggerOnInnerResize, false);
+			if (!triggerOnInnerResize) slider.setValue(xOffset, false, false);
+		}
+		_onResizeWidth = function(_,_,_) {
+			slider.setRange(xOffsetStart, xOffsetEnd, (width - ((maskSpace != null) ? maskSpace.left + maskSpace.right : 0)) / innerWidth, triggerOnResize, false);
+			if (!triggerOnResize) slider.setValue(xOffset, false, false);
 		}
 	}
 	
-	public function bindVSlider(slider:peote.ui.interactive.UISlider) {
-		slider.setRange(0, Math.min(0, height - innerBottom - ((maskSpace != null) ? maskSpace.bottom : 0)), (height - ((maskSpace != null) ? maskSpace.top - maskSpace.bottom : 0)) / innerBottom , false, false);
+	public function bindVSlider(slider:peote.ui.interactive.UISlider, triggerOnInnerResize = true, triggerOnResize = true ) {
+		// slider.setRange(0, Math.min(0, height - innerBottom - ((maskSpace != null) ? maskSpace.bottom : 0)), (height - ((maskSpace != null) ? maskSpace.top - maskSpace.bottom : 0)) / innerBottom , false, false);
+		slider.setRange(yOffsetStart, yOffsetEnd, (height - ((maskSpace != null) ? maskSpace.top + maskSpace.bottom : 0)) / innerHeight, false, false);
+		// slider.setValue(yOffset, false, false);
+		
 		slider._onChange = function(_, value:Float, _) _setYOffset(Math.round(value), true, false, true); // don't trigger internal _onChangeYOffset again!
 		_onChangeYOffset = function (_,yOffset:Float,_) slider.setValue(yOffset, true, false); // trigger sliders _onChange and onChange						
-		_onResizeHeight = function(_,_,_) slider.setRange(0, Math.min(0, height - innerBottom - ((maskSpace != null) ? maskSpace.bottom : 0)), (height - ((maskSpace != null) ? maskSpace.top - maskSpace.bottom : 0)) / innerBottom , true, false);
-		_onResizeInnerHeight = function(_,_,_) slider.setRange(0, Math.min(0, height - innerBottom - ((maskSpace != null) ? maskSpace.bottom : 0)), (height - ((maskSpace != null) ? maskSpace.top - maskSpace.bottom : 0)) / innerBottom , true, false);
+		
+		_onResizeInnerHeight = function(_,_,_) {
+			// slider.setRange(0, Math.min(0, height - innerBottom - ((maskSpace != null) ? maskSpace.bottom : 0)), (height - ((maskSpace != null) ? maskSpace.top - maskSpace.bottom : 0)) / innerBottom , triggerOnInnerResize, false);
+			slider.setRange(yOffsetStart, yOffsetEnd, (height - ((maskSpace != null) ? maskSpace.top + maskSpace.bottom : 0)) / innerHeight, triggerOnInnerResize, false);
+			if (!triggerOnInnerResize) slider.setValue(yOffset, false, false);
+		}
+		_onResizeHeight = function(_,_,_) {
+			// slider.setRange(0, Math.min(0, height - innerBottom - ((maskSpace != null) ? maskSpace.bottom : 0)), (height - ((maskSpace != null) ? maskSpace.top - maskSpace.bottom : 0)) / innerBottom , triggerOnResize, false);
+			slider.setRange(yOffsetStart, yOffsetEnd, (height - ((maskSpace != null) ? maskSpace.top + maskSpace.bottom : 0)) / innerHeight, triggerOnResize, false);
+			if (!triggerOnResize) slider.setValue(yOffset, false, false);
+		} 
 	}
 	
 	public function unbindHSlider(slider:peote.ui.interactive.UISlider) {

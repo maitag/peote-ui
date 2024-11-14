@@ -143,6 +143,18 @@ implements peote.layout.ILayoutElement
 		z -= p.z + 1;
 	}
 	
+	public inline function setParentPos(p:ParentElement) {
+		x += p.x;
+		y += p.y;
+		z += p.z + 1;
+	}
+	
+	public inline function removeParentPos(p:ParentElement) {
+		x -= p.x ;
+		y -= p.y;
+		z -= p.z + 1;
+	}
+	
 	
 	public var x:Int;
 	public var y:Int;
@@ -173,7 +185,6 @@ implements peote.layout.ILayoutElement
 	}
 	//function _onResizeWidth():Void {} // to override by childclasses
 
-	
 	public var height(default, set):Int;
 	inline function set_height(h:Int):Int {
 		if (h != height) {

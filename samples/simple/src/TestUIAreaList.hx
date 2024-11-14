@@ -11,13 +11,17 @@ import peote.text.Font;
 import peote.ui.PeoteUIDisplay;
 import peote.ui.interactive.UIElement;
 import peote.ui.interactive.UITextPage;
+import peote.ui.interactive.UITextLine;
+import peote.ui.interactive.UISlider;
 import peote.ui.interactive.UIArea;
 import peote.ui.style.BoxStyle;
 import peote.ui.style.RoundBorderStyle;
 import peote.ui.style.FontStyleTiled;
 import peote.ui.config.ResizeType;
 import peote.ui.config.TextConfig;
+import peote.ui.config.SliderConfig;
 import peote.ui.event.PointerEvent;
+import peote.ui.event.WheelEvent;
 
 import interactive.UIAreaList;
 import interactive.AreaListConfig;
@@ -63,7 +67,14 @@ class TestUIAreaList extends Application
 			selectionStyle: selectionStyle,
 			cursorStyle: cursorStyle
 		}
-			
+
+		var sliderConfig:SliderConfig = {
+			backgroundStyle: roundBorderStyle.copy(Color.GREY2),
+			draggerStyle: roundBorderStyle.copy(Color.GREY3, Color.GREY2, 0.5),
+			draggerSize:16,
+			draggSpace:1,
+		};
+				
 		// ---------------------------------------------------------
 		// --- creating PeoteUIDisplay with some styles in Order ---
 		// ---------------------------------------------------------
@@ -82,20 +93,30 @@ class TestUIAreaList extends Application
 		// ------------------- UIAreaList --------------------------
 		// ---------------------------------------------------------
 				
-		// var areaList = new UIAreaList(10, 10, 200, 400);
-		var areaList = new UIAreaList(10, 10, 200, 400, 0, { backgroundStyle:boxStyle, resizeType:ResizeType.ALL, maskSpace:{left:10} });
-		peoteUiDisplay.add(areaList);
+		var areaList = new UIAreaList(10, 10, 200, 400, 0, {
+			backgroundStyle:boxStyle,
+			resizeType:ResizeType.ALL,
+			maskSpace: {
+				top:25,
+				right:25,
+				left:5,
+				bottom:5
+			}
+		});
+		// peoteUiDisplay.add(areaList);
 		
+		// add some fixed Element for the header
+		var header = new UITextLine<FontStyleTiled>(0, 0, 0, 0, 2, "--- header ---", font, fontStyleInput, textInputConfig);
+		header.onPointerDown = (_, e:PointerEvent)-> areaList.startDragging(e);
+		header.onPointerUp = (_, e:PointerEvent)-> areaList.stopDragging(e);
+		areaList.addFixed(header);
+
 		// ---- add content ----
 		
 		
 		var uiElement0 = new UIElement(0, 0, 0, 50, 0, roundBorderStyle.copy(Color.GREEN2));
 		uiElement0.onPointerDown = (elem:UIElement, e:PointerEvent)-> {areaList.remove(elem);}
 		areaList.add(uiElement0);
-
-		var uiElement1 = new UIElement(0, 0, 0, 100, 0, roundBorderStyle);		
-		uiElement1.onPointerDown = (elem:UIElement, e:PointerEvent)-> {areaList.remove(elem);}
-		areaList.add(uiElement1);
 
 		var inputPage = new UITextPage<FontStyleTiled>(0, 0, 200, 0, 1, "input\ntext by\nUITextPage", font, fontStyleInput, textInputConfig);
 		inputPage.onPointerDown = function(t:UITextPage<FontStyleTiled>, e:PointerEvent) {
@@ -105,35 +126,109 @@ class TestUIAreaList extends Application
 		inputPage.onPointerUp = function(t:UITextPage<FontStyleTiled>, e:PointerEvent) {
 			t.stopSelection(e);
 		}
-		areaList.add(inputPage);
+		areaList.add(inputPage); //TODO: see UIAreaList -> resize is fired before it is added the pickables
+		inputPage.onResizeHeight = (e, height:Int, deltaHeight:Int) -> {
+			trace("resize textfield 1", height, deltaHeight);
+			// TODO:
+			if (height != deltaHeight) areaList.updateChildOnResizeHeight(e, deltaHeight);
+		}
+		// areaList.add(inputPage);
 
+		var uiElement1 = new UIElement(0, 0, 0, 100, 0, roundBorderStyle);		
+		uiElement1.onPointerDown = (elem:UIElement, e:PointerEvent)-> {areaList.remove(elem);}
+		areaList.add(uiElement1);
 
 		var innerArea = new UIArea(0, 0, 0, 100, {backgroundStyle:roundBorderStyle.copy(Color.BLUE2), resizeType:ResizeType.BOTTOM});
+		innerArea.onResizeHeight = (e, height:Int, deltaHeight:Int) -> areaList.updateChildOnResizeHeight(e, deltaHeight);
 		areaList.add(innerArea);
 
 
 		// -------------------------------
-		var innerAreaList = new UIAreaList(0, 0, 0, 100, {backgroundStyle:roundBorderStyle.copy(Color.RED2), resizeType:ResizeType.BOTTOM});
-		areaList.add(innerAreaList);
+
+		var innerAreaList = new UIAreaList(0, 0, 0, 200, {
+			backgroundStyle:roundBorderStyle.copy(Color.RED2),
+			resizeType:ResizeType.BOTTOM,
+			maskSpace: {
+				top:5,
+				right:25,
+				left:5,
+				bottom:5
+			}
+		});
+		// areaList.add(innerAreaList);
 
 			// inner content of innerAreaList
-			var uiElement00 = new UIElement(0, 0, 0, 20, 0, roundBorderStyle.copy(Color.LIME));
+			var uiElement00 = new UIElement(0, 0, 0, 50, 0, roundBorderStyle.copy(Color.LIME));
 			uiElement00.onPointerDown = (elem:UIElement, e:PointerEvent)-> {innerAreaList.remove(elem);}
 			innerAreaList.add(uiElement00);
 
-			var uiElement01 = new UIElement(0, 0, 0, 30, 0, roundBorderStyle.copy(Color.MAGENTA));		
+			var innerInputPage = new UITextPage<FontStyleTiled>(0, 0, 200, 0, 1, "inner\nUIAreaList", font, fontStyleInput, textInputConfig);
+			innerInputPage.onPointerDown = function(t:UITextPage<FontStyleTiled>, e:PointerEvent) { t.setInputFocus(e); t.startSelection(e); }
+			innerInputPage.onPointerUp = function(t:UITextPage<FontStyleTiled>, e:PointerEvent) { t.stopSelection(e); }
+			innerInputPage.onResizeHeight = (e, height:Int, deltaHeight:Int) -> {
+				trace("resize INNER TEXT",height, deltaHeight);
+				// TODO:
+				if (height != deltaHeight) innerAreaList.updateChildOnResizeHeight(e, deltaHeight);
+			}
+			innerAreaList.add(innerInputPage);
+
+			var uiElement01 = new UIElement(0, 0, 0, 100, 0, roundBorderStyle.copy(Color.MAGENTA));		
 			uiElement01.onPointerDown = (elem:UIElement, e:PointerEvent)-> {innerAreaList.remove(elem);}
 			innerAreaList.add(uiElement01);
-		
-		// -------------------------------
 
+			var innerVSlider = new UISlider(innerAreaList.width-20, 0, 20, innerAreaList.height, sliderConfig);
+			innerAreaList.addFixed(innerVSlider);
+			innerAreaList.bindVSlider(innerVSlider);
+			innerAreaList.onResizeWidth = (e, width:Int, deltaWidth:Int) -> {
+				innerVSlider.right = innerAreaList.right;
+			}
+			innerAreaList.onResizeHeight = (e, height:Int, deltaHeight:Int) -> {
+				innerVSlider.bottomSize = innerAreaList.bottom;
+				areaList.updateChildOnResizeHeight(e, deltaHeight);
+			}
+		areaList.add(innerAreaList);
+		// -------------------------------
 		
 		var uiElement2 = new UIElement(0, 0, 0, 100, 0, roundBorderStyle);		
 		uiElement2.onPointerDown = (elem:UIElement, e:PointerEvent)-> {areaList.remove(elem);}
 		areaList.add(uiElement2);
 
 
+		// ------------------------------------
+		// ---- Sliders to scroll the Area ----		
+		// ------------------------------------
+
+		// var hSlider = new UISlider(0, areaList.height-20, areaList.width-20, 20, sliderConfig);
+		// hSlider.onMouseWheel = (_, e:WheelEvent) -> hSlider.setWheelDelta( e.deltaY );
+		// areaList.addFixed(hSlider);		
 		
+		var vSlider = new UISlider(areaList.width-20, 0, 20, areaList.height, sliderConfig);
+		vSlider.onMouseWheel = (_, e:WheelEvent) -> vSlider.setWheelDelta( e.deltaY );
+		areaList.addFixed(vSlider);
+		
+		// bindings for sliders
+		// areaList.bindHSlider(hSlider);
+		areaList.bindVSlider(vSlider, false);
+
+		areaList.onResizeWidth = (_, width:Int, deltaWidth:Int) -> {
+			vSlider.right = areaList.right;
+			// hSlider.rightSize = vSlider.left;
+		}
+
+		areaList.onResizeHeight = (_, height:Int, deltaHeight:Int) -> {
+			vSlider.bottomSize = areaList.bottom;
+			// hSlider.bottom = areaList.bottom;
+		}
+		
+		// scroll to bottom!
+		// areaList.setYOffset(areaList.yOffsetEnd, true, true);
+		trace("aaaaaaaaaaaa");
+		peoteUiDisplay.add(areaList);
+		trace("bbbbbbbbbbbb",inputPage.height);
+		// TODO: need to trigger manually here:
+		areaList.updateChildOnResizeHeight(inputPage, inputPage.height);
+		innerAreaList.updateChildOnResizeHeight(innerInputPage, innerInputPage.height);
+
 		// ---------------------------------------------------------
 	
 		// TODO: make uiElement to switch between
