@@ -171,11 +171,10 @@ implements peote.layout.ILayoutElement
 	}
 	var changeZIndex:Int->Int->Void = null;
 
-	
+/*	
 	public var width(default, set):Int;
 	inline function set_width(w:Int):Int {
 		if (w != width) {
-			//_onResizeWidth();
 			if (resizeWidth != null) {
 				var oldWidth = width;
 				resizeWidth(width = w, w - oldWidth);
@@ -183,7 +182,6 @@ implements peote.layout.ILayoutElement
 		}
 		return w;
 	}
-	//function _onResizeWidth():Void {} // to override by childclasses
 
 	public var height(default, set):Int;
 	inline function set_height(h:Int):Int {
@@ -192,6 +190,26 @@ implements peote.layout.ILayoutElement
 				var oldHeight = height;
 				resizeHeight(height = h, h - oldHeight);
 			} else height = h;
+		}
+		return h;
+	}
+*/	
+	public var width(default, set):Int;
+	inline function set_width(w:Int):Int {
+		if (w != width) {
+			var delta = w - width;
+			width = w;
+			resizeWidth(delta);
+		}
+		return w;
+	}
+
+	public var height(default, set):Int;
+	inline function set_height(h:Int):Int {
+		if (h != height) {
+			var delta = h - height;
+			height = h; 
+			resizeHeight(delta);
 		}
 		return h;
 	}
@@ -268,10 +286,6 @@ implements peote.layout.ILayoutElement
 	// drag and focus events
 	var drag:Float->Float->Void = null;
 	var focus:Void->Void = null;
-
-	// resize events
-	var resizeWidth:Int->Int->Void = null;
-	var resizeHeight:Int->Int->Void = null;
 
 	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int)
 	{
@@ -589,7 +603,11 @@ implements peote.layout.ILayoutElement
 		if (f == null) focus = null else focus = f.bind(object);
 		return f;
 	}
-		
+	/*
+	// resize events
+	var resizeWidth:Int->Int->Void = null;
+	var resizeHeight:Int->Int->Void = null;
+
 	private inline function setOnResizeWidth<T>(object:T, f:T->Int->Int->Void):T->Int->Int->Void {
 		if (f == null) resizeWidth = null else resizeWidth = f.bind(object);
 		return f;
@@ -599,6 +617,56 @@ implements peote.layout.ILayoutElement
 		if (f == null) resizeHeight = null else resizeHeight = f.bind(object);
 		return f;
 	}
+	*/
+	// ------ custom and internal resize Events ---------------
+	var _resizeWidthIntern:Int->Int->Void = null;
+	var _resizeWidthSlider:Int->Int->Void = null;
+	var _resizeWidth:Int->Int->Void = null;
+	inline function resizeWidth(delta:Int):Void {
+		if (_resizeWidthIntern != null) _resizeWidthIntern(width, delta);
+		if (_resizeWidthSlider != null) _resizeWidthSlider(width, delta);
+		if (_resizeWidth != null) _resizeWidth(width, delta);
+	}
+
+	private inline function setOnResizeWidthIntern<T>(object:T, f:T->Int->Int->Void):T->Int->Int->Void {
+		if (f == null) _resizeWidthIntern = null else _resizeWidthIntern = f.bind(object);
+		return f;
+	}
+
+	private inline function setOnResizeWidthSlider<T>(object:T, f:T->Int->Int->Void):T->Int->Int->Void {
+		if (f == null) _resizeWidthSlider = null else _resizeWidthSlider = f.bind(object);
+		return f;
+	}
+
+	private inline function setOnResizeWidth<T>(object:T, f:T->Int->Int->Void):T->Int->Int->Void {
+		if (f == null) _resizeWidth = null else _resizeWidth = f.bind(object);
+		return f;
+	}
+	
+	var _resizeHeightIntern:Int->Int->Void = null;
+	var _resizeHeightSlider:Int->Int->Void = null;
+	var _resizeHeight:Int->Int->Void = null;
+	inline function resizeHeight(delta:Int):Void {
+		if (_resizeHeightIntern != null) _resizeHeightIntern(height, delta);
+		if (_resizeHeightSlider != null) _resizeHeightSlider(height, delta);
+		if (_resizeHeight != null) _resizeHeight(height, delta);
+	}
+
+	private inline function setOnResizeHeightIntern<T>(object:T, f:T->Int->Int->Void):T->Int->Int->Void {
+		if (f == null) _resizeHeightIntern = null else _resizeHeightIntern = f.bind(object);
+		return f;
+	}
+
+	private inline function setOnResizeHeightSlider<T>(object:T, f:T->Int->Int->Void):T->Int->Int->Void {
+		if (f == null) _resizeHeightSlider = null else _resizeHeightSlider = f.bind(object);
+		return f;
+	}
+
+	private inline function setOnResizeHeight<T>(object:T, f:T->Int->Int->Void):T->Int->Int->Void {
+		if (f == null) _resizeHeight = null else _resizeHeight = f.bind(object);
+		return f;
+	}
+	
 	
 	// -----------------
 		
@@ -662,7 +730,6 @@ implements peote.layout.ILayoutElement
 	
 	// -----------------------------------------------------------------
 	
-	// public inline function maskByElement(uiElement:Interactive, maskOnDrag:Bool = false)
 	public inline function maskByElement(uiElement:Interactive, maskOnDrag:Bool = false, maskSpace:Space = null)
 	{
 		#if (!peoteui_no_parentmasking)
@@ -677,13 +744,9 @@ implements peote.layout.ILayoutElement
 	{
 		#if (!peoteui_no_masking)
 		masked = if (uiElement.masked) 
-			// mask(uiElement.x + uiElement.maskX, uiElement.y + uiElement.maskY, uiElement.maskWidth, uiElement.maskHeight, uiElement.isVisible);
 			mask(uiElement.x + uiElement.maskX + leftOffset, uiElement.y + uiElement.maskY + topOffset, uiElement.maskWidth - leftOffset - rightOffset, uiElement.maskHeight - topOffset - bottomOffset, uiElement.isVisible);
-		// else mask(uiElement.x, uiElement.y, uiElement.width, uiElement.height, uiElement.isVisible);
 		else mask(uiElement.x + leftOffset, uiElement.y + topOffset, uiElement.width - leftOffset - rightOffset, uiElement.height - topOffset - bottomOffset, uiElement.isVisible);
-		//trace(masked, maskX, maskY, maskWidth, maskHeight);
 		#else
-		// if (uiElement.isVisible && isOutsideOf(uiElement.x, uiElement.y, uiElement.width, uiElement.height)) 
 		if (uiElement.isVisible && isOutsideOf(uiElement.x + leftOffset, uiElement.y + topOffset, uiElement.width - leftOffset - rightOffset, uiElement.height - topOffset - bottomOffset)) 
 			hide();
 		else if (uiElement.isVisible) show();

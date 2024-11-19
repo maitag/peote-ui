@@ -19,37 +19,44 @@ class UIAreaList extends UIArea implements ParentElement
 		
 		// TODO: extra _handler for the Slider 
 	
-		this._onResizeWidth = (_, width:Int, deltaWidth:Int) -> {
+		setOnResizeWidthIntern(this, function(_,_,_) {
 			for (child in childs) {
-				child.width = width-((maskSpace != null) ? maskSpace.left + maskSpace.right : 0);
+				child.width = this.width-((maskSpace != null) ? maskSpace.left + maskSpace.right : 0);
 				// child.maskByElement(this);
 				// child.updateLayout();
 			}
-		}
+		});
 
 		// this._onResizeHeight = (_, height:Int, deltaHeight:Int) -> {}
 	}
 
+	var _firstTimeAdded = true;
+	var _autosizedChilds = new Array<Interactive>();
 	override function onAddUIElementToDisplay()
 	{
+		if (_firstTimeAdded) { // detect where is text-elements what have autosize and is zero at first run
+			for (child in childs) {
+				if ( child.height == 0 && Type.getClassName(Type.getClass(child)).indexOf("peote.ui.interactive.UITextPage")>=0) {
+					_autosizedChilds.push(child);
+				}
+			}
+		}
+
 		super.onAddUIElementToDisplay();
 
-		// TODO: try to set all positions here so the textfields have its size
-		/*
-		for (child in childs) {
-			child.resizeHeight = function(height:Int, deltaHeight:Int) {
-				child.maskByElement(this, maskSpace);
-				child.updateLayout();
-				moveChildsByOffset(childs.indexOf(child)+1, deltaHeight);
-				innerBottom += deltaHeight;
-				if (_onResizeInnerHeight != null) _onResizeInnerHeight(this, innerHeight, deltaHeight);
-				if (onResizeInnerHeight != null) onResizeInnerHeight(this, innerHeight, deltaHeight);	
-			};
+		if (_firstTimeAdded) {
+			_firstTimeAdded = false;
+			for (child in _autosizedChilds) {
+				updateChildOnResizeHeight(child, 0, child.height);
+			}
+			_autosizedChilds = null;		
 		}
-		*/
+
 	}
 
-	override public function add(child:Interactive)
+	public function addResizable(child:Interactive) _add(child, true);
+	override public function add(child:Interactive) _add(child, false);
+	function _add(child:Interactive, addResizeInternEvent:Bool)
 	{
 		child.x = 0;
 		child.width = width - ((maskSpace != null) ? maskSpace.left + maskSpace.right : 0);
@@ -60,19 +67,10 @@ class UIAreaList extends UIArea implements ParentElement
 		else {
 			child.y = childs[childs.length-1].bottom - y - ((maskSpace != null) ? maskSpace.top : 0);
 		}
-		trace(child.height);
+		
 		super.add(child);
 
-		/*
-		child.resizeHeight = function(height:Int, deltaHeight:Int) {
-			child.maskByElement(this, maskSpace);
-			child.updateLayout();
-			moveChildsByOffset(childs.indexOf(child)+1, deltaHeight);
-			innerBottom += deltaHeight;
-			if (_onResizeInnerHeight != null) _onResizeInnerHeight(this, innerHeight, deltaHeight);
-			if (onResizeInnerHeight != null) onResizeInnerHeight(this, innerHeight, deltaHeight);	
-		};
-		*/
+		if (addResizeInternEvent) child.setOnResizeHeightIntern(child, updateChildOnResizeHeight); 
 
 	}
 	
@@ -92,15 +90,16 @@ class UIAreaList extends UIArea implements ParentElement
 
 	}
 
-	public function updateChildOnResizeHeight(child:Interactive, deltaHeight:Int)
+	public function updateChildOnResizeHeight(child:Interactive, height:Int, deltaHeight:Int)
 	{
+		// detect where is text-elements what have autosize and is zero before added
+		if (_firstTimeAdded && height == deltaHeight && Type.getClassName(Type.getClass(child)).indexOf("peote.ui.interactive.UITextPage")>=0) return;
+
 		// TODO:
 
 		var childIndex:Int = childs.indexOf(child);
 		if (childIndex < 0) return;
 
-		trace( Type.getClassName(Type.getClass(child)) );
-		
 		child.maskByElement(this, maskSpace);
 		// if ( Type.getClassName(Type.getClass(child)).indexOf("peote.ui.interactive.UITextPage")<0 )
 		child.updateLayout();

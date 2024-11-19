@@ -1663,10 +1663,7 @@ implements peote.layout.ILayoutElement
 		slider.setRange(0, Math.min(0, width - leftSpace - rightSpace - textWidth), (width  - leftSpace - rightSpace ) / textWidth, false, false );		
 		slider._onChange = function(_, value:Float, _) _setXOffset(Math.round(value), true, false, true); // don't trigger internal _onChangeXOffset again!
 		_onChangeXOffset = function (_,xOffset:Float,_) slider.setValue(xOffset, true, false); // trigger sliders _onChange and onChange
-		_onResizeWidth = function(_,_,_) {
-			slider.setRange(0, Math.min(0, width - leftSpace - rightSpace - textWidth), (width - leftSpace - rightSpace ) / textWidth, true, false );
-		}
-		_onResizeTextWidth = function(_,_,delta:Float) {
+		_onResizeTextWidth = function(_, _, delta:Float) {
 			var s = width - leftSpace - rightSpace;
 			if (textWidth < s || textWidth - delta > s) {
 				slider.setRange(0, Math.min(0, s - textWidth), s / textWidth, true, false );
@@ -1675,16 +1672,16 @@ implements peote.layout.ILayoutElement
 				slider.setValue(xOffset, true, false);
 			}
 		}
+		setOnResizeWidthSlider(this, function(_,_,_) {
+			slider.setRange(0, Math.min(0, width - leftSpace - rightSpace - textWidth), (width - leftSpace - rightSpace ) / textWidth, true, false );
+		});
 	}
 	
 	public function bindVSlider(slider:peote.ui.interactive.UISlider) {
 		slider.setRange(0, Math.min(0, height - topSpace - bottomSpace - textHeight), (height - topSpace - bottomSpace) / textHeight , false, false);				
 		slider._onChange = function(_, value:Float, _) _setYOffset(Math.round(value), true, false, true); // don't trigger internal _onChangeYOffset again!
 		_onChangeYOffset = function (_,yOffset:Float,_) slider.setValue(yOffset, true, false); // trigger sliders _onChange and onChange					
-		_onResizeHeight = function(_,_,_) {
-			slider.setRange(0, Math.min(0, height - topSpace - bottomSpace - textHeight), (height - topSpace - bottomSpace) / textHeight , true, false);
-		}
-		_onResizeTextHeight = function(_,_,delta:Float) {
+		_onResizeTextHeight = function(_, _, delta:Float) {
 			var s = height - topSpace - bottomSpace;
 			if (textHeight < s || textHeight - delta > s) {
 				slider.setRange(0, Math.min(0, s - textHeight), s / textHeight , true, false);
@@ -1693,40 +1690,32 @@ implements peote.layout.ILayoutElement
 				slider.setValue(yOffset, true, false);
 			}
 		}
+		setOnResizeHeightSlider(this, function(_,_,_) {
+			slider.setRange(0, Math.min(0, height - topSpace - bottomSpace - textHeight), (height - topSpace - bottomSpace) / textHeight , true, false);
+		});
 	}
 	
 	public function unbindHSlider(slider:peote.ui.interactive.UISlider) {
-		slider._onChange = null; _onChangeXOffset = null; _onResizeWidth = null; _onResizeTextWidth = null;
+		slider._onChange = null;
+		_onChangeXOffset = null;
+		setOnResizeWidthSlider(this, null);
+		_onResizeTextWidth = null;
 	}
 	
 	public function unbindVSlider(slider:peote.ui.interactive.UISlider) {
-		slider._onChange = null; _onChangeYOffset = null; _onResizeHeight = null; _onResizeTextHeight = null;
+		slider._onChange = null;
+		_onChangeYOffset = null;
+		setOnResizeHeightSlider(this, null);
+		_onResizeTextHeight = null;
 	}
 	
 	
-	// ------ internal Events ---------------
-	var _onResizeWidth(default, set):UITextPage<$styleType>->Int->Int->Void = null;
-	inline function set__onResizeWidth(f:UITextPage<$styleType>->Int->Int->Void):UITextPage<$styleType>->Int->Int->Void {
-		if (onResizeWidth == null) setOnResizeWidth(this, f);
-		else if (f == null)	setOnResizeWidth(this, onResizeWidth); 
-		else setOnResizeWidth(this, function(t:UITextPage<$styleType>, w:Int, h:Int) { f(t, w, h); onResizeWidth(t, w, h); } );
-		return _onResizeWidth = f;
-	}
-	
-	var _onResizeHeight(default, set):UITextPage<$styleType>->Int->Int->Void = null;
-	inline function set__onResizeHeight(f:UITextPage<$styleType>->Int->Int->Void):UITextPage<$styleType>->Int->Int->Void {
-		if (onResizeHeight == null) setOnResizeHeight(this, f);
-		else if (f == null)	setOnResizeHeight(this, onResizeHeight); 
-		else setOnResizeHeight(this, function(t:UITextPage<$styleType>, w:Int, h:Int) { f(t, w, h); onResizeHeight(t, w, h); } );
-		return _onResizeHeight = f;
-	}
-	
+	// ------------ Events ---------------
+
 	var _onResizeTextWidth:UITextPage<$styleType>->Float->Float->Void = null;
 	var _onResizeTextHeight:UITextPage<$styleType>->Float->Float->Void = null;
 	var _onChangeXOffset:UITextPage<$styleType>->Float->Float->Void = null;
 	var _onChangeYOffset:UITextPage<$styleType>->Float->Float->Void = null;
-	
-	// ----------- events ------------------
 	
 	// text-size (inner) resize events
 	public var onResizeTextWidth:UITextPage<$styleType>->Float->Float->Void = null;
@@ -1739,6 +1728,14 @@ implements peote.layout.ILayoutElement
 	// events if text is changed: fromLine, toLine, fromPos, toPos, chars
 	public var onInsertText:UITextPage<$styleType>->Int->Int->Int->Int->String->Void = null;
 	public var onDeleteText:UITextPage<$styleType>->Int->Int->Int->Int->String->Void = null;
+	
+	public var onResizeWidth(never, set):UITextPage<$styleType>->Int->Int->Void;
+	inline function set_onResizeWidth(f:UITextPage<$styleType>->Int->Int->Void):UITextPage<$styleType>->Int->Int->Void
+		return setOnResizeWidth(this, f);
+	
+	public var onResizeHeight(never, set):UITextPage<$styleType>->Int->Int->Void;
+	inline function set_onResizeHeight(f:UITextPage<$styleType>->Int->Int->Void):UITextPage<$styleType>->Int->Int->Void
+		return setOnResizeHeight(this, f);
 	
 	public var onPointerOver(never, set):UITextPage<$styleType>->peote.ui.event.PointerEvent->Void;
 	inline function set_onPointerOver(f:UITextPage<$styleType>->peote.ui.event.PointerEvent->Void):UITextPage<$styleType>->peote.ui.event.PointerEvent->Void
@@ -1775,20 +1772,6 @@ implements peote.layout.ILayoutElement
 	public var onFocus(never, set):UITextPage<$styleType>->Void;
 	inline function set_onFocus(f:UITextPage<$styleType>->Void):UITextPage<$styleType>->Void
 		return setOnFocus(this, f);
-
-	//public var onResizeWidth(never, set):UITextPage<$styleType>->Int->Int->Void;
-	//inline function set_onResizeWidth(f:UITextPage<$styleType>->Int->Int->Void):UITextPage<$styleType>->Int->Int->Void return setOnResizeWidth(this, f);	
-	public var onResizeWidth(default, set):UITextPage<$styleType>->Int->Int->Void = null;
-	inline function set_onResizeWidth(f:UITextPage<$styleType>->Int->Int->Void):UITextPage<$styleType>->Int->Int->Void {
-		onResizeWidth = f; set__onResizeWidth(_onResizeWidth); return f;
-	}
-		
-	//public var onResizeHeight(never, set):UITextPage<$styleType>->Int->Int->Void;
-	//inline function set_onResizeHeight(f:UITextPage<$styleType>->Int->Int->Void):UITextPage<$styleType>->Int->Int->Void return setOnResizeHeight(this, f);
-	public var onResizeHeight(default, set):UITextPage<$styleType>->Int->Int->Void = null;
-	inline function set_onResizeHeight(f:UITextPage<$styleType>->Int->Int->Void):UITextPage<$styleType>->Int->Int->Void {
-		onResizeHeight = f; set__onResizeHeight(_onResizeHeight); return f;
-	}
 
 }
 

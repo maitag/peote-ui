@@ -1244,9 +1244,6 @@ implements peote.layout.ILayoutElement
 		slider.setRange(0, Math.min(0, width - leftSpace - rightSpace - textWidth), (width  - leftSpace - rightSpace ) / textWidth, false, false );		
 		slider._onChange = function(_, value:Float, _) _setXOffset(Math.round(value), true, false, true); // don't trigger internal _onChangeXOffset again!
 		_onChangeXOffset = function (_,xOffset:Float,_) slider.setValue(xOffset, true, false); // trigger sliders _onChange and onChange						
-		_onResizeWidth = function(_,_,_) {
-			slider.setRange(0, Math.min(0, width - leftSpace - rightSpace - textWidth), (width - leftSpace - rightSpace ) / textWidth, true, false );
-		}
 		_onResizeTextWidth = function(_,_,delta:Float) {
 			var s = width - leftSpace - rightSpace;
 			if (textWidth < s || textWidth - delta > s) {
@@ -1256,28 +1253,25 @@ implements peote.layout.ILayoutElement
 				slider.setValue(xOffset, true, false);
 			}
 		}
+		setOnResizeWidthSlider(this, function(_,_,_) {
+			slider.setRange(0, Math.min(0, width - leftSpace - rightSpace - textWidth), (width - leftSpace - rightSpace ) / textWidth, true, false );
+		});
 	}
 	
 	public function unbindHSlider(slider:peote.ui.interactive.UISlider) {
-		slider._onChange = null; _onChangeXOffset = null; _onResizeWidth = null; _onResizeTextWidth = null;
+		slider._onChange = null;
+		_onChangeXOffset = null;
+		// _onResizeWidthForSlider = null;
+		setOnResizeWidthSlider(this, null);
+		_onResizeTextWidth = null;
 	}
 	
 	
-	// ------ internal Events ---------------
-	
-	var _onResizeWidth(default, set):UITextLine<$styleType>->Int->Int->Void = null;
-	inline function set__onResizeWidth(f:UITextLine<$styleType>->Int->Int->Void):UITextLine<$styleType>->Int->Int->Void {
-		if (onResizeWidth == null) setOnResizeWidth(this, f);
-		else if (f == null)	setOnResizeWidth(this, onResizeWidth); 
-		else setOnResizeWidth(this, function(t:UITextLine<$styleType>, w:Int, h:Int) { f(t, w, h); onResizeWidth(t, w, h); } );
-		return _onResizeWidth = f;
-	}
-	
+	// ----------- Events ---------------
+
 	var _onResizeTextWidth:UITextLine<$styleType>->Float->Float->Void = null;
 	var _onChangeXOffset:UITextLine<$styleType>->Float->Float->Void = null;
-	
-	// ----------- events ------------------
-	
+
 	// text-size (inner) resize events
 	public var onResizeTextWidth:UITextLine<$styleType>->Float->Float->Void = null;
 	
@@ -1287,6 +1281,14 @@ implements peote.layout.ILayoutElement
 	// events if text is changed: fromPos, toPos, chars
 	public var onInsertText:UITextLine<$styleType>->Int->Int->String->Void = null;
 	public var onDeleteText:UITextLine<$styleType>->Int->Int->String->Void = null;
+	
+	public var onResizeWidth(never, set):UITextLine<$styleType>->Int->Int->Void;
+	inline function set_onResizeWidth(f:UITextLine<$styleType>->Int->Int->Void):UITextLine<$styleType>->Int->Int->Void
+		return setOnResizeWidth(this, f);
+	
+	public var onResizeHeight(never, set):UITextLine<$styleType>->Int->Int->Void;
+	inline function set_onResizeHeight(f:UITextLine<$styleType>->Int->Int->Void):UITextLine<$styleType>->Int->Int->Void
+		return setOnResizeHeight(this, f);
 	
 	public var onPointerOver(never, set):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void;
 	inline function set_onPointerOver(f:UITextLine<$styleType>->peote.ui.event.PointerEvent->Void):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void
@@ -1324,20 +1326,6 @@ implements peote.layout.ILayoutElement
 	inline function set_onFocus(f:UITextLine < $styleType >->Void):UITextLine < $styleType >->Void 
 		return setOnFocus(this, f);
 		
-	
-	// TODO:	
-	
-	//public var onResizeWidth(never, set):UITextLine<$styleType>->Int->Int->Void;
-	//inline function set_onResizeWidth(f:UITextLine<$styleType>->Int->Int->Void):UITextLine<$styleType>->Int->Int->Void return setOnResizeWidth(this, f);
-	public var onResizeWidth(default, set):UITextLine<$styleType>->Int->Int->Void = null;
-	inline function set_onResizeWidth(f:UITextLine<$styleType>->Int->Int->Void):UITextLine<$styleType>->Int->Int->Void {
-		onResizeWidth = f; set__onResizeWidth(_onResizeWidth); return f;
-	}
-		
-	public var onResizeHeight(never, set):UITextLine<$styleType>->Int->Int->Void;
-	inline function set_onResizeHeight(f:UITextLine<$styleType>->Int->Int->Void):UITextLine<$styleType>->Int->Int->Void
-		return setOnResizeHeight(this, f);
-	
 }
 
 // -------------------------------------------------------------------------------------------

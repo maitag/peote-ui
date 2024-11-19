@@ -1,5 +1,6 @@
 package;
 
+import peote.ui.interactive.Interactive;
 import lime.app.Application;
 import lime.ui.Window;
 
@@ -127,11 +128,7 @@ class TestUIAreaList extends Application
 			t.stopSelection(e);
 		}
 		areaList.add(inputPage); //TODO: see UIAreaList -> resize is fired before it is added the pickables
-		inputPage.onResizeHeight = (e, height:Int, deltaHeight:Int) -> {
-			trace("resize textfield 1", height, deltaHeight);
-			// TODO:
-			if (height != deltaHeight) areaList.updateChildOnResizeHeight(e, deltaHeight);
-		}
+		inputPage.onResizeHeight = areaList.updateChildOnResizeHeight;
 		// areaList.add(inputPage);
 
 		var uiElement1 = new UIElement(0, 0, 0, 100, 0, roundBorderStyle);		
@@ -139,10 +136,8 @@ class TestUIAreaList extends Application
 		areaList.add(uiElement1);
 
 		var innerArea = new UIArea(0, 0, 0, 100, {backgroundStyle:roundBorderStyle.copy(Color.BLUE2), resizeType:ResizeType.BOTTOM});
-		innerArea.onResizeHeight = (e, height:Int, deltaHeight:Int) -> areaList.updateChildOnResizeHeight(e, deltaHeight);
+		innerArea.onResizeHeight = areaList.updateChildOnResizeHeight;
 		areaList.add(innerArea);
-
-
 		// -------------------------------
 
 		var innerAreaList = new UIAreaList(0, 0, 0, 200, {
@@ -165,12 +160,9 @@ class TestUIAreaList extends Application
 			var innerInputPage = new UITextPage<FontStyleTiled>(0, 0, 200, 0, 1, "inner\nUIAreaList", font, fontStyleInput, textInputConfig);
 			innerInputPage.onPointerDown = function(t:UITextPage<FontStyleTiled>, e:PointerEvent) { t.setInputFocus(e); t.startSelection(e); }
 			innerInputPage.onPointerUp = function(t:UITextPage<FontStyleTiled>, e:PointerEvent) { t.stopSelection(e); }
-			innerInputPage.onResizeHeight = (e, height:Int, deltaHeight:Int) -> {
-				trace("resize INNER TEXT",height, deltaHeight);
-				// TODO:
-				if (height != deltaHeight) innerAreaList.updateChildOnResizeHeight(e, deltaHeight);
-			}
-			innerAreaList.add(innerInputPage);
+			// innerInputPage.onResizeHeight = innerAreaList.updateChildOnResizeHeight;
+			// innerAreaList.add(innerInputPage);
+			innerAreaList.addResizable(innerInputPage); // <- this is add automatically the intern onresize-event
 
 			var uiElement01 = new UIElement(0, 0, 0, 100, 0, roundBorderStyle.copy(Color.MAGENTA));		
 			uiElement01.onPointerDown = (elem:UIElement, e:PointerEvent)-> {innerAreaList.remove(elem);}
@@ -184,7 +176,7 @@ class TestUIAreaList extends Application
 			}
 			innerAreaList.onResizeHeight = (e, height:Int, deltaHeight:Int) -> {
 				innerVSlider.bottomSize = innerAreaList.bottom;
-				areaList.updateChildOnResizeHeight(e, deltaHeight);
+				areaList.updateChildOnResizeHeight(e, height, deltaHeight);
 			}
 		areaList.add(innerAreaList);
 		// -------------------------------
@@ -219,16 +211,11 @@ class TestUIAreaList extends Application
 			vSlider.bottomSize = areaList.bottom;
 			// hSlider.bottom = areaList.bottom;
 		}
-		
+
 		// scroll to bottom!
 		// areaList.setYOffset(areaList.yOffsetEnd, true, true);
-		trace("aaaaaaaaaaaa");
 		peoteUiDisplay.add(areaList);
-		trace("bbbbbbbbbbbb",inputPage.height);
-		// TODO: need to trigger manually here:
-		areaList.updateChildOnResizeHeight(inputPage, inputPage.height);
-		innerAreaList.updateChildOnResizeHeight(innerInputPage, innerInputPage.height);
-
+		
 		// ---------------------------------------------------------
 	
 		// TODO: make uiElement to switch between
