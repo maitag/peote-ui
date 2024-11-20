@@ -171,30 +171,8 @@ implements peote.layout.ILayoutElement
 	}
 	var changeZIndex:Int->Int->Void = null;
 
-/*	
-	public var width(default, set):Int;
-	inline function set_width(w:Int):Int {
-		if (w != width) {
-			if (resizeWidth != null) {
-				var oldWidth = width;
-				resizeWidth(width = w, w - oldWidth);
-			} else width = w;
-		}
-		return w;
-	}
 
-	public var height(default, set):Int;
-	inline function set_height(h:Int):Int {
-		if (h != height) {
-			if (resizeHeight != null) {
-				var oldHeight = height;
-				resizeHeight(height = h, h - oldHeight);
-			} else height = h;
-		}
-		return h;
-	}
-*/	
-	public var width(default, set):Int;
+	public var width(default, set):Int = 0;
 	inline function set_width(w:Int):Int {
 		if (w != width) {
 			var delta = w - width;
@@ -204,7 +182,7 @@ implements peote.layout.ILayoutElement
 		return w;
 	}
 
-	public var height(default, set):Int;
+	public var height(default, set):Int = 0;
 	inline function set_height(h:Int):Int {
 		if (h != height) {
 			var delta = h - height;
