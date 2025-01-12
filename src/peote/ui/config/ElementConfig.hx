@@ -41,17 +41,17 @@ abstract ElementConfig(ElementConfigImpl) from ElementConfigImpl to ElementConfi
 
 	@:to
 	public inline function toSliderConfig():SliderConfig {
-		return {backgroundStyle:this.backgroundStyle, backgroundSpace:this.backgroundSpace};
+		return (this == null) ? null : {backgroundStyle:this.backgroundStyle, backgroundSpace:this.backgroundSpace};
 	}	
 
 	@:to
 	public inline function toAreaConfig():AreaConfig {
-		return {backgroundStyle:this.backgroundStyle, backgroundSpace:this.backgroundSpace};
+		return (this == null) ? null : {backgroundStyle:this.backgroundStyle, backgroundSpace:this.backgroundSpace};
 	}	
 
 	@:to
 	public inline function toTextConfig():TextConfig {
-		return {backgroundStyle:this.backgroundStyle, backgroundSpace:this.backgroundSpace};
+		return (this == null) ? null : {backgroundStyle:this.backgroundStyle, backgroundSpace:this.backgroundSpace};
 	}	
 
 

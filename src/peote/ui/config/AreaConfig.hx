@@ -42,7 +42,7 @@ abstract AreaConfig(AreaConfigImpl) from AreaConfigImpl to AreaConfigImpl
 
 	@:to
 	public inline function toElementConfig():ElementConfig {
-		return { backgroundStyle:this.backgroundStyle, backgroundSpace:this.backgroundSpace };
+		return (this == null) ? null : { backgroundStyle:this.backgroundStyle, backgroundSpace:this.backgroundSpace };
 	}
 
 }
