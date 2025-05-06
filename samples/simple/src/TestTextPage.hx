@@ -6,14 +6,33 @@ import lime.ui.Window;
 import peote.view.PeoteView;
 import peote.view.Color;
 
-import peote.text.Font;
-
 import peote.ui.PeoteUIDisplay;
-import peote.ui.interactive.*;
-import peote.ui.style.*;
-import peote.ui.config.*;
-import peote.ui.event.*;
 
+import peote.ui.style.RoundBorderStyle;
+import peote.ui.style.BoxStyle;
+
+import peote.ui.config.TextConfig;
+import peote.ui.config.HAlign;
+import peote.ui.config.VAlign;
+
+import peote.ui.event.PointerEvent;
+
+import peote.ui.style.FontStylePacked;
+import peote.ui.style.FontStyleTiled;
+
+// using macro generated Font and Text-widgets
+// -------------------------------------------
+typedef FntP = peote.text.Font<FontStylePacked>;
+typedef FntT = peote.text.Font<FontStyleTiled>;
+typedef TextLineT = peote.ui.interactive.UITextLine<FontStyleTiled>;
+typedef TextPageP = peote.ui.interactive.UITextPage<FontStylePacked>;
+
+// faster buildtime by using the pre generated:
+// --------------------------------------------
+// typedef FntP = peote.ui.packed.FontP;
+// typedef FntT = peote.ui.tiled.FontT;
+// typedef TextLineT = peote.ui.interactive.UITextLineT;
+// typedef TextPageP = peote.ui.interactive.UITextPageP;
 
 class TestTextPage extends Application
 {
@@ -36,10 +55,10 @@ class TestTextPage extends Application
 		// trace("window.display", window.display );
 		
 		// load the FONTs:
-		new Font<FontStylePacked>("assets/fonts/packed/hack/config.json").load( 
-			function(fontPacked:Font<FontStylePacked>) {
-				new Font<FontStyleTiled>("assets/fonts/tiled/hack_ascii.json").load(
-					function(fontTiled:Font<FontStyleTiled>) {
+		new FntP("assets/fonts/packed/hack/config.json").load( 
+			function(fontPacked:FntP) {
+				new FntT("assets/fonts/tiled/hack_ascii.json").load(
+					function(fontTiled:FntT) {
 						onFontLoaded(fontPacked, fontTiled);
 					}
 				);
@@ -51,7 +70,7 @@ class TestTextPage extends Application
 	
 	var buttonX:Int = 0;
 	var buttonY:Int = 0;
-	var fontButtons:Font<FontStyleTiled>;
+	var fntButtons:FntT;
 	var buttonBackgroundStyle:TextConfig = {
 		backgroundStyle: new RoundBorderStyle(Color.GREY5, Color.BLACK, 1.0, 9.0), 
 		textSpace: { left:6, right:6, top:3, bottom:3 }
@@ -64,33 +83,33 @@ class TestTextPage extends Application
 		s3:String = null, f3:Void->Void = null,
 		s4:String = null, f4:Void->Void = null)
 	{
-		var b:UITextLine<FontStyleTiled> = null;
+		var b:TextLineT = null;
 		var hgap:Int = 5; var vgap:Int = 30;
-		if (s1 != null) uiDisplay.add(b = fontButtons.createUITextLine(buttonX             , buttonY, 0, 0, s1, buttonStyle, buttonBackgroundStyle));
+		if (s1 != null) uiDisplay.add(b = fntButtons.createUITextLine(buttonX             , buttonY, 0, 0, s1, buttonStyle, buttonBackgroundStyle));
 		if (f1 != null) { b.onPointerClick = (_, _)-> f1(); b.onPointerOver = buttonOver; b.onPointerOut = buttonOut; }
-		if (s2 != null) uiDisplay.add(b = fontButtons.createUITextLine(b.x + hgap + b.width, buttonY, 0, 0, s2, buttonStyle, buttonBackgroundStyle));
+		if (s2 != null) uiDisplay.add(b = fntButtons.createUITextLine(b.x + hgap + b.width, buttonY, 0, 0, s2, buttonStyle, buttonBackgroundStyle));
 		if (f2 != null) { b.onPointerClick = (_,_)-> f2(); b.onPointerOver = buttonOver; b.onPointerOut = buttonOut; }
-		if (s3 != null) uiDisplay.add(b = fontButtons.createUITextLine(b.x + hgap + b.width, buttonY, 0, 0, s3, buttonStyle, buttonBackgroundStyle));
+		if (s3 != null) uiDisplay.add(b = fntButtons.createUITextLine(b.x + hgap + b.width, buttonY, 0, 0, s3, buttonStyle, buttonBackgroundStyle));
 		if (f3 != null) { b.onPointerClick = (_,_)-> f3(); b.onPointerOver = buttonOver; b.onPointerOut = buttonOut; }
-		if (s4 != null) uiDisplay.add(b = fontButtons.createUITextLine(b.x + hgap + b.width, buttonY, 0, 0, s4, buttonStyle, buttonBackgroundStyle));
+		if (s4 != null) uiDisplay.add(b = fntButtons.createUITextLine(b.x + hgap + b.width, buttonY, 0, 0, s4, buttonStyle, buttonBackgroundStyle));
 		if (f4 != null) { b.onPointerClick = (_, _)-> f4(); b.onPointerOver = buttonOver; b.onPointerOut = buttonOut; }
 		buttonY += vgap;
 	}
 	
-	function buttonOver(b:UITextLine<FontStyleTiled>, _) {
+	function buttonOver(b:TextLineT, _) {
 		b.backgroundStyle.color = Color.GREY7;
 		b.updateStyle();
 	}
-	function buttonOut(b:UITextLine<FontStyleTiled>, _) {
+	function buttonOut(b:TextLineT, _) {
 		b.backgroundStyle.color = Color.GREY5;
 		b.updateStyle();
 	}
 	
 	// ---------------- all Fonts are loaded  ----------------------
 	
-	public function onFontLoaded(fontPacked:Font<FontStylePacked>, fontTiled:Font<FontStyleTiled>) // font needs type here !
+	public function onFontLoaded(fontPacked:FntP, fontTiled:FntT) // font needs type here !
 	{
-		fontButtons = fontTiled; // make global for the button() function
+		fntButtons = fontTiled; // make global for the button() function
 		
 		var boxStyle  = new BoxStyle(Color.RED);
 		var roundBorderStyle = new RoundBorderStyle(Color.GREEN);
@@ -133,7 +152,7 @@ class TestTextPage extends Application
 			undoBufferSize:20
 		}
 
-		var textPage = new UITextPage<FontStylePacked>(240, 5, 0, 0,
+		var textPage = new TextPageP(240, 5, 0, 0,
 			"Hello World\nTesting UITextPage\nabdefg\n123456789",
 			fontPacked, fontStylePacked, textConfig
 		);
@@ -187,11 +206,11 @@ class TestTextPage extends Application
 		buttonY += 12;
 		button(
 			"backgroundShow/Hide", ()-> if (textPage.backgroundIsVisible) textPage.backgroundHide() else textPage.backgroundShow(),	
-			"color", ()-> { textPage.backgroundStyle.color = Color.random(); textPage.updateStyle(); }
+			"color", ()-> { if (textPage.backgroundStyle != null) {textPage.backgroundStyle.color = Color.random(); textPage.updateStyle();} }
 		);			
-		button("set boxStyle", ()-> if (textPage.backgroundStyle != null) textPage.backgroundStyle = backgroundSimpleStyle);
-		button("set roundStyle",  ()-> if (textPage.backgroundStyle != null) textPage.backgroundStyle = backgroundRoundStyle);
-		button("remove style",    ()-> if (textPage.backgroundStyle != null) textPage.backgroundStyle = null);
+		button("set boxStyle", ()-> textPage.backgroundStyle = backgroundSimpleStyle);
+		button("set roundStyle",  ()-> textPage.backgroundStyle = backgroundRoundStyle);
+		button("remove style",    ()-> textPage.backgroundStyle = null);
 				
 		// ------------ selection Style ------------
 		buttonY += 12;
@@ -202,7 +221,7 @@ class TestTextPage extends Application
 		);
 		button(
 			"selectionShow/Hide", ()-> if (textPage.selectionIsVisible) textPage.selectionHide() else textPage.selectionShow(),
-			"color", ()-> { textPage.selectionStyle.color = Color.random(); textPage.updateStyle(); }
+			"color", ()-> { if (textPage.selectionStyle != null) {textPage.selectionStyle.color = Color.random(); textPage.updateStyle();} }
 		);		
 		button("set simplestyle", ()-> textPage.selectionStyle = selectionSimpleStyle);
 		button("set roundStyle", ()-> textPage.selectionStyle = selectionRoundStyle);
@@ -212,11 +231,11 @@ class TestTextPage extends Application
 		buttonY += 12;
 		button(
 			"cursorShow/Hide", ()->if (textPage.cursorIsVisible) textPage.cursorHide() else textPage.cursorShow(),
-			"color", ()-> { textPage.cursorStyle.color = Color.random(); textPage.updateStyle(); } 
+			"color", ()-> { if (textPage.cursorStyle != null) {textPage.cursorStyle.color = Color.random(); textPage.updateStyle();} } 
 		);		
-		button("set simplestyle", ()-> if (textPage.cursorStyle != null) textPage.cursorStyle = cursorSimpleStyle);
-		button("set roundStyle", ()-> if (textPage.cursorStyle != null) textPage.cursorStyle = cursorRoundStyle);
-		button("remove style", ()-> if (textPage.cursorStyle != null) textPage.cursorStyle = null);
+		button("set simplestyle", ()-> textPage.cursorStyle = cursorSimpleStyle);
+		button("set roundStyle", ()-> textPage.cursorStyle = cursorRoundStyle);
+		button("remove style", ()-> textPage.cursorStyle = null);
 
 		
 		// ----------------------------------------------------------

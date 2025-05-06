@@ -1,13 +1,10 @@
 package;
 
-import peote.ui.interactive.Interactive;
 import lime.app.Application;
 import lime.ui.Window;
 
 import peote.view.PeoteView;
 import peote.view.Color;
-
-import peote.text.Font;
 
 import peote.ui.PeoteUIDisplay;
 import peote.ui.interactive.UIElement;
@@ -17,7 +14,6 @@ import peote.ui.interactive.UISlider;
 import peote.ui.interactive.UIArea;
 import peote.ui.style.BoxStyle;
 import peote.ui.style.RoundBorderStyle;
-import peote.ui.style.FontStyleTiled;
 import peote.ui.config.ResizeType;
 import peote.ui.config.TextConfig;
 import peote.ui.config.SliderConfig;
@@ -26,6 +22,20 @@ import peote.ui.event.WheelEvent;
 
 import interactive.UIAreaList;
 import interactive.AreaListConfig;
+
+import peote.ui.style.FontStyleTiled;
+
+// using macro generated Font and Text-widgets
+// -------------------------------------------
+typedef Fnt = peote.text.Font<FontStyleTiled>;
+typedef TextLine = peote.ui.interactive.UITextLine<FontStyleTiled>;
+typedef TextPage = peote.ui.interactive.UITextPage<FontStyleTiled>;
+
+// faster buildtime by using the pre generated:
+// --------------------------------------------
+// typedef Fnt = peote.ui.tiled.FontT;
+// typedef TextLine = peote.ui.interactive.UITextLineT;
+// typedef TextPage = peote.ui.interactive.UITextPageT;
 
 class TestUIAreaList extends Application
 {
@@ -44,17 +54,17 @@ class TestUIAreaList extends Application
 
 	public function startSample(window:Window)
 	{
-		new Font<FontStyleTiled>("assets/fonts/tiled/hack_ascii.json").load( onFontLoaded );
+		new Fnt("assets/fonts/tiled/hack_ascii.json").load( onFontLoaded );
 	}
 	
-	public function onFontLoaded(font:Font<FontStyleTiled>) // don'T forget argument-type here !
+	public function onFontLoaded(font:Fnt) // don'T forget argument-type here !
 	{
 		peoteView = new PeoteView(window);
 		peoteView.start();
 
 		// ---- setting up some styles -----
 
-		var boxStyle  = new BoxStyle(0x041144ff);
+		var boxStyle  = new BoxStyle(0x41144ff);
 		
 		var roundBorderStyle = RoundBorderStyle.createById(0);		
 		
@@ -107,7 +117,7 @@ class TestUIAreaList extends Application
 		// peoteUiDisplay.add(areaList);
 		
 		// add some fixed Element for the header
-		var header = new UITextLine<FontStyleTiled>(0, 0, 0, 0, 2, "--- header ---", font, fontStyleInput, textInputConfig);
+		var header = new TextLine(0, 0, 0, 0, 2, "--- header ---", font, fontStyleInput, textInputConfig);
 		header.onPointerDown = (_, e:PointerEvent)-> areaList.startDragging(e);
 		header.onPointerUp = (_, e:PointerEvent)-> areaList.stopDragging(e);
 		areaList.addFixed(header);
@@ -119,12 +129,12 @@ class TestUIAreaList extends Application
 		uiElement0.onPointerDown = (elem:UIElement, e:PointerEvent)-> {areaList.remove(elem);}
 		areaList.add(uiElement0);
 
-		var inputPage = new UITextPage<FontStyleTiled>(0, 0, 200, 0, 1, "input\ntext by\nUITextPage", font, fontStyleInput, textInputConfig);
-		inputPage.onPointerDown = function(t:UITextPage<FontStyleTiled>, e:PointerEvent) {
+		var inputPage = new TextPage(0, 0, 200, 0, 1, "input\ntext by\nUITextPage", font, fontStyleInput, textInputConfig);
+		inputPage.onPointerDown = function(t:TextPage, e:PointerEvent) {
 			t.setInputFocus(e);
 			t.startSelection(e);
 		}
-		inputPage.onPointerUp = function(t:UITextPage<FontStyleTiled>, e:PointerEvent) {
+		inputPage.onPointerUp = function(t:TextPage, e:PointerEvent) {
 			t.stopSelection(e);
 		}
 		areaList.add(inputPage); //TODO: see UIAreaList -> resize is fired before it is added the pickables
@@ -157,9 +167,9 @@ class TestUIAreaList extends Application
 			uiElement00.onPointerDown = (elem:UIElement, e:PointerEvent)-> {innerAreaList.remove(elem);}
 			innerAreaList.add(uiElement00);
 
-			var innerInputPage = new UITextPage<FontStyleTiled>(0, 0, 200, 0, 1, "inner\nUIAreaList", font, fontStyleInput, textInputConfig);
-			innerInputPage.onPointerDown = function(t:UITextPage<FontStyleTiled>, e:PointerEvent) { t.setInputFocus(e); t.startSelection(e); }
-			innerInputPage.onPointerUp = function(t:UITextPage<FontStyleTiled>, e:PointerEvent) { t.stopSelection(e); }
+			var innerInputPage = new TextPage(0, 0, 200, 0, 1, "inner\nUIAreaList", font, fontStyleInput, textInputConfig);
+			innerInputPage.onPointerDown = function(t:TextPage, e:PointerEvent) { t.setInputFocus(e); t.startSelection(e); }
+			innerInputPage.onPointerUp = function(t:TextPage, e:PointerEvent) { t.stopSelection(e); }
 			// innerInputPage.onResizeHeight = innerAreaList.updateChildOnResizeHeight;
 			// innerAreaList.add(innerInputPage);
 			innerAreaList.addResizable(innerInputPage); // <- this is add automatically the intern onresize-event
@@ -167,6 +177,11 @@ class TestUIAreaList extends Application
 			var uiElement01 = new UIElement(0, 0, 0, 100, 0, roundBorderStyle.copy(Color.MAGENTA));		
 			uiElement01.onPointerDown = (elem:UIElement, e:PointerEvent)-> {innerAreaList.remove(elem);}
 			innerAreaList.add(uiElement01);
+
+			var innerInputLine = new TextLine(0, 0, 200, 0, 1, "INPUTLINE", font, fontStyleInput, textInputConfig);
+			innerInputLine.onPointerDown = function(t:TextLine, e:PointerEvent) { t.setInputFocus(e); t.startSelection(e); }
+			innerInputLine.onPointerUp = function(t:TextLine, e:PointerEvent) { t.stopSelection(e); }
+			innerAreaList.addResizable(innerInputLine);
 
 			var innerVSlider = new UISlider(innerAreaList.width-20, 0, 20, innerAreaList.height, sliderConfig);
 			innerAreaList.addFixed(innerVSlider);
@@ -212,9 +227,10 @@ class TestUIAreaList extends Application
 			// hSlider.bottom = areaList.bottom;
 		}
 
-		// scroll to bottom!
-		// areaList.setYOffset(areaList.yOffsetEnd, true, true);
 		peoteUiDisplay.add(areaList);
+
+		// scroll to bottom (have to be after "add" because of text-elements!)
+		areaList.setYOffset(areaList.yOffsetEnd, true, true);
 		
 		// ---------------------------------------------------------
 	

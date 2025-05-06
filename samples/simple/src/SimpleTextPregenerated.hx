@@ -7,8 +7,6 @@ import lime.ui.KeyCode;
 import peote.view.PeoteView;
 import peote.view.Color;
 
-import peote.text.Font;
-
 import input2action.Input2Action;
 import input2action.ActionConfig;
 import input2action.ActionMap;
@@ -22,30 +20,15 @@ import peote.ui.config.*;
 import peote.ui.event.*;
 
 
-import peote.ui.style.interfaces.FontStyle;
+import peote.ui.packed.FontP;
+import peote.ui.style.FontStylePacked;
 
-
-// ------------------------------------------
-// --- using a custom FontStyle here --------
-// ------------------------------------------
-
-@packed // this is need for ttfcompile fonts (gl3font)
-@globalLineSpace // all pageLines using the same page.lineSpace (gap to next line into page)
-@:structInit
-class MyFontStyle implements FontStyle
-{
-	public var color:Color = Color.GREEN;
-	//public var color:Color = Color.GREEN.setAlpha(0.5);
-	public var width:Float = 38; // (<- is it still fixed to get from font-defaults if this is MISSING ?)
-	public var height:Float = 36;
-	@global public var weight = 0.5; //0.49 <- more thick (only for ttfcompiled fonts)
-}
 
 // ------------------------------------
 // -------- application start  --------
 // ------------------------------------
 
-class SimpleText extends Application
+class SimpleTextPregenerated extends Application
 {
 	var peoteView:PeoteView;
 	var uiDisplay:PeoteUIDisplay;
@@ -67,12 +50,15 @@ class SimpleText extends Application
 
 	public function startSample(window:Window)
 	{
-		new Font<MyFontStyle>("assets/fonts/packed/hack/config.json").load( onFontLoaded );
+		new FontP("assets/fonts/packed/hack/config.json").load( onFontLoaded );
 	}
 	
-	public function onFontLoaded(font:Font<MyFontStyle>) // don'T forget argument-type here !
+	public function onFontLoaded(font:FontP)
 	{					
-		var fontStyle = new MyFontStyle();
+		var fontStyle = new FontStylePacked();
+		fontStyle.color = Color.GREEN;
+		fontStyle.width = 38;
+		fontStyle.height = 36;
 		
 		var boxStyle = new BoxStyle(Color.BLACK);
 		
@@ -85,16 +71,16 @@ class SimpleText extends Application
 		// ---- simple TextLine with autosize and default textConfig ----
 		// --------------------------------------------------------------
 
-		// var textLine = new UITextLine<MyFontStyle>(20, 20, 0, 0, "UITextLine", font, fontStyle);
+		var textLine = new UITextLineP(20, 20, 0, 0, "UITextLine", font, fontStyle);
 		// alternatively it can also be:
-		var textLine = font.createUITextLine(20, 20, 0, 0, "UITextLine", fontStyle);
+		// var textLine = font.createUITextLine(20, 20, 0, 0, "UITextLine", fontStyle);
 		
 		// set events
-		textLine.onPointerOver = function(t:UITextLine<MyFontStyle>, e:PointerEvent) {
+		textLine.onPointerOver = function(t:UITextLineP, e:PointerEvent) {
 			t.fontStyle.color = Color.YELLOW;
 			t.updateStyle();
 		}
-		textLine.onPointerOut = function(t:UITextLine<MyFontStyle>, e:PointerEvent) {
+		textLine.onPointerOut = function(t:UITextLineP, e:PointerEvent) {
 			t.fontStyle.color = Color.GREEN;
 			t.updateStyle();
 		}
@@ -105,10 +91,10 @@ class SimpleText extends Application
 		// ------------------- input TextLine ---------------------------
 		// --------------------------------------------------------------
 				
-		var fontStyleInput = new MyFontStyle();
+		var fontStyleInput = new FontStylePacked();
 		fontStyleInput.color = Color.GREY5;
-		//fontStyleInput.height = 30;
-		//fontStyleInput.width = 20;
+		fontStyleInput.height = 38;
+		fontStyleInput.width = 36;
 		
 		var textConfig:TextConfig = {
 			backgroundStyle:boxStyle,
@@ -118,10 +104,10 @@ class SimpleText extends Application
 			undoBufferSize: 30
 		}
 		
-		var inputLine = new UITextLine<MyFontStyle>(300, 20, 0, 0, "input UITextLine", font, fontStyleInput, textConfig);
+		var inputLine = new UITextLineP(300, 20, 0, 0, "input UITextLine", font, fontStyleInput, textConfig);
 
 		// set events
-		inputLine.onPointerDown = function(t:UITextLine<MyFontStyle>, e:PointerEvent) {
+		inputLine.onPointerDown = function(t:UITextLineP, e:PointerEvent) {
 			t.setInputFocus(e); // alternatively: uiDisplay.setInputFocus(t);
 			//t.setInputFocus(e, true); // to also set the cursor
 			
@@ -131,7 +117,7 @@ class SimpleText extends Application
 			//t.setCursorToPointer(e); // set cursor to pointer-down position
 			//uiDisplay.onPointerMove = (_,e)->t.setCursorToPointer(e); // also move the cursor while dragging!
 		}
-		inputLine.onPointerUp = function(t:UITextLine<MyFontStyle>, e:PointerEvent) {
+		inputLine.onPointerUp = function(t:UITextLineP, e:PointerEvent) {
 			t.stopSelection(e);
 			//uiDisplay.onPointerMove = null; // stops moving the cursor while dragging
 		}
@@ -145,16 +131,16 @@ class SimpleText extends Application
 		// ---- simple TextPage with autosize and default textConfig ----
 		// --------------------------------------------------------------
 
-		// var textPage = new UITextPage<MyFontStyle>(20, 100, 0, 0, "UITextPage\ncan contain\nlinebreaks", font, fontStyle);
+		// var textPage = new UITextPageP(20, 100, 0, 0, "UITextPage\ncan contain\nlinebreaks", font, fontStyle);
 		// alternatively it can also be:
 		var textPage = font.createUITextPage(20, 100, 0, 0, "This text\ncontains\nlinebreaks", fontStyle);
 		
 		// set events
-		textPage.onPointerOver = function(t:UITextPage<MyFontStyle>, e:PointerEvent) {
+		textPage.onPointerOver = function(t:UITextPageP, e:PointerEvent) {
 			t.fontStyle.color = Color.YELLOW;
 			t.updateStyle();
 		}
-		textPage.onPointerOut = function(t:UITextPage<MyFontStyle>, e:PointerEvent) {
+		textPage.onPointerOut = function(t:UITextPageP, e:PointerEvent) {
 			t.fontStyle.color = Color.GREEN;
 			t.updateStyle();
 		}
@@ -168,10 +154,10 @@ class SimpleText extends Application
 		// ----------- input TextPage ----------------
 		// -------------------------------------------
 				
-		var fontStyleInput = new MyFontStyle();
+		var fontStyleInput = new FontStylePacked();
 		fontStyleInput.color = Color.GREY5;
-		//fontStyleInput.height = 30;
-		//fontStyleInput.width = 20;
+		fontStyleInput.height = 38;
+		fontStyleInput.width = 36;
 		
 		var textConfig:TextConfig = {
 			backgroundStyle:boxStyle,
@@ -180,15 +166,15 @@ class SimpleText extends Application
 			undoBufferSize: 30
 		}
 		
-		var inputPage = new UITextPage<MyFontStyle>(300, 100, 0, 0, "input\ntext by\nUIText\tPage", font, fontStyleInput, textConfig);
+		var inputPage = new UITextPageP(300, 100, 0, 0, "input\ntext by\nUIText\tPage", font, fontStyleInput, textConfig);
 
 		// set events
-		inputPage.onPointerDown = function(t:UITextPage<MyFontStyle>, e:PointerEvent) {
+		inputPage.onPointerDown = function(t:UITextPageP, e:PointerEvent) {
 			//t.setInputFocus(e, true);			
 			t.setInputFocus(e);			
 			t.startSelection(e);
 		}
-		inputPage.onPointerUp = function(t:UITextPage<MyFontStyle>, e:PointerEvent) {
+		inputPage.onPointerUp = function(t:UITextPageP, e:PointerEvent) {
 			t.stopSelection(e);
 		}
 		
@@ -202,15 +188,15 @@ class SimpleText extends Application
 		// ---- input TextLine with custom keyboard handling -------
 		// ---------------------------------------------------------
 			
-		var inputLineKeys = new UITextLine<MyFontStyle>(300, 500, 0, 0, "custom keyhandling", font, fontStyleInput, textConfig);
+		var inputLineKeys = new UITextLineP(300, 500, 0, 0, "custom keyhandling", font, fontStyleInput, textConfig);
 
 		// set events
-		inputLineKeys.onPointerDown = function(t:UITextLine<MyFontStyle>, e:PointerEvent) {
+		inputLineKeys.onPointerDown = function(t:UITextLineP, e:PointerEvent) {
 			t.setInputFocus(e); // alternatively: uiDisplay.setInputFocus(t);
 			//t.setInputFocus(e, true); // to also set the cursor
 			t.startSelection(e);
 		}
-		inputLineKeys.onPointerUp = function(t:UITextLine<MyFontStyle>, e:PointerEvent) {
+		inputLineKeys.onPointerUp = function(t:UITextLineP, e:PointerEvent) {
 			t.stopSelection(e);
 		}
 		uiDisplay.add(inputLineKeys);
@@ -241,8 +227,8 @@ class SimpleText extends Application
 				action:(_, _) -> {
 					trace("return");
 					// to check which textline if used globally
-					// trace( (cast uiDisplay.inputFocusElement : UITextLine<MyFontStyle>).text);
-					// trace( (cast InputTextLine.focusElement : UITextLine<MyFontStyle>).text);
+					// trace( (cast uiDisplay.inputFocusElement : UITextLineP).text);
+					// trace( (cast InputTextLine.focusElement : UITextLineP).text);
 				},
 				repeatKeyboardDefault:false
 			},			

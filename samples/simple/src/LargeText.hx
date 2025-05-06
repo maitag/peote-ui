@@ -93,9 +93,9 @@ class LargeText extends Application
 		// -------------------------------		
 		
 		var assetPath = AssetMacro.wget(
-			//"https://www.gutenberg.org/files/55108/55108-0.txt", "assets/testdata/hegel-scienceOfLogic.txt"
-			"https://www.gutenberg.org/cache/epub/919/pg919.txt", "assets/testdata/spinoza-ethic-I.txt"
-			//"https://ia800308.us.archive.org/10/items/SartreLaNause1974/Sartre%20-%20La%20naus%C3%A9e%20-%201974_djvu.txt", "assets/testdata/satre-la-nausee.txt"
+			"https://www.gutenberg.org/files/55108/55108-0.txt", "assets/testdata/hegel-scienceOfLogic.txt"
+			// "https://www.gutenberg.org/cache/epub/919/pg919.txt", "assets/testdata/spinoza-ethic-I.txt"
+			// "https://ia800308.us.archive.org/10/items/SartreLaNause1974/Sartre%20-%20La%20naus%C3%A9e%20-%201974_djvu.txt", "assets/testdata/satre-la-nausee.txt"
 		);
 		
 		Loader.text( assetPath,

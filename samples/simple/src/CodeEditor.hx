@@ -9,14 +9,32 @@ import peote.view.PeoteView;
 import peote.view.Color;
 
 import peote.text.Font;
+import peote.ui.tiled.FontT;
 
 import peote.ui.PeoteUIDisplay;
 import peote.ui.event.PointerEvent;
 import peote.ui.event.WheelEvent;
 
-import peote.ui.interactive.*;
-import peote.ui.config.*;
-import peote.ui.style.*;
+import peote.ui.interactive.UIArea;
+import peote.ui.interactive.UISlider;
+
+// import peote.ui.config.AreaConfig;
+import peote.ui.config.TextConfig;
+import peote.ui.config.SliderConfig;
+import peote.ui.config.ResizeType;
+import peote.ui.config.HAlign;
+
+import peote.ui.style.BoxStyle;
+import peote.ui.style.RoundBorderStyle;
+import peote.ui.style.FontStyleTiled;
+
+// typedef Fnt = peote.text.Font<FontStyleTiled>;
+// typedef TextLine = peote.ui.interactive.UITextLine<FontStyleTiled>;
+// typedef TextPage = peote.ui.interactive.UITextPage<FontStyleTiled>;
+
+typedef Fnt = peote.ui.tiled.FontT;
+typedef TextLine = peote.ui.interactive.UITextLineT;
+typedef TextPage = peote.ui.interactive.UITextPageT;
 
 
 class CodeEditor extends Application
@@ -36,10 +54,10 @@ class CodeEditor extends Application
 
 	public function startSample(window:Window)
 	{
-		new Font<FontStyleTiled>("assets/fonts/tiled/hack_ascii.json").load( onFontLoaded );
+		new Fnt("assets/fonts/tiled/hack_ascii.json").load( onFontLoaded );
 	}
 	
-	public function onFontLoaded(font:Font<FontStyleTiled>) // don'T forget argument-type here !
+	public function onFontLoaded(font:Fnt) // don'T forget argument-type here !
 	{
 		peoteView = new PeoteView(window);
 		peoteView.start();
@@ -104,7 +122,7 @@ class CodeEditor extends Application
 		// ---- header textline -----		
 		// --------------------------
 		
-		var header = new UITextLine<FontStyleTiled>(gap, gap,
+		var header = new TextLine(gap, gap,
 			area.width - gap - gap, headerSize, 
 			"=== Edit Code ===", font, fontStyleHeader, { backgroundStyle:roundBorderStyle, hAlign:HAlign.CENTER }
 		);
@@ -118,7 +136,7 @@ class CodeEditor extends Application
 		// ------- edit area --------
 		// --------------------------
 		
-		var textPage = new UITextPage<FontStyleTiled>(gap, headerSize + gap + 1,
+		var textPage = new TextPage(gap, headerSize + gap + 1,
 			area.width - sliderSize - gap - gap - 1,
 			area.height - headerSize - sliderSize - 2 - gap - gap,
 			"class Test {\n\tstatic function main() {\n\t\ttrace(\"Haxe is great!\");\n\t}\n}",

@@ -384,14 +384,11 @@ implements peote.layout.ILayoutElement
 	}
 	
 	public function remove(uiElement:Interactive):Void {
-		
-		// TODO: check for GLITCH here!
-		// send pointerout if was over while deleting
 		if (lastMouseOverIndex >= 0) {
 			var lastElem = movePickBuffer.getElement(lastMouseOverIndex).uiElement;
 			if (lastElem == uiElement) {
 				while (lastElem != null) {
-					lastElem.pointerOut({x: -1, y: -1, type:PointerType.MOUSE});
+					if (lastElem.pointerOverOnHide) lastElem.pointerOut({x: -1, y: -1, type:PointerType.MOUSE});
 					lastElem = lastElem.overOutEventsBubbleTo;
 				}
 				lastMouseOverIndex = -1;

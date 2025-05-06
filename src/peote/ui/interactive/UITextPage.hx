@@ -15,17 +15,25 @@ class UITextPageMacro
 	static public function buildClass(className:String, classPackage:Array<String>, stylePack:Array<String>, styleModule:String, styleName:String, styleSuperModule:String, styleSuperName:String, styleType:ComplexType, styleField:Array<String>):ComplexType
 	{
 		className += Macro.classNameExtension(styleName, styleModule);
-
 		var fullyQualifiedName:String = classPackage.concat([className]).join('.');
-		var tp = TPath({ pack:classPackage, name:className, params:[] });
-		if ( Macro.typeAlreadyGenerated(fullyQualifiedName) ) return tp;
-		
-		// if ( Macro.typeNotGenerated(classPackage.concat([className]).join('.')) )
-		// if ( Macro.isNotGenerated(className) )
-		// {
+
+		if ( !Macro.typeAlreadyGenerated(fullyQualifiedName) )
+		{	
 			Macro.debug(className, classPackage, stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
 			
 			//var glyphType = peote.text.Glyph.GlyphMacro.buildClass("Glyph", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType);
+			var uiTextPageType:ComplexType =  TPath({ pack:classPackage, name:"UITextPage" + Macro.classNameExtension(styleName, styleModule), params:[] });
+
+			var pageType = //peote.text.Page.PageMacro.buildClass("Page", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
+				TPath({ pack:["peote","text"], name:"Page", params:[TPType(styleType)] });
+			var pageLineType = //peote.text.PageLine.PageLineMacro.buildClass("PageLine", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
+				TPath({ pack:["peote","text"], name:"PageLine", params:[TPType(styleType)] });
+			var fontType = //peote.text.Font.FontMacro.buildClass("Font", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
+				TPath({ pack:["peote","text"], name:"Font", params:[TPType(styleType)] });
+			var fontProgramType = //peote.text.FontProgram.FontProgramMacro.buildClass("FontProgram", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
+				TPath({ pack:["peote","text"], name:"FontProgram", params:[TPType(styleType)] });
+		
+			
 			//var fontType = peote.text.Font.FontMacro.buildClass("Font", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
 			//var fontProgramType = peote.text.FontProgram.FontProgramMacro.buildClass("FontProgram", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
 			//var pageType  = peote.text.Page.PageMacro.buildClass("Page", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
@@ -33,11 +41,18 @@ class UITextPageMacro
 			//var fontPath = TPath({ pack:["peote","text"], name:"Font" + Macro.classNameExtension(styleName, styleModule), params:[] });
 			//var fontProgramPath = TPath({ pack:["peote","text"], name:"FontProgram" + Macro.classNameExtension(styleName, styleModule), params:[] });
 			//var pagePath = TPath({ pack:["peote","text"], name:"Page" + Macro.classNameExtension(styleName, styleModule), params:[] });
-			
-			var glyphStyleHasMeta = Macro.parseGlyphStyleMetas(styleModule+"."+styleName); // trace("FontProgram: glyphStyleHasMeta", glyphStyleHasMeta);
-			var glyphStyleHasField = Macro.parseGlyphStyleFields(styleModule+"."+styleName); // trace("FontProgram: glyphStyleHasField", glyphStyleHasField);
+		
+			Context.defineModule(fullyQualifiedName, [ getTypeDefinition(className, styleModule, styleName, styleType, uiTextPageType, pageType, pageLineType, fontType, fontProgramType) ]);
+		}
+		return TPath({ pack:classPackage, name:className, params:[] });
+	}
+		
+	static public function getTypeDefinition(className:String, styleModule:String, styleName:String, styleType:ComplexType, uiTextPageType:ComplexType, pageType:ComplexType, pageLineType:ComplexType, fontType:ComplexType, fontProgramType:ComplexType):TypeDefinition
+	{
+		// var glyphStyleHasMeta = Macro.parseGlyphStyleMetas(styleModule+"."+styleName); // trace("FontProgram: glyphStyleHasMeta", glyphStyleHasMeta);
+		var glyphStyleHasField = Macro.parseGlyphStyleFields(styleModule+"."+styleName); // trace("FontProgram: glyphStyleHasField", glyphStyleHasField);
 
-			var c = macro
+		var c = macro
 
 // -------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------
@@ -49,8 +64,8 @@ class $className extends peote.ui.interactive.Interactive
 implements peote.layout.ILayoutElement
 #end
 {	
-	var page:peote.text.Page<$styleType> = null; // $pageType
-	var pageLine:peote.text.PageLine<$styleType> = null; //$lineType
+	var page:$pageType = null;
+	var pageLine:$pageLineType = null;
 	
 	var undoBuffer:peote.ui.util.UndoBufferPage = null;
 	public var hasUndo(get, never):Bool;
@@ -62,8 +77,8 @@ implements peote.layout.ILayoutElement
 	public var textHeight(get, never):Float;
 	inline function get_textHeight():Float return (page != null) ? page.textHeight : height;
 	
-	var fontProgram:peote.text.FontProgram<$styleType>; //$fontProgramType	
-	var font:peote.text.Font<$styleType>; //$fontType	
+	var fontProgram:$fontProgramType;	
+	var font:$fontType;	
 	public var fontStyle:$styleType;
 	
 	public var backgroundSpace:peote.ui.config.Space = null;
@@ -353,9 +368,8 @@ implements peote.layout.ILayoutElement
 	var maskElement:peote.text.MaskElement;
 	#end
 	
-	//public function new(xPosition:Int, yPosition:Int, ?textSize:peote.ui.config.TextSize, zIndex:Int = 0, text:String,
 	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int = 0, text:String,
-	                    font:peote.text.Font<$styleType>, ?fontStyle:$styleType, //font:$fontType, fontStyle:$styleType
+	                    font:$fontType, ?fontStyle:$styleType,
 						?config:peote.ui.config.TextConfig)
 	{
 		//trace("NEW UITextPage");		
@@ -517,7 +531,7 @@ implements peote.layout.ILayoutElement
 		}
 		
 		
-		var _pageLine:peote.text.PageLine<$styleType>;
+		var _pageLine:$pageLineType;
 		var selectionElement:peote.ui.style.interfaces.StyleElement;
 		
 		if (create)	{
@@ -1568,7 +1582,7 @@ implements peote.layout.ILayoutElement
 		fontProgram.pageDeleteChars(page, fromLine, toLine, fromPos, toPos, isVisible);
 	}
 	
-	inline function _deleteChar(_pageLine:peote.text.PageLine<$styleType>, lineNumber:Int, position:Int) {
+	inline function _deleteChar(_pageLine:$pageLineType, lineNumber:Int, position:Int) {
 		//TODO:optimize
 		if (hasUndo) undoBuffer.delete(lineNumber, lineNumber+1, position, position+1, fontProgram.pageGetChars(page, lineNumber, lineNumber+1, position, position+1) );
 		if (onDeleteText != null) onDeleteText(this, lineNumber, lineNumber+1, position, position+1, fontProgram.pageGetChars(page, lineNumber, lineNumber+1, position, position+1) );
@@ -1584,13 +1598,13 @@ implements peote.layout.ILayoutElement
 		} else return fontProgram.pageCutChars(page, fromLine, toLine, fromPos, toPos, isVisible);
 	}
 	
-	inline function _addLinefeed(_pageLine:peote.text.PageLine<$styleType>, lineNumber:Int, position:Int) {
+	inline function _addLinefeed(_pageLine:$pageLineType, lineNumber:Int, position:Int) {
 		fontProgram.pageAddLinefeedAt(page, _pageLine, lineNumber, position, isVisible); // TODO: glyphstyle/defaultRange
 		if (hasUndo) undoBuffer.insert(lineNumber, lineNumber+2, position, 0, "\n");
 		if (onInsertText != null) onInsertText(this, lineNumber, lineNumber+2, position, 0, "\n");
 	}
 	
-	inline function _removeLinefeed(_pageLine:peote.text.PageLine<$styleType>, lineNumber:Int) {
+	inline function _removeLinefeed(_pageLine:$pageLineType, lineNumber:Int) {
 		var position = (_pageLine != null) ? _pageLine.length : page.getPageLine(lineNumber).length;
 		if (hasUndo) undoBuffer.delete(lineNumber, lineNumber+2, position, 0, "\n");
 		if (onDeleteText != null) onDeleteText(this, lineNumber, lineNumber+2, position, 0, "\n");
@@ -1712,77 +1726,73 @@ implements peote.layout.ILayoutElement
 	
 	// ------------ Events ---------------
 
-	var _onResizeTextWidth:UITextPage<$styleType>->Float->Float->Void = null;
-	var _onResizeTextHeight:UITextPage<$styleType>->Float->Float->Void = null;
-	var _onChangeXOffset:UITextPage<$styleType>->Float->Float->Void = null;
-	var _onChangeYOffset:UITextPage<$styleType>->Float->Float->Void = null;
+	var _onResizeTextWidth:$uiTextPageType->Float->Float->Void = null;
+	var _onResizeTextHeight:$uiTextPageType->Float->Float->Void = null;
+	var _onChangeXOffset:$uiTextPageType->Float->Float->Void = null;
+	var _onChangeYOffset:$uiTextPageType->Float->Float->Void = null;
 	
 	// text-size (inner) resize events
-	public var onResizeTextWidth:UITextPage<$styleType>->Float->Float->Void = null;
-	public var onResizeTextHeight:UITextPage<$styleType>->Float->Float->Void = null;
+	public var onResizeTextWidth:$uiTextPageType->Float->Float->Void = null;
+	public var onResizeTextHeight:$uiTextPageType->Float->Float->Void = null;
 
 	// events if text page is changing offset
-	public var onChangeXOffset:UITextPage<$styleType>->Float->Float->Void = null;
-	public var onChangeYOffset:UITextPage<$styleType>->Float->Float->Void = null;
+	public var onChangeXOffset:$uiTextPageType->Float->Float->Void = null;
+	public var onChangeYOffset:$uiTextPageType->Float->Float->Void = null;
 
 	// events if text is changed: fromLine, toLine, fromPos, toPos, chars
-	public var onInsertText:UITextPage<$styleType>->Int->Int->Int->Int->String->Void = null;
-	public var onDeleteText:UITextPage<$styleType>->Int->Int->Int->Int->String->Void = null;
+	public var onInsertText:$uiTextPageType->Int->Int->Int->Int->String->Void = null;
+	public var onDeleteText:$uiTextPageType->Int->Int->Int->Int->String->Void = null;
 	
-	public var onResizeWidth(never, set):UITextPage<$styleType>->Int->Int->Void;
-	inline function set_onResizeWidth(f:UITextPage<$styleType>->Int->Int->Void):UITextPage<$styleType>->Int->Int->Void
+	public var onResizeWidth(never, set):$uiTextPageType->Int->Int->Void;
+	inline function set_onResizeWidth(f:$uiTextPageType->Int->Int->Void):$uiTextPageType->Int->Int->Void
 		return setOnResizeWidth(this, f);
 	
-	public var onResizeHeight(never, set):UITextPage<$styleType>->Int->Int->Void;
-	inline function set_onResizeHeight(f:UITextPage<$styleType>->Int->Int->Void):UITextPage<$styleType>->Int->Int->Void
+	public var onResizeHeight(never, set):$uiTextPageType->Int->Int->Void;
+	inline function set_onResizeHeight(f:$uiTextPageType->Int->Int->Void):$uiTextPageType->Int->Int->Void
 		return setOnResizeHeight(this, f);
 	
-	public var onPointerOver(never, set):UITextPage<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerOver(f:UITextPage<$styleType>->peote.ui.event.PointerEvent->Void):UITextPage<$styleType>->peote.ui.event.PointerEvent->Void
+	public var onPointerOver(never, set):$uiTextPageType->peote.ui.event.PointerEvent->Void;
+	inline function set_onPointerOver(f:$uiTextPageType->peote.ui.event.PointerEvent->Void):$uiTextPageType->peote.ui.event.PointerEvent->Void
 		return setOnPointerOver(this, f);
 	
-	public var onPointerOut(never, set):UITextPage<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerOut(f:UITextPage<$styleType>->peote.ui.event.PointerEvent->Void):UITextPage<$styleType>->peote.ui.event.PointerEvent->Void 
+	public var onPointerOut(never, set):$uiTextPageType->peote.ui.event.PointerEvent->Void;
+	inline function set_onPointerOut(f:$uiTextPageType->peote.ui.event.PointerEvent->Void):$uiTextPageType->peote.ui.event.PointerEvent->Void 
 		return setOnPointerOut(this, f);
 	
-	public var onPointerMove(never, set):UITextPage<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerMove(f:UITextPage<$styleType>->peote.ui.event.PointerEvent->Void):UITextPage<$styleType>->peote.ui.event.PointerEvent->Void
+	public var onPointerMove(never, set):$uiTextPageType->peote.ui.event.PointerEvent->Void;
+	inline function set_onPointerMove(f:$uiTextPageType->peote.ui.event.PointerEvent->Void):$uiTextPageType->peote.ui.event.PointerEvent->Void
 		return setOnPointerMove(this, f);
 	
-	public var onPointerDown(never, set):UITextPage<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerDown(f:UITextPage<$styleType>->peote.ui.event.PointerEvent->Void):UITextPage<$styleType>->peote.ui.event.PointerEvent->Void
+	public var onPointerDown(never, set):$uiTextPageType->peote.ui.event.PointerEvent->Void;
+	inline function set_onPointerDown(f:$uiTextPageType->peote.ui.event.PointerEvent->Void):$uiTextPageType->peote.ui.event.PointerEvent->Void
 		return setOnPointerDown(this, f);
 	
-	public var onPointerUp(never, set):UITextPage<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerUp(f:UITextPage<$styleType>->peote.ui.event.PointerEvent->Void):UITextPage<$styleType>->peote.ui.event.PointerEvent->Void
+	public var onPointerUp(never, set):$uiTextPageType->peote.ui.event.PointerEvent->Void;
+	inline function set_onPointerUp(f:$uiTextPageType->peote.ui.event.PointerEvent->Void):$uiTextPageType->peote.ui.event.PointerEvent->Void
 		return setOnPointerUp(this, f);
 	
-	public var onPointerClick(never, set):UITextPage<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerClick(f:UITextPage<$styleType>->peote.ui.event.PointerEvent->Void):UITextPage<$styleType>->peote.ui.event.PointerEvent->Void
+	public var onPointerClick(never, set):$uiTextPageType->peote.ui.event.PointerEvent->Void;
+	inline function set_onPointerClick(f:$uiTextPageType->peote.ui.event.PointerEvent->Void):$uiTextPageType->peote.ui.event.PointerEvent->Void
 		return setOnPointerClick(this, f);
 		
-	public var onMouseWheel(never, set):UITextPage<$styleType>->peote.ui.event.WheelEvent->Void;
-	inline function set_onMouseWheel(f:UITextPage<$styleType>->peote.ui.event.WheelEvent->Void):UITextPage<$styleType>->peote.ui.event.WheelEvent->Void 
+	public var onMouseWheel(never, set):$uiTextPageType->peote.ui.event.WheelEvent->Void;
+	inline function set_onMouseWheel(f:$uiTextPageType->peote.ui.event.WheelEvent->Void):$uiTextPageType->peote.ui.event.WheelEvent->Void 
 		return setOnMouseWheel(this, f);
 				
-	public var onDrag(never, set):UITextPage<$styleType>->Float->Float->Void;
-	inline function set_onDrag(f:UITextPage<$styleType>->Float->Float->Void):UITextPage<$styleType>->Float->Float->Void
+	public var onDrag(never, set):$uiTextPageType->Float->Float->Void;
+	inline function set_onDrag(f:$uiTextPageType->Float->Float->Void):$uiTextPageType->Float->Float->Void
 		return setOnDrag(this, f);
 	
-	public var onFocus(never, set):UITextPage<$styleType>->Void;
-	inline function set_onFocus(f:UITextPage<$styleType>->Void):UITextPage<$styleType>->Void
+	public var onFocus(never, set):$uiTextPageType->Void;
+	inline function set_onFocus(f:$uiTextPageType->Void):$uiTextPageType->Void
 		return setOnFocus(this, f);
 
 }
 
 // -------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------
-			
-			// Context.defineModule(classPackage.concat([className]).join('.'),[c]);
-			Context.defineModule(fullyQualifiedName, [c]);
-		// }
-		// return TPath({ pack:classPackage, name:className, params:[] });
-		return tp;
+		
+		return c;
 	}
 }
 #end

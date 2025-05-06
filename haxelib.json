@@ -4,9 +4,9 @@
 	"license": "MIT",
 	"tags": ["peote", "ui", "userinterface", "layout", "widgets"],
 	"description": "Userinterface for peote-view",
-	"version": "0.9.4",
+	"version": "0.9.5",
 	"classPath": "src/",
-	"releasenote": "fixing macros how it detects already generated types (lang-server cache glitch)",
+	"releasenote": "adding pregeneration for all font-macros and the text ui-elements",
 	"contributors": ["maitag"],
 	"dependencies": {
 		"lime": "",

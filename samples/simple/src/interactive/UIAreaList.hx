@@ -11,7 +11,7 @@ class UIAreaList extends UIArea implements ParentElement
 
 	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int = 0, ?config:AreaListConfig)
 	{		
-		super(xPosition, yPosition, width, height, zIndex, config);		
+		super(xPosition, yPosition, width, height, zIndex, config);
 		
 		// ------------------------------------
 		// --------- RESIZE HANDLING ----------		
@@ -30,13 +30,17 @@ class UIAreaList extends UIArea implements ParentElement
 		// this._onResizeHeight = (_, height:Int, deltaHeight:Int) -> {}
 	}
 
+	function isTextChild(child):Bool {
+		return (Type.getClassName(Type.getClass(child)).indexOf("peote.ui.interactive.UIText") >= 0);
+	}
+
 	var _firstTimeAdded = true;
 	var _autosizedChilds = new Array<Interactive>();
 	override function onAddUIElementToDisplay()
 	{
 		if (_firstTimeAdded) { // detect where is text-elements what have autosize and is zero at first run
 			for (child in childs) {
-				if ( child.height == 0 && Type.getClassName(Type.getClass(child)).indexOf("peote.ui.interactive.UITextPage")>=0) {
+				if ( child.height == 0 && isTextChild(child) ) {
 					_autosizedChilds.push(child);
 				}
 			}
@@ -54,7 +58,9 @@ class UIAreaList extends UIArea implements ParentElement
 
 	}
 
-	public function addResizable(child:Interactive) _add(child, true);
+	// -----------------------------------------------------------
+
+	public function addResizable(child:Interactive) _add(child, true); // TODO: later only "add" and with options per child
 	override public function add(child:Interactive) _add(child, false);
 	function _add(child:Interactive, addResizeInternEvent:Bool)
 	{
@@ -69,9 +75,9 @@ class UIAreaList extends UIArea implements ParentElement
 		}
 		
 		super.add(child);
-
+		
 		if (addResizeInternEvent) child.setOnResizeHeightIntern(child, updateChildOnResizeHeight); 
-
+		
 	}
 	
 	override public function remove(child:Interactive)
@@ -86,14 +92,18 @@ class UIAreaList extends UIArea implements ParentElement
 			moveChildsByOffset(index+1, -yOff);
 		}
 
+		// TODO: remove resize-handler if there was added some!
+
 		super.remove(child);
 
 	}
 
+	// -----------------------------------------------------------
+
 	public function updateChildOnResizeHeight(child:Interactive, height:Int, deltaHeight:Int)
 	{
 		// detect where is text-elements what have autosize and is zero before added
-		if (_firstTimeAdded && height == deltaHeight && Type.getClassName(Type.getClass(child)).indexOf("peote.ui.interactive.UITextPage")>=0) return;
+		if ( _firstTimeAdded && height == deltaHeight && isTextChild(child) ) return;
 
 		// TODO:
 

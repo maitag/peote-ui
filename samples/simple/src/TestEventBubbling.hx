@@ -8,14 +8,29 @@ import lime.ui.Window;
 import peote.view.PeoteView;
 import peote.view.Color;
 
-import peote.text.Font;
-
 import peote.ui.PeoteUIDisplay;
-import peote.ui.interactive.*;
-import peote.ui.style.*;
-import peote.ui.config.*;
-import peote.ui.event.*;
 
+import peote.ui.interactive.UIElement;
+
+import peote.ui.style.RoundBorderStyle;
+
+import peote.ui.config.HAlign;
+import peote.ui.config.VAlign;
+
+import peote.ui.event.PointerEvent;
+import peote.ui.event.PointerType;
+
+import peote.ui.style.FontStyleTiled;
+
+// using macro generated Font and Text-widgets
+// -------------------------------------------
+typedef Fnt = peote.text.Font<FontStyleTiled>;
+typedef TextLine = peote.ui.interactive.UITextLine<FontStyleTiled>;
+
+// faster buildtime by using the pre generated:
+// --------------------------------------------
+// typedef Fnt = peote.ui.tiled.FontT;
+// typedef TextLine = peote.ui.interactive.UITextLineT;
 
 class TestEventBubbling extends Application
 {
@@ -36,16 +51,16 @@ class TestEventBubbling extends Application
 
 	var style = new RoundBorderStyle(Color.GREY1, Color.GREY5, 2.0, 20.0);
 	
-	var font:Font<FontStyleTiled>;
+	var font:Fnt;
 	var fontStyle:FontStyleTiled;
 	
 	public function startSample(window:Window)
 	{
 		// load the FONT:
-		new Font<FontStyleTiled>("assets/fonts/tiled/hack_ascii.json").load( onFontLoaded );
+		new Fnt("assets/fonts/tiled/hack_ascii.json").load( onFontLoaded );
 	}
 	
-	public function onFontLoaded(font:Font<FontStyleTiled>)
+	public function onFontLoaded(font:Fnt)
 	{
 		peoteView = new PeoteView(window);
 
@@ -187,7 +202,7 @@ class TestEventBubbling extends Application
 		uiDisplay.add(button);
 		
 		if (text != "") {
-			var textLine = new UITextLine<FontStyleTiled>(x, y, w, h, z, text, font, fontStyle, {hAlign:HAlign.CENTER, vAlign:VAlign.CENTER});
+			var textLine = new TextLine(x, y, w, h, z, text, font, fontStyle, {hAlign:HAlign.CENTER, vAlign:VAlign.CENTER});
 			uiDisplay.add(textLine);
 		}
 		

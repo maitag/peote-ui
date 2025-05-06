@@ -231,6 +231,9 @@ implements peote.layout.ILayoutElement
 	public var maskWidth:Int;
 	public var maskHeight:Int;
 	#end
+
+	// to disable PointerOut-event while remove/hide
+	public var pointerOverOnHide = true;
 	
 	
 	// Pointer and MouseWheel events

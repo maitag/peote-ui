@@ -15,29 +15,37 @@ class UITextLineMacro
 	static public function buildClass(className:String, classPackage:Array<String>, stylePack:Array<String>, styleModule:String, styleName:String, styleSuperModule:String, styleSuperName:String, styleType:ComplexType, styleField:Array<String>):ComplexType
 	{
 		className += Macro.classNameExtension(styleName, styleModule);
-
 		var fullyQualifiedName:String = classPackage.concat([className]).join('.');
-		var tp = TPath({ pack:classPackage, name:className, params:[] });
-		if ( Macro.typeAlreadyGenerated(fullyQualifiedName) ) return tp;
-		
-		// if ( Macro.typeNotGenerated(classPackage.concat([className]).join('.')) )
-		// if ( Macro.isNotGenerated(className) )
-		// {
+
+		if ( !Macro.typeAlreadyGenerated(fullyQualifiedName) )
+		{	
 			Macro.debug(className, classPackage, stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
 			
 			//var glyphType = peote.text.Glyph.GlyphMacro.buildClass("Glyph", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType);
-			//var fontType = peote.text.Font.FontMacro.buildClass("Font", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
-			//var fontProgramType = peote.text.FontProgram.FontProgramMacro.buildClass("FontProgram", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
-			//var lineType  = peote.text.Line.LineMacro.buildClass("Line", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
+			var uiTextLineType:ComplexType =  TPath({ pack:classPackage, name:"UITextLine" + Macro.classNameExtension(styleName, styleModule), params:[] });
+
+			var lineType = //peote.text.Line.LineMacro.buildClass("Line", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
+				TPath({ pack:["peote","text"], name:"Line", params:[TPType(styleType)] });
+			var fontType = //peote.text.Font.FontMacro.buildClass("Font", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
+				TPath({ pack:["peote","text"], name:"Font", params:[TPType(styleType)] });
+			var fontProgramType = //peote.text.FontProgram.FontProgramMacro.buildClass("FontProgram", ["peote","text"], stylePack, styleModule, styleName, styleSuperModule, styleSuperName, styleType, styleField);
+				TPath({ pack:["peote","text"], name:"FontProgram", params:[TPType(styleType)] });
 			
 			//var fontPath = TPath({ pack:["peote","text"], name:"Font" + Macro.classNameExtension(styleName, styleModule), params:[] });
 			//var fontProgramPath = TPath({ pack:["peote","text"], name:"FontProgram" + Macro.classNameExtension(styleName, styleModule), params:[] });
 			//var linePath = TPath({ pack:["peote","text"], name:"Line" + Macro.classNameExtension(styleName, styleModule), params:[] });
 			
-			var glyphStyleHasMeta = Macro.parseGlyphStyleMetas(styleModule+"."+styleName); // trace("FontProgram: glyphStyleHasMeta", glyphStyleHasMeta);
-			var glyphStyleHasField = Macro.parseGlyphStyleFields(styleModule+"."+styleName); // trace("FontProgram: glyphStyleHasField", glyphStyleHasField);
+			Context.defineModule(fullyQualifiedName, [ getTypeDefinition(className, styleModule, styleName, styleType, uiTextLineType, lineType, fontType, fontProgramType) ]);
+		}
+		return TPath({ pack:classPackage, name:className, params:[] });
+	}
+		
+	static public function getTypeDefinition(className:String, styleModule:String, styleName:String, styleType:ComplexType, uiTextLineType:ComplexType, lineType:ComplexType, fontType:ComplexType, fontProgramType:ComplexType):TypeDefinition
+	{
+		// var glyphStyleHasMeta = Macro.parseGlyphStyleMetas(styleModule+"."+styleName); // trace("FontProgram: glyphStyleHasMeta", glyphStyleHasMeta);
+		var glyphStyleHasField = Macro.parseGlyphStyleFields(styleModule+"."+styleName); // trace("FontProgram: glyphStyleHasField", glyphStyleHasField);
 
-			var c = macro
+		var c = macro
 
 // -------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------
@@ -49,7 +57,7 @@ class $className extends peote.ui.interactive.Interactive
 implements peote.layout.ILayoutElement
 #end
 {	
-	var line:peote.text.Line<$styleType> = null; //$lineType
+	var line:$lineType = null;
 	
 	var undoBuffer:peote.ui.util.UndoBufferLine = null;
 	public var hasUndo(get, never):Bool;
@@ -58,8 +66,8 @@ implements peote.layout.ILayoutElement
 	public var textWidth(get, never):Float;
 	inline function get_textWidth():Float return line.textSize;
 	
-	var fontProgram:peote.text.FontProgram<$styleType>; //$fontProgramType	
-	var font:peote.text.Font<$styleType>; //$fontType	
+	var fontProgram:$fontProgramType;
+	var font:$fontType;
 	public var fontStyle:$styleType;
 	
 	public var backgroundSpace:peote.ui.config.Space = null;
@@ -302,7 +310,7 @@ implements peote.layout.ILayoutElement
 	#end
 	
 	public function new(xPosition:Int, yPosition:Int, width:Int, height:Int, zIndex:Int = 0, text:String,
-	                    font:peote.text.Font<$styleType>, ?fontStyle:$styleType, //font:$fontType, fontStyle:$styleType
+	                    font:$fontType, ?fontStyle:$styleType,
 	                    ?config:peote.ui.config.TextConfig)
 	{
 		//trace("NEW UITextLine");		
@@ -1269,73 +1277,69 @@ implements peote.layout.ILayoutElement
 	
 	// ----------- Events ---------------
 
-	var _onResizeTextWidth:UITextLine<$styleType>->Float->Float->Void = null;
-	var _onChangeXOffset:UITextLine<$styleType>->Float->Float->Void = null;
+	var _onResizeTextWidth:$uiTextLineType->Float->Float->Void = null;
+	var _onChangeXOffset:$uiTextLineType->Float->Float->Void = null;
 
 	// text-size (inner) resize events
-	public var onResizeTextWidth:UITextLine<$styleType>->Float->Float->Void = null;
+	public var onResizeTextWidth:$uiTextLineType->Float->Float->Void = null;
 	
 	// events if text page is changing offset
-	public var onChangeXOffset:UITextLine<$styleType>->Float->Float->Void = null;
+	public var onChangeXOffset:$uiTextLineType->Float->Float->Void = null;
 
 	// events if text is changed: fromPos, toPos, chars
-	public var onInsertText:UITextLine<$styleType>->Int->Int->String->Void = null;
-	public var onDeleteText:UITextLine<$styleType>->Int->Int->String->Void = null;
+	public var onInsertText:$uiTextLineType->Int->Int->String->Void = null;
+	public var onDeleteText:$uiTextLineType->Int->Int->String->Void = null;
 	
-	public var onResizeWidth(never, set):UITextLine<$styleType>->Int->Int->Void;
-	inline function set_onResizeWidth(f:UITextLine<$styleType>->Int->Int->Void):UITextLine<$styleType>->Int->Int->Void
+	public var onResizeWidth(never, set):$uiTextLineType->Int->Int->Void;
+	inline function set_onResizeWidth(f:$uiTextLineType->Int->Int->Void):$uiTextLineType->Int->Int->Void
 		return setOnResizeWidth(this, f);
 	
-	public var onResizeHeight(never, set):UITextLine<$styleType>->Int->Int->Void;
-	inline function set_onResizeHeight(f:UITextLine<$styleType>->Int->Int->Void):UITextLine<$styleType>->Int->Int->Void
+	public var onResizeHeight(never, set):$uiTextLineType->Int->Int->Void;
+	inline function set_onResizeHeight(f:$uiTextLineType->Int->Int->Void):$uiTextLineType->Int->Int->Void
 		return setOnResizeHeight(this, f);
 	
-	public var onPointerOver(never, set):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerOver(f:UITextLine<$styleType>->peote.ui.event.PointerEvent->Void):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void
+	public var onPointerOver(never, set):$uiTextLineType->peote.ui.event.PointerEvent->Void;
+	inline function set_onPointerOver(f:$uiTextLineType->peote.ui.event.PointerEvent->Void):$uiTextLineType->peote.ui.event.PointerEvent->Void
 		return setOnPointerOver(this, f);
 	
-	public var onPointerOut(never, set):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerOut(f:UITextLine<$styleType>->peote.ui.event.PointerEvent->Void):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void 
+	public var onPointerOut(never, set):$uiTextLineType->peote.ui.event.PointerEvent->Void;
+	inline function set_onPointerOut(f:$uiTextLineType->peote.ui.event.PointerEvent->Void):$uiTextLineType->peote.ui.event.PointerEvent->Void 
 		return setOnPointerOut(this, f);
 	
-	public var onPointerMove(never, set):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerMove(f:UITextLine<$styleType>->peote.ui.event.PointerEvent->Void):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void
+	public var onPointerMove(never, set):$uiTextLineType->peote.ui.event.PointerEvent->Void;
+	inline function set_onPointerMove(f:$uiTextLineType->peote.ui.event.PointerEvent->Void):$uiTextLineType->peote.ui.event.PointerEvent->Void
 		return setOnPointerMove(this, f);
 	
-	public var onPointerDown(never, set):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerDown(f:UITextLine<$styleType>->peote.ui.event.PointerEvent->Void):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void
+	public var onPointerDown(never, set):$uiTextLineType->peote.ui.event.PointerEvent->Void;
+	inline function set_onPointerDown(f:$uiTextLineType->peote.ui.event.PointerEvent->Void):$uiTextLineType->peote.ui.event.PointerEvent->Void
 		return setOnPointerDown(this, f);
 	
-	public var onPointerUp(never, set):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerUp(f:UITextLine<$styleType>->peote.ui.event.PointerEvent->Void):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void
+	public var onPointerUp(never, set):$uiTextLineType->peote.ui.event.PointerEvent->Void;
+	inline function set_onPointerUp(f:$uiTextLineType->peote.ui.event.PointerEvent->Void):$uiTextLineType->peote.ui.event.PointerEvent->Void
 		return setOnPointerUp(this, f);
 	
-	public var onPointerClick(never, set):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void;
-	inline function set_onPointerClick(f:UITextLine<$styleType>->peote.ui.event.PointerEvent->Void):UITextLine<$styleType>->peote.ui.event.PointerEvent->Void
+	public var onPointerClick(never, set):$uiTextLineType->peote.ui.event.PointerEvent->Void;
+	inline function set_onPointerClick(f:$uiTextLineType->peote.ui.event.PointerEvent->Void):$uiTextLineType->peote.ui.event.PointerEvent->Void
 		return setOnPointerClick(this, f);
 		
-	public var onMouseWheel(never, set):UITextLine<$styleType>->peote.ui.event.WheelEvent->Void;
-	inline function set_onMouseWheel(f:UITextLine<$styleType>->peote.ui.event.WheelEvent->Void):UITextLine<$styleType>->peote.ui.event.WheelEvent->Void 
+	public var onMouseWheel(never, set):$uiTextLineType->peote.ui.event.WheelEvent->Void;
+	inline function set_onMouseWheel(f:$uiTextLineType->peote.ui.event.WheelEvent->Void):$uiTextLineType->peote.ui.event.WheelEvent->Void 
 		return setOnMouseWheel(this, f);
 				
-	public var onDrag(never, set):UITextLine<$styleType>->Float->Float->Void;
-	inline function set_onDrag(f:UITextLine<$styleType>->Float->Float->Void):UITextLine<$styleType>->Float->Float->Void
+	public var onDrag(never, set):$uiTextLineType->Float->Float->Void;
+	inline function set_onDrag(f:$uiTextLineType->Float->Float->Void):$uiTextLineType->Float->Float->Void
 		return setOnDrag(this, f);
 	
-	public var onFocus(never, set):UITextLine<$styleType>->Void;
-	inline function set_onFocus(f:UITextLine < $styleType >->Void):UITextLine < $styleType >->Void 
+	public var onFocus(never, set):$uiTextLineType->Void;
+	inline function set_onFocus(f:$uiTextLineType->Void):$uiTextLineType->Void 
 		return setOnFocus(this, f);
 		
 }
 
 // -------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------
-			
-			// Context.defineModule(classPackage.concat([className]).join('.'),[c]);
-			Context.defineModule(fullyQualifiedName, [c]);
-		// }
-		// return TPath({ pack:classPackage, name:className, params:[] });
-		return tp;
+		
+		return c;
 	}
 }
 #end

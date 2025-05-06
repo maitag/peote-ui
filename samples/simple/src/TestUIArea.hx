@@ -11,13 +11,36 @@ import peote.view.Buffer;
 import peote.view.Element;
 import peote.view.Color;
 
-import peote.text.Font;
-
 import peote.ui.PeoteUIDisplay;
-import peote.ui.interactive.*;
-import peote.ui.style.*;
-import peote.ui.config.*;
-import peote.ui.event.*;
+import peote.ui.interactive.UIElement;
+import peote.ui.interactive.UIArea;
+import peote.ui.interactive.UIDisplay;
+import peote.ui.interactive.UISlider;
+
+import peote.ui.style.BoxStyle;
+import peote.ui.style.RoundBorderStyle;
+
+import peote.ui.config.TextConfig;
+import peote.ui.config.SliderConfig;
+import peote.ui.config.HAlign;
+
+import peote.ui.event.PointerEvent;
+import peote.ui.event.WheelEvent;
+
+import peote.ui.style.FontStyleTiled;
+
+// using macro generated Font and Text-widgets
+// -------------------------------------------
+typedef Fnt = peote.text.Font<FontStyleTiled>;
+typedef TextLine = peote.ui.interactive.UITextLine<FontStyleTiled>;
+typedef TextPage = peote.ui.interactive.UITextPage<FontStyleTiled>;
+
+// faster buildtime by using the pre generated:
+// --------------------------------------------
+// typedef Fnt = peote.ui.tiled.FontT;
+// typedef TextLine = peote.ui.interactive.UITextLineT;
+// typedef TextPage = peote.ui.interactive.UITextPageT;
+
 
 class Elem implements Element {
 	@posX @anim("Position", "pingpong") public var x:Int;
@@ -64,10 +87,10 @@ class TestUIArea extends Application
 
 	public function startSample(window:Window)
 	{
-		new Font<FontStyleTiled>("assets/fonts/tiled/hack_ascii.json").load( onFontLoaded );
+		new Fnt("assets/fonts/tiled/hack_ascii.json").load( onFontLoaded );
 	}
 	
-	public function onFontLoaded(font:Font<FontStyleTiled>) // don'T forget argument-type here !
+	public function onFontLoaded(font:Fnt) // don'T forget argument-type here !
 	{
 		peoteView = new PeoteView(window);
 		peoteView.start();
@@ -129,7 +152,7 @@ class TestUIArea extends Application
 		
 		// ---- header textline (starts also area-dragging) ----		
 		
-		var header = new UITextLine<FontStyleTiled>(0, 0, 500, 0, 1, "=== UIArea ===", font, fontStyleHeader, {
+		var header = new TextLine(0, 0, 500, 0, 1, "=== UIArea ===", font, fontStyleHeader, {
 			backgroundStyle:roundBorderStyle,
 			backgroundSpace:{left:5},
 			hAlign:HAlign.CENTER
@@ -156,7 +179,7 @@ class TestUIArea extends Application
 		// ---- add content ----
 
 		// add some fixed Element out of mask and area-offset
-		var fixedButton = new UITextLine<FontStyleTiled>(0, 0, 0, 0, 2, "Fixed Button", font, fontStyleInput, textInputConfig);
+		var fixedButton = new TextLine(0, 0, 0, 0, 2, "Fixed Button", font, fontStyleInput, textInputConfig);
 		content.addFixed(fixedButton);
 
 		
@@ -190,12 +213,12 @@ class TestUIArea extends Application
 		}
 		content.add(uiElement);		
 
-		var inputPage = new UITextPage<FontStyleTiled>(250, 300, 0, 0, 1, "input\ntext by\nUIText\tPage", font, fontStyleInput, textInputConfig);
-		inputPage.onPointerDown = function(t:UITextPage<FontStyleTiled>, e:PointerEvent) {
+		var inputPage = new TextPage(250, 300, 0, 0, 1, "input\ntext by\nUIText\tPage", font, fontStyleInput, textInputConfig);
+		inputPage.onPointerDown = function(t:TextPage, e:PointerEvent) {
 			t.setInputFocus(e);			
 			t.startSelection(e);
 		}
-		inputPage.onPointerUp = function(t:UITextPage<FontStyleTiled>, e:PointerEvent) {
+		inputPage.onPointerUp = function(t:TextPage, e:PointerEvent) {
 			t.stopSelection(e);
 		}
 		inputPage.onResizeWidth = (_, width:Int, deltaWidth:Int) -> {
