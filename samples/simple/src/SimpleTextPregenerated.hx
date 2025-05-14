@@ -258,6 +258,13 @@ class SimpleTextPregenerated extends Application
 		
 
 
+		// testing zoom and offsets
+		// peoteView.zoom = 0.7;
+		// peoteView.xOffset = 50;
+		// peoteView.yOffset = 50;
+		// uiDisplay.zoom = 0.5;
+		// uiDisplay.xOffset = 100;
+		// uiDisplay.yOffset = 100;
 
 
 

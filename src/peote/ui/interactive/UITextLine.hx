@@ -793,10 +793,10 @@ implements peote.layout.ILayoutElement
 	
 	inline function onSelect(e:peote.ui.event.PointerEvent):Void {
 		//trace("onSelect");
-		if (localX(e.x) < leftSpace) {
+		if (e.x < leftSpace + x) {
 			if (selectNextX != -1) { selectNextX = - 1; startSelectOutsideTimer(); }
 		}
-		else if (localX(e.x) > width - rightSpace) {
+		else if (e.x > width - rightSpace + x) {
 			if (selectNextX != 1) { selectNextX = 1; startSelectOutsideTimer();	}
 		}
 		else selectNextX = 0;

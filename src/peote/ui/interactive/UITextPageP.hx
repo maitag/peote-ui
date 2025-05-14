@@ -687,23 +687,23 @@ class UITextPageP extends peote.ui.interactive.Interactive implements peote.ui.i
 		selectNextY = 0;
 	}
 	inline function onSelect(e:peote.ui.event.PointerEvent):Void {
-		if (localX(e.x) < leftSpace) {
+		if (e.x < leftSpace + x) {
 			if (selectNextX != -1) {
 				selectNextX = -1;
 				startSelectOutsideTimer();
 			};
-		} else if (localX(e.x) > width - rightSpace) {
+		} else if (e.x > width - rightSpace + x) {
 			if (selectNextX != 1) {
 				selectNextX = 1;
 				startSelectOutsideTimer();
 			};
 		} else selectNextX = 0;
-		if (localY(e.y) < topSpace) {
+		if (e.y < topSpace + y) {
 			if (selectNextY != -1) {
 				selectNextY = -1;
 				startSelectOutsideTimer();
 			};
-		} else if (localY(e.y) > height - bottomSpace) {
+		} else if (e.y > height - bottomSpace + y) {
 			if (selectNextY != 1) {
 				selectNextY = 1;
 				startSelectOutsideTimer();

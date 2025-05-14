@@ -515,9 +515,9 @@ implements peote.layout.ILayoutElement
 				pickedIndex = peoteView.getElementAt(mouseX, mouseY, this, movePickProgram);					
 			}
 			
-			if (intoSelectionTextLine != null) // text selection
+			if (intoSelectionTextLine != null && intoSelectionUIDisplay == this) // text selection
 			{
-				intoSelectionTextLine.onSelect({x:Std.int(localX(x)), y:Std.int(localX(y)), type:PointerType.MOUSE});
+				intoSelectionTextLine.onSelect({x:Std.int(localX(x)), y:Std.int(localY(y)), type:PointerType.MOUSE});
 			}
 			else if (draggingMouseElements.length > 0) // Dragging
 			{
@@ -1196,8 +1196,13 @@ implements peote.layout.ILayoutElement
 	public var inputFocusElement(default, null):InputFocus = null;
 	
 	inline function setInputFocus(t:InputFocus, e:PointerEvent=null) {
-		if (inputFocusElement != t) {
+		if (inputFocusUIDisplay != null && inputFocusUIDisplay != this)
+		{
+			if (inputFocusUIDisplay.inputFocusElement != null) inputFocusUIDisplay.inputFocusElement.removeInputFocus();
+		}
 
+		if (inputFocusElement != t)
+		{
 			inputFocusUIDisplay = this;
 			
 			if (inputFocusElement != null) inputFocusElement.removeInputFocus();
@@ -1217,9 +1222,11 @@ implements peote.layout.ILayoutElement
 		return {x:Std.int(localX(e.x)), y:Std.int(localY(e.y)), type:e.type, touch:e.touch, mouseButton:e.mouseButton};
 	
 	static var intoSelectionTextLine:InputText = null;
-
+	static var intoSelectionUIDisplay:PeoteUIDisplay = null;
+	
 	public function startSelection(t:InputText, e:PointerEvent) {
 		if (intoSelectionTextLine != null) intoSelectionTextLine.onSelectStop(localPointerEvent(e)); // if there is another into selectionMode
+		intoSelectionUIDisplay = this;
 		intoSelectionTextLine = t;
 		t.onSelectStart(localPointerEvent(e));
 	}
