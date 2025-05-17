@@ -2,8 +2,6 @@
 
 ->work in progress<-
 
-To see whats working at now look into [`samples/`](https://github.com/maitag/peote-ui/tree/master/samples) folder!
-
 
 ## Installation and Dependencies:
 
@@ -33,6 +31,13 @@ Finally install the lib itself by:
 haxelib git peote-ui https://github.com/maitag/peote-ui
 ```
 
+### Samples and usecases
+
+Samples can be found into [peote-ui-samples](https://github.com/maitag/peote-ui-samples) repository.
+Some into [peote-playground](https://github.com/maitag/peote-playground) also using it, e.g. [here](https://github.com/maitag/peote-playground/net/chat).
+
+First usecase here: [lyapunow fractalgenerator](https://github.com/maitag/haxe-lyapunow).
+
 
 ## How to use
 
@@ -44,22 +49,38 @@ This is the simplest way where interactive elements can be placed
 directly by x/y values inside the Display with a given size.
 
 Available elements you can add:
+- Interactive (have no Style so its hidden and only interacts)
 - UIElement (for simple buttons)
-- UIDisplay (to make an peote-view Display interactive)
-- UITextLine<FontStyle> (text, textinput and button)
+- UISlider
+- UIArea
+- UIDisplay (to make any peote-view Display interactive)
 
-TODO:
-- UITextPage<FontStyle>  (fully textfield)
+macro generated text elements for Font<FontStyle>:
+- UITextLine<FontStyle>
+- UITextPage<FontStyle>
+
+pregenerated text elements for peote.ui.tiled.FontT (Font<FontStyleTiled>):
+- UITextLineT
+- UITextPageT
+
+pregenerated text elements for peote.ui.packed.FontP (Font<FontStylePacked>):
+- UITextLineP
+- UITextPageP
 
 
-### PeoteUI 
+
+You can also put this ui-elements into layout by using peote-layout lib,
+see here for some samples: [peote-layout/samples/peote-ui](https://github.com/maitag/peote-layout/tree/main/samples/peote-ui)
+
+
+### PeoteUI (TODO)
 
 Here the PeoteUI itself and all widgets are layout-container abstracts of [peote-layout](https://github.com/maitag/peote-layout).
 So you can create a userinterface where all is contained into a nesting structure to make the inner elements scalable
 in depend to the outer size. This can be useful e.g. to automatically fit your UI to different display-sizes.
 
-Available Widgets:
+Available Widgets at now:
 - Div
 - TextLine
 ...
-(more widgets will be followed!)
+(more widgets later!)
