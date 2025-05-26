@@ -1858,7 +1858,6 @@ class FontProgramT extends peote.view.Program {
 	}
 	public function pageWrapLine(page:PageT, lineNumber:Int, wordwrap:Bool = false, updatePageTextWidth:Bool = true, ?glyphStyle:peote.ui.style.FontStyleTiled, ?defaultFontRange:Null<Int>, addRemoveGlyphes:Bool = true):Int {
 		if (lineNumber >= page.length) return 0;
-		trace("pageWrapLine ", lineNumber);
 		var pageLine = page.getPageLine(lineNumber);
 		var position:Int;
 		var glyph:GlyphT;

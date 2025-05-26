@@ -1,7 +1,10 @@
 package peote.ui.interactive;
 class UITextPageP extends peote.ui.interactive.Interactive implements peote.ui.interactive.interfaces.ActionTextPage implements peote.ui.interactive.interfaces.InputFocus implements peote.ui.interactive.interfaces.InputText {
-	var page : peote.ui.packed.PageP = null;
+	public var page(default, null) : peote.ui.packed.PageP = null;
 	var pageLine : peote.ui.packed.PageLineP = null;
+	public var length(get, never) : Int;
+	inline function get_length():Int return page.length;
+	public inline function getLineLength(lineNumber:Int):Int return page.getPageLine(lineNumber).length;
 	var undoBuffer : peote.ui.util.UndoBufferPage = null;
 	public var hasUndo(get, never) : Bool;
 	inline function get_hasUndo():Bool return (undoBuffer != null);
@@ -9,8 +12,8 @@ class UITextPageP extends peote.ui.interactive.Interactive implements peote.ui.i
 	inline function get_textWidth():Float return (page != null) ? page.textWidth : width;
 	public var textHeight(get, never) : Float;
 	inline function get_textHeight():Float return (page != null) ? page.textHeight : height;
-	var fontProgram : peote.ui.packed.FontProgramP;
-	var font : peote.ui.packed.FontP;
+	public var fontProgram(default, null) : peote.ui.packed.FontProgramP;
+	public var font(default, null) : peote.ui.packed.FontP;
 	public var fontStyle : peote.ui.style.FontStylePacked;
 	public var backgroundSpace : peote.ui.config.Space = null;
 	var backgroundProgram : peote.ui.style.interfaces.StyleProgram = null;
@@ -645,6 +648,12 @@ class UITextPageP extends peote.ui.interactive.Interactive implements peote.ui.i
 		peote.ui.interactive.input2action.InputTextPage.focusElement = this;
 		if (uiDisplay != null) uiDisplay.setInputFocus(this, e);
 		if (cursorToPointer) setCursorToPointer(e);
+		cursorShow();
+	}
+	public inline function setInputFocusAt(cursor:Int, cursorLine:Int, setCursorToPosition:Bool = true):Void {
+		peote.ui.interactive.input2action.InputTextPage.focusElement = this;
+		if (uiDisplay != null) uiDisplay.setInputFocus(this);
+		if (setCursorToPosition) setCursorAndLine(cursor, cursorLine);
 		cursorShow();
 	}
 	public inline function removeInputFocus() {

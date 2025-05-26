@@ -1,13 +1,15 @@
 package peote.ui.interactive;
 class UITextLineT extends peote.ui.interactive.Interactive implements peote.ui.interactive.interfaces.ActionTextLine implements peote.ui.interactive.interfaces.InputFocus implements peote.ui.interactive.interfaces.InputText {
-	var line : peote.ui.tiled.LineT = null;
+	public var line(default, null) : peote.ui.tiled.LineT = null;
+	public var length(get, never) : Int;
+	inline function get_length():Int return line.length;
 	var undoBuffer : peote.ui.util.UndoBufferLine = null;
 	public var hasUndo(get, never) : Bool;
 	inline function get_hasUndo():Bool return (undoBuffer != null);
 	public var textWidth(get, never) : Float;
 	inline function get_textWidth():Float return line.textSize;
-	var fontProgram : peote.ui.tiled.FontProgramT;
-	var font : peote.ui.tiled.FontT;
+	public var fontProgram(default, null) : peote.ui.tiled.FontProgramT;
+	public var font(default, null) : peote.ui.tiled.FontT;
 	public var fontStyle : peote.ui.style.FontStyleTiled;
 	public var backgroundSpace : peote.ui.config.Space = null;
 	var backgroundProgram : peote.ui.style.interfaces.StyleProgram = null;
@@ -526,6 +528,12 @@ class UITextLineT extends peote.ui.interactive.Interactive implements peote.ui.i
 		if (cursorToPointer) setCursorToPointer(e);
 		cursorShow();
 	}
+	public inline function setInputFocusAt(position:Int, setCursorToPosition:Bool = true):Void {
+		peote.ui.interactive.input2action.InputTextLine.focusElement = this;
+		if (uiDisplay != null) uiDisplay.setInputFocus(this);
+		if (setCursorToPosition) setCursor(position);
+		cursorShow();
+	}
 	public inline function removeInputFocus() {
 		if (uiDisplay != null) uiDisplay.removeInputFocus(this);
 		cursorHide();
@@ -750,7 +758,7 @@ class UITextLineT extends peote.ui.interactive.Interactive implements peote.ui.i
 		if (lime.system.Clipboard.text != null) textInput(lime.system.Clipboard.text);
 	}
 	public function selectAll() {
-		select(0, line.length - 1);
+		select(0, line.length);
 		setCursor(0, false, false);
 	}
 	inline function _updateCursorSelection(newCursor:Int, addSelection:Bool) {

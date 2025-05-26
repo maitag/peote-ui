@@ -64,8 +64,13 @@ class $className extends peote.ui.interactive.Interactive
 implements peote.layout.ILayoutElement
 #end
 {	
-	var page:$pageType = null;
-	var pageLine:$pageLineType = null;
+	public var page(default, null):$pageType = null;
+	var pageLine:$pageLineType = null; // temporary pageline 
+
+	public var length(get, never):Int;
+	inline function get_length():Int return page.length; // number of lines
+
+	public inline function getLineLength(lineNumber:Int):Int return page.getPageLine(lineNumber).length; // number of chars into line
 	
 	var undoBuffer:peote.ui.util.UndoBufferPage = null;
 	public var hasUndo(get, never):Bool;
@@ -77,8 +82,8 @@ implements peote.layout.ILayoutElement
 	public var textHeight(get, never):Float;
 	inline function get_textHeight():Float return (page != null) ? page.textHeight : height;
 	
-	var fontProgram:$fontProgramType;	
-	var font:$fontType;	
+	public var fontProgram(default, null):$fontProgramType;	
+	public var font(default, null):$fontType;	
 	public var fontStyle:$styleType;
 	
 	public var backgroundSpace:peote.ui.config.Space = null;
@@ -913,6 +918,13 @@ implements peote.layout.ILayoutElement
 		peote.ui.interactive.input2action.InputTextPage.focusElement = this;
 		if (uiDisplay != null) uiDisplay.setInputFocus(this, e);
 		if (cursorToPointer) setCursorToPointer(e);
+		cursorShow();
+	}
+
+	public inline function setInputFocusAt(cursor:Int, cursorLine:Int, setCursorToPosition:Bool = true):Void {
+		peote.ui.interactive.input2action.InputTextPage.focusElement = this;
+		if (uiDisplay != null) uiDisplay.setInputFocus(this);
+		if (setCursorToPosition) setCursorAndLine(cursor, cursorLine);
 		cursorShow();
 	}
 	

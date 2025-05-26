@@ -57,7 +57,10 @@ class $className extends peote.ui.interactive.Interactive
 implements peote.layout.ILayoutElement
 #end
 {	
-	var line:$lineType = null;
+	public var line(default, null):$lineType = null;
+
+	public var length(get, never):Int; // number of chars into line
+	inline function get_length():Int return line.length;
 	
 	var undoBuffer:peote.ui.util.UndoBufferLine = null;
 	public var hasUndo(get, never):Bool;
@@ -66,8 +69,8 @@ implements peote.layout.ILayoutElement
 	public var textWidth(get, never):Float;
 	inline function get_textWidth():Float return line.textSize;
 	
-	var fontProgram:$fontProgramType;
-	var font:$fontType;
+	public var fontProgram(default, null):$fontProgramType;
+	public var font(default, null):$fontType;
 	public var fontStyle:$styleType;
 	
 	public var backgroundSpace:peote.ui.config.Space = null;
@@ -728,6 +731,13 @@ implements peote.layout.ILayoutElement
 		if (cursorToPointer) setCursorToPointer(e);
 		cursorShow();
 	}
+
+	public inline function setInputFocusAt(position:Int, setCursorToPosition:Bool = true):Void {
+		peote.ui.interactive.input2action.InputTextLine.focusElement = this;
+		if (uiDisplay != null) uiDisplay.setInputFocus(this);
+		if (setCursorToPosition) setCursor(position);
+		cursorShow();
+	}
 	
 	public inline function removeInputFocus() {
 		if (uiDisplay != null) uiDisplay.removeInputFocus(this);
@@ -1045,7 +1055,7 @@ implements peote.layout.ILayoutElement
 	}
 
 	public function selectAll() {
-		select(0, line.length - 1);
+		select(0, line.length);
 		setCursor(0, false, false);
 	}
 
