@@ -144,7 +144,7 @@ class BoxStyleProgram extends Program implements StyleProgram
 		getBuffer().addElement(cast styleElement);
 	}
 	
-	public inline function update(styleElement:StyleElement)
+	public inline function updateElement(styleElement:StyleElement)
 	{
 		getBuffer().updateElement(cast styleElement);
 	}

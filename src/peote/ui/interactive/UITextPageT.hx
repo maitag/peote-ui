@@ -33,7 +33,7 @@ class UITextPageT extends peote.ui.interactive.Interactive implements peote.ui.i
 				} else {
 					backgroundStyle = style;
 					backgroundElement.setStyle(style);
-					if (isVisible && backgroundIsVisible) backgroundProgram.update(backgroundElement);
+					if (isVisible && backgroundIsVisible) backgroundProgram.updateElement(backgroundElement);
 				};
 			} else {
 				if (isVisible && backgroundIsVisible) backgroundProgram.removeElement(backgroundElement);
@@ -151,7 +151,7 @@ class UITextPageT extends peote.ui.interactive.Interactive implements peote.ui.i
 				} else {
 					cursorStyle = style;
 					cursorElement.setStyle(style);
-					if (isVisible && cursorIsVisible) cursorProgram.update(cursorElement);
+					if (isVisible && cursorIsVisible) cursorProgram.updateElement(cursorElement);
 				};
 			} else {
 				if (isVisible && cursorIsVisible) cursorProgram.removeElement(cursorElement);
@@ -431,7 +431,7 @@ class UITextPageT extends peote.ui.interactive.Interactive implements peote.ui.i
 					if (addUpdate) selectionProgram.addElement(selectionElement);
 				} else {
 					if (updateStyle) selectionElement.setStyle(selectionStyle);
-					if (addUpdate) selectionProgram.update(selectionElement);
+					if (addUpdate) selectionProgram.updateElement(selectionElement);
 				};
 			};
 			selectionElementMax++;
@@ -448,7 +448,7 @@ class UITextPageT extends peote.ui.interactive.Interactive implements peote.ui.i
 		for (i in 0 ... selectionElementMax) {
 			selectionElement = selectionElementArray[i];
 			selectionElement.setStyle(style);
-			if (updateAfter) selectionProgram.update(selectionElement);
+			if (updateAfter) selectionProgram.updateElement(selectionElement);
 		};
 	}
 	inline function _createCursorMasked(addUpdate:Bool) _setCreateCursorMasked(addUpdate, true);
@@ -494,7 +494,7 @@ class UITextPageT extends peote.ui.interactive.Interactive implements peote.ui.i
 			if (addUpdate) cursorProgram.addElement(cursorElement);
 		} else {
 			cursorElement.setMasked(this, cx, cy, cw, ch, mx, my, mw, mh, z);
-			if (addUpdate) cursorProgram.update(cursorElement);
+			if (addUpdate) cursorProgram.updateElement(cursorElement);
 		};
 	}
 	override inline function updateVisibleStyle() {
@@ -503,14 +503,14 @@ class UITextPageT extends peote.ui.interactive.Interactive implements peote.ui.i
 			if (isVisible) fontProgram.pageUpdate(page);
 			if (backgroundElement != null) {
 				backgroundElement.setStyle(backgroundStyle);
-				if (isVisible && backgroundIsVisible) backgroundProgram.update(backgroundElement);
+				if (isVisible && backgroundIsVisible) backgroundProgram.updateElement(backgroundElement);
 			};
 			if (selectionElementArray != null) {
 				selectionElementsSetStyle(selectionStyle, isVisible && selectionIsVisible);
 			};
 			if (cursorElement != null) {
 				cursorElement.setStyle(cursorStyle);
-				if (isVisible && cursorIsVisible) cursorProgram.update(cursorElement);
+				if (isVisible && cursorIsVisible) cursorProgram.updateElement(cursorElement);
 			};
 		};
 	}
@@ -548,7 +548,7 @@ class UITextPageT extends peote.ui.interactive.Interactive implements peote.ui.i
 			if (backgroundElement != null) {
 				if (updateStyle) backgroundElement.setStyle(backgroundStyle);
 				backgroundElement.setLayout(this, backgroundSpace);
-				if (isVisible && backgroundIsVisible) backgroundProgram.update(backgroundElement);
+				if (isVisible && backgroundIsVisible) backgroundProgram.updateElement(backgroundElement);
 			};
 		};
 		if (updateSelection && selectionElementArray != null) {

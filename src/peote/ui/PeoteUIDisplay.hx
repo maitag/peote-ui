@@ -1539,8 +1539,7 @@ implements peote.layout.ILayoutElement
 		// keyboard & text
 		window.onKeyDown.add(keyDownActive);
 		window.onKeyUp.add(keyUpActive);
-		window.onTextInput.add(textInputActive);
-		
+		window.onTextInput.add(textInputActive);		
 	}
 	
 	#if html5

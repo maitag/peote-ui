@@ -9,5 +9,5 @@ interface StyleProgram
 	public function createElementAt(uiElement:Interactive, x:Int, y:Int, w:Int, h:Int, mx:Int, my:Int, mw:Int, mh:Int, z:Int, style:Dynamic, space:Space = null):StyleElement;
 	public function addElement(styleElement:StyleElement):Void;
 	public function removeElement(styleElement:StyleElement):Void;
-	public function update(styleElement:StyleElement):Void;
+	public function updateElement(styleElement:StyleElement):Void;
 }

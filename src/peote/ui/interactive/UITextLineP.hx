@@ -29,7 +29,7 @@ class UITextLineP extends peote.ui.interactive.Interactive implements peote.ui.i
 				} else {
 					backgroundStyle = style;
 					backgroundElement.setStyle(style);
-					if (isVisible && backgroundIsVisible) backgroundProgram.update(backgroundElement);
+					if (isVisible && backgroundIsVisible) backgroundProgram.updateElement(backgroundElement);
 				};
 			} else {
 				if (isVisible && backgroundIsVisible) backgroundProgram.removeElement(backgroundElement);
@@ -68,7 +68,7 @@ class UITextLineP extends peote.ui.interactive.Interactive implements peote.ui.i
 				} else {
 					selectionStyle = style;
 					selectionElement.setStyle(style);
-					if (isVisible && selectionIsVisible) selectionProgram.update(selectionElement);
+					if (isVisible && selectionIsVisible) selectionProgram.updateElement(selectionElement);
 				};
 			} else {
 				if (isVisible && selectionIsVisible) selectionProgram.removeElement(selectionElement);
@@ -132,7 +132,7 @@ class UITextLineP extends peote.ui.interactive.Interactive implements peote.ui.i
 				} else {
 					cursorStyle = style;
 					cursorElement.setStyle(style);
-					if (isVisible && cursorIsVisible) cursorProgram.update(cursorElement);
+					if (isVisible && cursorIsVisible) cursorProgram.updateElement(cursorElement);
 				};
 			} else {
 				if (isVisible && cursorIsVisible) cursorProgram.removeElement(cursorElement);
@@ -326,7 +326,7 @@ class UITextLineP extends peote.ui.interactive.Interactive implements peote.ui.i
 			if (addUpdate) selectionProgram.addElement(selectionElement);
 		} else {
 			selectionElement.setMasked(this, selectX, selectY, selectWidth, selectHeight, mx, my, mw, mh, z);
-			if (addUpdate) selectionProgram.update(selectionElement);
+			if (addUpdate) selectionProgram.updateElement(selectionElement);
 		};
 	}
 	inline function _createCursorMasked(addUpdate:Bool) _setCreateCursorMasked(addUpdate, true);
@@ -372,7 +372,7 @@ class UITextLineP extends peote.ui.interactive.Interactive implements peote.ui.i
 			if (addUpdate) cursorProgram.addElement(cursorElement);
 		} else {
 			cursorElement.setMasked(this, cx, cy, cw, ch, mx, my, mw, mh, z);
-			if (addUpdate) cursorProgram.update(cursorElement);
+			if (addUpdate) cursorProgram.updateElement(cursorElement);
 		};
 	}
 	override inline function updateVisibleStyle() {
@@ -381,15 +381,15 @@ class UITextLineP extends peote.ui.interactive.Interactive implements peote.ui.i
 			if (isVisible) fontProgram.lineUpdate(line);
 			if (backgroundElement != null) {
 				backgroundElement.setStyle(backgroundStyle);
-				if (isVisible && backgroundIsVisible) backgroundProgram.update(backgroundElement);
+				if (isVisible && backgroundIsVisible) backgroundProgram.updateElement(backgroundElement);
 			};
 			if (selectionElement != null) {
 				selectionElement.setStyle(selectionStyle);
-				if (isVisible && selectionIsVisible) selectionProgram.update(selectionElement);
+				if (isVisible && selectionIsVisible) selectionProgram.updateElement(selectionElement);
 			};
 			if (cursorElement != null) {
 				cursorElement.setStyle(cursorStyle);
-				if (isVisible && cursorIsVisible) cursorProgram.update(cursorElement);
+				if (isVisible && cursorIsVisible) cursorProgram.updateElement(cursorElement);
 			};
 		};
 	}
@@ -427,7 +427,7 @@ class UITextLineP extends peote.ui.interactive.Interactive implements peote.ui.i
 			if (backgroundElement != null) {
 				if (updateStyle) backgroundElement.setStyle(backgroundStyle);
 				backgroundElement.setLayout(this, backgroundSpace);
-				if (isVisible && backgroundIsVisible) backgroundProgram.update(backgroundElement);
+				if (isVisible && backgroundIsVisible) backgroundProgram.updateElement(backgroundElement);
 			};
 		};
 		if (updateSelection && selectionElement != null) {

@@ -120,7 +120,7 @@ class FontProgramT extends peote.view.Program {
 	}
 	public inline function setFont(font:FontT):Void {
 		this.font = font;
-		autoUpdateTextures = false;
+		autoUpdate = false;
 		setTexture(font.textureCache, "TEX");
 	}
 	public inline function setFontStyle(fontStyle:peote.ui.style.FontStyleTiled):Void {
@@ -158,7 +158,7 @@ class FontProgramT extends peote.view.Program {
 			{ };
 			if (tilt != "" && tilt != "0.0") setFormula("x", "x + (1.0-aPosition.y)*width*" + tilt);
 		};
-		updateTextures();
+		update();
 	}
 	inline function makeTabSize(glyph:GlyphT, width:Float):Float {
 		if (glyph.char == 9) return width * 3.0 else return width;

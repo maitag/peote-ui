@@ -42,7 +42,7 @@ implements peote.layout.ILayoutElement
 				else { // styleprogram is of same type
 					style = _style;
 					styleElement.setStyle(_style);
-					if (isVisible && styleIsVisible) styleProgram.update(styleElement);
+					if (isVisible && styleIsVisible) styleProgram.updateElement(styleElement);
 				}
 			}
 			else { // remove style
@@ -102,7 +102,7 @@ implements peote.layout.ILayoutElement
 	{
 		if (styleElement != null) {
 			styleElement.setStyle(style);
-			if (isVisible && styleIsVisible) styleProgram.update(styleElement);
+			if (isVisible && styleIsVisible) styleProgram.updateElement(styleElement);
 		}
 	}
 	
@@ -110,7 +110,7 @@ implements peote.layout.ILayoutElement
 	{
 		if (styleElement != null) {
 			styleElement.setLayout(this, backgroundSpace);
-			if (isVisible && styleIsVisible) styleProgram.update(styleElement);
+			if (isVisible && styleIsVisible) styleProgram.updateElement(styleElement);
 		}
 		updateUIElementLayout(); // hook to childclass
 	}
@@ -121,7 +121,7 @@ implements peote.layout.ILayoutElement
 		if (styleElement != null) {
 			styleElement.setStyle(style);
 			styleElement.setLayout(this, backgroundSpace);
-			if (isVisible && styleIsVisible) styleProgram.update(styleElement);
+			if (isVisible && styleIsVisible) styleProgram.updateElement(styleElement);
 		}
 		updateUIElement(); // hook to childclass
 	}

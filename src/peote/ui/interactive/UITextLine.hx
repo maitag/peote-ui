@@ -97,7 +97,7 @@ implements peote.layout.ILayoutElement
 				else { // styleprogram is of same type
 					backgroundStyle = style;
 					backgroundElement.setStyle(style);
-					if (isVisible && backgroundIsVisible) backgroundProgram.update(backgroundElement);
+					if (isVisible && backgroundIsVisible) backgroundProgram.updateElement(backgroundElement);
 				}
 			} 
 			else { // remove style
@@ -142,7 +142,7 @@ implements peote.layout.ILayoutElement
 				else { // styleprogram is of same type
 					selectionStyle = style;
 					selectionElement.setStyle(style);
-					if (isVisible && selectionIsVisible) selectionProgram.update(selectionElement);
+					if (isVisible && selectionIsVisible) selectionProgram.updateElement(selectionElement);
 				}
 			} 
 			else { // remove style
@@ -205,7 +205,7 @@ implements peote.layout.ILayoutElement
 				else { // styleprogram is of same type
 					cursorStyle = style;
 					cursorElement.setStyle(style);
-					if (isVisible && cursorIsVisible) cursorProgram.update(cursorElement);
+					if (isVisible && cursorIsVisible) cursorProgram.updateElement(cursorElement);
 				}
 			} 
 			else { // remove style
@@ -440,7 +440,7 @@ implements peote.layout.ILayoutElement
 		}
 		else {
 			selectionElement.setMasked(this, selectX, selectY, selectWidth, selectHeight, mx, my, mw, mh, z); // TODO zIndex
-			if (addUpdate) selectionProgram.update(selectionElement);
+			if (addUpdate) selectionProgram.updateElement(selectionElement);
 		}
 	}
 	
@@ -487,7 +487,7 @@ implements peote.layout.ILayoutElement
 		}
 		else {
 			cursorElement.setMasked(this, cx, cy, cw, ch, mx, my, mw, mh, z); // TODO zIndex
-			if (addUpdate) cursorProgram.update(cursorElement);
+			if (addUpdate) cursorProgram.updateElement(cursorElement);
 		}
 	}
 	
@@ -500,15 +500,15 @@ implements peote.layout.ILayoutElement
 			
 			if (backgroundElement != null) {
 				backgroundElement.setStyle(backgroundStyle);
-				if (isVisible && backgroundIsVisible) backgroundProgram.update(backgroundElement);
+				if (isVisible && backgroundIsVisible) backgroundProgram.updateElement(backgroundElement);
 			}
 			if (selectionElement != null) {
 				selectionElement.setStyle(selectionStyle);		
-				if (isVisible && selectionIsVisible) selectionProgram.update(selectionElement);
+				if (isVisible && selectionIsVisible) selectionProgram.updateElement(selectionElement);
 			}
 			if (cursorElement != null) {
 				cursorElement.setStyle(cursorStyle);		
-				if (isVisible && cursorIsVisible) cursorProgram.update(cursorElement);
+				if (isVisible && cursorIsVisible) cursorProgram.updateElement(cursorElement);
 			}
 		}
 	}
@@ -580,7 +580,7 @@ implements peote.layout.ILayoutElement
 			if (backgroundElement != null) {
 				if (updateStyle) backgroundElement.setStyle(backgroundStyle);
 				backgroundElement.setLayout(this, backgroundSpace);
-				if (isVisible && backgroundIsVisible) backgroundProgram.update(backgroundElement);
+				if (isVisible && backgroundIsVisible) backgroundProgram.updateElement(backgroundElement);
 			}
 		}
 		
