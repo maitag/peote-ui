@@ -45,7 +45,7 @@ class FontT {
 		};
 	}
 	public function load(onLoad:FontT -> Void, ?onProgressOverall:(Int, Int) -> Void, debug:Bool = false) {
-		utils.Loader.text(path + jsonFilename, debug, function(jsonString:String) {
+		peote.view.Load.text(path + jsonFilename, debug, function(jsonString:String) {
 			jsonString = rComments.replace(jsonString, "");
 			jsonString = rHexToDec.map(jsonString, function(r) return Std.string(Std.parseInt(r.matched(2))));
 			var parser = new json2object.JsonParser<peote.text.FontConfig>();
@@ -113,7 +113,7 @@ class FontT {
 	}
 	private function loadFontData(onLoad:FontT -> Void, onProgressOverall:(Int, Int) -> Void, debug:Bool):Void {
 		var gl3FontData = new Array<peote.text.Gl3FontData>();
-		utils.Loader.bytesArray(config.ranges.map(function(v) {
+		peote.view.Load.bytesArray(config.ranges.map(function(v) {
 			if (v.data != null) return path + v.data else return path + rParseEnding.replace(v.image, ".dat");
 		}), debug, function(index:Int, bytes:lime.utils.Bytes) {
 			gl3FontData[index] = new peote.text.Gl3FontData(bytes, config.ranges[index].range.min, config.ranges[index].range.max, kerning);
@@ -124,7 +124,7 @@ class FontT {
 	public function embed() { }
 	@:access(peote.text.Range)
 	private function loadImages(?gl3FontData:Array<peote.text.Gl3FontData>, onLoad:FontT -> Void, onProgressOverall:(Int, Int) -> Void, debug:Bool):Void {
-		utils.Loader.imageArray(config.ranges.map(function(v) return path + v.image), debug, function(index:Int, loaded:Int, size:Int) {
+		peote.view.Load.imageArray(config.ranges.map(function(v) return path + v.image), debug, function(index:Int, loaded:Int, size:Int) {
 			if (onProgressOverall != null) onProgressOverall(loaded, size);
 		}, function(index:Int, image:lime.graphics.Image) {
 			{
