@@ -742,7 +742,7 @@ implements peote.layout.ILayoutElement
 	inline function mask(_x:Int, _y:Int, _width:Int, _height:Int, _isVisible:Bool):Bool
 	{
 		if (x < _x) {
-			if (right <= _x) { maskWidth = 0; if (_isVisible && isVisible) uiDisplay.remove(this); return false;}
+			if (right <= _x) { maskWidth = 0; if (_isVisible && isVisible && uiDisplay!=null) uiDisplay.remove(this); return false;}
 			else {
 				maskX = _x - x;
 				if (right >= _x + _width) maskWidth = _width;
@@ -751,7 +751,7 @@ implements peote.layout.ILayoutElement
 			}
 		} 
 		else if (right > _x + _width) {
-			if (x >= _x + _width) { maskWidth = 0; if (_isVisible && isVisible) uiDisplay.remove(this); return false;}
+			if (x >= _x + _width) { maskWidth = 0; if (_isVisible && isVisible && uiDisplay!=null) uiDisplay.remove(this); return false;}
 			else {
 				maskX = 0;
 				maskWidth = width - (right - (_x + _width));
@@ -768,28 +768,28 @@ implements peote.layout.ILayoutElement
 	inline function _maskElementY(_y:Int, _height:Int, xMasked, _isVisible:Bool):Bool
 	{
 		if (y < _y) {
-			if (bottom <= _y) { maskHeight = 0; if (_isVisible && isVisible) uiDisplay.remove(this); return false; }
+			if (bottom <= _y) { maskHeight = 0; if (_isVisible && isVisible && uiDisplay!=null) uiDisplay.remove(this); return false; }
 			else {
 				maskY = _y - y;
 				if (bottom >= _y + _height) maskHeight = _height;
 				else maskHeight = height - maskY;
-				if (_isVisible && !isVisible) uiDisplay.add(this);
+				if (_isVisible && !isVisible && uiDisplay!=null) uiDisplay.add(this);
 				return true;
 			}
 		} 
 		else if (bottom > _y + _height) {
-			if (y >= _y + _height)  { maskHeight = 0; if (_isVisible && isVisible) uiDisplay.remove(this); return false; }
+			if (y >= _y + _height)  { maskHeight = 0; if (_isVisible && isVisible && uiDisplay!=null) uiDisplay.remove(this); return false; }
 			else {
 				maskY = 0;
 				maskHeight = height - (bottom - (_y + _height));
-				if (_isVisible && !isVisible) uiDisplay.add(this);
+				if (_isVisible && !isVisible && uiDisplay!=null) uiDisplay.add(this);
 				return true;
 			}
 		}
 		else {
 			maskY = 0;
 			maskHeight = height;
-			if (_isVisible && !isVisible) uiDisplay.add(this);
+			if (_isVisible && !isVisible && uiDisplay!=null) uiDisplay.add(this);
 			return xMasked;
 		}
 	}

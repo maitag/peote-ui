@@ -59,32 +59,35 @@ implements peote.layout.ILayoutElement
 	
 	override inline function updateVisibleLayout():Void
 	{
-		#if (peoteui_no_masking)
-			display.x = Std.int(x * uiDisplay.xz + uiDisplay.xOffset + uiDisplay.x);
-			display.y = Std.int(y * uiDisplay.yz + uiDisplay.yOffset + uiDisplay.y);
-			display.width  = Std.int(width  * uiDisplay.xz);
-			display.height = Std.int(height * uiDisplay.yz);
-		#else
-		if (masked) { // if some of the edges is cut by mask for scroll-area
-			display.x = Std.int((x + maskX) * uiDisplay.xz + uiDisplay.xOffset + uiDisplay.x);
-			display.y = Std.int((y + maskY) * uiDisplay.yz + uiDisplay.yOffset + uiDisplay.y);
-			display.width  = Std.int(maskWidth  * uiDisplay.xz);
-			display.height = Std.int(maskHeight * uiDisplay.yz);
-			display.xOffset = Std.int(xOffset - maskX * uiDisplay.xz);
-			display.yOffset = Std.int(yOffset - maskY * uiDisplay.yz);
-		} else {
-			display.x = Std.int(x * uiDisplay.xz + uiDisplay.xOffset + uiDisplay.x);
-			display.y = Std.int(y * uiDisplay.yz + uiDisplay.yOffset + uiDisplay.y);
-			display.width  = Std.int(width  * uiDisplay.xz);
-			display.height = Std.int(height * uiDisplay.yz);
-			display.xOffset = 0;
-			display.yOffset = 0;
+		if (uiDisplay != null) 
+		{
+			#if (peoteui_no_masking)
+				display.x = Std.int(x * uiDisplay.xz + uiDisplay.xOffset + uiDisplay.x);
+				display.y = Std.int(y * uiDisplay.yz + uiDisplay.yOffset + uiDisplay.y);
+				display.width  = Std.int(width  * uiDisplay.xz);
+				display.height = Std.int(height * uiDisplay.yz);
+			#else
+			if (masked) { // if some of the edges is cut by mask for scroll-area
+				display.x = Std.int((x + maskX) * uiDisplay.xz + uiDisplay.xOffset + uiDisplay.x);
+				display.y = Std.int((y + maskY) * uiDisplay.yz + uiDisplay.yOffset + uiDisplay.y);
+				display.width  = Std.int(maskWidth  * uiDisplay.xz);
+				display.height = Std.int(maskHeight * uiDisplay.yz);
+				display.xOffset = Std.int(xOffset - maskX * uiDisplay.xz);
+				display.yOffset = Std.int(yOffset - maskY * uiDisplay.yz);
+			} else {
+				display.x = Std.int(x * uiDisplay.xz + uiDisplay.xOffset + uiDisplay.x);
+				display.y = Std.int(y * uiDisplay.yz + uiDisplay.yOffset + uiDisplay.y);
+				display.width  = Std.int(width  * uiDisplay.xz);
+				display.height = Std.int(height * uiDisplay.yz);
+				display.xOffset = 0;
+				display.yOffset = 0;
+			}
+			#end
+			// TODO: only inside updateStyle and also a boolean to en/disable zoomToPeoteUIDisplay!
+			display.zoom  = uiDisplay.zoom;
+			display.xZoom = uiDisplay.xZoom;
+			display.yZoom = uiDisplay.yZoom;
 		}
-		#end
-		// TODO: only inside updateStyle and also a boolean to en/disable zoomToPeoteUIDisplay!
-		display.zoom  = uiDisplay.zoom;
-		display.xZoom = uiDisplay.xZoom;
-		display.yZoom = uiDisplay.yZoom;
 	}
 
 	override inline function updateVisible():Void
@@ -95,7 +98,7 @@ implements peote.layout.ILayoutElement
 	// -----------------
 	override inline function onAddVisibleToDisplay()
 	{
-		trace("UIDisplay onAddVisibleToDisplay", uiDisplay.xz);
+		// trace("UIDisplay onAddVisibleToDisplay", uiDisplay.xz);
 		if (uiDisplay.peoteView != null) {
 			// TODO: updating zoom at the first time ?
 			uiDisplay.peoteView.addDisplay(display, addAtDisplay, addBefore);

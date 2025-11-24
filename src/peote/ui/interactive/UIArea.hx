@@ -142,7 +142,6 @@ implements peote.layout.ILayoutElement
 		child.upDownEventsBubbleTo = this;
 		child.wheelEventsBubbleTo = this;
 		child.moveEventsBubbleTo = this;
-
 		child.setParentPos(this);
 		if (isVisible) uiDisplay.add(child);
 		child.updateLayout(); // need if the child is a parent itself
@@ -213,22 +212,25 @@ implements peote.layout.ILayoutElement
 	}
 	
 	// ---------------------------------------
-	
+	var allChildsAdded = false;
+
 	override inline function updateUIElementLayout():Void
 	{
-		if (!isVisible) return;
-
+		// if (!isVisible) return;
+		
 		var deltaX = x + xOffset - last_xOffset;
 		var deltaY = y + yOffset - last_yOffset;
 		last_xOffset = x + xOffset;
 		last_yOffset = y + yOffset;
-		
-		for (child in childs) {
-			child.x += deltaX;
-			child.y += deltaY;
-			child.maskByElement(this, maskSpace);
-			child.updateLayout();
-		}
+
+		// if (isVisible) {
+			for (child in childs) {
+				child.x += deltaX;
+				child.y += deltaY;
+				if (isVisible) child.maskByElement(this, maskSpace);
+				if (isVisible) if (allChildsAdded) child.updateLayout();
+			}
+		// }
 
 		deltaX = x - last_x;
 		deltaY = y - last_y;
@@ -238,8 +240,10 @@ implements peote.layout.ILayoutElement
 		for (child in childsFixed) {
 			child.x += deltaX;
 			child.y += deltaY;
-			child.maskByElement(this); // TODO: only if child have that option
-			child.updateLayout();
+			if (isVisible) {
+				child.maskByElement(this); // TODO: only if child have that option
+				child.updateLayout();
+			}
 		}		
 		updateResizer(resizerAvail);
 	}
@@ -267,6 +271,7 @@ implements peote.layout.ILayoutElement
 			child.updateLayout(); // need if the child is a parent itself?
 		}
 		addResizer(resizerAvail);
+		allChildsAdded = true;
 	}
 	
 	override function onRemoveUIElementFromDisplay()
@@ -274,6 +279,7 @@ implements peote.layout.ILayoutElement
 		for (child in childs) if (child.isVisible) uiDisplay.remove(child);
 		for (child in childsFixed) if (child.isVisible) uiDisplay.remove(child);
 		removeResizer(resizerAvail);
+		allChildsAdded = false;
 	}	
 	
 	// --------------------
@@ -368,11 +374,11 @@ implements peote.layout.ILayoutElement
 	inline function createResizer(t:ResizeType, onPointerDown:UIElement->PointerEvent->Void, onDrag:UIElement->Float->Float->Void):UIElement {
 		var r:UIElement;
 		if (t.hasEdge) {
-			r = new UIElement(0, 0, resizerEdgeSize, resizerEdgeSize, 3);
+			r = new UIElement(0, 0, resizerEdgeSize, resizerEdgeSize, this.z + 4); // TODO: custom z offset for resizer
 			if (t.hasBottomRight || t.hasTopLeft) r.onPointerOver  = function(_, _) uiDisplay.peoteView.window.cursor = MouseCursor.RESIZE_NWSE;
 			else r.onPointerOver  = function(_, _) uiDisplay.peoteView.window.cursor = MouseCursor.RESIZE_NESW;
 		} else {
-			r = new UIElement(0, 0, resizerSize, resizerSize, 3);
+			r = new UIElement(0, 0, resizerSize, resizerSize, this.z + 4); // TODO: custom z offset for resizer
 			if (t.hasLeft || t.hasRight) r.onPointerOver  = function(_, _) uiDisplay.peoteView.window.cursor = MouseCursor.RESIZE_WE;
 			else r.onPointerOver = function(_, _) uiDisplay.peoteView.window.cursor = MouseCursor.RESIZE_NS;
 		}

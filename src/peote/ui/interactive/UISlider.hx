@@ -93,8 +93,9 @@ implements peote.layout.ILayoutElement
 		
 		dragger.maskByElement(this);
 		dragger.updateLayout();
-		
+
 		if (isVisible && triggerMouseMove) uiDisplay.triggerMouse(this);
+		
 		if (triggerOnChange) {
 			if (_onChange != null) _onChange(this, value, percent);
 			if (onChange != null) onChange(this, value, percent);
