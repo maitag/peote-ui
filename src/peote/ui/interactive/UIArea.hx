@@ -216,21 +216,21 @@ implements peote.layout.ILayoutElement
 
 	override inline function updateUIElementLayout():Void
 	{
-		// if (!isVisible) return;
-		
 		var deltaX = x + xOffset - last_xOffset;
 		var deltaY = y + yOffset - last_yOffset;
 		last_xOffset = x + xOffset;
 		last_yOffset = y + yOffset;
 
-		// if (isVisible) {
-			for (child in childs) {
-				child.x += deltaX;
-				child.y += deltaY;
-				if (isVisible) child.maskByElement(this, maskSpace);
-				if (isVisible) if (allChildsAdded) child.updateLayout();
+		for (child in childs) {
+			child.x += deltaX;
+			child.y += deltaY;
+			if (isVisible) {
+				// TODO:
+				// child.maskByElement(this, maskSpace);
+				if (allChildsAdded) child.maskByElement(this, maskSpace);
+				if (allChildsAdded) child.updateLayout();
 			}
-		// }
+		}
 
 		deltaX = x - last_x;
 		deltaY = y - last_y;
