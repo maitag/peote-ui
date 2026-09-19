@@ -108,12 +108,16 @@ implements peote.layout.ILayoutElement
 		setValue(value + delta, triggerOnChange, triggerMouseMove);
 	}
 
-	public inline function setWheelDelta(delta:Float, triggerOnChange:Bool = true, triggerMouseMove:Bool = true) 
+	public inline function setWheelDelta(delta:Float, percent:Float = 0.1, triggerOnChange:Bool = true, triggerMouseMove:Bool = true) 
 	{
-		// TODO: make 0.05 here customizable (e.g. pixels per wheelclick)
-		setPercent(percent - ((delta > 0) ? 1 : -1 ) * 0.05, triggerOnChange, triggerMouseMove);
+		setPercent(percent - ((delta > 0) ? 1 : -1 ) * percent, triggerOnChange, triggerMouseMove);
 	}
 
+	public inline function setWheelDeltaPixel(delta:Float, pixel:Int, triggerOnChange:Bool = true, triggerMouseMove:Bool = true) 
+	{
+		setPercent(percent - ((delta > 0) ? 1 : -1 ) * ((height > draggerHeight) ? pixel/(height-draggerHeight) : 0), triggerOnChange, triggerMouseMove);
+	}
+	
 	var dragger:UIElement = null;
 	var background:UIElement = null;
 	
